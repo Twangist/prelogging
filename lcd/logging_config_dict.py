@@ -27,6 +27,10 @@ class LoggingConfigDict(dict):
 
     The methods of ``LoggingConfigDict`` let you dispense with lots (and lots) of nested
     curly braces and single-quotes around keywords.
+
+    .. note::
+        In this class as well as in :ref:`LoggingConfigDictEx`, `level` always means the
+        ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric value ``logging.DEBUG``.
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
 
