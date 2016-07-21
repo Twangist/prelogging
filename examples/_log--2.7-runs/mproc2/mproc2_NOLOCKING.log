@@ -1,0 +1,91 @@
+MainProcess : root          : INFO    :  2016-07-09 17:12:50,537: Processing 40 documents using 4 processes.
+Process-14  : root          : INFO    :  2016-07-09 17:12:50,544: >>>>>> Hi from process-2; processing docs 10 - 19
+Process-14  : root          : INFO    :  2016-07-09 17:12:50,545: 2: 10
+	and again 2: 10
+Process-13  : root          : INFO    :  2016-07-09 17:12:50,544: >>>>>> Hi from process-1; processing docs 0 - 9
+Process-13  : root          : INFO    :  2016-07-09 17:12:50,545: 1:  0
+	and again 1:  0
+Process-16  : root          : INFO    :  2016-07-09 17:12:50,546: >>>>>> Hi from process-4; processing docs 30 - 39
+Process-16  : root          : INFO    :  2016-07-09 17:12:50,547: 4: 30
+	and again 4: 30
+Process-15  : root          : INFO    :  2016-07-09 17:12:50,546: >>>>>> Hi from process-3; processing docs 20 - 29
+Process-15  : root          : INFO    :  2016-07-09 17:12:50,547: 3: 20
+	and again 3: 20
+Process-13  : root          : INFO    :  2016-07-09 17:12:50,646: 1:  1
+	and again 1:  1
+Process-13  : root          : INFO    :  2016-07-09 17:12:50,647: 1:  2
+	and again 1:  2
+Process-15  : root          : INFO    :  2016-07-09 17:12:50,648: 3: 21
+	and again 3: 21
+Process-15  : root          : INFO    :  2016-07-09 17:12:50,649: 3: 22
+	and again 3: 22
+Process-14  : root          : INFO    :  2016-07-09 17:12:50,745: 2: 11
+	and again 2: 11
+Process-14  : root          : INFO    :  2016-07-09 17:12:50,746: 2: 12
+	and again 2: 12
+Process-16  : root          : INFO    :  2016-07-09 17:12:50,747: 4: 31
+	and again 4: 31
+Process-16  : root          : INFO    :  2016-07-09 17:12:50,747: 4: 32
+	and again 4: 32
+Process-13  : root          : INFO    :  2016-07-09 17:12:50,748: 1:  3
+	and again 1:  3
+Process-13  : root          : INFO    :  2016-07-09 17:12:50,748: 1:  4
+	and again 1:  4
+Process-15  : root          : INFO    :  2016-07-09 17:12:50,749: 3: 23
+	and again 3: 23
+Process-15  : root          : INFO    :  2016-07-09 17:12:50,750: 3: 24
+	and again 3: 24
+Process-13  : root          : INFO    :  2016-07-09 17:12:50,850: 1:  5
+	and again 1:  5
+Process-13  : root          : INFO    :  2016-07-09 17:12:50,850: 1:  6
+	and again 1:  6
+Process-15  : root          : INFO    :  2016-07-09 17:12:50,851: 3: 25
+	and again 3: 25
+Process-15  : root          : INFO    :  2016-07-09 17:12:50,851: 3: 26
+	and again 3: 26
+Process-14  : root          : INFO    :  2016-07-09 17:12:50,946: 2: 13
+	and again 2: 13
+Process-14  : root          : INFO    :  2016-07-09 17:12:50,946: 2: 14
+	and again 2: 14
+Process-16  : root          : INFO    :  2016-07-09 17:12:50,948: 4: 33
+	and again 4: 33
+Process-16  : root          : INFO    :  2016-07-09 17:12:50,948: 4: 34
+	and again 4: 34
+Process-13  : root          : INFO    :  2016-07-09 17:12:50,951: 1:  7
+	and again 1:  7
+Process-13  : root          : INFO    :  2016-07-09 17:12:50,951: 1:  8
+	and again 1:  8
+Process-15  : root          : INFO    :  2016-07-09 17:12:50,952: 3: 27
+	and again 3: 27
+Process-15  : root          : INFO    :  2016-07-09 17:12:50,952: 3: 28
+	and again 3: 28
+Process-13  : root          : INFO    :  2016-07-09 17:12:51,051: 1:  9
+	and again 1:  9
+Process-13  : root          : INFO    :  2016-07-09 17:12:51,052: >>>>>> Bye from process-1
+Process-15  : root          : INFO    :  2016-07-09 17:12:51,054: 3: 29
+	and again 3: 29
+Process-15  : root          : INFO    :  2016-07-09 17:12:51,054: >>>>>> Bye from process-3
+Process-14  : root          : INFO    :  2016-07-09 17:12:51,148: 2: 15
+	and again 2: 15
+Process-14  : root          : INFO    :  2016-07-09 17:12:51,148: 2: 16
+	and again 2: 16
+Process-16  : root          : INFO    :  2016-07-09 17:12:51,150: 4: 35
+	and again 4: 35
+Process-16  : root          : INFO    :  2016-07-09 17:12:51,150: 4: 36
+	and again 4: 36
+Process-14  : root          : INFO    :  2016-07-09 17:12:51,349: 2: 17
+	and again 2: 17
+Process-14  : root          : INFO    :  2016-07-09 17:12:51,349: 2: 18
+	and again 2: 18
+Process-16  : root          : INFO    :  2016-07-09 17:12:51,351: 4: 37
+	and again 4: 37
+Process-16  : root          : INFO    :  2016-07-09 17:12:51,352: 4: 38
+	and again 4: 38
+Process-14  : root          : INFO    :  2016-07-09 17:12:51,550: 2: 19
+	and again 2: 19
+Process-14  : root          : INFO    :  2016-07-09 17:12:51,551: >>>>>> Bye from process-2
+Process-16  : root          : INFO    :  2016-07-09 17:12:51,553: 4: 39
+	and again 4: 39
+Process-16  : root          : INFO    :  2016-07-09 17:12:51,553: >>>>>> Bye from process-4
+MainProcess : root          : INFO    :  2016-07-09 17:12:51,556: NUM_DOCS_TOTAL: 40, len(total_results): 40
+MainProcess : root          : INFO    :  2016-07-09 17:12:51,557: [(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (3, 20), (3, 21), (3, 22), (3, 23), (3, 24), (3, 25), (3, 26), (3, 27), (3, 28), (3, 29), (2, 10), (2, 11), (2, 12), (2, 13), (2, 14), (2, 15), (2, 16), (2, 17), (2, 18), (2, 19), (4, 30), (4, 31), (4, 32), (4, 33), (4, 34), (4, 35), (4, 36), (4, 37), (4, 38), (4, 39)]

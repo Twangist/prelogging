@@ -1,0 +1,308 @@
+# coding=utf-8
+
+__author__ = "Brian O'Neill"
+
+__doc__ = """ \
+LoggingConfigDict
+    A general class that simplifies building a logging config dictionary,
+    modularly and incrementally, for ultimate use with ``logging.config.dictConfig()`` :
+
+        https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig
+
+    Its methods let you dispense with lots (and lots) of nested curly braces
+    and single-quotes around keywords.
+"""
+
+import logging
+import logging.config
+
+
+class LoggingConfigDict(dict):
+    """
+    A general class that simplifies building a logging config dictionary,
+    modularly and incrementally, for ultimate use wiht the ``config()``
+    method of this class, which simply calls ``logging.config.dictConfig()`` :
+
+        https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig
+
+    The methods of ``LoggingConfigDict`` let you dispense with lots (and lots) of nested
+    curly braces and single-quotes around keywords.
+    """
+    _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
+
+    def __init__(self,      # *,
+                 root_level='WARNING',              # == logging default level
+                 disable_existing_loggers=None      # logging default value is True
+                ):
+        """
+        :param root_level: one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``, ``'ERROR'``, ``'CRITICAL'``, ``'NOTSET'``.
+        :param disable_existing_loggers: corresponds to the ``logging.config.dictConfig()``
+               keyword parameter of the same name. Using the default value (``None``)
+               causes the `logging` module's default (``True``) to be used.
+        """
+        assert root_level in self._level_names
+        super(LoggingConfigDict, self).__init__()
+        self['version'] = 1
+        # self['disable_existing_loggers'] = True
+        self['formatters'] = {}
+        self['filters'] = {}
+        self['handlers'] = {}
+        self['loggers'] = {}
+        self['root'] = dict(level=root_level,
+                            handlers=[])
+        # Note: though it sounds promising, 'incremental' is not very useful.
+        # From the logging.config docs:
+        # "because objects such as filters and formatters are anonymous, once a configuration is set up,
+        #  it is not possible to refer to such anonymous objects when augmenting a configuration."
+        self['incremental'] = False         # logging default value
+
+        # self['disable_existing_loggers'] can also be set
+        #  with .config(disable_existing_loggers=flag)
+        if disable_existing_loggers is not None:
+            self['disable_existing_loggers'] = bool(disable_existing_loggers)
+
+    # notational conveniences
+    @property
+    def formatters(self):
+        """(Property) Return the ``'formatters'`` subdictionary, which maps
+        each formatter name to the corresponding (sub)subdictionary."""
+        return self['formatters']
+
+    @property
+    def filters(self):
+        """(Property) Return the ``'filters'`` subdictionary, which maps
+        each filter name to the corresponding (sub)subdictionary."""
+        return self['filters']
+
+    @property
+    def handlers(self):
+        """(Property) Return the ``'handlers'`` subdictionary, which maps
+        each handler name to the corresponding (sub)subdictionary.
+        """
+        return self['handlers']
+
+    @property
+    def loggers(self):
+        """(Property) Return the ``'loggers'`` subdictionary, which maps
+        each nonempty logger name to the corresponding (sub)subdictionary."""
+        return self['loggers']
+
+    @property
+    def root(self):
+        """(Property) Return the ``'root'`` subdictionary."""
+        return self['root']
+
+    def set_root_level(self, root_level):
+        """
+        Set the loglevel of the root handler.
+        Given that ``__init__`` has a ``root_level`` parameter, this isn't really needed.
+
+        :param root_level: an explicit value. The default set in ``__init__`` is ``'WARNING'``.
+        """
+        assert root_level in self._level_names
+        self.root['level'] = root_level
+        return self
+
+    def add_root_handlers(self, * handler_names):
+        """Add handlers in ``handler_names`` to the root logger."""
+        self.root['handlers'].extend(handler_names)
+        return self
+
+    def add_root_filters(self, * filter_names):
+        """Add filters in ``filter_names`` to the root logger."""
+        if not filter_names:
+            return self
+        root_filters_list = self.root.setdefault('filters', [])
+        root_filters_list.extend(filter_names)
+        return self
+
+    def add_formatter(self, formatter_name,     # *,
+                      class_='logging.Formatter',   # the typical case
+                      ** format_dict):
+        """Add a formatter to the ``'formatters'`` subdictionary.
+
+        :param formatter_name: just that
+        :param ** format_dict: keyword/value pairs (values are generally strings)
+                    For the special keyword `class`, which is a Python reserved word
+                    and therefore can't be used as a keyword parameter, use `class_`.
+        :return: ``self``
+        """
+        assert 'class' not in format_dict
+        assert 'class_' not in format_dict
+        format_dict['class'] = class_
+        self.formatters[formatter_name] = format_dict.copy()
+        return self
+
+    def add_filter(self, filter_name,
+                   ** filter_dict):
+        """Add a filter to the ``'filters'`` subdictionary.
+
+        :param filter_name: just that
+        :param filter_dict: keyword/value pairs (values are generally strings)
+        :return: self
+        """
+        ##assert 'class' not in filter_dict
+        ## Todo: does this even work? logging docs stink re filters.
+        ## We can add a filter as in test_filters_on_logger in tests/test_LoggingConfigDict.py
+        ##      ** {'()': lambda: _count_debug }
+        ## and
+        ##    ** {'()': CountInfo
+        ## but 'class_' doesn't do the right thing, nor does 'name' (see logging source)
+        ## SO the hell with it.
+        # if 'class_' in filter_dict:
+        #     filter_dict['class'] = filter_dict.pop('class_')
+
+        self.filters[filter_name] = filter_dict.copy()
+        return self
+
+    @staticmethod
+    def _to_seq(str_or_seq):
+        """Utility function that lets methods allow parameters to be either a name
+         or a sequence of names. Return a list of names.
+        :param str_or_seq: a name of a thing (filter, handler),
+                            or a sequence of names of homogeneous things,
+                            or None.
+        :return: sequence of names. If ``str_or_seq`` is a ``str``, return ``[str_or_seq]``;
+                 if ``str_or_seq`` is ``None``, return ``[]``;
+                 otherwise, return ``str_or_seq``.
+        """
+        if isinstance(str_or_seq, str):
+            str_or_seq = [str_or_seq]
+        return list(str_or_seq or [])
+
+    def add_handler(self, handler_name,     # *,
+                    filters=None,
+                    ** handler_dict):
+        """Add a handler to the ``'handlers'`` subdictionary.
+
+        :param handler_name: just that
+        :param filters: the name of a filter, or a sequence of names of filters, to be used by the handler
+        :param ** handler_dict: keyword/value pairs (values are generally strings)
+                    For the special keyword `class`, use `class_`.
+        :return: self
+        """
+        assert 'class' not in handler_dict
+        if 'class_' in handler_dict:
+            handler_dict['class'] = handler_dict.pop('class_')
+
+        filters = self._to_seq(filters)
+        if filters:
+            handler_dict['filters'] = filters
+
+        self.handlers[handler_name] = handler_dict.copy()
+        return self
+
+    def add_file_handler(self, handler_name,    # *,
+                         filename,
+                         formatter,     # ='process_logger_level_msg'
+                         mode='w',
+                         level='NOTSET',    # log everything: logging module default
+                         delay=False,
+                         **kwargs):
+        """Add a handler with the given name, with class ``'logging.FileHandler'``,
+        using the filename, formatter, and other data provided.
+
+        :param handler_name: just that
+        :param filename: The name of the file to which this handler should log messages.
+            It may contain an absolute or relative path, as well.
+        :param formatter: The name of a previously added formatter.
+        :param mode: The mode for writing.
+        :param level: The loglevel of this file handler.
+        :param delay: If True, the file will be created lazily, only when actually written to.
+        :param kwargs: Any other key/value pairs to pass to ``add_handler()``.
+        :return: self
+        """
+        self.add_handler(handler_name,
+                         class_='logging.FileHandler',
+                         filename=filename,
+                         formatter=formatter,
+                         mode=mode,
+                         level=level,
+                         delay=delay,
+                         **kwargs)
+        return self
+
+    def add_logger(self,
+                   logger_name,     # *,
+                   handlers=None,
+                   level='NOTSET',
+                   propagate=None,
+                   filters=None):
+        """Add a logger to the ``'loggers'`` subdictionary.
+
+        :param logger_name: just that
+        :param handlers: a handler name, or sequence of handler names
+        :param level: a logging level (as ``str``)
+        :param propagate: (bool) whether to propagate to parent logger(s).
+                The default ``None`` causes the `logging` module's default
+                value of ``True`` to be used.
+        :param filters: a filter name, or sequence of filter names
+        :return: self
+        """
+        d = {'level': level}
+
+        handlers = self._to_seq(handlers)
+        if handlers:
+            d['handlers'] = handlers
+
+        if propagate is not None:
+            d['propagate'] = propagate
+
+        filters = self._to_seq(filters)
+        if filters:
+            d['filters'] = filters
+
+        self.loggers[logger_name] = d
+        return self
+
+    def set_handler_level(self, handler_name, level):
+        """Set the loglevel of handler `handler_name`.
+        Raise KeyError if no such handler.
+        :param handler_name: name of handler.
+        :param level: loglevel (as ``str``)
+        """
+        assert level in self._level_names
+        self.handlers[handler_name]['level'] = level
+        return self
+
+    def set_logger_level(self, logger_name,     # *,
+                         level):
+        """If ``logger_name`` is empty, set loglevel of root handler to ``level``,
+        else set loglevel of handler ``logger_name`` to ``level``.
+        Raise KeyError if no such logger.
+        """
+        assert level in self._level_names
+
+        if not logger_name:
+            self.set_root_level(level)
+        else:
+            self.loggers[logger_name]['level'] = level
+        return self
+
+    def config(self,    # *,
+               disable_existing_loggers=None):
+        """Call ``logging.dictConfig()`` with the dict we've built.
+
+        :param disable_existing_loggers: Last chance to change this setting.
+
+        By default, LoggingConfigDicts are created with
+
+            ``self['disable_existing_loggers'] == False``
+
+        (The ``logging`` module defaults this setting to ``True``.)
+        """
+        if disable_existing_loggers is not None:
+            self['disable_existing_loggers'] = bool(disable_existing_loggers)
+        logging.config.dictConfig(dict(self))
+
+    def dump(self):                                     # pragma: no cover
+        """Pretty-print the underlying ``dict``.
+        For debugging, sanity checks, etc.
+        :return: self (even this does)
+        """
+        from pprint import pformat
+        print(  '---->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n'
+              + pformat(dict(self)) + '\n'
+              + '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<.'     #, flush=True
+        )
+        return self

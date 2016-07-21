@@ -1,0 +1,10 @@
+/_HIDE/
+.DS_Store
+.idea
+/__pycache__/
+.ipynb_checkpoints/*.*
+temp*.py
+temp*.txt
+
+/_log/
+/examples/_log/

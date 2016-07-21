@@ -1,0 +1,20 @@
+examples.child_logger_main: INFO    :  2016-07-09 17:12:47,441: Starting up... 
+examples.child_logger_main: DEBUG   :  2016-07-09 17:12:47,441: Doing something boring with 0
+examples.child_logger_main.sub_noprop: DEBUG   :  2016-07-09 17:12:47,441: Doing something boring with 0
+examples.child_logger_main.sub_prop: DEBUG   :  2016-07-09 17:12:47,441: Doing something boring with 0
+examples.child_logger_main: INFO    :  2016-07-09 17:12:47,442: Doing something special with 0
+examples.child_logger_main.sub_noprop: INFO    :  2016-07-09 17:12:47,442: Doing something SPECIAL with 0
+examples.child_logger_main.sub_prop: INFO    :  2016-07-09 17:12:47,442: Doing something SPECIAL with 0
+examples.child_logger_main: DEBUG   :  2016-07-09 17:12:47,442: Doing something boring with 1
+examples.child_logger_main.sub_noprop: DEBUG   :  2016-07-09 17:12:47,442: Doing something boring with 1
+examples.child_logger_main.sub_prop: DEBUG   :  2016-07-09 17:12:47,442: Doing something boring with 1
+examples.child_logger_main: INFO    :  2016-07-09 17:12:47,442: Doing something special with 1
+examples.child_logger_main.sub_noprop: INFO    :  2016-07-09 17:12:47,442: Doing something SPECIAL with 1
+examples.child_logger_main.sub_prop: INFO    :  2016-07-09 17:12:47,442: Doing something SPECIAL with 1
+examples.child_logger_main: DEBUG   :  2016-07-09 17:12:47,442: Doing something boring with 2
+examples.child_logger_main.sub_noprop: DEBUG   :  2016-07-09 17:12:47,443: Doing something boring with 2
+examples.child_logger_main.sub_prop: DEBUG   :  2016-07-09 17:12:47,443: Doing something boring with 2
+examples.child_logger_main: INFO    :  2016-07-09 17:12:47,443: Doing something special with 2
+examples.child_logger_main.sub_noprop: INFO    :  2016-07-09 17:12:47,443: Doing something SPECIAL with 2
+examples.child_logger_main.sub_prop: INFO    :  2016-07-09 17:12:47,443: Doing something SPECIAL with 2
+examples.child_logger_main: INFO    :  2016-07-09 17:12:47,443: ... shutting down.

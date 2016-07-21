@@ -1,0 +1,12 @@
+.. _LoggingConfigDict:
+
+LoggingConfigDict
+===============================
+
+Resides in ``logging_config_dict.py``.
+
+.. autoclass:: lcd.logging_config_dict.LoggingConfigDict
+    :members: __init__, formatters, filters, handlers, loggers, root, set_root_level,
+              add_filter, add_formatter, add_handler, add_logger, add_root_filters, add_root_handlers,
+              add_file_handler, set_handler_level, set_logger_level, config, dump
+    :special-members:

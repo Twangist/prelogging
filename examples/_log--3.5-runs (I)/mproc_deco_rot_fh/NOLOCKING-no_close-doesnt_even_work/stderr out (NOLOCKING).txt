@@ -1,0 +1,210 @@
+final newlines messed up (see various places below)
+AND, more importantly, it doesn't even work:
+===================================================
+
+MainProcess: INFO    : lat, lon = 0, 0
+MainProcess: INFO    : lat, lon = 0, 1
+MainProcess: INFO    : lat, lon = 0, 2
+MainProcess: INFO    : lat, lon = 0, 3
+MainProcess: INFO    : lat, lon = 0, 4
+MainProcess: INFO    : lat, lon = 1, 0
+MainProcess: INFO    : lat, lon = 1, 1
+MainProcess: INFO    : lat, lon = 1, 2
+MainProcess: INFO    : lat, lon = 1, 3
+MainProcess: INFO    : lat, lon = 1, 4
+MainProcess: INFO    : lat, lon = 2, 0
+MainProcess: INFO    : lat, lon = 2, 1
+MainProcess: INFO    : lat, lon = 2, 2
+MainProcess: INFO    : lat, lon = 2, 3
+MainProcess: INFO    : lat, lon = 2, 4
+MainProcess: INFO    : lat, lon = 3, 0
+MainProcess: INFO    : lat, lon = 3, 1
+MainProcess: INFO    : lat, lon = 3, 2
+MainProcess: INFO    : lat, lon = 3, 3
+MainProcess: INFO    : lat, lon = 3, 4
+MainProcess: INFO    : lat, lon = 4, 0
+MainProcess: INFO    : lat, lon = 4, 1
+MainProcess: INFO    : lat, lon = 4, 2
+MainProcess: INFO    : lat, lon = 4, 3
+MainProcess: INFO    : lat, lon = 4, 4
+ForkPoolWorker-2: INFO    : processing lat, lon = 0, 1
+	              0, 1ForkPoolWorker-3: INFO    : processing lat, lon = 0, 2
+	              0, 2
+
+ForkPoolWorker-5: INFO    : processing lat, lon = 0, 4
+	              0, 4
+ForkPoolWorker-1: INFO    : processing lat, lon = 0, 0
+	              0, 0ForkPoolWorker-4: INFO    : processing lat, lon = 0, 3
+	              0, 3
+
+--- Logging error ---
+ForkPoolWorker-6: INFO    : processing lat, lon = 1, 0
+	              1, 0
+ForkPoolWorker-7: INFO    : processing lat, lon = 1, 1
+	              1, 1
+ForkPoolWorker-8: INFO    : processing lat, lon = 1, 2
+	              1, 2
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/logging/handlers.py", line 72, in emit
+    self.doRollover()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/logging/handlers.py", line 173, in doRollover
+    self.rotate(self.baseFilename, dfn)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/logging/handlers.py", line 113, in rotate
+    os.rename(source, dest)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/NOLOCKING/rot_fh.log' -> '/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/NOLOCKING/rot_fh.log.1'
+Call stack:
+  File "/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/mproc_deco_rot_fh.py", line 79, in <module>
+    logging.getLogger().debug(process_data_set(data))
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 52, in __call__
+    return self.f(*args, **kwargs)
+  File "<string>", line 8, in process_data_set
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 83, in assign
+    self.assigns.append((target, self(*args)))
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 90, in __call__
+    self.pool = Pool(*self.pool_args, **self.pool_kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/context.py", line 118, in Pool
+    context=self.get_context())
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/pool.py", line 168, in __init__
+    self._repopulate_pool()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/pool.py", line 233, in _repopulate_pool
+    w.start()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/process.py", line 105, in start
+    self._popen = self._Popen(self)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/context.py", line 267, in _Popen
+    return Popen(process_obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/popen_fork.py", line 74, in _launch
+    code = process_obj._bootstrap()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/process.py", line 254, in _bootstrap
+    self.run()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/pool.py", line 119, in worker
+    result = (True, func(*args, **kwds))
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 9, in concWrapper
+    result = concurrent.functions[f](*args)
+  File "/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/mproc_deco_rot_fh.py", line 31, in process_lat_lon
+    % (lat, lon, lat, lon)
+Message: 'processing lat, lon = 0, 0\n\t              0, 0'
+Arguments: ()
+ForkPoolWorker-5: INFO    : processing lat, lon = 1, 3
+	              1, 3ForkPoolWorker-3: INFO    : processing lat, lon = 1, 4
+	              1, 4
+
+ForkPoolWorker-2: INFO    : processing lat, lon = 2, 0
+	              2, 0
+--- Logging error ---
+--- Logging error ---
+ForkPoolWorker-4: INFO    : processing lat, lon = 2, 1
+	              2, 1
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/logging/handlers.py", line 72, in emit
+    self.doRollover()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/logging/handlers.py", line 169, in doRollover
+    os.rename(sfn, dfn)
+Traceback (most recent call last):
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/NOLOCKING/rot_fh.log.3' -> '/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/NOLOCKING/rot_fh.log.4'
+Call stack:
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/logging/handlers.py", line 72, in emit
+    self.doRollover()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/logging/handlers.py", line 169, in doRollover
+    os.rename(sfn, dfn)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/NOLOCKING/rot_fh.log.3' -> '/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/NOLOCKING/rot_fh.log.4'
+Call stack:
+ForkPoolWorker-6: INFO    : processing lat, lon = 2, 3
+	              2, 3
+ForkPoolWorker-7: INFO    : processing lat, lon = 2, 2
+	              2, 2
+ForkPoolWorker-8: INFO    : processing lat, lon = 2, 4
+	              2, 4
+  File "/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/mproc_deco_rot_fh.py", line 79, in <module>
+    logging.getLogger().debug(process_data_set(data))
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 52, in __call__
+    return self.f(*args, **kwargs)
+  File "/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/mproc_deco_rot_fh.py", line 79, in <module>
+    logging.getLogger().debug(process_data_set(data))
+  File "<string>", line 8, in process_data_set
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 52, in __call__
+    return self.f(*args, **kwargs)
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 83, in assign
+    self.assigns.append((target, self(*args)))
+  File "<string>", line 8, in process_data_set
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 90, in __call__
+    self.pool = Pool(*self.pool_args, **self.pool_kwargs)
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 83, in assign
+    self.assigns.append((target, self(*args)))
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/context.py", line 118, in Pool
+    context=self.get_context())
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 90, in __call__
+    self.pool = Pool(*self.pool_args, **self.pool_kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/pool.py", line 168, in __init__
+    self._repopulate_pool()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/context.py", line 118, in Pool
+    context=self.get_context())
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/pool.py", line 233, in _repopulate_pool
+    w.start()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/pool.py", line 168, in __init__
+    self._repopulate_pool()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/process.py", line 105, in start
+    self._popen = self._Popen(self)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/pool.py", line 233, in _repopulate_pool
+    w.start()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/context.py", line 267, in _Popen
+    return Popen(process_obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/process.py", line 105, in start
+    self._popen = self._Popen(self)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/context.py", line 267, in _Popen
+    return Popen(process_obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/popen_fork.py", line 74, in _launch
+    code = process_obj._bootstrap()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/process.py", line 254, in _bootstrap
+    self.run()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/popen_fork.py", line 74, in _launch
+    code = process_obj._bootstrap()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/process.py", line 254, in _bootstrap
+    self.run()
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/pool.py", line 119, in worker
+    result = (True, func(*args, **kwds))
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 9, in concWrapper
+    result = concurrent.functions[f](*args)
+  File "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/multiprocessing/pool.py", line 119, in worker
+    result = (True, func(*args, **kwds))
+  File "/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/mproc_deco_rot_fh.py", line 31, in process_lat_lon
+    % (lat, lon, lat, lon)
+  File "/Users/brianoneill/_VENVs/py3.5/lib/python3.5/site-packages/deco/conc.py", line 9, in concWrapper
+    result = concurrent.functions[f](*args)
+  File "/Users/brianoneill/PycharmProjects/logging_config/examples/mproc_deco_rot_fh/mproc_deco_rot_fh.py", line 31, in process_lat_lon
+    % (lat, lon, lat, lon)
+Message: 'processing lat, lon = 1, 3\n\t              1, 3'
+Arguments: ()
+Message: 'processing lat, lon = 2, 0\n\t              2, 0'
+Arguments: ()
+ForkPoolWorker-1: INFO    : processing lat, lon = 3, 0
+	              3, 0
+ForkPoolWorker-4: INFO    : processing lat, lon = 3, 2
+	              3, 2ForkPoolWorker-3: INFO    : processing lat, lon = 3, 1
+	              3, 1
+
+ForkPoolWorker-8: INFO    : processing lat, lon = 4, 0
+	              4, 0
+ForkPoolWorker-7: INFO    : processing lat, lon = 3, 3
+	              3, 3
+ForkPoolWorker-6: INFO    : processing lat, lon = 3, 4
+	              3, 4
+ForkPoolWorker-5: INFO    : processing lat, lon = 4, 1
+	              4, 1ForkPoolWorker-2: INFO    : processing lat, lon = 4, 2
+	              4, 2
+
+ForkPoolWorker-1: INFO    : processing lat, lon = 4, 3
+	              4, 3
+ForkPoolWorker-4: INFO    : processing lat, lon = 4, 4
+	              4, 4

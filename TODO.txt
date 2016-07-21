@@ -1,0 +1,37 @@
+TODOs
+=====
+
+Package name:
+
+*   keep name `lcd`?  rename back to `logging_config_dict` ???
+    or something better?
+
+Examples:
+
+* Put `examples/` folder inside `lcd/` ???
+
+*   examples:
+    Investigate getting rid of `docopt` dependency, just use argparse -- right?
+    As much as possible, just use the standard library.
+
+*   Write up a guide to the examples?
+    main module, + a brief description of what each does
+    Separate file / chapter?  A table (shudder)?
+
+
+IDEAS
+-----
+
+Default is to NOT add handlers to root. This is in general good for packages,
+which should use/add their own "private", "personal" logger, created as in
+examples child_logger_* and mproc_*.
+Initialization order concerns -- Can a package and an app (lets say) that
+uses the package *both* use ConfigSettingsDict*?  By default, `logging`'s
+dict-based configuration has limitations...
+It seems the answer is, Yes, if they both use the disable_existing_loggers param
+to .config(); default is None, in which case the setting used is what was passed
+to __init__, default False [contra logging module, where default is True];
+if non-None is passed, its bool value is used.  disable_existing_loggers should
+be set to False by packages that want to use this package but also want to play
+nicely with other packages and client apps that also use the package (or, more
+generally, those that use logging's dict-config).

@@ -1,0 +1,968 @@
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 0.071s
+
+OK
+2. Log to both file and console
+4. Log to both file and console
+examples.child_logger_main: INFO    : Starting up...
+examples.child_logger_main.sub_noprop: DEBUG   : Doing something boring with 0
+examples.child_logger_main: INFO    : Doing something special with 0
+examples.child_logger_main.sub_noprop: INFO    : Doing something SPECIAL with 0
+examples.child_logger_main.sub_prop: INFO    : Doing something SPECIAL with 0
+examples.child_logger_main.sub_noprop: DEBUG   : Doing something boring with 1
+examples.child_logger_main: INFO    : Doing something special with 1
+examples.child_logger_main.sub_noprop: INFO    : Doing something SPECIAL with 1
+examples.child_logger_main.sub_prop: INFO    : Doing something SPECIAL with 1
+examples.child_logger_main.sub_noprop: DEBUG   : Doing something boring with 2
+examples.child_logger_main: INFO    : Doing something special with 2
+examples.child_logger_main.sub_noprop: INFO    : Doing something SPECIAL with 2
+examples.child_logger_main.sub_prop: INFO    : Doing something SPECIAL with 2
+examples.child_logger_main: INFO    : ... shutting down.
+root                              : INFO    : Starting up...
+examples.child_logger2_sub_noprop : DEBUG   : Doing something boring with 0
+root                              : WARNING : Doing something special with 0
+examples.child_logger2_sub_noprop : INFO    : Doing something SPECIAL with 0
+examples.child_logger2_sub_prop   : INFO    : Doing something SPECIAL with 0
+examples.child_logger2_sub_noprop : DEBUG   : Doing something boring with 1
+root                              : WARNING : Doing something special with 1
+examples.child_logger2_sub_noprop : INFO    : Doing something SPECIAL with 1
+examples.child_logger2_sub_prop   : INFO    : Doing something SPECIAL with 1
+root                              : INFO    : ... shutting down.
+<<<< 0 >>>> 0....x....1....x....2....x....3....x....4....x....5....x....6....x....
+<<<< 1 >>>> 0....x....1....x....2....x....3....x....4....x....5....x....6....x....
+<<<< 2 >>>> 0....x....1....x....2....x....3....x....4....x....5....x....6....x....
+<<<< 3 >>>> 0....x....1....x....2....x....3....x....4....x....5....x....6....x....
+Processing 80 documents using 8 processes.
+>>>>>> Hi from process-1; processing docs 0 - 9
+>>>>>> Hi from process-2; processing docs 10 - 19
+1:  0
+	and again 1:  0
+2: 10
+	and again 2: 10
+>>>>>> Hi from process-3; processing docs 20 - 29
+3: 20
+	and again 3: 20
+>>>>>> Hi from process-4; processing docs 30 - 39
+4: 30
+	and again 4: 30
+>>>>>> Hi from process-5; processing docs 40 - 49
+5: 40
+	and again 5: 40
+>>>>>> Hi from process-6; processing docs 50 - 59
+6: 50
+	and again 6: 50
+>>>>>> Hi from process-8; processing docs 70 - 79
+>>>>>> Hi from process-7; processing docs 60 - 69
+8: 70
+	and again 8: 70
+7: 60
+	and again 7: 60
+1:  1
+	and again 1:  1
+1:  2
+	and again 1:  2
+3: 21
+	and again 3: 21
+3: 22
+	and again 3: 22
+5: 41
+	and again 5: 41
+5: 42
+	and again 5: 42
+7: 61
+	and again 7: 61
+7: 62
+	and again 7: 62
+2: 11
+	and again 2: 11
+2: 12
+	and again 2: 12
+1:  3
+	and again 1:  3
+1:  4
+	and again 1:  4
+3: 23
+	and again 3: 23
+3: 24
+	and again 3: 24
+4: 31
+	and again 4: 31
+4: 32
+	and again 4: 32
+6: 51
+	and again 6: 51
+5: 43
+	and again 5: 43
+6: 52
+	and again 6: 52
+5: 44
+	and again 5: 44
+8: 71
+	and again 8: 71
+8: 72
+	and again 8: 72
+7: 63
+	and again 7: 63
+7: 64
+	and again 7: 64
+1:  5
+	and again 1:  5
+3: 25
+	and again 3: 25
+1:  6
+	and again 1:  6
+3: 26
+	and again 3: 26
+5: 45
+	and again 5: 45
+5: 46
+	and again 5: 46
+7: 65
+	and again 7: 65
+7: 66
+	and again 7: 66
+2: 13
+	and again 2: 13
+2: 14
+	and again 2: 14
+3: 27
+	and again 3: 27
+4: 33
+	and again 4: 33
+1:  7
+	and again 1:  7
+3: 28
+	and again 3: 28
+4: 34
+	and again 4: 34
+1:  8
+	and again 1:  8
+6: 53
+	and again 6: 53
+6: 54
+	and again 6: 54
+5: 47
+	and again 5: 47
+5: 48
+	and again 5: 48
+8: 73
+	and again 8: 73
+8: 74
+	and again 8: 74
+7: 67
+	and again 7: 67
+7: 68
+	and again 7: 68
+3: 29
+	and again 3: 29
+>>>>>> Bye from process-3
+1:  9
+	and again 1:  9
+>>>>>> Bye from process-1
+5: 49
+	and again 5: 49
+>>>>>> Bye from process-5
+7: 69
+	and again 7: 69
+>>>>>> Bye from process-7
+2: 15
+	and again 2: 15
+2: 16
+	and again 2: 16
+4: 35
+	and again 4: 35
+4: 36
+	and again 4: 36
+6: 55
+	and again 6: 55
+6: 56
+	and again 6: 56
+8: 75
+	and again 8: 75
+8: 76
+	and again 8: 76
+2: 17
+	and again 2: 17
+2: 18
+	and again 2: 18
+4: 37
+	and again 4: 37
+4: 38
+	and again 4: 38
+6: 57
+	and again 6: 57
+6: 58
+	and again 6: 58
+8: 77
+	and again 8: 77
+8: 78
+	and again 8: 78
+2: 19
+	and again 2: 19
+4: 39
+	and again 4: 39
+6: 59
+	and again 6: 59
+8: 79
+	and again 8: 79
+>>>>>> Bye from process-2
+>>>>>> Bye from process-4
+>>>>>> Bye from process-6
+>>>>>> Bye from process-8
+NUM_DOCS_TOTAL: 80, len(total_results): 80
+[(3, 20), (3, 21), (3, 22), (3, 23), (3, 24), (3, 25), (3, 26), (3, 27), (3, 28), (3, 29), (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (5, 40), (5, 41), (5, 42), (5, 43), (5, 44), (5, 45), (5, 46), (5, 47), (5, 48), (5, 49), (7, 60), (7, 61), (7, 62), (7, 63), (7, 64), (7, 65), (7, 66), (7, 67), (7, 68), (7, 69), (2, 10), (2, 11), (2, 12), (2, 13), (2, 14), (2, 15), (2, 16), (2, 17), (2, 18), (2, 19), (4, 30), (4, 31), (4, 32), (4, 33), (4, 34), (4, 35), (4, 36), (4, 37), (4, 38), (4, 39), (6, 50), (6, 51), (6, 52), (6, 53), (6, 54), (6, 55), (6, 56), (6, 57), (6, 58), (6, 59), (8, 70), (8, 71), (8, 72), (8, 73), (8, 74), (8, 75), (8, 76), (8, 77), (8, 78), (8, 79)]
+Processing 80 documents using 8 processes.
+>>>>>> Hi from process-1; processing docs 0 - 9
+1:  0
+	and again 1:  0
+>>>>>> Hi from process-2; processing docs 10 - 19
+2: 10
+	and again 2: 10
+>>>>>> Hi from process-3; processing docs 20 - 29
+3: 20
+	and again 3: 20
+>>>>>> Hi from process-4; processing docs 30 - 39
+4: 30
+	and again 4: 30
+>>>>>> Hi from process-5; processing docs 40 - 49
+5: 40
+	and again 5: 40
+>>>>>> Hi from process-6; processing docs 50 - 59
+6: 50
+	and again 6: 50
+>>>>>> Hi from process-7; processing docs 60 - 69
+7: 60
+	and again 7: 60
+>>>>>> Hi from process-8; processing docs 70 - 79
+8: 70
+	and again 8: 70
+1:  1
+	and again 1:  1
+1:  2
+	and again 1:  2
+3: 21
+	and again 3: 21
+3: 22
+	and again 3: 22
+5: 41
+	and again 5: 41
+5: 42
+	and again 5: 42
+7: 61
+	and again 7: 61
+7: 62
+	and again 7: 62
+2: 11
+	and again 2: 111:  3
+	and again 1:  3
+
+2: 12
+	and again 2: 12
+1:  4
+	and again 1:  4
+3: 23
+	and again 3: 23
+3: 24
+	and again 3: 24
+4: 31
+	and again 4: 31
+4: 32
+	and again 4: 32
+5: 43
+	and again 5: 43
+6: 51
+	and again 6: 51
+6: 52
+	and again 6: 52
+5: 44
+	and again 5: 44
+8: 71
+	and again 8: 71
+8: 72
+	and again 8: 72
+7: 63
+	and again 7: 63
+7: 64
+	and again 7: 64
+1:  5
+	and again 1:  5
+1:  6
+	and again 1:  6
+3: 25
+	and again 3: 25
+3: 26
+	and again 3: 26
+5: 45
+	and again 5: 45
+5: 46
+	and again 5: 46
+7: 65
+	and again 7: 65
+7: 66
+	and again 7: 66
+2: 13
+	and again 2: 13
+2: 14
+	and again 2: 14
+1:  7
+	and again 1:  7
+1:  8
+	and again 1:  8
+4: 33
+	and again 4: 33
+4: 34
+	and again 4: 34
+3: 27
+	and again 3: 27
+3: 28
+	and again 3: 28
+6: 53
+	and again 6: 53
+6: 54
+	and again 6: 54
+5: 47
+	and again 5: 47
+5: 48
+	and again 5: 48
+8: 73
+	and again 8: 73
+8: 74
+	and again 8: 74
+7: 67
+	and again 7: 67
+7: 68
+	and again 7: 68
+1:  9
+	and again 1:  9
+>>>>>> Bye from process-1
+3: 29
+	and again 3: 29
+>>>>>> Bye from process-3
+5: 49
+	and again 5: 49
+>>>>>> Bye from process-5
+7: 69
+	and again 7: 69
+>>>>>> Bye from process-7
+2: 15
+	and again 2: 15
+2: 16
+	and again 2: 16
+4: 35
+	and again 4: 35
+4: 36
+	and again 4: 36
+6: 55
+	and again 6: 55
+6: 56
+	and again 6: 56
+8: 75
+	and again 8: 75
+8: 76
+	and again 8: 76
+2: 17
+	and again 2: 17
+2: 18
+	and again 2: 18
+4: 37
+	and again 4: 37
+4: 38
+	and again 4: 38
+6: 57
+	and again 6: 57
+6: 58
+	and again 6: 58
+8: 77
+	and again 8: 77
+8: 78
+	and again 8: 78
+2: 19
+	and again 2: 19
+>>>>>> Bye from process-2
+4: 39
+	and again 4: 39
+>>>>>> Bye from process-4
+6: 59
+	and again 6: 59
+>>>>>> Bye from process-6
+8: 79
+	and again 8: 79
+>>>>>> Bye from process-8
+NUM_DOCS_TOTAL: 80, len(total_results): 80
+[(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (3, 20), (3, 21), (3, 22), (3, 23), (3, 24), (3, 25), (3, 26), (3, 27), (3, 28), (3, 29), (5, 40), (5, 41), (5, 42), (5, 43), (5, 44), (5, 45), (5, 46), (5, 47), (5, 48), (5, 49), (7, 60), (7, 61), (7, 62), (7, 63), (7, 64), (7, 65), (7, 66), (7, 67), (7, 68), (7, 69), (2, 10), (2, 11), (2, 12), (2, 13), (2, 14), (2, 15), (2, 16), (2, 17), (2, 18), (2, 19), (4, 30), (4, 31), (4, 32), (4, 33), (4, 34), (4, 35), (4, 36), (4, 37), (4, 38), (4, 39), (6, 50), (6, 51), (6, 52), (6, 53), (6, 54), (6, 55), (6, 56), (6, 57), (6, 58), (6, 59), (8, 70), (8, 71), (8, 72), (8, 73), (8, 74), (8, 75), (8, 76), (8, 77), (8, 78), (8, 79)]
+'_log/mproc/mproc_LOCKING.log has no NUL (0) bytes
+'_log/mproc/mproc_NOLOCKING.log *** does *** contain NUL (0) bytes
+Processing 40 documents using 8 processes.
+>>>>>> Hi from process-4; processing docs 15 - 19
+>>>>>> Hi from process-5; processing docs 20 - 24
+4: 15
+	and again 4: 15
+>>>>>> Hi from process-2; processing docs 5 - 9
+>>>>>> Hi from process-1; processing docs 0 - 4
+5: 20
+	and again 5: 20
+>>>>>> Hi from process-3; processing docs 10 - 14
+4: 16
+	and again 4: 16
+2:  5
+	and again 2:  5
+1:  0
+	and again 1:  0
+3: 10
+	and again 3: 10
+2:  6
+	and again 2:  6
+>>>>>> Hi from process-6; processing docs 25 - 29
+>>>>>> Hi from process-7; processing docs 30 - 34
+6: 25
+	and again 6: 25
+>>>>>> Hi from process-8; processing docs 35 - 39
+7: 30
+	and again 7: 30
+6: 26
+	and again 6: 26
+8: 35
+	and again 8: 35
+8: 36
+	and again 8: 36
+5: 21
+	and again 5: 21
+5: 22
+	and again 5: 22
+1:  1
+	and again 1:  1
+3: 11
+	and again 3: 11
+1:  2
+	and again 1:  2
+3: 12
+	and again 3: 12
+7: 31
+	and again 7: 31
+7: 32
+	and again 7: 32
+5: 23
+	and again 5: 23
+4: 17
+	and again 4: 17
+5: 24
+	and again 5: 24
+4: 18
+	and again 4: 18
+2:  7
+	and again 2:  7
+2:  8
+	and again 2:  8
+3: 13
+	and again 3: 13
+1:  3
+	and again 1:  3
+3: 14
+	and again 3: 14
+1:  4
+	and again 1:  4
+6: 27
+	and again 6: 27
+8: 37
+	and again 8: 37
+6: 28
+	and again 6: 28
+8: 38
+	and again 8: 38
+7: 33
+	and again 7: 33
+7: 34
+	and again 7: 34
+>>>>>> Bye from process-5
+>>>>>> Bye from process-3
+>>>>>> Bye from process-1
+>>>>>> Bye from process-7
+4: 19
+	and again 4: 19
+>>>>>> Bye from process-4
+2:  9
+	and again 2:  9
+>>>>>> Bye from process-2
+6: 29
+	and again 6: 29
+8: 39
+	and again 8: 39
+>>>>>> Bye from process-6
+>>>>>> Bye from process-8
+NUM_DOCS_TOTAL: 40, len(total_results): 40
+[(5, 20), (5, 21), (5, 22), (5, 23), (5, 24), (3, 10), (3, 11), (3, 12), (3, 13), (3, 14), (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (7, 30), (7, 31), (7, 32), (7, 33), (7, 34), (4, 15), (4, 16), (4, 17), (4, 18), (4, 19), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9), (6, 25), (6, 26), (6, 27), (6, 28), (6, 29), (8, 35), (8, 36), (8, 37), (8, 38), (8, 39)]
+Processing 40 documents using 8 processes.
+>>>>>> Hi from process-1; processing docs 0 - 4
+1:  0
+	and again 1:  0
+>>>>>> Hi from process-2; processing docs 5 - 9
+2:  5
+	and again 2:  5
+2:  6
+	and again 2:  6
+>>>>>> Hi from process-3; processing docs 10 - 14
+3: 10
+	and again 3: 10
+>>>>>> Hi from process-5; processing docs 20 - 24
+5: 20
+	and again 5: 20
+>>>>>> Hi from process-4; processing docs 15 - 19
+4: 15
+	and again 4: 15
+4: 16
+	and again 4: 16
+>>>>>> Hi from process-7; processing docs 30 - 34
+7: 30
+	and again 7: 30
+>>>>>> Hi from process-6; processing docs 25 - 29
+>>>>>> Hi from process-8; processing docs 35 - 39
+6: 25
+	and again 6: 25
+8: 35
+	and again 8: 35
+6: 26
+	and again 6: 26
+8: 36
+	and again 8: 36
+1:  1
+	and again 1:  1
+1:  2
+	and again 1:  2
+3: 11
+	and again 3: 11
+3: 12
+	and again 3: 12
+5: 21
+	and again 5: 21
+5: 22
+	and again 5: 22
+7: 31
+	and again 7: 31
+7: 32
+	and again 7: 32
+2:  7
+	and again 2:  7
+1:  3
+	and again 1:  3
+2:  8
+	and again 2:  8
+1:  4
+	and again 1:  4
+3: 13
+	and again 3: 13
+3: 14
+	and again 3: 14
+5: 23
+	and again 5: 23
+4: 17
+	and again 4: 17
+5: 24
+	and again 5: 24
+4: 18
+	and again 4: 18
+6: 27
+	and again 6: 27
+8: 37
+	and again 8: 37
+6: 28
+	and again 6: 28
+8: 38
+	and again 8: 38
+7: 33
+	and again 7: 33
+7: 34
+	and again 7: 34
+>>>>>> Bye from process-1
+>>>>>> Bye from process-3
+>>>>>> Bye from process-5
+>>>>>> Bye from process-7
+2:  9
+	and again 2:  9
+>>>>>> Bye from process-2
+4: 19
+	and again 4: 19
+>>>>>> Bye from process-4
+6: 29
+	and again 6: 29
+8: 39
+	and again 8: 39
+>>>>>> Bye from process-6
+>>>>>> Bye from process-8
+NUM_DOCS_TOTAL: 40, len(total_results): 40
+[(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (3, 10), (3, 11), (3, 12), (3, 13), (3, 14), (5, 20), (5, 21), (5, 22), (5, 23), (5, 24), (7, 30), (7, 31), (7, 32), (7, 33), (7, 34), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9), (4, 15), (4, 16), (4, 17), (4, 18), (4, 19), (6, 25), (6, 26), (6, 27), (6, 28), (6, 29), (8, 35), (8, 36), (8, 37), (8, 38), (8, 39)]
+'_log/mproc2/mproc2_LOCKING.log has no NUL (0) bytes
+'_log/mproc2/mproc2_NOLOCKING.log *** does *** contain NUL (0) bytes
+MainProcess: 2016-07-09 15:53:26,722: root                : INFO    : lat, lon = 0, 0
+MainProcess: 2016-07-09 15:53:26,740: root                : INFO    : lat, lon = 0, 1
+MainProcess: 2016-07-09 15:53:26,742: root                : INFO    : lat, lon = 0, 2
+MainProcess: 2016-07-09 15:53:26,742: root                : INFO    : lat, lon = 0, 3
+MainProcess: 2016-07-09 15:53:26,743: root                : INFO    : lat, lon = 0, 4
+MainProcess: 2016-07-09 15:53:26,743: root                : INFO    : lat, lon = 1, 0
+MainProcess: 2016-07-09 15:53:26,743: root                : INFO    : lat, lon = 1, 1
+MainProcess: 2016-07-09 15:53:26,743: root                : INFO    : lat, lon = 1, 2
+MainProcess: 2016-07-09 15:53:26,744: root                : INFO    : lat, lon = 1, 3
+MainProcess: 2016-07-09 15:53:26,744: root                : INFO    : lat, lon = 1, 4
+MainProcess: 2016-07-09 15:53:26,744: root                : INFO    : lat, lon = 2, 0
+MainProcess: 2016-07-09 15:53:26,744: root                : INFO    : lat, lon = 2, 1
+MainProcess: 2016-07-09 15:53:26,744: root                : INFO    : lat, lon = 2, 2
+MainProcess: 2016-07-09 15:53:26,745: root                : INFO    : lat, lon = 2, 3
+MainProcess: 2016-07-09 15:53:26,745: root                : INFO    : lat, lon = 2, 4
+MainProcess: 2016-07-09 15:53:26,745: root                : INFO    : lat, lon = 3, 0
+MainProcess: 2016-07-09 15:53:26,745: root                : INFO    : lat, lon = 3, 1
+MainProcess: 2016-07-09 15:53:26,746: root                : INFO    : lat, lon = 3, 2
+MainProcess: 2016-07-09 15:53:26,747: root                : INFO    : lat, lon = 3, 3
+MainProcess: 2016-07-09 15:53:26,748: root                : INFO    : lat, lon = 3, 4
+MainProcess: 2016-07-09 15:53:26,749: root                : INFO    : lat, lon = 4, 0
+MainProcess: 2016-07-09 15:53:26,749: root                : INFO    : lat, lon = 4, 1
+MainProcess: 2016-07-09 15:53:26,749: root                : INFO    : lat, lon = 4, 2
+MainProcess: 2016-07-09 15:53:26,749: root                : INFO    : lat, lon = 4, 3
+MainProcess: 2016-07-09 15:53:26,750: root                : INFO    : lat, lon = 4, 4
+ForkPoolWorker-33: 2016-07-09 15:53:26,848: root                : INFO    : processing lat, lon = 0, 0
+	              0, 0
+ForkPoolWorker-34: 2016-07-09 15:53:26,848: root                : INFO    : processing lat, lon = 0, 1
+	              0, 1
+ForkPoolWorker-35: 2016-07-09 15:53:26,849: root                : INFO    : processing lat, lon = 0, 2
+	              0, 2
+ForkPoolWorker-36: 2016-07-09 15:53:26,849: root                : INFO    : processing lat, lon = 0, 3
+	              0, 3
+ForkPoolWorker-37: 2016-07-09 15:53:26,849: root                : INFO    : processing lat, lon = 0, 4
+	              0, 4
+ForkPoolWorker-39: 2016-07-09 15:53:26,849: root                : INFO    : processing lat, lon = 1, 1
+	              1, 1
+ForkPoolWorker-40: 2016-07-09 15:53:26,849: root                : INFO    : processing lat, lon = 1, 2
+	              1, 2
+ForkPoolWorker-38: 2016-07-09 15:53:26,849: root                : INFO    : processing lat, lon = 1, 0
+	              1, 0
+ForkPoolWorker-33: 2016-07-09 15:53:26,950: root                : INFO    : processing lat, lon = 1, 3
+	              1, 3
+ForkPoolWorker-36: 2016-07-09 15:53:26,951: root                : INFO    : processing lat, lon = 2, 1
+	              2, 1
+ForkPoolWorker-35: 2016-07-09 15:53:26,951: root                : INFO    : processing lat, lon = 2, 0
+	              2, 0
+ForkPoolWorker-34: 2016-07-09 15:53:26,951: root                : INFO    : processing lat, lon = 1, 4
+	              1, 4
+ForkPoolWorker-37: 2016-07-09 15:53:26,952: root                : INFO    : processing lat, lon = 2, 2
+	              2, 2
+ForkPoolWorker-39: 2016-07-09 15:53:26,952: root                : INFO    : processing lat, lon = 2, 3
+	              2, 3
+ForkPoolWorker-40: 2016-07-09 15:53:26,952: root                : INFO    : processing lat, lon = 2, 4
+	              2, 4
+ForkPoolWorker-38: 2016-07-09 15:53:26,953: root                : INFO    : processing lat, lon = 3, 0
+	              3, 0
+ForkPoolWorker-33: 2016-07-09 15:53:27,051: root                : INFO    : processing lat, lon = 3, 1
+	              3, 1
+ForkPoolWorker-35: 2016-07-09 15:53:27,053: root                : INFO    : processing lat, lon = 3, 3
+	              3, 3
+ForkPoolWorker-34: 2016-07-09 15:53:27,053: root                : INFO    : processing lat, lon = 3, 4
+	              3, 4
+ForkPoolWorker-36: 2016-07-09 15:53:27,053: root                : INFO    : processing lat, lon = 3, 2
+	              3, 2
+ForkPoolWorker-37: 2016-07-09 15:53:27,053: root                : INFO    : processing lat, lon = 4, 0
+	              4, 0
+ForkPoolWorker-39: 2016-07-09 15:53:27,054: root                : INFO    : processing lat, lon = 4, 1
+	              4, 1
+ForkPoolWorker-40: 2016-07-09 15:53:27,054: root                : INFO    : processing lat, lon = 4, 2
+	              4, 2
+ForkPoolWorker-38: 2016-07-09 15:53:27,055: root                : INFO    : processing lat, lon = 4, 3
+	              4, 3
+ForkPoolWorker-33: 2016-07-09 15:53:27,153: root                : INFO    : processing lat, lon = 4, 4
+	              4, 4
+MainProcess: 2016-07-09 15:53:27,378: root                : INFO    : lat, lon = 0, 0
+MainProcess: 2016-07-09 15:53:27,378: root                : INFO    : lat, lon = 0, 1
+MainProcess: 2016-07-09 15:53:27,379: root                : INFO    : lat, lon = 0, 2
+MainProcess: 2016-07-09 15:53:27,379: root                : INFO    : lat, lon = 0, 3
+MainProcess: 2016-07-09 15:53:27,380: root                : INFO    : lat, lon = 0, 4
+MainProcess: 2016-07-09 15:53:27,380: root                : INFO    : lat, lon = 1, 0
+MainProcess: 2016-07-09 15:53:27,381: root                : INFO    : lat, lon = 1, 1
+MainProcess: 2016-07-09 15:53:27,381: root                : INFO    : lat, lon = 1, 2
+MainProcess: 2016-07-09 15:53:27,382: root                : INFO    : lat, lon = 1, 3
+MainProcess: 2016-07-09 15:53:27,382: root                : INFO    : lat, lon = 1, 4
+MainProcess: 2016-07-09 15:53:27,382: root                : INFO    : lat, lon = 2, 0
+MainProcess: 2016-07-09 15:53:27,382: root                : INFO    : lat, lon = 2, 1
+MainProcess: 2016-07-09 15:53:27,383: root                : INFO    : lat, lon = 2, 2
+MainProcess: 2016-07-09 15:53:27,383: root                : INFO    : lat, lon = 2, 3
+MainProcess: 2016-07-09 15:53:27,383: root                : INFO    : lat, lon = 2, 4
+MainProcess: 2016-07-09 15:53:27,384: root                : INFO    : lat, lon = 3, 0
+MainProcess: 2016-07-09 15:53:27,384: root                : INFO    : lat, lon = 3, 1
+MainProcess: 2016-07-09 15:53:27,384: root                : INFO    : lat, lon = 3, 2
+MainProcess: 2016-07-09 15:53:27,385: root                : INFO    : lat, lon = 3, 3
+MainProcess: 2016-07-09 15:53:27,385: root                : INFO    : lat, lon = 3, 4
+MainProcess: 2016-07-09 15:53:27,385: root                : INFO    : lat, lon = 4, 0
+MainProcess: 2016-07-09 15:53:27,385: root                : INFO    : lat, lon = 4, 1
+MainProcess: 2016-07-09 15:53:27,385: root                : INFO    : lat, lon = 4, 2
+MainProcess: 2016-07-09 15:53:27,385: root                : INFO    : lat, lon = 4, 3
+MainProcess: 2016-07-09 15:53:27,386: root                : INFO    : lat, lon = 4, 4
+ForkPoolWorker-35: 2016-07-09 15:53:27,480: root                : INFO    : processing lat, lon = 0, 0
+	              0, 0
+ForkPoolWorker-34: 2016-07-09 15:53:27,480: root                : INFO    : processing lat, lon = 0, 1
+	              0, 1
+ForkPoolWorker-36: 2016-07-09 15:53:27,481: root                : INFO    : processing lat, lon = 0, 2
+	              0, 2
+ForkPoolWorker-39: 2016-07-09 15:53:27,481: root                : INFO    : processing lat, lon = 0, 4
+	              0, 4
+ForkPoolWorker-37: 2016-07-09 15:53:27,481: root                : INFO    : processing lat, lon = 0, 3
+	              0, 3
+ForkPoolWorker-40: 2016-07-09 15:53:27,482: root                : INFO    : processing lat, lon = 1, 0
+	              1, 0
+ForkPoolWorker-33: 2016-07-09 15:53:27,482: root                : INFO    : processing lat, lon = 1, 2
+	              1, 2
+ForkPoolWorker-38: 2016-07-09 15:53:27,482: root                : INFO    : processing lat, lon = 1, 1
+	              1, 1
+ForkPoolWorker-35: 2016-07-09 15:53:27,582: root                : INFO    : processing lat, lon = 1, 3
+	              1, 3
+ForkPoolWorker-36: 2016-07-09 15:53:27,582: root                : INFO    : processing lat, lon = 2, 0
+	              2, 0
+ForkPoolWorker-34: 2016-07-09 15:53:27,582: root                : INFO    : processing lat, lon = 1, 4
+	              1, 4
+ForkPoolWorker-39: 2016-07-09 15:53:27,583: root                : INFO    : processing lat, lon = 2, 1
+	              2, 1
+ForkPoolWorker-37: 2016-07-09 15:53:27,583: root                : INFO    : processing lat, lon = 2, 2
+	              2, 2
+ForkPoolWorker-40: 2016-07-09 15:53:27,583: root                : INFO    : processing lat, lon = 2, 3
+	              2, 3
+ForkPoolWorker-33: 2016-07-09 15:53:27,584: root                : INFO    : processing lat, lon = 2, 4
+	              2, 4
+ForkPoolWorker-38: 2016-07-09 15:53:27,584: root                : INFO    : processing lat, lon = 3, 0
+	              3, 0
+ForkPoolWorker-35: 2016-07-09 15:53:27,684: root                : INFO    : processing lat, lon = 3, 1
+	              3, 1
+ForkPoolWorker-36: 2016-07-09 15:53:27,684: root                : INFO    : processing lat, lon = 3, 2
+	              3, 2
+ForkPoolWorker-39: 2016-07-09 15:53:27,684: root                : INFO    : processing lat, lon = 3, 4
+	              3, 4
+ForkPoolWorker-34: 2016-07-09 15:53:27,684: root                : INFO    : processing lat, lon = 3, 3
+	              3, 3
+ForkPoolWorker-37: 2016-07-09 15:53:27,684: root                : INFO    : processing lat, lon = 4, 0
+	              4, 0
+ForkPoolWorker-40: 2016-07-09 15:53:27,685: root                : INFO    : processing lat, lon = 4, 1
+	              4, 1
+ForkPoolWorker-33: 2016-07-09 15:53:27,685: root                : INFO    : processing lat, lon = 4, 2
+	              4, 2
+ForkPoolWorker-38: 2016-07-09 15:53:27,685: root                : INFO    : processing lat, lon = 4, 3
+	              4, 3
+ForkPoolWorker-35: 2016-07-09 15:53:27,786: root                : INFO    : processing lat, lon = 4, 4
+	              4, 4
+_log/mproc_deco/logfile (LOCKING).log has no NUL (0) bytes
+_log/mproc_deco/logfile (NOLOCKING).log has no NUL (0) bytes
+MainProcess: INFO    : lat, lon = 0, 0
+MainProcess: INFO    : lat, lon = 0, 1
+MainProcess: INFO    : lat, lon = 0, 2
+MainProcess: INFO    : lat, lon = 0, 3
+MainProcess: INFO    : lat, lon = 0, 4
+MainProcess: INFO    : lat, lon = 0, 5
+MainProcess: INFO    : lat, lon = 1, 0
+MainProcess: INFO    : lat, lon = 1, 1
+MainProcess: INFO    : lat, lon = 1, 2
+MainProcess: INFO    : lat, lon = 1, 3
+MainProcess: INFO    : lat, lon = 1, 4
+MainProcess: INFO    : lat, lon = 1, 5
+MainProcess: INFO    : lat, lon = 2, 0
+MainProcess: INFO    : lat, lon = 2, 1
+MainProcess: INFO    : lat, lon = 2, 2
+MainProcess: INFO    : lat, lon = 2, 3
+MainProcess: INFO    : lat, lon = 2, 4
+MainProcess: INFO    : lat, lon = 2, 5
+MainProcess: INFO    : lat, lon = 3, 0
+MainProcess: INFO    : lat, lon = 3, 1
+MainProcess: INFO    : lat, lon = 3, 2
+MainProcess: INFO    : lat, lon = 3, 3
+MainProcess: INFO    : lat, lon = 3, 4
+MainProcess: INFO    : lat, lon = 3, 5
+MainProcess: INFO    : lat, lon = 4, 0
+MainProcess: INFO    : lat, lon = 4, 1
+MainProcess: INFO    : lat, lon = 4, 2
+MainProcess: INFO    : lat, lon = 4, 3
+MainProcess: INFO    : lat, lon = 4, 4
+MainProcess: INFO    : lat, lon = 4, 5
+MainProcess: INFO    : lat, lon = 5, 0
+MainProcess: INFO    : lat, lon = 5, 1
+MainProcess: INFO    : lat, lon = 5, 2
+MainProcess: INFO    : lat, lon = 5, 3
+MainProcess: INFO    : lat, lon = 5, 4
+MainProcess: INFO    : lat, lon = 5, 5
+ForkPoolWorker-41: INFO    : processing lat, lon = 0, 0
+	              0, 0
+ForkPoolWorker-43: INFO    : processing lat, lon = 0, 2
+	              0, 2
+ForkPoolWorker-42: INFO    : processing lat, lon = 0, 1
+	              0, 1
+ForkPoolWorker-41: INFO    : processing lat, lon = 0, 3
+	              0, 3
+ForkPoolWorker-43: INFO    : processing lat, lon = 0, 4
+	              0, 4
+ForkPoolWorker-42: INFO    : processing lat, lon = 0, 5
+	              0, 5
+ForkPoolWorker-41: INFO    : processing lat, lon = 1, 0
+	              1, 0
+ForkPoolWorker-43: INFO    : processing lat, lon = 1, 1
+	              1, 1
+ForkPoolWorker-42: INFO    : processing lat, lon = 1, 2
+	              1, 2
+ForkPoolWorker-41: INFO    : processing lat, lon = 1, 3
+	              1, 3
+ForkPoolWorker-43: INFO    : processing lat, lon = 1, 4
+	              1, 4
+ForkPoolWorker-42: INFO    : processing lat, lon = 1, 5
+	              1, 5
+ForkPoolWorker-41: INFO    : processing lat, lon = 2, 0
+	              2, 0
+ForkPoolWorker-43: INFO    : processing lat, lon = 2, 1
+	              2, 1
+ForkPoolWorker-42: INFO    : processing lat, lon = 2, 2
+	              2, 2
+ForkPoolWorker-41: INFO    : processing lat, lon = 2, 3
+	              2, 3
+ForkPoolWorker-43: INFO    : processing lat, lon = 2, 4
+	              2, 4
+ForkPoolWorker-42: INFO    : processing lat, lon = 2, 5
+	              2, 5
+ForkPoolWorker-41: INFO    : processing lat, lon = 3, 0
+	              3, 0
+ForkPoolWorker-43: INFO    : processing lat, lon = 3, 1
+	              3, 1
+ForkPoolWorker-42: INFO    : processing lat, lon = 3, 2
+	              3, 2
+ForkPoolWorker-41: INFO    : processing lat, lon = 3, 3
+	              3, 3
+ForkPoolWorker-43: INFO    : processing lat, lon = 3, 4
+	              3, 4
+ForkPoolWorker-42: INFO    : processing lat, lon = 3, 5
+	              3, 5
+ForkPoolWorker-41: INFO    : processing lat, lon = 4, 0
+	              4, 0
+ForkPoolWorker-43: INFO    : processing lat, lon = 4, 1
+	              4, 1
+ForkPoolWorker-42: INFO    : processing lat, lon = 4, 2
+	              4, 2
+ForkPoolWorker-41: INFO    : processing lat, lon = 4, 3
+	              4, 3
+ForkPoolWorker-43: INFO    : processing lat, lon = 4, 4
+	              4, 4
+ForkPoolWorker-42: INFO    : processing lat, lon = 4, 5
+	              4, 5
+ForkPoolWorker-41: INFO    : processing lat, lon = 5, 0
+	              5, 0
+ForkPoolWorker-43: INFO    : processing lat, lon = 5, 1
+	              5, 1
+ForkPoolWorker-42: INFO    : processing lat, lon = 5, 2
+	              5, 2
+ForkPoolWorker-41: INFO    : processing lat, lon = 5, 3
+	              5, 3
+ForkPoolWorker-43: INFO    : processing lat, lon = 5, 4
+	              5, 4
+ForkPoolWorker-42: INFO    : processing lat, lon = 5, 5
+	              5, 5
+MainProcess: INFO    : {0: {0: 0.8444218515250481, 1: 0.7579544029403025, 2: 0.420571580830845, 3: 0.25891675029296335, 4: 0.5112747213686085, 5: 0.4049341374504143}, 1: {0: 0.7579544029403025, 1: 0.420571580830845, 2: 0.25891675029296335, 3: 0.5112747213686085, 4: 0.4049341374504143, 5: 0.7837985890347726}, 2: {0: 0.420571580830845, 1: 0.25891675029296335, 2: 0.5112747213686085, 3: 0.4049341374504143, 4: 0.7837985890347726, 5: 0.30331272607892745}, 3: {0: 0.25891675029296335, 1: 0.5112747213686085, 2: 0.4049341374504143, 3: 0.7837985890347726, 4: 0.30331272607892745, 5: 0.4765969541523558}, 4: {0: 0.5112747213686085, 1: 0.4049341374504143, 2: 0.7837985890347726, 3: 0.30331272607892745, 4: 0.4765969541523558, 5: 0.5833820394550312}, 5: {0: 0.4049341374504143, 1: 0.7837985890347726, 2: 0.30331272607892745, 3: 0.4765969541523558, 4: 0.5833820394550312, 5: 0.9081128851953352}}
+MainProcess: INFO    : 1.3668529987335205
+*** mproc_deco_rot_fh.py worked with locking.
+MainProcess: INFO    : lat, lon = 0, 0
+MainProcess: INFO    : lat, lon = 0, 1
+MainProcess: INFO    : lat, lon = 0, 2
+MainProcess: INFO    : lat, lon = 0, 3
+MainProcess: INFO    : lat, lon = 0, 4
+MainProcess: INFO    : lat, lon = 0, 5
+MainProcess: INFO    : lat, lon = 1, 0
+MainProcess: INFO    : lat, lon = 1, 1
+MainProcess: INFO    : lat, lon = 1, 2
+MainProcess: INFO    : lat, lon = 1, 3
+MainProcess: INFO    : lat, lon = 1, 4
+MainProcess: INFO    : lat, lon = 1, 5
+MainProcess: INFO    : lat, lon = 2, 0
+MainProcess: INFO    : lat, lon = 2, 1
+MainProcess: INFO    : lat, lon = 2, 2
+MainProcess: INFO    : lat, lon = 2, 3
+MainProcess: INFO    : lat, lon = 2, 4
+MainProcess: INFO    : lat, lon = 2, 5
+MainProcess: INFO    : lat, lon = 3, 0
+MainProcess: INFO    : lat, lon = 3, 1
+MainProcess: INFO    : lat, lon = 3, 2
+MainProcess: INFO    : lat, lon = 3, 3
+MainProcess: INFO    : lat, lon = 3, 4
+MainProcess: INFO    : lat, lon = 3, 5
+MainProcess: INFO    : lat, lon = 4, 0
+MainProcess: INFO    : lat, lon = 4, 1
+MainProcess: INFO    : lat, lon = 4, 2
+MainProcess: INFO    : lat, lon = 4, 3
+MainProcess: INFO    : lat, lon = 4, 4
+MainProcess: INFO    : lat, lon = 4, 5
+MainProcess: INFO    : lat, lon = 5, 0
+MainProcess: INFO    : lat, lon = 5, 1
+MainProcess: INFO    : lat, lon = 5, 2
+MainProcess: INFO    : lat, lon = 5, 3
+MainProcess: INFO    : lat, lon = 5, 4
+MainProcess: INFO    : lat, lon = 5, 5
+ForkPoolWorker-41: INFO    : processing lat, lon = 0, 0
+	              0, 0
+ForkPoolWorker-43: INFO    : processing lat, lon = 0, 1
+	              0, 1
+ForkPoolWorker-42: INFO    : processing lat, lon = 0, 2
+	              0, 2
+ForkPoolWorker-41: INFO    : processing lat, lon = 0, 3
+	              0, 3
+ForkPoolWorker-43: INFO    : processing lat, lon = 0, 4
+	              0, 4
+ForkPoolWorker-42: INFO    : processing lat, lon = 0, 5
+	              0, 5
+ForkPoolWorker-41: INFO    : processing lat, lon = 1, 0
+	              1, 0
+ForkPoolWorker-42: INFO    : processing lat, lon = 1, 2
+	              1, 2
+ForkPoolWorker-43: INFO    : processing lat, lon = 1, 1
+	              1, 1
+ForkPoolWorker-41: INFO    : processing lat, lon = 1, 3
+	              1, 3
+ForkPoolWorker-42: INFO    : processing lat, lon = 1, 4
+	              1, 4
+ForkPoolWorker-43: INFO    : processing lat, lon = 1, 5
+	              1, 5
+ForkPoolWorker-41: INFO    : processing lat, lon = 2, 0
+	              2, 0
+ForkPoolWorker-43: INFO    : processing lat, lon = 2, 2
+	              2, 2
+ForkPoolWorker-42: INFO    : processing lat, lon = 2, 1
+	              2, 1
+ForkPoolWorker-41: INFO    : processing lat, lon = 2, 3
+	              2, 3
+ForkPoolWorker-43: INFO    : processing lat, lon = 2, 4
+	              2, 4
+ForkPoolWorker-42: INFO    : processing lat, lon = 2, 5
+	              2, 5
+ForkPoolWorker-41: INFO    : processing lat, lon = 3, 0
+	              3, 0
+ForkPoolWorker-43: INFO    : processing lat, lon = 3, 1
+	              3, 1
+ForkPoolWorker-42: INFO    : processing lat, lon = 3, 2
+	              3, 2
+ForkPoolWorker-41: INFO    : processing lat, lon = 3, 3
+	              3, 3
+ForkPoolWorker-43: INFO    : processing lat, lon = 3, 4
+	              3, 4
+ForkPoolWorker-42: INFO    : processing lat, lon = 3, 5
+	              3, 5
+ForkPoolWorker-41: INFO    : processing lat, lon = 4, 0
+	              4, 0
+ForkPoolWorker-43: INFO    : processing lat, lon = 4, 1
+	              4, 1
+ForkPoolWorker-42: INFO    : processing lat, lon = 4, 2
+	              4, 2
+ForkPoolWorker-43: INFO    : processing lat, lon = 4, 4
+	              4, 4
+ForkPoolWorker-41: INFO    : processing lat, lon = 4, 3
+	              4, 3
+ForkPoolWorker-42: INFO    : processing lat, lon = 4, 5
+	              4, 5
+ForkPoolWorker-43: INFO    : processing lat, lon = 5, 0
+	              5, 0
+ForkPoolWorker-41: INFO    : processing lat, lon = 5, 1
+	              5, 1
+ForkPoolWorker-42: INFO    : processing lat, lon = 5, 2
+	              5, 2
+ForkPoolWorker-41: INFO    : processing lat, lon = 5, 4
+	              5, 4
+ForkPoolWorker-43: INFO    : processing lat, lon = 5, 3
+	              5, 3
+ForkPoolWorker-42: INFO    : processing lat, lon = 5, 5
+	              5, 5
+MainProcess: INFO    : {0: {0: 0.8444218515250481, 1: 0.7579544029403025, 2: 0.420571580830845, 3: 0.25891675029296335, 4: 0.5112747213686085, 5: 0.4049341374504143}, 1: {0: 0.7579544029403025, 1: 0.420571580830845, 2: 0.25891675029296335, 3: 0.5112747213686085, 4: 0.4049341374504143, 5: 0.7837985890347726}, 2: {0: 0.420571580830845, 1: 0.25891675029296335, 2: 0.5112747213686085, 3: 0.4049341374504143, 4: 0.7837985890347726, 5: 0.30331272607892745}, 3: {0: 0.25891675029296335, 1: 0.5112747213686085, 2: 0.4049341374504143, 3: 0.7837985890347726, 4: 0.30331272607892745, 5: 0.4765969541523558}, 4: {0: 0.5112747213686085, 1: 0.4049341374504143, 2: 0.7837985890347726, 3: 0.30331272607892745, 4: 0.4765969541523558, 5: 0.5833820394550312}, 5: {0: 0.4049341374504143, 1: 0.7837985890347726, 2: 0.30331272607892745, 3: 0.4765969541523558, 4: 0.5833820394550312, 5: 0.9081128851953352}}
+MainProcess: INFO    : 1.644178867340088

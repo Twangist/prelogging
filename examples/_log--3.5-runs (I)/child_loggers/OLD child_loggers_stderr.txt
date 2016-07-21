@@ -1,0 +1,14 @@
+__main__                 : INFO    : Starting up... 
+__main__.sub_noprop      : DEBUG   : Doing something boring with 0
+__main__                 : INFO    : Doing something special with 0
+__main__.sub_noprop      : INFO    : Doing something SPECIAL with 0
+__main__.sub_prop        : INFO    : Doing something SPECIAL with 0
+__main__.sub_noprop      : DEBUG   : Doing something boring with 1
+__main__                 : INFO    : Doing something special with 1
+__main__.sub_noprop      : INFO    : Doing something SPECIAL with 1
+__main__.sub_prop        : INFO    : Doing something SPECIAL with 1
+__main__.sub_noprop      : DEBUG   : Doing something boring with 2
+__main__                 : INFO    : Doing something special with 2
+__main__.sub_noprop      : INFO    : Doing something SPECIAL with 2
+__main__.sub_prop        : INFO    : Doing something SPECIAL with 2
+__main__                 : INFO    : ... shutting down.

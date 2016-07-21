@@ -1,0 +1,15 @@
+MainProcess: 2016-07-09 17:12:52,435: root                : INFO    : lat, lon = 5, 3
+MainProcess: 2016-07-09 17:12:52,436: root                : INFO    : lat, lon = 5, 4
+MainProcess: 2016-07-09 17:12:52,436: root                : INFO    : lat, lon = 5, 5
+PoolWorker-26: 2016-07-09 17:12:52,524: root                : INFO    : processing lat, lon = 0, 0
+	              0, 0
+PoolWorker-25: 2016-07-09 17:12:52,525: root                : INFO    : processing lat, lon = 0, 1
+	              0, 1
+PoolWorker-27: 2016-07-09 17:12:52,526: root                : INFO    : processing lat, lon = 0, 2
+	              0, 2
+PoolWorker-26: 2016-07-09 17:12:52,626: root                : INFO    : processing lat, lon = 0, 3
+	              0, 3
+PoolWorker-25: 2016-07-09 17:12:52,626: root                : INFO    : processing lat, lon = 0, 4
+	              0, 4
+PoolWorker-27: 2016-07-09 17:12:52,628: root                : INFO    : processing lat, lon = 0, 5
+	              0, 5

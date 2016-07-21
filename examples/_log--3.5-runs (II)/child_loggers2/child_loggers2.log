@@ -1,0 +1,14 @@
+root                              : INFO    :  2016-07-09 16:41:22,367: Starting up... 
+root                              : DEBUG   :  2016-07-09 16:41:22,367: Doing something boring with 0
+examples.child_logger2_sub_noprop : DEBUG   :  2016-07-09 16:41:22,368: Doing something boring with 0
+examples.child_logger2_sub_prop   : DEBUG   :  2016-07-09 16:41:22,368: Doing something boring with 0
+root                              : WARNING :  2016-07-09 16:41:22,368: Doing something special with 0
+examples.child_logger2_sub_noprop : INFO    :  2016-07-09 16:41:22,368: Doing something SPECIAL with 0
+examples.child_logger2_sub_prop   : INFO    :  2016-07-09 16:41:22,368: Doing something SPECIAL with 0
+root                              : DEBUG   :  2016-07-09 16:41:22,368: Doing something boring with 1
+examples.child_logger2_sub_noprop : DEBUG   :  2016-07-09 16:41:22,368: Doing something boring with 1
+examples.child_logger2_sub_prop   : DEBUG   :  2016-07-09 16:41:22,368: Doing something boring with 1
+root                              : WARNING :  2016-07-09 16:41:22,368: Doing something special with 1
+examples.child_logger2_sub_noprop : INFO    :  2016-07-09 16:41:22,369: Doing something SPECIAL with 1
+examples.child_logger2_sub_prop   : INFO    :  2016-07-09 16:41:22,369: Doing something SPECIAL with 1
+root                              : INFO    :  2016-07-09 16:41:22,369: ... shutting down.

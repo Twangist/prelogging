@@ -1,0 +1,127 @@
+MainProcess: 2016-07-10 20:13:02,158: root                : INFO    : lat, lon = 0, 0
+MainProcess: 2016-07-10 20:13:02,174: root                : INFO    : lat, lon = 0, 1
+MainProcess: 2016-07-10 20:13:02,174: root                : INFO    : lat, lon = 0, 2
+MainProcess: 2016-07-10 20:13:02,175: root                : INFO    : lat, lon = 0, 3
+MainProcess: 2016-07-10 20:13:02,175: root                : INFO    : lat, lon = 0, 4
+MainProcess: 2016-07-10 20:13:02,176: root                : INFO    : lat, lon = 1, 0
+MainProcess: 2016-07-10 20:13:02,176: root                : INFO    : lat, lon = 1, 1
+MainProcess: 2016-07-10 20:13:02,176: root                : INFO    : lat, lon = 1, 2
+MainProcess: 2016-07-10 20:13:02,176: root                : INFO    : lat, lon = 1, 3
+MainProcess: 2016-07-10 20:13:02,177: root                : INFO    : lat, lon = 1, 4
+MainProcess: 2016-07-10 20:13:02,177: root                : INFO    : lat, lon = 2, 0
+MainProcess: 2016-07-10 20:13:02,177: root                : INFO    : lat, lon = 2, 1
+MainProcess: 2016-07-10 20:13:02,177: root                : INFO    : lat, lon = 2, 2
+MainProcess: 2016-07-10 20:13:02,178: root                : INFO    : lat, lon = 2, 3
+MainProcess: 2016-07-10 20:13:02,178: root                : INFO    : lat, lon = 2, 4
+MainProcess: 2016-07-10 20:13:02,178: root                : INFO    : lat, lon = 3, 0
+MainProcess: 2016-07-10 20:13:02,178: root                : INFO    : lat, lon = 3, 1
+MainProcess: 2016-07-10 20:13:02,178: root                : INFO    : lat, lon = 3, 2
+MainProcess: 2016-07-10 20:13:02,179: root                : INFO    : lat, lon = 3, 3
+MainProcess: 2016-07-10 20:13:02,179: root                : INFO    : lat, lon = 3, 4
+MainProcess: 2016-07-10 20:13:02,179: root                : INFO    : lat, lon = 4, 0
+MainProcess: 2016-07-10 20:13:02,181: root                : INFO    : lat, lon = 4, 1
+MainProcess: 2016-07-10 20:13:02,181: root                : INFO    : lat, lon = 4, 2
+MainProcess: 2016-07-10 20:13:02,181: root                : INFO    : lat, lon = 4, 3
+MainProcess: 2016-07-10 20:13:02,182: root                : INFO    : lat, lon = 4, 4
+ForkPoolWorker-33: 2016-07-10 20:13:02,281: root                : INFO    : processing lat, lon = 0, 0
+	              0, 0
+ForkPoolWorker-36: 2016-07-10 20:13:02,282: root                : INFO    : processing lat, lon = 0, 3
+	              0, 3
+ForkPoolWorker-35: 2016-07-10 20:13:02,282: root                : INFO    : processing lat, lon = 0, 2
+	              0, 2
+ForkPoolWorker-37: 2016-07-10 20:13:02,282: root                : INFO    : processing lat, lon = 0, 4
+	              0, 4
+ForkPoolWorker-34: 2016-07-10 20:13:02,282: root                : INFO    : processing lat, lon = 0, 1
+	              0, 1
+ForkPoolWorker-38: 2016-07-10 20:13:02,282: root                : INFO    : processing lat, lon = 1, 0
+	              1, 0
+ForkPoolWorker-40: 2016-07-10 20:13:02,283: root                : INFO    : processing lat, lon = 1, 2
+	              1, 2
+ForkPoolWorker-39: 2016-07-10 20:13:02,283: root                : INFO    : processing lat, lon = 1, 1
+	              1, 1
+ForkPoolWorker-33: 2016-07-10 20:13:02,383: root                : INFO    : processing lat, lon = 1, 3
+	              1, 3
+ForkPoolWorker-36: 2016-07-10 20:13:02,383: root                : INFO    : processing lat, lon = 1, 4
+	              1, 4
+ForkPoolWorker-37: 2016-07-10 20:13:02,384: root                : INFO    : processing lat, lon = 2, 1
+	              2, 1
+ForkPoolWorker-34: 2016-07-10 20:13:02,384: root                : INFO    : processing lat, lon = 2, 2
+	              2, 2
+ForkPoolWorker-35: 2016-07-10 20:13:02,384: root                : INFO    : processing lat, lon = 2, 0
+	              2, 0
+ForkPoolWorker-39: 2016-07-10 20:13:02,386: root                : INFO    : processing lat, lon = 3, 0
+	              3, 0
+ForkPoolWorker-38: 2016-07-10 20:13:02,386: root                : INFO    : processing lat, lon = 2, 3
+	              2, 3
+ForkPoolWorker-40: 2016-07-10 20:13:02,386: root                : INFO    : processing lat, lon = 2, 4
+	              2, 4
+ForkPoolWorker-36: 2016-07-10 20:13:02,485: root                : INFO    : processing lat, lon = 3, 2
+	              3, 2
+ForkPoolWorker-33: 2016-07-10 20:13:02,485: root                : INFO    : processing lat, lon = 3, 1
+	              3, 1
+ForkPoolWorker-35: 2016-07-10 20:13:02,486: root                : INFO    : processing lat, lon = 4, 0
+	              4, 0
+ForkPoolWorker-34: 2016-07-10 20:13:02,486: root                : INFO    : processing lat, lon = 3, 4
+	              3, 4
+ForkPoolWorker-37: 2016-07-10 20:13:02,486: root                : INFO    : processing lat, lon = 3, 3
+	              3, 3
+ForkPoolWorker-40: 2016-07-10 20:13:02,487: root                : INFO    : processing lat, lon = 4, 3
+	              4, 3
+ForkPoolWorker-39: 2016-07-10 20:13:02,487: root                : INFO    : processing lat, lon = 4, 1
+	              4, 1
+ForkPoolWorker-38: 2016-07-10 20:13:02,487: root                : INFO    : processing lat, lon = 4, 2
+	              4, 2
+ForkPoolWorker-36: 2016-07-10 20:13:02,587: root                : INFO    : processing lat, lon = 4, 4
+	              4, 4
+MainProcess: 2016-07-10 20:13:02,588: root                : DEBUG   : {0: {0: 0.8444218515250481, 1: 0.7579544029403025, 2: 0.420571580830845, 3: 0.25891675029296335, 4: 0.5112747213686085}, 1: {0: 0.7579544029403025, 1: 0.420571580830845, 2: 0.25891675029296335, 3: 0.5112747213686085, 4: 0.4049341374504143}, 2: {0: 0.420571580830845, 1: 0.25891675029296335, 2: 0.5112747213686085, 3: 0.4049341374504143, 4: 0.7837985890347726}, 3: {0: 0.25891675029296335, 1: 0.5112747213686085, 2: 0.4049341374504143, 3: 0.7837985890347726, 4: 0.30331272607892745}, 4: {0: 0.5112747213686085, 1: 0.4049341374504143, 2: 0.7837985890347726, 3: 0.30331272607892745, 4: 0.4765969541523558}}
+MainProcess: 2016-07-10 20:13:02,588: root                : DEBUG   : 0.4429011344909668
+ForkPoolWorker-33: 2016-07-10 20:13:02,692: root                : INFO    : processing lat, lon = 0, 0
+	              0, 0
+ForkPoolWorker-35: 2016-07-10 20:13:02,692: root                : INFO    : processing lat, lon = 0, 1
+	              0, 1
+ForkPoolWorker-34: 2016-07-10 20:13:02,693: root                : INFO    : processing lat, lon = 0, 2
+	              0, 2
+ForkPoolWorker-37: 2016-07-10 20:13:02,693: root                : INFO    : processing lat, lon = 0, 3
+	              0, 3
+ForkPoolWorker-39: 2016-07-10 20:13:02,695: root                : INFO    : processing lat, lon = 1, 0
+	              1, 0
+ForkPoolWorker-38: 2016-07-10 20:13:02,695: root                : INFO    : processing lat, lon = 1, 1
+	              1, 1
+ForkPoolWorker-36: 2016-07-10 20:13:02,695: root                : INFO    : processing lat, lon = 1, 2
+	              1, 2
+ForkPoolWorker-40: 2016-07-10 20:13:02,695: root                : INFO    : processing lat, lon = 0, 4
+	              0, 4
+ForkPoolWorker-33: 2016-07-10 20:13:02,793: root                : INFO    : processing lat, lon = 1, 3
+	              1, 3
+ForkPoolWorker-35: 2016-07-10 20:13:02,794: root                : INFO    : processing lat, lon = 1, 4
+	              1, 4
+ForkPoolWorker-37: 2016-07-10 20:13:02,795: root                : INFO    : processing lat, lon = 2, 1
+	              2, 1
+ForkPoolWorker-34: 2016-07-10 20:13:02,795: root                : INFO    : processing lat, lon = 2, 0
+	              2, 0
+ForkPoolWorker-38: 2016-07-10 20:13:02,796: root                : INFO    : processing lat, lon = 2, 3
+	              2, 3
+ForkPoolWorker-39: 2016-07-10 20:13:02,796: root                : INFO    : processing lat, lon = 2, 2
+	              2, 2
+ForkPoolWorker-40: 2016-07-10 20:13:02,797: root                : INFO    : processing lat, lon = 3, 0
+	              3, 0
+ForkPoolWorker-36: 2016-07-10 20:13:02,797: root                : INFO    : processing lat, lon = 2, 4
+	              2, 4
+ForkPoolWorker-33: 2016-07-10 20:13:02,895: root                : INFO    : processing lat, lon = 3, 1
+	              3, 1
+ForkPoolWorker-35: 2016-07-10 20:13:02,896: root                : INFO    : processing lat, lon = 3, 2
+	              3, 2
+ForkPoolWorker-37: 2016-07-10 20:13:02,897: root                : INFO    : processing lat, lon = 3, 3
+	              3, 3
+ForkPoolWorker-34: 2016-07-10 20:13:02,897: root                : INFO    : processing lat, lon = 3, 4
+	              3, 4
+ForkPoolWorker-38: 2016-07-10 20:13:02,898: root                : INFO    : processing lat, lon = 4, 0
+	              4, 0
+ForkPoolWorker-39: 2016-07-10 20:13:02,898: root                : INFO    : processing lat, lon = 4, 1
+	              4, 1
+ForkPoolWorker-40: 2016-07-10 20:13:02,899: root                : INFO    : processing lat, lon = 4, 2
+	              4, 2
+ForkPoolWorker-36: 2016-07-10 20:13:02,899: root                : INFO    : processing lat, lon = 4, 3
+	              4, 3
+ForkPoolWorker-33: 2016-07-10 20:13:02,996: root                : INFO    : processing lat, lon = 4, 4
+	              4, 4

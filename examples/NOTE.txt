@@ -1,0 +1,3 @@
+Run the programs in this directory from this directory -- e.g.
+    $ cd path/to/examples
+    $ ./mproc.py

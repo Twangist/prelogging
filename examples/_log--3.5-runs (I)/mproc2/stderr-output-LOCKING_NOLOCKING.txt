@@ -1,0 +1,182 @@
+Processing 40 documents using 4 processes.
+>>>>>> Hi from process-1; processing docs 0 - 9
+1:  0
+	and again 1:  0
+>>>>>> Hi from process-2; processing docs 10 - 19
+>>>>>> Hi from process-3; processing docs 20 - 29
+2: 10
+	and again 2: 10
+3: 20
+	and again 3: 20
+>>>>>> Hi from process-4; processing docs 30 - 39
+4: 30
+	and again 4: 30
+1:  1
+	and again 1:  1
+1:  2
+	and again 1:  2
+3: 21
+	and again 3: 21
+3: 22
+	and again 3: 22
+1:  3
+	and again 1:  3
+1:  4
+	and again 1:  4
+2: 11
+	and again 2: 11
+2: 12
+	and again 2: 12
+3: 23
+	and again 3: 23
+3: 24
+	and again 3: 24
+4: 31
+	and again 4: 31
+4: 32
+	and again 4: 32
+1:  5
+	and again 1:  5
+1:  6
+	and again 1:  6
+3: 25
+	and again 3: 25
+3: 26
+	and again 3: 26
+2: 13
+	and again 2: 13
+2: 14
+	and again 2: 14
+1:  7
+	and again 1:  7
+3: 27
+	and again 3: 27
+4: 33
+	and again 4: 33
+1:  8
+	and again 1:  8
+3: 28
+	and again 3: 28
+4: 34
+	and again 4: 34
+1:  9
+	and again 1:  9
+3: 29
+	and again 3: 29
+>>>>>> Bye from process-1
+>>>>>> Bye from process-3
+2: 15
+	and again 2: 15
+2: 16
+	and again 2: 16
+4: 35
+	and again 4: 35
+4: 36
+	and again 4: 36
+2: 17
+	and again 2: 17
+2: 18
+	and again 2: 18
+4: 37
+	and again 4: 37
+4: 38
+	and again 4: 38
+2: 19
+	and again 2: 19
+>>>>>> Bye from process-2
+4: 39
+	and again 4: 39
+>>>>>> Bye from process-4
+NUM_DOCS_TOTAL: 40, len(total_results): 40
+[(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (3, 20), (3, 21), (3, 22), (3, 23), (3, 24), (3, 25), (3, 26), (3, 27), (3, 28), (3, 29), (2, 10), (2, 11), (2, 12), (2, 13), (2, 14), (2, 15), (2, 16), (2, 17), (2, 18), (2, 19), (4, 30), (4, 31), (4, 32), (4, 33), (4, 34), (4, 35), (4, 36), (4, 37), (4, 38), (4, 39)]
+Processing 40 documents using 4 processes.
+>>>>>> Hi from process-1; processing docs 0 - 9
+1:  0
+	and again 1:  0
+>>>>>> Hi from process-2; processing docs 10 - 19
+>>>>>> Hi from process-3; processing docs 20 - 29
+2: 10
+	and again 2: 10
+3: 20
+	and again 3: 20
+>>>>>> Hi from process-4; processing docs 30 - 39
+4: 30
+	and again 4: 30
+1:  1
+	and again 1:  1
+1:  2
+	and again 1:  2
+3: 21
+	and again 3: 21
+3: 22
+	and again 3: 22
+2: 11
+	and again 2: 11
+2: 12
+	and again 2: 12
+1:  3
+	and again 1:  3
+3: 23
+	and again 3: 23
+1:  4
+	and again 1:  4
+3: 24
+	and again 3: 24
+4: 31
+	and again 4: 31
+4: 32
+	and again 4: 32
+3: 25
+	and again 3: 25
+1:  5
+	and again 1:  5
+3: 26
+	and again 3: 26
+1:  6
+	and again 1:  6
+2: 13
+	and again 2: 13
+2: 14
+	and again 2: 14
+3: 27
+	and again 3: 27
+1:  7
+	and again 1:  7
+4: 33
+	and again 4: 33
+4: 34
+	and again 4: 34
+3: 28
+	and again 3: 28
+1:  8
+	and again 1:  8
+1:  9
+	and again 1:  9
+3: 29
+	and again 3: 29
+>>>>>> Bye from process-3
+>>>>>> Bye from process-1
+2: 15
+	and again 2: 15
+2: 16
+	and again 2: 16
+4: 35
+	and again 4: 35
+4: 36
+	and again 4: 36
+2: 17
+	and again 2: 17
+2: 18
+	and again 2: 18
+4: 37
+	and again 4: 37
+4: 38
+	and again 4: 38
+2: 19
+	and again 2: 19
+>>>>>> Bye from process-2
+4: 39
+	and again 4: 39
+>>>>>> Bye from process-4
+NUM_DOCS_TOTAL: 40, len(total_results): 40
+[(3, 20), (3, 21), (3, 22), (3, 23), (3, 24), (3, 25), (3, 26), (3, 27), (3, 28), (3, 29), (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (2, 10), (2, 11), (2, 12), (2, 13), (2, 14), (2, 15), (2, 16), (2, 17), (2, 18), (2, 19), (4, 30), (4, 31), (4, 32), (4, 33), (4, 34), (4, 35), (4, 36), (4, 37), (4, 38), (4, 39)]
