@@ -1,7 +1,7 @@
-Module Reference
+Class Reference
 =========================
 
-`lcd` is a small package of three small modules.
+`lcd` is a small package: five small classes in three small modules.
 
 
 .. toctree::

@@ -23,34 +23,31 @@ class LoggingConfigDict(dict):
 
     A general class that simplifies building a logging config dict, modularly and incrementally,
     for ultimate use with the ``config()`` method of this class, which simply calls
-    ``logging.config.dictConfig()`` :
-
-        https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig
-
+    `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
     The methods of ``LoggingConfigDict`` let you dispense with lots (and lots) of nested
     curly braces and single-quotes around keywords.
 
-    In this class as well as in :ref:`LoggingConfigDictEx`, "level" always means the
-    ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric value ``logging.DEBUG``.
-    A level name, in short — one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``, ``'ERROR'``,
-    ``'CRITICAL'``, or ``'NOTSET'``.
+    *   In this class as well as in :ref:`LoggingConfigDictEx`, "level" always means the
+        ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric value ``logging.DEBUG``.
+        A level name, in short — one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``, ``'ERROR'``,
+        ``'CRITICAL'``, or ``'NOTSET'``.
 
-    Except for ``config()`` and the properties ``formatters``, ``filters``, ``handlers``,
-    ``loggers`` and ``root``, all public methods of this class and of
-    :ref:`LoggingConfigDictEx` return ``self``, to allow chaining.
+    *   Except for ``config()`` and the properties ``formatters``, ``filters``, ``handlers``,
+        ``loggers`` and ``root``, all public methods of this class and of
+        :ref:`LoggingConfigDictEx` return ``self``, to allow chaining.
 
-    The (leaf) values in logging config dicts are almost all strings. The exceptions are
-    ``bool`` values and actual streams allowed as the value of ``'stream'``
-    in a handler subdictionary (e.g. ``stream=sys.stdout``). This package uses ``bool``
-    values, but not actual streams, preferring the text equivalents accepted
-    by the `logging` module's ``configDict()`` method:
+    *   The (leaf) values in logging config dicts are almost all strings. The exceptions are
+        ``bool`` values and actual streams allowed as the value of ``'stream'``
+        in a handler subdictionary (e.g. ``stream=sys.stdout``). This package uses ``bool``
+        values, but not actual streams, preferring the text equivalents accepted
+        by the `logging` module's ``configDict()`` method:
 
-        instead of ``stream=sys.stdout``, we use ``stream='ext://sys.stdout'``.
+            instead of ``stream=sys.stdout``, we use ``stream='ext://sys.stdout'``.
 
-    The reason: the ``clone_handler()`` method of the subclass ``LoggingConfigDictEx``
-    uses ``deepcopy()``, and streams can't be deep-copied. We recommend that you not use
-    actual streams, but rather the text equivalents, as shown in the example just given.
-    |br|
+        The reason: the ``clone_handler()`` method of the subclass ``LoggingConfigDictEx``
+        uses ``deepcopy()``, and streams can't be deep-copied. We recommend that you not use
+        actual streams, but rather the text equivalents, as shown in the example just given.
+
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
 
@@ -61,8 +58,8 @@ class LoggingConfigDict(dict):
         """
         :param root_level: a ``str`` name of a loglevel.
         :param disable_existing_loggers: corresponds to the ``logging.config.dictConfig()``
-               keyword parameter of the same name. Using the default value (``None``)
-               causes the `logging` module's default (``True``) to be used.
+               keyword parameter of the same name. Using the default value ``None``
+               causes the `logging` module's default value ``True`` to be used.
         """
         assert root_level in self._level_names
         super(LoggingConfigDict, self).__init__()
@@ -236,7 +233,7 @@ class LoggingConfigDict(dict):
         :param handler_name: just that
         :param filename: The name of the file to which this handler should log messages.
             It may contain an absolute or relative path, as well.
-        :param formatter: The name of a previously added formatter.
+        :param formatter: The name of a previously added formatter, to be used by this handler.
         :param mode: The mode for writing.
         :param level: The loglevel of this file handler.
         :param delay: If True, the file will be created lazily, only when actually written to.

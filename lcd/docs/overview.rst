@@ -156,14 +156,15 @@ values refer back to keys in other sub\``dict``\s — a thicket of curly braces,
 which you finally pass to ``dictConfig()``.
 
 `lcd` defines two classes, ``LoggingConfigDict`` and ``LoggingConfigDictEx``, which represent
-dictionaries used for logging configuration:
+logging configuration dictionaries — *logging config dicts*, for short:
 
 .. figure:: lcd_dict_classes.png
 
 You use the methods of these classes to add specifications of named ``Formatter``\s, ``Handler``\s,
 ``Logger``\s, and optional ``Filter``\s. Once you've done so, calling the ``config()`` method of
-a ``LoggingConfigDict`` configures logging by passing itself (as a ``dict``) to ``logging.config.dictConfig()``.
-This call creates all the objects and linkages specified by the underlying dictionary.
+a ``LoggingConfigDict`` configures logging by passing the object (itself, as a ``dict``)
+to ``logging.config.dictConfig()``. This call creates all the objects and linkages specified
+by the underlying dictionary.
 
 
 .. _example-various-config:

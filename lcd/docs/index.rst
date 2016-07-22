@@ -22,6 +22,6 @@ Using `lcd`
     setup-testing-examples
     overview
     topics-recipes
-    module-reference
+    class-reference
     the-index
 

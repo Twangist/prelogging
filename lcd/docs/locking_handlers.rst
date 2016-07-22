@@ -1,6 +1,6 @@
 .. _locking-handlers:
 
-Locking Handlers
+Locking handlers
 ===============================
 
 These classes reside in ``locking_handlers.py``.

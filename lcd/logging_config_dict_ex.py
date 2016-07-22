@@ -42,11 +42,11 @@ class LoggingConfigDictEx(LoggingConfigDict):
     the "usual" classes defined by `logging`. (See the :ref:`class inheritance diagram <lcd-all-classes>`.)
     By default, ``locking`` is False.
 
-    All of the methods that add a handler take boolean parameters ``add_to_root`` and ``locking``,
-    which allow the overriding of the values established by ``__init__``.
+    All of the methods that add a handler take parameters ``add_to_root`` and ``locking``,
+    each a ``bool`` or ``None``; these allow overriding of the values established by ``__init__``.
     Thus, for example, callers can add a non-locking handler even if ``self.locking`` is true,
-    or a locking handler even if ``self.locking`` is false. The default of these parameters
-    to handler-adding methods is ``None``, meaning: use the value of the attribute on ``self``.
+    or a locking handler even if ``self.locking`` is false. The default value of these parameters
+    of handler-adding methods is ``None``, meaning: use the value of the attribute on ``self``.
 
     ``log_path`` is a directory in which log files will be created by ``add_file_handler``
     and ``add_rotating_file_handler``. If the filename passed to those methods contains
@@ -87,7 +87,6 @@ class LoggingConfigDictEx(LoggingConfigDict):
     || ``'time_logger_level_msg'``          || ``'%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'``                      |
     +---------------------------------------+------------------------------------------------------------------------------------+
 
-    |br|
     """
 
     format_strs = {
@@ -118,7 +117,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                  log_path='',
                  locking=False,
                  add_handlers_to_root=False,
-                 disable_existing_loggers=False):  # 0.2.2, logging default value is True
+                 disable_existing_loggers=False):  # logging default value is True
         """
         :param root_level: one of 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET'
         :param log_path: is a path, absolute or relative, where logfiles will
@@ -133,11 +132,12 @@ class LoggingConfigDictEx(LoggingConfigDict):
             will automatically add handlers to the root logger, as well as to the ``handlers``
             subdictionary.
         :param disable_existing_loggers: corresponds to logging dict-config key(/value).
-                    Changed default val to False so that separate packages can use
-                    this class to create their own ("private") loggers before or after
-                    their clients do their own logging config.
+            Made this default value ``False`` so that separate packages can use
+            this class to create their own ("private") loggers before or after
+            their clients do their own logging config. The `logging` default value is ``True``.
 
-        See also :ref:`__init__ keyword parameters <LoggingConfigDictEx-init-params>`.
+        See also :ref:`__init__ keyword parameters <LoggingConfigDictEx-init-params>` above,
+        in the class's docstring.
         """
         super(LoggingConfigDictEx, self).__init__(
                         root_level=root_level,
