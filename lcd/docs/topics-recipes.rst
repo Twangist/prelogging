@@ -15,6 +15,54 @@ Basic usage of ``LoggingConfigDict``
 .. todo::
     intro blather, basic usage of ``LoggingConfigDict``
 
+Cite :ref:`LoggingConfigDict`: introduction for basic usage,
+and reference
+
+The :ref:`overview` contains :ref:`an example <example-overview-config>` showing
+how easy it is using ``LoggingConfigDictEx`` to
+configure the root logger with both a console handler and a file handler.
+
+It's instructive to see how the same result can be achieved using only ``LoggingConfigDict``.
+
+.. _overview-example-using-only-LoggingConfigDict:
+
+Overview example, using only ``LoggingConfigDict``
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+If we were to use just the base class ``lcd.LoggingConfigDict``, the Overview example
+becomes just a little less concise. Now, we have to create two formatters, and
+we must explicitly add the two handlers to the root logger (two passages which
+we've commented as ``# NEW``):
+
+.. code::
+
+    from lcd import LoggingConfigDict
+
+    lcd = LoggingConfigDict(root_level='DEBUG')
+
+    # NEW
+    lcd.add_formatter('minimal',
+                      format='%(message)s'
+    ).add_formatter('logger_level_msg',
+                    format='%(name)-20s: %(levelname)-8s: %(message)s'
+    )
+
+    lcd.add_handler('console',
+                    formatter='minimal',
+                    level='INFO',
+                    class_='logging.StreamHandler',
+    ).add_file_handler('file_handler',
+                       formatter='logger_level_msg',
+                       level='DEBUG',
+                       filename='blather.log',
+    )
+
+    # NEW
+    lcd.add_root_handlers('console', 'file_handler')
+
+    lcd.config()
+
+
 --------------------------------------------------
 
 Basic usage of ``LoggingConfigDictEx``
@@ -47,14 +95,17 @@ Defining new formatters
 Easily configuring a root logger
 ++++++++++++++++++++++++++++++++++
 
+We already saw `one example <example-overview-config>` of how easy it is to
+configure the root logger with both a console handler and a file handler.
+
 Adding a console handler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Adding a file handler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Example [TODO: of WHAT?]
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Example [TODO: of WHAT? Config'd root, + use child loggers "free"]
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 A typical, useful approach is to add handlers only to the root logger,
 and then have each module log messages using ``logging.getLogger(__name__)``.

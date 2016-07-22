@@ -1,3 +1,5 @@
+.. _overview:
+
 Overview
 ===============
 
@@ -135,7 +137,7 @@ Typically, we won't require any ``Filter``\s, and then, setting up logging invol
 * define ``Handler``\s that use the ``Formatter``\s
 * define ``Logger``\s that use the ``Handler``\s.
 
-In common cases, such as the :ref:`example-various-config` of the next section, `lcd` eliminates
+In common cases, such as the :ref:`example-overview-config` of the next section, `lcd` eliminates
 the first step and makes the last step trivial.
 
 
@@ -167,7 +169,7 @@ to ``logging.config.dictConfig()``. This call creates all the objects and linkag
 by the underlying dictionary.
 
 
-.. _example-various-config:
+.. _example-overview-config:
 
 Example
 ++++++++
@@ -243,55 +245,14 @@ else receives reasonable, expected defaults. Using the "batteries included"
 Here, we use a couple of the builtin ``Formatter``\s supplied by ``LoggingConfigDictEx``.
 Because we pass the flag ``add_handlers_to_root=True`` when creating the instance ``lcd_ex``,
 every handler we add to ``lcd_ex`` is automatically added to the root logger.
+Later, we'll :ref:`revisit this example <overview-example-using-only-LoggingConfigDict>`,
+to see how the same result can be achieved using only ``LoggingConfigDict``.
 
-.. note::
-    To allow chaining, as in the above example, the methods of ``LoggingConfigDict``
-    and ``LoggingConfigDictEx`` generally return ``self``.
+Remarks
+^^^^^^^^^^
 
-
-With `lcd` — more verbosely [TODO maybe relegate this to elsewhere]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. todo::
-    ¿Maybe banish this subsubsection to the next chapter, first subsection,
-    "Basic Config with ``LoggingConfigDict``"?
-
-    Go straight to "Configuration without `lcd`" below.
-
-    This whole subsection should be punchy, marketingspeak: tout the clarity & concision of `lcd` (sic).
-
-    TODO: If this subsubsection moves, NEVERTHELESS preserve this as a transition or wrapup:
-
-        You can use the ``dump()`` method of a ``LoggingConfigDict`` to prettyprint its underlying ``dict``.
-        In fact, that's how we determined the value of ``config_dict`` in the following example.
-
-
-If we were to use just the base class ``lcd.LoggingConfigDict``, the above example becomes just
-a little less concise. Now, we have to create the two formatters, and explicitly add the two
-handlers to the root logger:
-
-.. code::
-
-    from lcd import LoggingConfigDict
-
-    lcd = LoggingConfigDict(root_level='DEBUG')
-    lcd.add_formatter('minimal',
-                      format='%(message)s'
-    ).add_formatter('logger_level_msg',
-                    format='%(name)-20s: %(levelname)-8s: %(message)s'
-    )
-    lcd.add_handler('console',
-                    formatter='minimal',
-                    level='INFO',
-                    class_='logging.StreamHandler',
-    ).add_file_handler('file_handler',
-                       formatter='logger_level_msg',
-                       level='DEBUG',
-                       filename='blather.log',
-    )
-    lcd.add_root_handlers('console', 'file_handler')
-
-    lcd.config()
+To allow chaining, as in the above example, the methods of ``LoggingConfigDict``
+and ``LoggingConfigDictEx`` generally return ``self``.
 
 You can use the ``dump()`` method of a ``LoggingConfigDict`` to prettyprint its underlying ``dict``.
 In fact, that's how we determined the value of ``config_dict`` in the following example.

@@ -80,15 +80,27 @@ div.highlight-python {
 }
 */
 
+/*h2 {*/
+    /*font-size: 110%;*/
+    /*/!*font-style: italic;*!/*/
+/*}*/
+h3 {
+    font-size: 116%;
+    /*font-style: italic;*/
+}
+
 h4 {
-    font-size: 112%;    // was 115%
+    font-size: 104%;
+    opacity: 0.8;
 }
 
 h5 {
-    font-size: 104%;    // was 110%
+    font-size: 95%;
+    font-style: italic;
+    opacity: 0.7;
 }
 
 h6 {
-    font-size: 100%;    // was 110%
-    font-style: italic;
+    font-size: 96%;
+    /*font-style: italic;*/
 }
