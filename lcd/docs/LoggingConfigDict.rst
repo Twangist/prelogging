@@ -39,7 +39,7 @@ for specifying objects:
 
 A single ``LoggingConfigDict`` can be passed around to different "areas" of a program,
 each contributing specifications of its desired formatters, filters, handlers and
-loggers.
+loggers. 
 
 Once a ``LoggingConfigDict`` has been populated, it can be used to configure
 logging by calling its ``config()`` method, which is basically just shorthand
