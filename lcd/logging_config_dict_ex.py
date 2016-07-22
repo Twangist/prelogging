@@ -14,13 +14,53 @@ class LoggingConfigDictEx(LoggingConfigDict):
     various handler-creators, multiprocessing-aware handlers that output to the console,
     to files and to rotating files.
 
+    .. include:: _global.rst
+
+    Except for ``__init__``, every method of this class adds a handler of some kind.
+
+    .. _LoggingConfigDictEx-init-params:
+
+    .. index:: __init__ keyword parameters (LoggingConfigDictEx)
+
+    ``__init__`` **keyword parameters**  |br|
+    ``- - - - - - - - - - - - - - - - - - - - - - - - -``
+
+    In addition to the parameters ``root_level`` and ``disable_existing_loggers``
+    recognized by :ref:`LoggingConfigDict`, the constructor of this class accepts a few more::
+
+            add_handlers_to_root (bool)
+            locking              (bool)
+            log_path             (str)
+
+    When ``add_handlers_to_root`` is true, by default the other methods of this class
+    automatically add handlers to the root logger as well as to the ``handlers`` subdictionary.
+    By default, ``add_handlers_to_root`` is False.
+
+    When ``locking`` is true, by default the other methods of this class
+    add :ref:`locking handlers <locking-handlers>`; if it's false, handlers instantiate
+    the "usual" classes defined by `logging`. (See the :ref:`class inheritance diagram <lcd-all-classes>`.)
+    By default, ``locking`` is False.
+
+    All of the methods that add a handler take boolean parameters ``add_to_root`` and ``locking``,
+    which allow the overriding of the values established by ``__init__``.
+    Thus, for example, callers can add a non-locking handler even if ``self.locking`` is true,
+    or a locking handler even if ``self.locking`` is false. The default of these parameters
+    to handler-adding methods is ``None``, meaning: use the value of the attribute on ``self``.
+
+    ``log_path`` is a directory in which log files will be created by ``add_file_handler``
+    and ``add_rotating_file_handler``. If the filename passed to those methods contains
+    a relative path, then the logfile will be created in that relative subdirectory of
+    ``log_path``. If ``log_path`` is not an absolute path, then it is relative to the
+    current directory at runtime when ``config()`` is finally called.
+
     .. _builtin-formatters:
 
     .. index:: Builtin Formatters (LoggingConfigDictEx)
 
-    .. include:: _global.rst
+    **Formatters provided** |br|
+    ``- - - - - - - - - - - - - - - - - - - - - - - - -``
 
-    Formatters provided (their names making it fairly obvious what their format strings are):
+    Their names make it fairly obvious what their format strings are:
 
     +---------------------------------------+------------------------------------------------------------------------------------+
     || Formatter name                       || Format string                                                                     |
@@ -88,10 +128,15 @@ class LoggingConfigDictEx(LoggingConfigDict):
             and file handlers created by ``add_file_handler`` and ``add_rotating_file_handler``
             use locking file handlers, UNLESS ``locking=False`` is passed to the calls that
             create those handlers.
+        :param add_handlers_to_root: If true, by default the other methods of this class
+            will automatically add handlers to the root logger, as well as to the ``handlers``
+            subdictionary.
         :param disable_existing_loggers: corresponds to logging dict-config key(/value).
                     Changed default val to False so that separate packages can use
                     this class to create their own ("private") loggers before or after
                     their clients do their own logging config.
+
+        See also :ref:`__init__ keyword parameters <LoggingConfigDictEx-init-params>`.
         """
         super(LoggingConfigDictEx, self).__init__(
                         root_level=root_level,
@@ -110,10 +155,16 @@ class LoggingConfigDictEx(LoggingConfigDict):
                       clone,
                       handler,
                       add_to_root=None):
-        """
-        :param clone:
-        :param handler:
-        :param add_to_root:
+        """Add a handler named by ``clone`` whose handler dictionary is a deep copy of
+        the dictionary of the handler named by ``handler``.
+
+        **Note**: if the handler named  by ``clone`` already exists, its settings
+        will be replaced by those of ``handler``.
+
+        :param clone: name of a (usually new) handler — the target.
+        :param handler: name of existing, source handler. Raise ``KeyError``
+            if no such handler has been added.
+        :param add_to_root: If true, add the ``clone`` handler to the root logger.
         :return: ``self``
         """
         add_to_root = (self.add_handlers_to_root
@@ -130,13 +181,11 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          ** clone_dict)
         return self
 
-    def add_handler(self, handler_name, # *,
+    def add_handler(self, handler_name,     # *,
                     add_to_root=None,
                     ** handler_dict):
-        """Virtual, adds ``add_to_root`` parameter.
-        :param handler_name:
-        :param add_to_root:
-        :param handler_dict:
+        """Virtual; adds the ``add_to_root`` parameter to ``LoggingConfigDictEx.add_handler()``.
+
         :return: ``self``
         """
         super(LoggingConfigDictEx, self).add_handler(handler_name, ** handler_dict)
@@ -159,9 +208,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :param stream:
         :param formatter:
         :param level:
-        :param locking: so caller can add a non-locking handler even if self.locking,
-                but doesn't have to specify `locking=xxx` twice. Likewise,
-                a caller can add a locking handler even if self.locking == False.
+        :param locking: If true, this handler will be a :ref:`LockingStreamHandler`;
+            if false, the handler will be a ``logging.StreamHandler``.
         :param add_to_root:
         :param kwargs:
         :return: ``self``
@@ -196,13 +244,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
                              locking=None,
                              add_to_root=None,
                              **kwargs):
-        """
-        :param handler_name:
-        :param formatter:
-        :param level:
-        :param locking:
-        :param add_to_root:
-        :param kwargs:
+        """Add a console (stream) handler that writes to ``sys.stdout``.
+
         :return: ``self``
         """
         self._add_console_handler(handler_name,
@@ -220,13 +263,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
                              locking=None,
                              add_to_root=None,
                              **kwargs):
-        """
-        :param handler_name:
-        :param formatter:
-        :param level:
-        :param locking:
-        :param add_to_root:
-        :param kwargs:
+        """Add a console (stream) handler that writes to ``sys.stderr``.
+
         :return: ``self``
         """
         self._add_console_handler(handler_name,
@@ -247,16 +285,9 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          locking=None,
                          add_to_root=None,
                          **kwargs):
-        """
-        :param handler_name:
-        :param filename:
-        :param formatter:
-        :param mode:
-        :param level:
-        :param delay: True ==> log file not created until written to
-        :param locking:
-        :param add_to_root:
-        :param kwargs:
+        """Virtual; adds keyword parameters ``locking`` and ``add_to_root``
+        to the parameters of ``LoggingConfigDict.add_file_handler()``.
+
         :return: ``self``
         """
         # So: self can be created with (self.)locking=False,
@@ -297,8 +328,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          add_to_root=None,
                          **kwargs):
         """
-        :param handler_name:
-        :param filename:
+        :param handler_name: just that
+        :param filename: just that
         :param max_bytes: logfile size threshold. Given logfile name `lf.log`,
                           if a write would cause `lf.log` to exceed this size,
                           the following occurs, where K = backup_count:
@@ -312,14 +343,14 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :param backup_count: (max) n)umber of backup files to create and maintain.
                           The logging module calls this parameter `backupCount`;
                           it also defaults to 0.
-        :param formatter:
+        :param formatter: the name of the formatter that this handler will use
         :param mode: NOTE -- mode is `append`, logging module default
-        :param level:
-        :param delay: True ==> log file not created until written to
+        :param level: the loglevel of this handler
+        :param delay: if True, the log file won't be created until it's actually written to
         :param locking: Mandatory if multiprocessing -- things won't even work,
                           logfile can't be found: FileNotFoundError: [Errno 2]...
-        :param add_to_root:
-        :param kwargs:
+        :param add_to_root: whether or not to add this handler to the root logger
+        :param kwargs: additional key/value pairs
         :return: ``self``
         """
         # So: self can be created with (self.)locking=False,

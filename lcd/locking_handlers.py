@@ -43,6 +43,8 @@ class MPLock_Mixin():
 
 class LockingStreamHandler(logging.StreamHandler, MPLock_Mixin):
     """
+    .. _LockingStreamHandler:
+
     A multiprocessing-safe handler class that writes formatted logging records
     to a stream. This class doesn't close the stream, as ``sys.stdout`` or
     ``sys.stderr`` may be used.
@@ -70,7 +72,10 @@ class LockingStreamHandler(logging.StreamHandler, MPLock_Mixin):
 
 
 class LockingFileHandler(logging.FileHandler, MPLock_Mixin):
-    """A multiprocessing-safe handler class that writes
+    """
+    .. _LockingFileHandler:
+
+    A multiprocessing-safe handler class that writes
     formatted logging records to disk files.
 
     For more information, see the documentation for the base class `logging.FileHandler <https://docs.python.org/3/library/logging.handlers.html?highlight=logging#filehandler>`_.
@@ -93,10 +98,13 @@ class LockingFileHandler(logging.FileHandler, MPLock_Mixin):
 from logging import handlers
 
 class LockingRotatingFileHandler(logging.handlers.RotatingFileHandler, MPLock_Mixin):
-    """A multiprocessing-safe handler class that writes
+    """
+    .. _LockingRotatingFileHandler:
+
+    A multiprocessing-safe handler class that writes
     formatted logging records to a rotating set of disk files.
 
-    For more information, see the documentation for the base class `logging.RotatingFileHandler <https://docs.python.org/3/library/logging.handlers.html?highlight=logging#rotatingfilehandler>`_.
+    For more information, see the documentation for the base class `logging.handlers.RotatingFileHandler <https://docs.python.org/3/library/logging.handlers.html?highlight=logging#rotatingfilehandler>`_.
     """
     def __init__(self, filename, create_lock=False, mode='a', encoding=None, delay=False, **kwargs):
         """Open the specified file and use it as the stream for logging.

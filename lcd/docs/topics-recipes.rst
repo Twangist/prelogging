@@ -1,6 +1,8 @@
 Topics and Recipes
 ====================
 
+.. include:: _global.rst
+
 .. todo::
     Blah examples/topics blah
 
@@ -12,63 +14,6 @@ Basic usage of ``LoggingConfigDict``
 
 .. todo::
     intro blather, basic usage of ``LoggingConfigDict``
-
-As shown in the Introduction's :ref:`class inheritance diagram <lcd-all-classes>`,
-objects of this class *are* dicts.
-
-The methods of this class —``add_formatter``, ``add_filter``,
-``add_handler``, ``add_logger``, and so on — operate on the underlying dictionary.
-That dict is significantly nested, and keys often appear among the data, as
-back references to things "already defined".
-
-Although dicts are unordered, when configuring logging there's a precedence ordering
-for specifying objects:
-
-    1. Create a ``LoggingConfigDict``, optionally specifying the level of the root handler
-
-    2. Add formatter specifications with ``add_formatter()``
-
-    3. Add any filter specifications with ``add_filter()`` (or interchange Steps 2. and 3.)
-
-    4. Add handler specifications with ``add_handler()`` and/or ``add_file_handler()``
-
-       In steps 2. – 4., you give each thing specified a name, by which you refer to it
-       in subsequent steps when associating the thing with other, higher-level things.
-
-    5. If desired, configure the root logger using ``add_root_handlers()``, ``add_root_filters()``
-       and ``set_root_level()``.
-
-       You refer by name to handlers and filters already specified in the previous steps.
-
-    6. Add logger specifications, if any, with ``add_logger()``. Specify the handlers
-       and filters of a logger with the ``handlers`` and ``filters`` keyword parameters.
-
-
-The (leaf) values in logging config dicts are almost all strings. The exceptions are
-``bool`` values and actual streams allowed as the value of ``'stream'`` in
-in a handler subdict (e.g. ``stream=sys.stdout``). This package uses ``bool``
-values, but not actual streams, preferring the text equivalents accepted
-by the `logging` module's ``configDict()`` method:
-
-    instead of ``stream=sys.stdout``, we use ``stream='ext://sys.stdout'``.
-
-The reason: the ``clone_handler()`` method of the subclass ``LoggingConfigDictEx``
-uses ``deepcopy()``, and streams can't be deepcopied. We recommend that you not use
-actual streams, but rather the text equivalents, as shown in the example just given.
-
-
-
-A single ``LoggingConfigDict`` can be passed around to different "areas" of a program,
-each contributing specifications of its desired formatters, filters, handlers and
-loggers.
-
-.. note::
-    In this class as well as in :ref:`LoggingConfigDictEx`, `level` always means the
-    ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric value ``logging.DEBUG``.
-
-Once a ``LoggingConfigDict`` has been populated, it can be used to configure
-logging by calling its ``config()`` method, which is basically just shorthand
-for a call to ``logging.config.dictConfig()``.
 
 --------------------------------------------------
 

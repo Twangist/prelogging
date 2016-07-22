@@ -1,3 +1,5 @@
+.. _locking-handlers:
+
 Locking Handlers
 ===============================
 

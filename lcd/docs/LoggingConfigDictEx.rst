@@ -3,7 +3,7 @@
 LoggingConfigDictEx
 ===============================
 
-Resides in ``logging_config_dict_ex.py``.
+This class resides in ``logging_config_dict_ex.py``.
 
 .. autoclass:: lcd.logging_config_dict_ex.LoggingConfigDictEx
     :members: __init__, clone_handler, add_handler, add_stdout_console_handler, add_stderr_console_handler,

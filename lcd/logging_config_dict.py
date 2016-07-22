@@ -21,9 +21,9 @@ class LoggingConfigDict(dict):
     """
     .. include:: _global.rst
 
-    A general class that simplifies building a logging config dictionary,
-    modularly and incrementally, for ultimate use with the ``config()``
-    method of this class, which simply calls ``logging.config.dictConfig()`` :
+    A general class that simplifies building a logging configuration dictionary
+    (a *logging config dict*), modularly and incrementally, for ultimate use with
+    the ``config()`` method of this class, which simply calls ``logging.config.dictConfig()`` :
 
         https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig
 
@@ -32,7 +32,20 @@ class LoggingConfigDict(dict):
 
     **Note**: in this class as well as in :ref:`LoggingConfigDictEx`, "level" always means the
     ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric value ``logging.DEBUG``.
-    One of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``, ``'ERROR'``, ``'CRITICAL'``, or ``'NOTSET'``.
+    A level name, in short — one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``, ``'ERROR'``,
+    ``'CRITICAL'``, or ``'NOTSET'``.
+
+    The (leaf) values in logging config dicts are almost all strings. The exceptions are
+    ``bool`` values and actual streams allowed as the value of ``'stream'``
+    in a handler subdictionary (e.g. ``stream=sys.stdout``). This package uses ``bool``
+    values, but not actual streams, preferring the text equivalents accepted
+    by the `logging` module's ``configDict()`` method:
+
+        instead of ``stream=sys.stdout``, we use ``stream='ext://sys.stdout'``.
+
+    The reason: the ``clone_handler()`` method of the subclass ``LoggingConfigDictEx``
+    uses ``deepcopy()``, and streams can't be deep-copied. We recommend that you not use
+    actual streams, but rather the text equivalents, as shown in the example just given.
     |br|
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
@@ -274,9 +287,9 @@ class LoggingConfigDict(dict):
 
     def set_logger_level(self, logger_name,     # *,
                          level):
-        """If ``logger_name`` is empty, set loglevel of root handler to ``level``,
-        else set loglevel of handler ``logger_name`` to ``level``.
-        Raise KeyError if no such logger.
+        """If ``logger_name`` is empty, set the loglevel of the root handler to ``level``,
+        else set the loglevel of handler ``logger_name`` to ``level``.
+        Raise ``KeyError`` if no such logger.
         """
         assert level in self._level_names
 

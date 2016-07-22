@@ -106,7 +106,7 @@ with the statement ``logging.getLogger('mylogger').warning("Be careful!")``.
 Every ``Handler`` and every ``Logger`` has a threshold loglevel.
 
 The loglevel of a message must equal or exceed the loglevel of a logger in order for the logger
-to send the message to its handlers. The message will be written by such a handler only if the
+to send the message to its handlers. A handler will write a message only if the
 message's loglevel also equals or exceeds that of the handler.
 
 ``Filter``\s provide still more fine-grained control over which messages are written.
@@ -148,7 +148,8 @@ The `logging.config` submodule offers two equivalent ways to specify configurati
 * with a text file written in YAML, conforming to analogous requirements, and passed to ``logging.config.fileConfig()``.
 
 The `schema for configuration dictionaries <https://docs.python.org/3/library/logging.config.html#configuration-dictionary-schema>`_
-documents the format of such dictionaries — using YAML to do so! Arguably, this documentation
+documents the format of such dictionaries — and uses YAML to do so!, to cut down on
+the clutter of quotation marks and curly braces. Arguably, this documentation
 makes it seem quite daunting to configure logging with a ``dict``. Following its precepts,
 you must create a medium-sized ``dict`` containing several nested ``dict``\s, in which many
 values refer back to keys in other sub\``dict``\s — a thicket of curly braces, quotes and colons,
@@ -343,13 +344,14 @@ For the definitive account of static configuration, see the documentation of
 `logging.config <https://docs.python.org/3/library/logging.config.html?highlight=logging>`_.
 
 The logging `HOWTO <https://docs.python.org/3/howto/logging.html>`_
-contains tutorials show typical setups and uses of logging, configured in code at runtime.
+contains tutorials that show typical setups and uses of logging, configured in code at runtime.
 The `logging Cookbook <https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook>`_
 contains many techniques, several of which go beyond the scope of `lcd` because they involve
-`logging` capabilities that can't be configured statically (e.g. the use of ``LoggerAdapter``\s).
+`logging` capabilities that can't be configured statically (e.g. the use of
+`LoggerAdapters <https://docs.python.org/3/library/logging.html#loggeradapter-objects>`_).
 
 The `logging` module supports multithreaded operation, but does **not** support
-`Logging to a single file from multiple processes <https://docs.python.org/3/howto/logging-cookbook.html#logging-to-a-single-file-from-multiple-processes>`_.
+`logging to a single file from multiple processes <https://docs.python.org/3/howto/logging-cookbook.html#logging-to-a-single-file-from-multiple-processes>`_.
 Happily, `lcd` does.
 
 
