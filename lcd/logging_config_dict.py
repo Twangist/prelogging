@@ -30,8 +30,9 @@ class LoggingConfigDict(dict):
     The methods of ``LoggingConfigDict`` let you dispense with lots (and lots) of nested
     curly braces and single-quotes around keywords.
 
-    **Note**: in this class as well as in :ref:`LoggingConfigDictEx`, `level` always means the
+    **Note**: in this class as well as in :ref:`LoggingConfigDictEx`, "level" always means the
     ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric value ``logging.DEBUG``.
+    One of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``, ``'ERROR'``, ``'CRITICAL'``, or ``'NOTSET'``.
     |br|
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
@@ -41,7 +42,7 @@ class LoggingConfigDict(dict):
                  disable_existing_loggers=None      # logging default value is True
                 ):
         """
-        :param root_level: one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``, ``'ERROR'``, ``'CRITICAL'``, ``'NOTSET'``.
+        :param root_level: a ``str`` name of a loglevel.
         :param disable_existing_loggers: corresponds to the ``logging.config.dictConfig()``
                keyword parameter of the same name. Using the default value (``None``)
                causes the `logging` module's default (``True``) to be used.
@@ -184,7 +185,7 @@ class LoggingConfigDict(dict):
         :param handler_name: just that
         :param filters: the name of a filter, or a sequence of names of filters, to be used by the handler
         :param ** handler_dict: keyword/value pairs (values are generally strings)
-                    For the special keyword `class`, use `class_`.
+                    For the special keyword ``class``, use ``class_``.
         :return: self
         """
         assert 'class' not in handler_dict
