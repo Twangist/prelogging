@@ -23,13 +23,109 @@ Basic usage of ``LoggingConfigDictEx``
 .. todo::
     intro blather, basic usage of ``LoggingConfigDictEx``
 
-EXAMPLE -- Adding a logger that's discrete from the root (or any parent)
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-8980 7606 2417
+Using formatters
+++++++++++++++++++++++++++
 
-.. todo::
-    Explain the heading a bit
+asfasdf
+
+Using builtin formatters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+qwerty
+
+Defining new formatters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+    The `logging` module supports a large number of keywords
+    that can appear in formatters — for a complete list, see the documentation for
+    `LogRecord attributes <https://docs.python.org/3/library/logging.html?highlight=logging#logrecord-attributes>`_.
+    Each logged message can even include the name of the function, and/or the line number,
+    where its originating logging call was issued.
+
+
+Easily configuring a root logger
+++++++++++++++++++++++++++++++++++
+
+Adding a console handler
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Adding a file handler
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Example [TODO: of WHAT?]
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A typical, useful approach is to add handlers only to the root logger,
+and then have each module log messages using ``logging.getLogger(__name__)``.
+These "child" loggers require no configuration; they use the handlers
+of the root because by default loggers are created with ``propagate=True``.
+
+If the formatters of the handlers include the logger name — as does ``logger_level_msg``
+of ``LoggingConfigDictEx`` objects, for example — each logged message will relate
+which module wrote it.
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LoggingConfigDictEx
+    >>> import logging
+    >>> lcd_ex = LoggingConfigDictEx(add_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_console_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's was not right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+
+Adding non-root loggers
+----------------------------------
+
+Reasons to do so:
+
+    * in a particular module or package, you want to use a different loglevel from
+      that of the root logger, using the same handlers as the root (& so, writing
+      to the same destination(s));
+
+    * you want to write to destinations other than those of the root,
+      either instead of or in addition to those.
+
+
+Configuring a non-root logger
+++++++++++++++++++++++++++++++++++
+
+.. todo:: this.
+
+One which propagates, and (two possibilities)
+
+    1. has no handlers of its own, or
+    2. has handlers of its own
+
+Requirements
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+asdf
+
+How-to
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fdsa
+
+
+Using the root logger and a "discrete" logger
++++++++++++++++++++++++++++++++++++++++++++++++
+
+In this example we use two loggers: the root, and another logger that's "discrete"
+from the root, and indeed from any ancestor logger, in the sense that:
+
+    * it doesn't share any handlers with any ancestor, and
+    * it doesn't propagate to any ancestor.
+
+As the root is an ancestor of every logger, in particular we'll require that
+the added logger should *not* add its handlers to the root, and that it should
+not "propagate" to its parent (the root, in this example).
+
 
 Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -40,7 +136,7 @@ at their respective `lcd` default loglevels ``'WARNING'`` and ``'NOTSET'``;
 a discrete logger, named let's say ``'extra'``, with loglevel ''`DEBUG`'',
 which will write to a different file using a handler at default loglevel ``'NOTSET'``.
 
-How to realize them [sic?]
+How-to
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Start with a ``LoggingConfigDictEx`` that uses standard (non-locking) stream
@@ -115,63 +211,36 @@ in the calls that configure the ``'extra'`` logger.
        Observe that ``"UH OH"`` and ``"ho hum"`` are logged to ``_LOG/app_extra.log``
        by the root logger.
 
+.. _blahblah:
 
-Using builtin formatters
-++++++++++++++++++++++++++
+.. index:: Logger.propagate property
 
-
-Easily configuring a root logger
-++++++++++++++++++++++++++++++++++
-
-Adding a console handler
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Adding a file handler
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-A typical, useful approach is to add handlers to the root logger,
-and then have each module log messages using ``logging.getLogger(__name__)``.
-These "child" loggers require no configuration; they use the handlers
-of the root because by default loggers are created with ``propagate=True``.
-
-If the formatters of the handlers include the logger name — as does ``logger_level_msg``
-of ``LoggingConfigDictEx`` objects, for example — each logged message will relate which module wrote it.
-
-The following example illustrates the general technique:
-
-    >>> from lcd import LoggingConfigDictEx
-    >>> import logging
-    >>> lcd_ex = LoggingConfigDictEx(add_handlers_to_root=True)
-    >>> lcd_ex.add_stdout_console_handler('con', formatter='logger_level_msg')
-    >>> lcd_ex.config()
-    >>> logging.getLogger().warning("Look out!")
-    root                : WARNING : Look out!
-    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
-    my_submodule        : WARNING : Something's was not right.
-    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
-    your_submodule      : ERROR   : Uh oh, there was an error.
+.. index:: Placement of handlers when using multiple loggers, best practice
 
 .. note::
-    The `logging` module supports a large number of keywords
-    that can appear in formatters — for a complete list, see the documentation for
-    `LogRecord attributes <https://docs.python.org/3/library/logging.html?highlight=logging#logrecord-attributes>`_.
-    Each logged messages can even include the name of the function, and/or the line number,
-    where its originating logging call was issued.
+    According to the documentation of the
+    `Logger.propagate property <https://docs.python.org/3/library/logging.html#logging.Logger.propagate>`_,
 
 
+    | if [``propagate``] evaluates to true [the default], events logged
+    | to this logger will be passed to the handlers of higher level (ancestor)
+    | loggers, in addition to any handlers attached to this logger. Messages
+    | are passed directly to the ancestor loggers’ handlers - neither the level
+    | nor filters of the ancestor loggers in question are considered.
 
-Configuring a non-root logger
-++++++++++++++++++++++++++++++++++
+    |br|
+    This suggests that truly intricate, and no doubt surprising, configurations
+    can be achieved using propagation and fussy placements of handlers on loggers.
+    The **Note** at the end of the above link clearly states best practice:
 
-non-root handler
-
-Configuring both a root and a non-root logger
-++++++++++++++++++++++++++++++++++++++++++++++++
-
-root and non-root handler
+    | If you attach a handler to a logger and one or more of its ancestors,
+    | it may emit the same record multiple times. In general, you should not
+    | need to attach a handler to more than one logger - if you just attach it
+    | to the appropriate logger which is highest in the logger hierarchy, then
+    | it will see all events logged by all descendant loggers, provided that
+    | their propagate setting is left set to True. A common scenario is to
+    | attach handlers only to the root logger, and to let propagation take care
+    | of the rest.
 
 --------------------------------------------------
 

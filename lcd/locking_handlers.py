@@ -3,12 +3,6 @@
 __author__ = 'brianoneill'
 
 __doc__ = """ \
-This module contains multiprocessing-safe handler classes for use with `logging`.
-The ``LoggingConfigDictEx`` class and its methods provide an interface to them —
-in the ordinary course of things it's probably unnecessary to use them directly.
-
------
-
 """
 
 import logging

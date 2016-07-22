@@ -6,6 +6,10 @@ from copy import deepcopy
 from .locking_handlers import LockingStreamHandler, LockingFileHandler
 from .logging_config_dict import LoggingConfigDict
 
+# NOTE: Available if you want it:
+__doc__ = """\
+"""
+
 __author__ = "Brian O'Neill"
 
 class LoggingConfigDictEx(LoggingConfigDict):
