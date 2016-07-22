@@ -16,7 +16,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
 
     .. include:: _global.rst
 
-    Except for ``__init__``, every method of this class adds a handler of some kind.
+    Except for ``__init__``, every method of this class adds a handler of some kind,
+    and returns ``self``.
 
     .. _LoggingConfigDictEx-init-params:
 
@@ -184,7 +185,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
     def add_handler(self, handler_name,     # *,
                     add_to_root=None,
                     ** handler_dict):
-        """Virtual; adds the ``add_to_root`` parameter to ``LoggingConfigDictEx.add_handler()``.
+        """Virtual; adds the ``add_to_root`` parameter to ``LoggingConfigDict.add_handler()``.
 
         :return: ``self``
         """

@@ -3,7 +3,7 @@
 Locking Handlers
 ===============================
 
-These reside in ``locking_handlers.py``.
+These classes reside in ``locking_handlers.py``.
 
 .. automodule:: lcd.locking_handlers
     :members:

@@ -6,7 +6,8 @@ LoggingConfigDict
 This class resides in ``logging_config_dict.py``.
 
 As shown in the Introduction's :ref:`class inheritance diagram <lcd-all-classes>`,
-objects of this class *are* dicts.
+objects of this class *are* dicts — *logging configuration dictionaries*,
+or *logging config dicts* for short.
 
 The methods of this class —``add_formatter``, ``add_filter``,
 ``add_handler``, ``add_logger``, and so on — operate on the underlying dictionary.
@@ -20,16 +21,18 @@ for specifying objects:
 
     2. Add formatter specifications with ``add_formatter()``
 
-    3. Add any filter specifications with ``add_filter()`` (or interchange Steps 2. and 3.)
+    3. Add any filter specifications with ``add_filter()`` (Steps 2. and 3. can be interchanged)
 
-    4. Add handler specifications with ``add_handler()`` and/or ``add_file_handler()``
+
+    4. Add handler specifications with ``add_handler()`` and/or ``add_file_handler()``,
+       referring by name to formatters and filters already specified in previous steps.
 
        In steps 2. – 4., you give each thing specified a name, by which you refer to it
        in subsequent steps when associating the thing with other, higher-level things.
 
     5. If desired, configure the root logger using ``add_root_handlers()``, ``add_root_filters()``
-       and ``set_root_level()``, referring by name to handlers and filters already specified
-       in the previous steps.
+       and/or ``set_root_level()``, referring by name to handlers and filters already specified
+       in previous steps.
 
     6. Add logger specifications, if any, with ``add_logger()``. Specify the handlers
        and filters of a logger by name, using the ``handlers`` and ``filters`` keyword parameters.

@@ -244,9 +244,8 @@ Because we pass the flag ``add_handlers_to_root=True`` when creating the instanc
 every handler we add to ``lcd_ex`` is automatically added to the root logger.
 
 .. note::
-    Except for ``config()`` and the properties ``formatters``, ``filters``, ``handlers``,
-    ``loggers`` and ``root``, all methods of ``LoggingConfigDict`` and
-    ``LoggingConfigDictEx`` return ``self``, to allow chaining, as in the above example.
+    To allow chaining, as in the above example, the methods of ``LoggingConfigDict``
+    and ``LoggingConfigDictEx`` generally return ``self``.
 
 
 With `lcd` — more verbosely [TODO maybe relegate this to elsewhere]

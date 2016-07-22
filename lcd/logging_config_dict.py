@@ -21,19 +21,23 @@ class LoggingConfigDict(dict):
     """
     .. include:: _global.rst
 
-    A general class that simplifies building a logging configuration dictionary
-    (a *logging config dict*), modularly and incrementally, for ultimate use with
-    the ``config()`` method of this class, which simply calls ``logging.config.dictConfig()`` :
+    A general class that simplifies building a logging config dict, modularly and incrementally,
+    for ultimate use with the ``config()`` method of this class, which simply calls
+    ``logging.config.dictConfig()`` :
 
         https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig
 
     The methods of ``LoggingConfigDict`` let you dispense with lots (and lots) of nested
     curly braces and single-quotes around keywords.
 
-    **Note**: in this class as well as in :ref:`LoggingConfigDictEx`, "level" always means the
+    In this class as well as in :ref:`LoggingConfigDictEx`, "level" always means the
     ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric value ``logging.DEBUG``.
     A level name, in short — one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``, ``'ERROR'``,
     ``'CRITICAL'``, or ``'NOTSET'``.
+
+    Except for ``config()`` and the properties ``formatters``, ``filters``, ``handlers``,
+    ``loggers`` and ``root``, all public methods of this class and of
+    :ref:`LoggingConfigDictEx` return ``self``, to allow chaining.
 
     The (leaf) values in logging config dicts are almost all strings. The exceptions are
     ``bool`` values and actual streams allowed as the value of ``'stream'``
@@ -118,18 +122,25 @@ class LoggingConfigDict(dict):
         Given that ``__init__`` has a ``root_level`` parameter, this isn't really needed.
 
         :param root_level: an explicit value. The default set in ``__init__`` is ``'WARNING'``.
+        :return: ``self``
         """
         assert root_level in self._level_names
         self.root['level'] = root_level
         return self
 
     def add_root_handlers(self, * handler_names):
-        """Add handlers in ``handler_names`` to the root logger."""
+        """Add handlers in ``handler_names`` to the root logger.
+
+        :return: ``self``
+        """
         self.root['handlers'].extend(handler_names)
         return self
 
     def add_root_filters(self, * filter_names):
-        """Add filters in ``filter_names`` to the root logger."""
+        """Add filters in ``filter_names`` to the root logger.
+
+        :return: ``self``
+        """
         if not filter_names:
             return self
         root_filters_list = self.root.setdefault('filters', [])
@@ -159,7 +170,7 @@ class LoggingConfigDict(dict):
 
         :param filter_name: just that
         :param filter_dict: keyword/value pairs (values are generally strings)
-        :return: self
+        :return: ``self``
         """
         ##assert 'class' not in filter_dict
         ## Todo: does this even work? logging docs stink re filters.
@@ -199,7 +210,7 @@ class LoggingConfigDict(dict):
         :param filters: the name of a filter, or a sequence of names of filters, to be used by the handler
         :param ** handler_dict: keyword/value pairs (values are generally strings)
                     For the special keyword ``class``, use ``class_``.
-        :return: self
+        :return: ``self``
         """
         assert 'class' not in handler_dict
         if 'class_' in handler_dict:
@@ -230,7 +241,7 @@ class LoggingConfigDict(dict):
         :param level: The loglevel of this file handler.
         :param delay: If True, the file will be created lazily, only when actually written to.
         :param kwargs: Any other key/value pairs to pass to ``add_handler()``.
-        :return: self
+        :return: ``self``
         """
         self.add_handler(handler_name,
                          class_='logging.FileHandler',
@@ -257,7 +268,7 @@ class LoggingConfigDict(dict):
                 The default ``None`` causes the `logging` module's default
                 value of ``True`` to be used.
         :param filters: a filter name, or sequence of filter names
-        :return: self
+        :return: ``self``
         """
         d = {'level': level}
 
@@ -280,6 +291,7 @@ class LoggingConfigDict(dict):
         Raise KeyError if no such handler.
         :param handler_name: name of handler.
         :param level: loglevel (as ``str``)
+        :return: ``self``
         """
         assert level in self._level_names
         self.handlers[handler_name]['level'] = level
@@ -290,6 +302,7 @@ class LoggingConfigDict(dict):
         """If ``logger_name`` is empty, set the loglevel of the root handler to ``level``,
         else set the loglevel of handler ``logger_name`` to ``level``.
         Raise ``KeyError`` if no such logger.
+        :return: ``self``
         """
         assert level in self._level_names
 
@@ -318,7 +331,8 @@ class LoggingConfigDict(dict):
     def dump(self):                                     # pragma: no cover
         """Pretty-print the underlying ``dict``.
         For debugging, sanity checks, etc.
-        :return: self (even this does)
+
+        :return: ``self`` (even this)
         """
         from pprint import pformat
         print(  '---->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n'
