@@ -19,8 +19,10 @@ import logging.config
 
 class LoggingConfigDict(dict):
     """
+    .. include:: _global.rst
+
     A general class that simplifies building a logging config dictionary,
-    modularly and incrementally, for ultimate use wiht the ``config()``
+    modularly and incrementally, for ultimate use with the ``config()``
     method of this class, which simply calls ``logging.config.dictConfig()`` :
 
         https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig
@@ -28,9 +30,9 @@ class LoggingConfigDict(dict):
     The methods of ``LoggingConfigDict`` let you dispense with lots (and lots) of nested
     curly braces and single-quotes around keywords.
 
-    .. note::
-        In this class as well as in :ref:`LoggingConfigDictEx`, `level` always means the
-        ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric value ``logging.DEBUG``.
+    **Note**: in this class as well as in :ref:`LoggingConfigDictEx`, `level` always means the
+    ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric value ``logging.DEBUG``.
+    |br|
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
 
