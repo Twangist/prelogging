@@ -9,29 +9,44 @@ Topics and Recipes
 * Basic usage & discussion of ``LoggingConfigDict`` [TODO: make subsection & link]
 
 * Formatters
-    * :ref:`tr-LCDEx-using-builtin-formatters`
-    * :ref:`tr-LCDEx-defining-new-formatters`
+    .. hlist::
+        :columns: 3
+
+        * :ref:`tr-LCDEx-using-builtin-formatters`
+        * :ref:`tr-LCDEx-defining-new-formatters`
 
 * Configuring the root logger
-    * :ref:`tr-easy-config-root-add-console`
-    * :ref:`tr-easy-config-root-add-file`
-    * :ref:`tr-config-root-use-children`
+    .. hlist::
+        :columns: 3
+
+        * :ref:`tr-easy-config-root-add-console`
+        * :ref:`tr-easy-config-root-add-file`
+        * :ref:`tr-config-root-use-children`
 
 * Non-root loggers
-    * :ref:`tr-config-non-root-propagate`
-    * :ref:`tr-config-discrete-non-root`
+    .. hlist::
+        :columns: 3
+
+        * :ref:`tr-config-non-root-propagate`
+        * :ref:`tr-config-discrete-non-root`
 
 * Rotating file handlers
     * :ref:`tr-rot-fh`
 
 * Multiprocessing
-    * :ref:`tr-mp-console`
-    * :ref:`tr-mp-fh`
-    * :ref:`tr-mp-rot-fh`
+    .. hlist::
+        :columns: 3
+
+        * :ref:`tr-mp-console`
+        * :ref:`tr-mp-fh`
+        * :ref:`tr-mp-rot-fh`
 
 * Filters
-    * :ref:`tr-filters-logger`
-    * :ref:`tr-filters-handler`
+    .. hlist::
+        :columns: 3
+
+        * :ref:`tr-filters-logger`
+        * :ref:`tr-filters-handler`
 
 --------------------------------------------------
 
@@ -348,8 +363,8 @@ in the calls that configure the ``'extra'`` logger.
 
 .. _tr-rot-fh:
 
-Rotating file handlers
-------------------------
+Using a rotating file handler
+------------------------------------
 
 rotating fh blah blah
 
@@ -365,20 +380,20 @@ MP blather
 
 .. _tr-mp-console:
 
-Console handler (MP)
-+++++++++++++++++++++++++++++
+Using a locking console handler
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 123
 
 .. _tr-mp-fh:
 
-File handler (MP)
-+++++++++++++++++++++++++++++
+Using a locking file handler
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 abc
 
 .. _tr-mp-rot-fh:
 
-Rotating file handler (MP)
-+++++++++++++++++++++++++++++
+Using a locking rotating file handler
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 xyz
 
 --------------------------------------------------
