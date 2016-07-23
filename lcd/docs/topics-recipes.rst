@@ -3,14 +3,41 @@ Topics and Recipes
 
 .. include:: _global.rst
 
-.. todo::
-    Blah examples/topics blah
+* Basic usage of ``LoggingConfigDict`` (appropriate/move stuff from :ref:`LoggingConfigDict`)
+    * :ref:`overview-example-using-only-LoggingConfigDict`
+
+* Basic usage & discussion of ``LoggingConfigDict`` [TODO: make subsection & link]
+
+* Using formatters
+    * :ref:`tr-LCDEx-using-builtin-formatters`
+    * :ref:`tr-LCDEx-defining-new-formatters`
+
+* Easily configuring the root logger
+    * :ref:`tr-easy-config-root-add-console`
+    * :ref:`tr-easy-config-root-add-file`
+    * :ref:`tr-config-root-use-children`
+
+* Adding non-root loggers
+    * :ref:`tr-config-non-root-propagate`
+    * :ref:`tr-config-discrete-non-root`
+
+* :ref:`tr-rot-fh`
+
+* Multiprocessing
+    * :ref:`tr-mp-console`
+    * :ref:`tr-mp-fh`
+    * :ref:`tr-mp-rot-fh`
+
+* Using filters
+    * :ref:`tr-filters-logger`
+    * :ref:`tr-filters-handler`
 
 --------------------------------------------------
 
+.. _tr-basic-usage-LCD:
+
 Basic usage of ``LoggingConfigDict``
 -------------------------------------------------------
-
 
 .. todo::
     intro blather, basic usage of ``LoggingConfigDict``
@@ -65,6 +92,8 @@ we've commented as ``# NEW``):
 
 --------------------------------------------------
 
+.. _tr-basic-usage-LCDEx:
+
 Basic usage of ``LoggingConfigDictEx``
 ---------------------------------------------------------
 
@@ -72,25 +101,32 @@ Basic usage of ``LoggingConfigDictEx``
     intro blather, basic usage of ``LoggingConfigDictEx``
 
 
+.. _tr-LCDEx-using-formatters:
+
 Using formatters
 ++++++++++++++++++++++++++
 
 asfasdf
 
+.. _tr-LCDEx-using-builtin-formatters:
+
 Using builtin formatters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 qwerty
 
+.. _tr-LCDEx-defining-new-formatters:
+
 Defining new formatters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. note::
-    The `logging` module supports a large number of keywords
-    that can appear in formatters — for a complete list, see the documentation for
-    `LogRecord attributes <https://docs.python.org/3/library/logging.html?highlight=logging#logrecord-attributes>`_.
-    Each logged message can even include the name of the function, and/or the line number,
-    where its originating logging call was issued.
+The `logging` module supports a large number of keywords
+that can appear in formatters — for a complete list, see the documentation for
+`LogRecord attributes <https://docs.python.org/3/library/logging.html?highlight=logging#logrecord-attributes>`_.
+Each logged message can even include the name of the function, and/or the line number,
+where its originating logging call was issued.
 
+
+.. _tr-easy-config-root:
 
 Easily configuring a root logger
 ++++++++++++++++++++++++++++++++++
@@ -98,13 +134,19 @@ Easily configuring a root logger
 We already saw `one example <example-overview-config>` of how easy it is to
 configure the root logger with both a console handler and a file handler.
 
+.. _tr-easy-config-root-add-console:
+
 Adding a console handler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _tr-easy-config-root-add-file:
 
 Adding a file handler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Example [TODO: of WHAT? Config'd root, + use child loggers "free"]
+.. _tr-config-root-use-children:
+
+Configuring only the root logger, and using child loggers
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 A typical, useful approach is to add handlers only to the root logger,
@@ -132,6 +174,10 @@ The following example illustrates the general technique:
     your_submodule      : ERROR   : Uh oh, there was an error.
 
 
+--------------------------------------------------
+
+.. _tr-add-non-root:
+
 Adding non-root loggers
 ----------------------------------
 
@@ -144,6 +190,8 @@ Reasons to do so:
     * you want to write to destinations other than those of the root,
       either instead of or in addition to those.
 
+
+.. _tr-config-non-root-propagate:
 
 Configuring a non-root logger
 ++++++++++++++++++++++++++++++++++
@@ -163,6 +211,8 @@ How-to
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 fdsa
 
+
+.. _tr-config-discrete-non-root:
 
 Using the root logger and a "discrete" logger
 +++++++++++++++++++++++++++++++++++++++++++++++
@@ -262,7 +312,7 @@ in the calls that configure the ``'extra'`` logger.
        Observe that ``"UH OH"`` and ``"ho hum"`` are logged to ``_LOG/app_extra.log``
        by the root logger.
 
-.. _blahblah:
+.. _tr-propagate-docs:
 
 .. index:: Logger.propagate property
 
@@ -295,6 +345,8 @@ in the calls that configure the ``'extra'`` logger.
 
 --------------------------------------------------
 
+.. _tr-rot-fh:
+
 Rotating file handlers
 ------------------------
 
@@ -303,18 +355,26 @@ rotating fh blah blah
 --------------------------------------------------
 
 
+.. _tr-mp:
+
 Multiprocessing
 -----------------
 
 MP blather
 
+.. _tr-mp-console:
+
 Console handler (MP)
 +++++++++++++++++++++++++++++
 123
 
+.. _tr-mp-fh:
+
 File handler (MP)
 +++++++++++++++++++++++++++++
 abc
+
+.. _tr-mp-rot-fh:
 
 Rotating file handler (MP)
 +++++++++++++++++++++++++++++
@@ -323,7 +383,21 @@ xyz
 --------------------------------------------------
 
 
+.. _tr-filters:
+
 Filters
 --------
 
 see tests ... for examples of how to set up a logger filter or a handler filter
+
+.. _tr-filters-logger:
+
+Filters on a logger
++++++++++++++++++++++++++++++
+ZXCVBN
+
+.. _tr-filters-handler:
+
+Filters on a handler
++++++++++++++++++++++++++++++
+TYUIO
