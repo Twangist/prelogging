@@ -53,7 +53,7 @@ a handler or two to the root.
     a monolithic function that's somewhat complex yet of limited capabilities.
 
     .. todo::
-        This makes a lousy "Note", yes?
+        The above makes a lousy "Note", ya?
 
 
 `logging`-configuration classes
