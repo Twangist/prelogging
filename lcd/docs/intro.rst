@@ -21,6 +21,7 @@ Introduction: `lcd` does... *what*?
 .. _lcd-all-classes:
 
 .. figure:: lcd_ALL_classes.png
+    :figwidth: 100%
 
     **lcd** classes and their superclasses
 

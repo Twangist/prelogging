@@ -8,27 +8,28 @@ Topics and Recipes
 
 * Basic usage & discussion of ``LoggingConfigDict`` [TODO: make subsection & link]
 
-* Using formatters
+* Formatters
     * :ref:`tr-LCDEx-using-builtin-formatters`
     * :ref:`tr-LCDEx-defining-new-formatters`
 
-* Easily configuring the root logger
+* Configuring the root logger
     * :ref:`tr-easy-config-root-add-console`
     * :ref:`tr-easy-config-root-add-file`
     * :ref:`tr-config-root-use-children`
 
-* Adding non-root loggers
+* Non-root loggers
     * :ref:`tr-config-non-root-propagate`
     * :ref:`tr-config-discrete-non-root`
 
-* :ref:`tr-rot-fh`
+* Rotating file handlers
+    * :ref:`tr-rot-fh`
 
 * Multiprocessing
     * :ref:`tr-mp-console`
     * :ref:`tr-mp-fh`
     * :ref:`tr-mp-rot-fh`
 
-* Using filters
+* Filters
     * :ref:`tr-filters-logger`
     * :ref:`tr-filters-handler`
 
@@ -146,8 +147,8 @@ Adding a file handler
 
 .. _tr-config-root-use-children:
 
-Configuring only the root logger, and using child loggers
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Using named (child) loggers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A typical, useful approach is to add handlers only to the root logger,
 and then have each module log messages using ``logging.getLogger(__name__)``.

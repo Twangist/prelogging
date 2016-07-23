@@ -35,7 +35,7 @@ handlers of it's *parent handler*. The parent of ``'mylogger'`` is the root logg
 ``logging.getLogger()``. In many cases, to configure logging it's sufficient just to add
 a handler or two to the root.
 
-.. note::
+.. topic:: `logging` shorthands and defaults
 
     `logging` supplies reasonable out-of-the-box defaults so that you can easily
     start to use its capabilities. You can just say:
@@ -53,7 +53,9 @@ a handler or two to the root.
     a monolithic function that's somewhat complex yet of limited capabilities.
 
     .. todo::
-        The above makes a lousy "Note", ya?
+        The above subsection is a ".. topic::".
+        Does it work? does this material belong here,
+        is its relevance to the foregoing clear?
 
 
 `logging`-configuration classes
@@ -98,7 +100,7 @@ A ``Handler`` writes logged messages to a particular destination — a stream (e
 ``sys.stderr``, ``sys.stdout``, or an in-memory stream such as an ``io.StringIO()``),
 a file, a rotating set of files, a socket, etc.
 
-A ``Logger``sends logged messages to its associated handlers. Various
+A ``Logger`` sends logged messages to its associated handlers. Various
 criteria filter out which messages are actually written.
 
 Every message that a logger logs has a *level* — a *loglevel*, as we'll call it: an integer
@@ -188,11 +190,11 @@ Example
 Suppose we want the following logging configuration:
 
     Messages should be logged to both ``stderr`` and a file. Only messages with loglevel
-    ``INFO``or higher should appear on-screen, but all messages should be logged to the
-    file. Messages to ``stderr``should consist of just the message, but messages
+    ``INFO`` or higher should appear on-screen, but all messages should be logged to the
+    file. Messages to ``stderr`` should consist of just the message, but messages
     written to the file should contain the logger name and the message's loglevel.
 
-This suggests two handlers, each with an appropriate formatter — a ``stderr``console
+This suggests two handlers, each with an appropriate formatter — a ``stderr`` console
 handler with level ``INFO``, and a file handler with level ``DEBUG``. Both handlers
 should be attached to the root logger, which must have level ``DEBUG`` (or ``NOTSET``)
 to allow all messages through.

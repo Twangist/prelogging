@@ -64,6 +64,10 @@ pre {
     font-size: 83% !important;
 }
 
+/* Suppress breadcrumbs */
+div[aria-label="breadcrumbs navigation"] {
+    display: none
+}
 
 /*
 Make HRs more visible, they're ridiculous with 'border-top: 1px solid #e1e4e5;''
@@ -86,7 +90,7 @@ div.highlight-python {
 /*}*/
 h3 {
     font-size: 116%;
-    /*font-style: italic;*/
+    font-style: italic;
 }
 
 h4 {
