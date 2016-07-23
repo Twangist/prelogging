@@ -52,11 +52,20 @@ span.literal {
     font-size: 110% !important;
 }
 
+/* TRY THIS -- tighten padding, on right?
+ */
+.rst-content tt, .rst-content tt, .rst-content code {
+	color: #000;
+	/*padding: 2px 5px;*/
+	padding: 2px 1px;
+}
+
 code.literal {
     color: #003398 !important;
     background-color: #f3f4fc;
     /*font-size: 87% !important */
-    font-size: 87% !important;
+    /*font-size: 87% !important;*/
+    font-size: 90% !important;
 }
 
 /* THIS works -- code blocks */
