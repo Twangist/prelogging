@@ -3,10 +3,15 @@ Topics and Recipes
 
 .. include:: _global.rst
 
-* Basic usage of ``LoggingConfigDict`` (appropriate/move stuff from :ref:`LoggingConfigDict`)
-    * :ref:`overview-example-using-only-LoggingConfigDict`
+* ``LoggingConfigDict``
+    .. hlist::
+        :columns: 3
 
-* Basic usage & discussion of ``LoggingConfigDict`` [TODO: make subsection & link]
+        * :ref:`Basic usage and principles<tr-basic-usage-LCD>`
+        * :ref:`overview-example-using-only-LoggingConfigDict`
+
+* ``LoggingConfigDictEx`` [TODO: make subsection & link for item below]
+    * Basic usage & principles (if any) -- what it adds to ``LoggingConfigDict``
 
 * Formatters
     .. hlist::
@@ -23,7 +28,7 @@ Topics and Recipes
         * :ref:`tr-easy-config-root-add-file`
         * :ref:`tr-config-root-use-children`
 
-* Non-root loggers
+* Configuring and using root and non-root loggers together
     .. hlist::
         :columns: 3
 
@@ -120,20 +125,20 @@ Basic usage of ``LoggingConfigDictEx``
 .. _tr-LCDEx-using-formatters:
 
 Using formatters
-++++++++++++++++++++++++++
+-------------------------------------------------------
 
 asfasdf
 
 .. _tr-LCDEx-using-builtin-formatters:
 
 Using builtin formatters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+++++++++++++++++++++++++++
 qwerty
 
 .. _tr-LCDEx-defining-new-formatters:
 
 Defining new formatters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+++++++++++++++++++++++++++
 
 The `logging` module supports a large number of keywords
 that can appear in formatters — for a complete list, see the documentation for
@@ -144,8 +149,8 @@ where its originating logging call was issued.
 
 .. _tr-easy-config-root:
 
-Easily configuring a root logger
-++++++++++++++++++++++++++++++++++
+Configuring the root logger
+------------------------------------------
 
 We already saw `one example <example-overview-config>` of how easy it is to
 configure the root logger with both a console handler and a file handler.
@@ -153,12 +158,12 @@ configure the root logger with both a console handler and a file handler.
 .. _tr-easy-config-root-add-console:
 
 Adding a console handler
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+++++++++++++++++++++++++++
 
 .. _tr-easy-config-root-add-file:
 
 Adding a file handler
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+++++++++++++++++++++++++++
 
 .. _tr-config-root-use-children:
 
@@ -194,8 +199,8 @@ The following example illustrates the general technique:
 
 .. _tr-add-non-root:
 
-Adding non-root loggers
-----------------------------------
+Configuring and using non-root loggers
+----------------------------------------------
 
 Reasons to do so:
 
@@ -209,8 +214,8 @@ Reasons to do so:
 
 .. _tr-config-non-root-propagate:
 
-Configuring a non-root logger
-++++++++++++++++++++++++++++++++++
+A non-root logger that propagates
++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. todo:: this.
 
@@ -230,8 +235,8 @@ fdsa
 
 .. _tr-config-discrete-non-root:
 
-Using the root logger and a "discrete" logger
-+++++++++++++++++++++++++++++++++++++++++++++++
+A "discrete" non-root logger
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 In this example we use two loggers: the root, and another logger that's "discrete"
 from the root, and indeed from any ancestor logger, in the sense that:
