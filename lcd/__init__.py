@@ -1,4 +1,4 @@
-__author__ = 'brianoneill'
+__author__ = "Brian O'Neill"
 
 from ._version import __version__
 from .logging_config_dict import LoggingConfigDict

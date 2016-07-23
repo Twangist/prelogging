@@ -1,17 +1,10 @@
 #!/usr/bin/env python
 
 # PyPI supports rST, hence:
-__doc__ = """
-`lcd` (for ``LoggingConfigDict``) is a package containing classes that simplify
-building a logging config dictionary modularly and incrementally,
-of the sort expected by ``logging.config.dictConfig()`` (added in Python 3.2,
-backported to 2.7).
-
-LoggingConfigDict               --  ...
-LoggingConfigDictEx             --  ... multiprocessing-aware
-LockingStreamHandler            --  ...        "       -  "
-LockingFileHandler              --  ...        "       -  "
-LockingRotatingFileHandler      --  ...        "       -  "
+__doc__ = """\
+`lcd` (for "logging config dict") streamlines the configuration of Python
+logging, and adds multiprocess-safe handlers for writing to streams, files
+and rotating files.
 """
 
 from lcd import __version__, __author__
@@ -22,10 +15,12 @@ setup(
     version=__version__,
     author=__author__,       # "Brian O'Neill",
     author_email='twangist@gmail.com',
-    description='Classes to simplify building a logging config dictionary',
+    description='streamlines the configuration of Python logging, includes '
+                'multiprocessing-safe handlers',
     long_description=__doc__,
     license='MIT',
-    keywords='logging config dictConfig dict configuration multiprocessing',
+    keywords='logging config dictConfig dict configuration multiprocessing '
+             'rotating file',
     url='http://github.com/Twangist/lcd',
     packages=['lcd', 'lcd/tests'],               # , 'examples'
     test_suite='run_tests.py',
