@@ -6,7 +6,6 @@ __doc__ = """\
 logging, and adds multiprocess-safe handlers for writing to streams, files
 and rotating files.
 """
-
 from lcd import __version__, __author__
 
 from setuptools import setup
