@@ -166,7 +166,6 @@ class TestLoggingConfigDict(TestCase):
             :param record: logging.LogRecord
             :return: bool -- True ==> let record through, False ==> squelch
             """
-            # nonlocal debug_count
             if record.levelno == logging.DEBUG:
                 self.debug_count += 1
             return True

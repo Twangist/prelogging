@@ -5,6 +5,8 @@ from copy import deepcopy
 
 from .locking_handlers import LockingStreamHandler, LockingFileHandler
 from .logging_config_dict import LoggingConfigDict
+from ._version import IS_PY2
+
 
 # NOTE: Available if you want it:
 __doc__ = """\
@@ -20,8 +22,9 @@ class LoggingConfigDictEx(LoggingConfigDict):
 
     .. include:: _global.rst
 
-    Except for ``__init__``, every method of this class adds a handler of some kind,
-    and returns ``self``.
+    Except for ``__init__`` and the ``add_*_filter`` methods, every method of this class
+    adds a handler of some kind. All methods except ``__init__`` return ``self``.
+
 
     .. _LoggingConfigDictEx-init-params:
 
@@ -72,6 +75,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
     +=======================================+====================================================================================+
     || ``'minimal'``                        || ``'%(message)s'``                                                                 |
     +---------------------------------------+------------------------------------------------------------------------------------+
+    || ``'level_msg'``                      || ``'%(levelname)-8s: %(message)s'``                                                |
+    +---------------------------------------+------------------------------------------------------------------------------------+
     || ``'process_msg'``                    || ``'%(processName)-10s: %(message)s'``                                             |
     +---------------------------------------+------------------------------------------------------------------------------------+
     || ``'logger_process_msg'``             || ``'%(name)-20s: %(processName)-10s: %(message)s'``                                |
@@ -96,6 +101,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
     format_strs = {
         'minimal':
             '%(message)s',
+        'level_msg':
+            '%(levelname)-8s: %(message)s',
         'process_msg':
             '%(processName)-10s: %(message)s',
         'logger_process_msg':
@@ -385,5 +392,21 @@ class LoggingConfigDictEx(LoggingConfigDict):
             self.handlers[handler_name]['()'] = 'ext://lcd.LockingRotatingFileHandler'
             self.handlers[handler_name]['create_lock'] = True
         return self
+
+    # . 0.2.7 -- Two convenience methods, so callers don't have to copy/paste
+    # .       weird syntax, & so that we don't have to explain it in docs.
+    # TODO Document (use these in filters example (topics/recipes))
+    #  |   and write a test, based on recipe-filter-1.py i.e. on filter recipe
+
+    def add_class_filter(self, filter_name, filter_class, ** filter_dict):
+        filter_dict['()'] = filter_class
+        return self.add_filter(filter_name, ** filter_dict)
+
+    def add_function_filter(self, filter_name, filter_fn, ** filter_dict):
+        if IS_PY2:
+            if not hasattr(filter_fn, 'filter'):
+                setattr(filter_fn, 'filter', filter_fn)
+        filter_dict['()'] = lambda: filter_fn
+        return self.add_filter(filter_name, ** filter_dict)
 
     # TODO  Support for  ColorizedStreamHandler?

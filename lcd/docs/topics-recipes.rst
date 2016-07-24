@@ -10,8 +10,8 @@ Topics and Recipes
         * :ref:`Basic usage and principles<tr-basic-usage-LCD>`
         * :ref:`overview-example-using-only-LoggingConfigDict`
 
-* ``LoggingConfigDictEx`` [TODO: make subsection & link for item below]
-    * Basic usage & principles (if any) -- what it adds to ``LoggingConfigDict``
+* ``LoggingConfigDictEx``
+    * :ref:`tr-basic-LCDEx`
 
 * Formatters
     .. hlist::
@@ -38,7 +38,7 @@ Topics and Recipes
 * Rotating file handlers
     * :ref:`tr-rot-fh`
 
-* Multiprocessing
+* Multiprocessing — using locking handlers
     .. hlist::
         :columns: 3
 
@@ -64,21 +64,23 @@ Basic usage of ``LoggingConfigDict``
     intro blather, basic usage of ``LoggingConfigDict``
 
 Cite :ref:`LoggingConfigDict`: introduction for basic usage,
-and reference
+and reference // OR (todo): move that material to here.
+???
 
 The :ref:`overview` contains :ref:`an example <example-overview-config>` showing
 how easy it is using ``LoggingConfigDictEx`` to
 configure the root logger with both a console handler and a file handler.
-
-It's instructive to see how the same result can be achieved using only ``LoggingConfigDict``.
+The solution shown there takes advantage of a few conveniences provided by
+``LoggingConfigDictEx``. It's instructive to see how the same result can be
+achieved using only ``LoggingConfigDict``.
 
 .. _overview-example-using-only-LoggingConfigDict:
 
-Overview example, using only ``LoggingConfigDict``
+The Overview example, using only ``LoggingConfigDict``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-If we were to use just the base class ``lcd.LoggingConfigDict``, the Overview example
-becomes just a little less concise. Now, we have to create two formatters, and
+If we were to use just the base class ``LoggingConfigDict``, the Overview example
+becomes just a little less concise. Now, we have to add two formatters, and
 we must explicitly add the two handlers to the root logger (two passages which
 we've commented as ``# NEW``):
 
@@ -113,14 +115,16 @@ we've commented as ``# NEW``):
 
 --------------------------------------------------
 
-.. _tr-basic-usage-LCDEx:
+.. _tr-basic-LCDEx:
 
-Basic usage of ``LoggingConfigDictEx``
+What ``LoggingConfigDictEx`` contributes
 ---------------------------------------------------------
 
 .. todo::
-    intro blather, basic usage of ``LoggingConfigDictEx``
+    intro blather re  ``LoggingConfigDictEx``: why this superclass,
+    what does it do, offer?
 
+--------------------------------------------------
 
 .. _tr-LCDEx-using-formatters:
 
@@ -146,6 +150,8 @@ that can appear in formatters — for a complete list, see the documentation for
 Each logged message can even include the name of the function, and/or the line number,
 where its originating logging call was issued.
 
+--------------------------------------------------
+
 
 .. _tr-easy-config-root:
 
@@ -167,8 +173,8 @@ Adding a file handler
 
 .. _tr-config-root-use-children:
 
-Using named (child) loggers
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using non-root (named, child) loggers without configuring them
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 A typical, useful approach is to add handlers only to the root logger,
 and then have each module log messages using ``logging.getLogger(__name__)``.
@@ -214,7 +220,7 @@ Reasons to do so:
 
 .. _tr-config-non-root-propagate:
 
-A non-root logger that propagates
+A propagating non-root logger
 +++++++++++++++++++++++++++++++++++++++++++++++
 
 .. todo:: this.
@@ -262,8 +268,8 @@ How-to
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Start with a ``LoggingConfigDictEx`` that uses standard (non-locking) stream
-and file handlers. Put logfiles in the ``_log/`` subdirectory of the current
-directory. Use root loglevel ``'DEBUG'``. ::
+and file handlers; use root loglevel ``'DEBUG'``; put logfiles in the ``_log/``
+subdirectory of the current directory::
 
     import logging
     from lcd import LoggingConfigDictEx
@@ -277,33 +283,37 @@ Set up the root logger with a ``stderr`` console handler and a file handler,
 at their respective default loglevels ``'WARNING'`` and ``'NOTSET'``::
 
     lcd_ex.add_stderr_console_handler('console', formatter='minimal')
-    lcd_ex.add_file_handler('app_fh',
-                            filename='app.log',
+    lcd_ex.add_file_handler('root_fh',
+                            filename='root.log',
                             formatter='logger_level_msg')
 
 Add an ``'extra'`` logger, with loglevel ''`DEBUG`'',
 which will write to a different file using a handler at default loglevel ``'NOTSET'``.
 Note the use of parameters ``add_to_root`` and ``propagate``:
 
-    * ``add_to_root=False`` ensures that this handler *won't* be added to the root logger,
-      overriding the ``lcd_ex`` default value established by ``add_handlers_to_root=True`` above;
+    * in the ``add_file_handler`` call, passing ``add_to_root=False`` ensures that
+      this handler *won't* be added to the root logger,
+      overriding the ``lcd_ex`` default value established by
+      ``add_handlers_to_root=True`` above;
 
-    * ``propagate=False`` ensures that messages logged by ``'extra'``
-      don't also write to the root and its handlers:
+    * in the ``add_logger`` call, ``propagate=False`` ensures that messages logged
+      by ``'extra'`` don't also write to the root and its handlers:
 
 .. code::
 
         lcd_ex.add_file_handler('extra_fh',
-                                filename='app_extra.log',
+                                filename='extra.log',
                                 formatter='logger_level_msg',
-                                add_to_root=False)
+                                add_to_root=False
+                               )
         lcd_ex.add_logger('extra',
                           handlers=['extra_fh'],
                           level='DEBUG',
-                          propagate=False)
+                          propagate=False
+                         )
 
-Finally, call ``config()`` to create actual objects of `logging` types — ``logging.Formatter``,
-``logging.Logger``, etc. ::
+Finally, call ``config()`` to create actual objects of `logging` types —
+``logging.Formatter``, ``logging.Logger``, etc. ::
 
     lcd_ex.config()
 
@@ -312,26 +322,62 @@ but then, arguably, neither does `logging`).
 
 To use the loggers, access them by name::
 
-    # This writes "Hi there" to file `_LOG/app_extra.log`:
+    # 'extra' writes "Hi there" to file `_LOG/extra.log`:
     logging.getLogger('extra').warning("Hi there.")
 
-    # This writes "UH OH" to `stderr` and to `_LOG/app.log` (root logger):
+    # Root writes "UH OH" to `stderr` and to `_LOG/root.log`:
     logging.getLogger().error("UH OH")
 
-    # This writes "ho hum" to `_LOG/app.log` only:
+    # Root writes "ho hum" to `_LOG/root.log` only:
     logging.getLogger().debug("ho hum")
 
-**Exercise**: Verify the claimed effects of the ``add_to_root`` and ``propagate`` parameters
-in the calls that configure the ``'extra'`` logger.
+**Exercise**: Verify the claimed effects of the ``add_to_root`` and ``propagate``
+parameters in the two calls that configure the ``'extra_fh'`` handler and the
+``'extra'`` logger.
 
-    1. Omit ``add_to_root=False`` from the ``add_file_handler`` call.
-       Observe that ``"Hi there."`` gets logged to ``stderr`` and to ``_LOG/app.log``
-       by logger ``'extra'``.
+    1. Comment out ``add_to_root=False`` from the ``add_file_handler`` call
+       for ``'extra_fh'``.
 
-    2. Restore ``add_to_root=False`` to the ``add_file_handler`` call,
-       and omit ``propagate=False`` from the ``add_logger`` call.
-       Observe that ``"UH OH"`` and ``"ho hum"`` are logged to ``_LOG/app_extra.log``
-       by the root logger.
+       Now, ``'extra_fh'`` is a handler of the root logger *too*, so
+       it logs its messages ``"UH OH"`` and ``"ho hum"`` to ``_LOG/extra.log``,
+       as well as to ``root.log`` and ``stderr`` as before.
+
+       ``_LOG/root.log`` contains::
+
+            root                : ERROR   : UH OH
+            root                : DEBUG   : ho hum
+
+       ``_LOG/extra.log`` contains::
+
+            extra               : WARNING : Hi there.
+            root                : ERROR   : UH OH
+            root                : DEBUG   : ho hum
+
+       ``stderr`` output::
+
+            UH OH
+
+    2. Uncomment ``add_to_root=False`` in the ``add_file_handler`` call,
+       and comment out ``propagate=False`` from the ``add_logger`` call.
+
+       Now, ``'extra'`` writes to the root's handlers as well as its own,
+       so it logs a warning ``"Hi there."`` to both ``stderr`` and ``_LOG/root.log``.
+
+       ``_LOG/root.log`` contains::
+
+            extra               : WARNING : Hi there.
+            root                : ERROR   : UH OH
+            root                : DEBUG   : ho hum
+
+       ``_LOG/extra.log`` contains::
+
+            extra               : WARNING : Hi there.
+
+       ``stderr`` output::
+
+            Hi there.
+            UH OH
+
 
 .. _tr-propagate-docs:
 
@@ -339,16 +385,17 @@ in the calls that configure the ``'extra'`` logger.
 
 .. index:: Placement of handlers when using multiple loggers, best practice
 
-.. note::
-    According to the documentation of the
-    `Logger.propagate property <https://docs.python.org/3/library/logging.html#logging.Logger.propagate>`_,
+.. topic:: Best practices for propagation and handler placement
+
+    According to the documentation for
+    `Logger.propagate <https://docs.python.org/3/library/logging.html#logging.Logger.propagate>`_,
 
 
-    | if [``propagate``] evaluates to true [the default], events logged
-    | to this logger will be passed to the handlers of higher level (ancestor)
-    | loggers, in addition to any handlers attached to this logger. Messages
-    | are passed directly to the ancestor loggers’ handlers - neither the level
-    | nor filters of the ancestor loggers in question are considered.
+    | if [a logger's ``propagate`` property] evaluates to true [the default],
+    | events logged to this logger will be passed to the handlers of higher level
+    | (ancestor) loggers, in addition to any handlers attached to this logger.
+    | Messages are passed directly to the ancestor loggers’ handlers - neither
+    | the level nor filters of the ancestor loggers in question are considered.
 
     |br|
     This suggests that truly intricate, and no doubt surprising, configurations
@@ -378,10 +425,28 @@ rotating fh blah blah
 
 .. _tr-mp:
 
-Multiprocessing
------------------
+Multiprocessing — using locking handlers
+----------------------------------------------
 
-MP blather
+(MP blather)
+
+For a particular ``LoggingConfigDictEx``, there are two possibilities:
+
+.. topic:: locking handlers used by default
+    on every ``add_*_handler`` method call
+
+    ``locking=True`` was passed to constructor
+
+vs
+
+.. topic:: standard handlers used by default
+    on every ``add_*_handler`` method call
+
+    ``locking=False`` was passed to constructor
+
+    When you add (specs for) a handler using an ``add_*_handler`` method,
+    pass ``locking=True`` to the method in order for the handler to be locking.
+
 
 .. _tr-mp-console:
 
@@ -409,16 +474,157 @@ xyz
 Filters
 --------
 
-see tests ... for examples of how to set up a logger filter or a handler filter
+see tests, test_LoggingConfigDict.py ...
+for examples of how to set up a logger filter or a handler filter
+
+``logging.Filter`` objects have a ``filter(record)`` method
+which takes a ``logging.LogRecord`` and returns ``bool``.
+In Py3, you can supply any callable ``LogRecord`` -> ``bool``
+as a filter.
+In Py2, you can supply anything that has ``.filter`` attribute,
+and then, that attribute is *called* with a ``LogRecord``
+and expected to return ``bool``.
+
+The Py2 workaround: to use a function as a filter,
+give it the attribute ``filter`` and let the value of that attribute
+equal the function itself.
+
+
+.. _filter-setup:
+
+Defining filters
+++++++++++++++++++++++++++++++++
+
+Here are a couple of examples of filters. These never suppress
+logging of a message, as they always return ``True``. Each has
+side effects: printing messages, and incrementing a distinct
+global variable::
+
+    _info_count = 0
+    _debug_count = 0
+
+Classic filters are subclasses of logging.Filter::
+
+    class CountInfoSquelchOdd(logging.Filter):
+        def filter(self_, record):
+            """Suppress odd-numbered messages (records) whose level == INFO,
+            where the "first" message is the 0-th hence is even-numbered.
+            :param self_: "self" for the CountInfo object (unused)
+            :param record: logging.LogRecord
+            :return: bool -- True ==> let record through, False ==> squelch
+            """
+            global _info_count
+            if record.levelno == logging.INFO:
+                _info_count += 1
+                return _info_count % 2
+            else:
+                return True
+
+A filter can also be a function::
+
+    def count_debug_allow_2(record):
+        """
+        :param record: ``logging.LogRecord``
+        :return: ``bool`` -- True ==> let record through, False ==> squelch
+        """
+        global _debug_count
+        if record.levelno == logging.DEBUG:
+            _debug_count += 1
+            return _debug_count <= 2
+        else:
+            return True
+
 
 .. _tr-filters-logger:
 
-Filters on a logger
+Filters on the root logger
 +++++++++++++++++++++++++++++
-ZXCVBN
+
+Let's configure the root logger to use both filters shown above::
+
+    lcd_ex = LoggingConfigDictEx(
+        add_handlers_to_root=True,
+        root_level='DEBUG')
+
+    lcd_ex.add_stdout_console_handler(
+        'console',
+        level='DEBUG',
+        formatter='level_msg')
+
+    lcd_ex.add_function_filter('count_d', count_debug_allow_2)
+    lcd_ex.add_class_filter('count_i', CountInfoSquelchOdd)
+
+    lcd_ex.add_root_filters('count_d', 'count_i')
+
+    lcd_ex.config()
+
+Now use the root logger::
+
+    import logging
+    root = logging.getLogger()
+
+    # Py2: use u"Hi 1", etc.
+    for i in range(5):
+        root.debug(str(i))
+        root.info(str(i))
+
+    print("_debug_count:", _debug_count)
+    print("_info_count:", _info_count)
+
+This passage writes the following to ``stdout``::
+
+    DEBUG   : 0
+    INFO    : 0
+    DEBUG   : 1
+    INFO    : 2
+    INFO    : 4
+    _debug_count: 5
+    _info_count: 5
+
+
+Filters on a non-root logger
++++++++++++++++++++++++++++++
+
+Adding the example filters to a non-root logger ``'mylogger'`` requires just one
+change. Instead of using ``add_root_filters('count_d', 'count_i')`` to add the
+filters to the root logger, add them when calling ``add_logger`` for ``'mylogger'``::
+
+    lcd_ex.add_logger('mylogger',
+                      filters=['count_d', 'count_i'],
+                      ... )
+
+
+Alternately, use [NEW< TODO] ``attach_logger_filters('mylogger',
+                                                     'count_d', 'count_i')``
+signature should be
+    def attach_logger_filters(self, logger_name, *filter_names)
+& similarly
+    def attach_logger_handlers(self, logger_name, *handler_names)
 
 .. _tr-filters-handler:
 
 Filters on a handler
 +++++++++++++++++++++++++++++
-TYUIO
+
+To add filters to a handler, use the ``filters`` keyword parameter to
+**any** ``add_*_handler`` method. All such methods funnel through
+``LoggingConfigDict.add_handler``. The ``filters`` parameter can be
+either the name of a filter (a ``str``) or a sequence (``list``, ``tuple``, etc.)
+of names of filters.
+
+Using our two example filters, each of the following method calls adds a handler
+with just the ``'count_d'`` filter attached::
+
+    lcd_ex.add_stderr_console_handler('con-err',
+                                      filters='count_d')
+    lcd_ex.add_file_handler('fh',
+                            filename='some-logfile.log',
+                            filters=['count_d'])
+
+The following statement adds a rotating file handler with both filters attached::
+
+    lcd_ex.add_rotating_file_handler('rfh',
+                                     filename='some-rotating-logfile.log',
+                                     max_bytes=1024,
+                                     backup_count=5,
+                                     filters=['count_i', 'count_d'])
