@@ -108,7 +108,7 @@ we've commented as ``# NEW``):
     )
 
     # NEW
-    lcd.add_root_handlers('console', 'file_handler')
+    lcd.attach_root_handlers('console', 'file_handler')
 
     lcd.config()
 
@@ -554,7 +554,7 @@ Let's configure the root logger to use both filters shown above::
     lcd_ex.add_function_filter('count_d', count_debug_allow_2)
     lcd_ex.add_class_filter('count_i', CountInfoSquelchOdd)
 
-    lcd_ex.add_root_filters('count_d', 'count_i')
+    lcd_ex.attach_root_filters('count_d', 'count_i')
 
     lcd_ex.config()
 
@@ -586,7 +586,7 @@ Filters on a non-root logger
 +++++++++++++++++++++++++++++
 
 Adding the example filters to a non-root logger ``'mylogger'`` requires just one
-change. Instead of using ``add_root_filters('count_d', 'count_i')`` to add the
+change. Instead of using ``attach_root_filters('count_d', 'count_i')`` to add the
 filters to the root logger, add them when calling ``add_logger`` for ``'mylogger'``::
 
     lcd_ex.add_logger('mylogger',

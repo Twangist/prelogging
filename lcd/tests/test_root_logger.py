@@ -22,6 +22,8 @@ def configure_logging(log_path, logfilename=''):
 
     if logfilename:
         # add a file handler, which will write to log_path + '/' + logfilename
+        # Of course, we don't have to add a formatter, we could just
+        # use formatter='level_msg' in add_file_handler(...)
         lcd_ex.add_formatter(
             'my_file_formatter',
             format='%(levelname)-8s: %(message)s'
@@ -31,6 +33,7 @@ def configure_logging(log_path, logfilename=''):
         lcd_ex.add_file_handler(
             'app_file',
             filename=logfilename,
+            locking=True,                   # for kicks 'n' coverage
             formatter='my_file_formatter',
         )
     # lcd_ex.dump()           # | DEBUG
@@ -49,7 +52,7 @@ def test_root_logger():
     >>> configure_logging(LOG_PATH, logfilename)
 
     >>> logger = logging.getLogger()
-    >>> logger.debug("1. Message not logged")          # logger level is WARNING
+    >>> logger.debug("1. Message not logged")          # logger level is INFO
     >>> logger.warning("2. Log to both file and console")
     2. Log to both file and console
 
@@ -58,7 +61,7 @@ def test_root_logger():
     >>> logger.warning("4. Log to both file and console")
     4. Log to both file and console
 
-    # _log/root_loggelogfile.log contains these lines, flush left:
+    # _testlogs/logfile.log contains these lines, flush left:
     #   WARNING : 2. Log to both file and console
     #   DEBUG   : 3. Log to file only
     #   WARNING : 4. Log to both file and console

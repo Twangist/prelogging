@@ -139,17 +139,22 @@ class TestLoggingConfigDict(TestCase):
         )
         lcd.add_logger(
             'default',
-            handlers='console',
             level='DEBUG',
+            # handlers='console',
             propagate=False     # for coverage
         )
+
+        # lcd.dump()      # | DEBUG comment out
+
+        lcd.attach_logger_handlers('default', 'console')
+
         # lcd.dump()      # | DEBUG comment out
 
         self.assertEqual(
             lcd['handlers'],
             {'console': {'class': 'logging.StreamHandler',
-                          'formatter': 'minimal',
-                          'level': 'INFO'}}
+                         'formatter': 'minimal',
+                         'level': 'INFO'}}
         )
         self.assertEqual(
             lcd['loggers'],
@@ -203,7 +208,7 @@ class TestLoggingConfigDict(TestCase):
         ).set_handler_level(
             'console', 'DEBUG')
 
-        lcd.add_root_handlers('console')
+        lcd.attach_root_handlers('console')
 
         lcd.add_filter(
             'count_d',
@@ -259,19 +264,20 @@ class TestLoggingConfigDict(TestCase):
             'console',
             class_='logging.StreamHandler',
             stream=my_stream,
-            level='INFO',
+            # level='INFO',
             formatter='minimal'
         ).set_handler_level(
             'console', 'DEBUG')
 
-        lcd.add_root_handlers('console')
+        lcd.attach_logger_handlers('', 'console')   # coverage; defers to attach_root_handlers
 
         lcd.add_filter(
             'count_i',
             ** {'()': CountInfo}
         )
 
-        lcd.add_logger('abc', filters='count_i')
+        lcd.add_logger('abc')       # , filters='count_i'
+        lcd.attach_logger_filters('abc', 'count_i')
 
         lcd.config()
 
@@ -315,13 +321,14 @@ class TestLoggingConfigDict(TestCase):
             # class_='logging.NullHandler',   # . <-- suppress output
             level='INFO',
             formatter='minimal'
-        ).add_root_handlers('console')
+        ).attach_root_handlers('console')
 
         lcd.add_filter(
             'count_gew',
             ** {'()': CountGEWarning}
-        ).add_root_filters(                   # coverage ho'dom
-        ).add_root_filters('count_gew')
+        ).attach_root_filters(                      # coverage ho'dom
+        ).attach_logger_filters(''                  # coverage ho'dom
+        ).attach_logger_filters('', 'count_gew')    # coverage; defers to attach_root_filters
 
         lcd.config()
         logger = logging.getLogger()
@@ -380,9 +387,10 @@ class TestLoggingConfigDict(TestCase):
             # class_='logging.NullHandler',     # can't do this to suppress output: filter won't be called
             level='INFO',
             formatter='minimal',
-            filters=['filter_odd']
         )
-        lcd.add_root_handlers('console')
+        lcd.attach_handler_filters('console')               # coverage
+        lcd.attach_handler_filters('console', 'filter_odd')
+        lcd.attach_root_handlers('console')
 
         # Swap stderr BEFORE lcd.config:
         _stderr = sys.stderr

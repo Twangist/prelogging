@@ -1,9 +1,8 @@
 # coding=utf-8
-import sys
+
 import os
 from copy import deepcopy
 
-from .locking_handlers import LockingStreamHandler, LockingFileHandler
 from .logging_config_dict import LoggingConfigDict
 from ._version import IS_PY2
 
@@ -205,7 +204,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                        if add_to_root is None else
                        bool(add_to_root))
         if add_to_root:
-            super(LoggingConfigDictEx, self).add_root_handlers(handler_name)
+            super(LoggingConfigDictEx, self).attach_root_handlers(handler_name)
         return self
 
     def _add_console_handler(self, handler_name,    # *,

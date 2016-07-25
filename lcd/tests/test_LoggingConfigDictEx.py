@@ -2,6 +2,9 @@ __author__ = 'brianoneill'
 
 from lcd import LoggingConfigDictEx
 from unittest import TestCase
+import logging
+import sys
+import io
 
 #############################################################################
 
@@ -178,6 +181,88 @@ class TestLoggingConfigDictEx(TestCase):
                      'level': 'WARNING',
                      'stream': 'ext://sys.stdout'}}
         )
+
+
+class TestLoggingConfigDictEx_check(TestCase):
+
+    def test_check_bad1(self):
+
+        lcd_ex = LoggingConfigDictEx(
+            add_handlers_to_root=True,
+            root_level='DEBUG')
+
+        #  NOW SCREW IT UP:
+        lcd_ex.attach_root_filters('not-a-filter-1', 'not-a-filter-2')
+        lcd_ex.attach_root_handlers('not-a-handler-1', 'not-a-handler-2')
+        lcd_ex.add_file_handler(
+            'fh', 'myfile.log',
+            filters=['also-not-a-filter-1', 'also-not-a-filter-2'])
+
+        # Swap stderr BEFORE lcd_ex.check():
+        _stderr = sys.stderr
+        sio_err = io.StringIO()
+        sys.stderr = sio_err
+
+        # check out ".check()"
+        # We expect this call to have written to stderr, and to raise KeyError
+        with self.assertRaises(KeyError):
+            lcd_ex.check()
+
+        self.assertEqual(
+            sio_err.getvalue(),
+            "Problems -- nonexistent things mentioned\n"
+            "   handler            'fh' mentions     filter 'also-not-a-filter-1'\n"
+            "   handler            'fh' mentions     filter 'also-not-a-filter-2'\n"
+            "    logger              '' mentions     filter 'not-a-filter-1'\n"
+            "    logger              '' mentions     filter 'not-a-filter-2'\n"
+            "    logger              '' mentions    handler 'not-a-handler-1'\n"
+            "    logger              '' mentions    handler 'not-a-handler-2'\n"
+        )
+        # unswap stderr, unnecessarily
+        sys.stderr = _stderr
+
+    def test_check_bad2(self):
+
+        lcd_ex = LoggingConfigDictEx()
+        # handler w/bad formatter
+        lcd_ex.add_stdout_console_handler('con', formatter='no-such-formatter')
+
+        # non-root logger
+        lcd_ex.add_logger(
+            'mylogger',
+            handlers=['no-such-handler-1', 'no-such-handler-2'],
+            filters='no-such-filter-1',
+        )
+
+        # Swap stderr BEFORE lcd_ex.check():
+        _stderr = sys.stderr
+        sio_err = io.StringIO()
+        sys.stderr = sio_err
+
+        # check out ".check()"
+        # We expect this call to have written to stderr, and to raise KeyError
+        with self.assertRaises(KeyError):
+            lcd_ex.check()
+
+        # print(sio_err.getvalue())       # | DEBUG comment out
+
+        self.assertEqual(
+            sio_err.getvalue(),
+            "Problems -- nonexistent things mentioned\n"
+            "   handler           'con' mentions  formatter 'no-such-formatter'\n"
+            "    logger      'mylogger' mentions     filter 'no-such-filter-1'\n"
+            "    logger      'mylogger' mentions    handler 'no-such-handler-1'\n"
+            "    logger      'mylogger' mentions    handler 'no-such-handler-2'\n"
+        )
+        # unswap stderr, unnecessarily
+        sys.stderr = _stderr
+
+    def test_check_ok(self):
+
+        lcd_ex = LoggingConfigDictEx()
+        self.assertEqual(lcd_ex, lcd_ex.check())
+
+
 
 #############################################################################
 

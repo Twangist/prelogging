@@ -1,5 +1,7 @@
 # coding=utf-8
 
+from __future__ import print_function
+
 __author__ = "Brian O'Neill"
 
 __doc__ = """ \
@@ -30,7 +32,7 @@ for specifying objects:
     *In steps 2. – 4. you give each thing specified a name, by which you refer to it
     in subsequent steps when associating the thing with other, higher-level things.*
 
-    5. If desired, configure the root logger using ``add_root_handlers()``, ``add_root_filters()``
+    5. If desired, configure the root logger using ``attach_root_handlers()``, ``attach_root_filters()``
        and/or ``set_root_level()``, referring by name to handlers and filters already specified
        in previous steps.
 
@@ -52,7 +54,7 @@ for a call to
 
 import logging
 import logging.config
-
+from ._version import IS_PY2
 
 class LoggingConfigDict(dict):
     """
@@ -162,7 +164,7 @@ class LoggingConfigDict(dict):
         self.root['level'] = root_level
         return self
 
-    def add_root_handlers(self, * handler_names):
+    def attach_root_handlers(self, * handler_names):
         """Add handlers in ``handler_names`` to the root logger.
 
         :return: ``self``
@@ -170,7 +172,7 @@ class LoggingConfigDict(dict):
         self.root['handlers'].extend(handler_names)
         return self
 
-    def add_root_filters(self, * filter_names):
+    def attach_root_filters(self, * filter_names):
         """Add filters in ``filter_names`` to the root logger.
 
         :return: ``self``
@@ -179,6 +181,56 @@ class LoggingConfigDict(dict):
             return self
         root_filters_list = self.root.setdefault('filters', [])
         root_filters_list.extend(filter_names)
+        return self
+
+    # Note, 0.2.7 By analogy, add_logger_*s methods
+
+    def attach_logger_handlers(self, logger_name, * handler_names):
+        """Add handlers in ``handler_names`` to the logger named ``logger_name``.
+
+        :param logger_name: (``str``) name of logger to attach handlers to
+        :param handler_names: sequence of handler names
+        :return: ``self``
+        """
+        if not logger_name:
+            self.attach_root_handlers(* handler_names)
+        elif handler_names:
+            logger_handlers_list = self.loggers[logger_name].setdefault('handlers', [])
+            logger_handlers_list.extend(handler_names)
+        return self
+
+    def attach_logger_filters(self, logger_name, * filter_names):
+        """Add filters in ``filter_names`` to the logger named ``logger_name``.
+
+        :param logger_name: (``str``) name of logger to attach filters to
+        :param filter_names: sequence of filter names
+        :return: ``self``
+        """
+        if not filter_names:
+            return self
+
+        if not logger_name:
+            self.attach_root_filters(* filter_names)
+        else:
+            logger_dict = self.loggers[logger_name]
+            logger_filters_list = logger_dict.setdefault('filters', [])
+            logger_filters_list.extend(filter_names)
+
+        return self
+
+    def attach_handler_filters(self, handler_name, * filter_names):
+        """Add filters in ``filter_names`` to the handler named ``handler_name``.
+
+        :param handler_name: (``str``) name of handler to attach filters to
+        :param filter_names: sequence of filter names
+        :return: ``self``
+        """
+        if not filter_names:
+            return self
+
+        handler_dict = self.handlers[handler_name]
+        handler_filters_list = handler_dict.setdefault('filters', [])
+        handler_filters_list.extend(filter_names)
         return self
 
     def add_formatter(self, formatter_name,     # *,
@@ -241,6 +293,7 @@ class LoggingConfigDict(dict):
         """Add a handler to the ``'handlers'`` subdictionary.
 
         :param handler_name: just that
+        :param formatter: name of a previously added formatter
         :param filters: the name of a filter, or a sequence of names of filters, to be used by the handler
         :param ** handler_dict: keyword/value pairs (values are generally strings)
                     For the special keyword ``class``, use ``class_``.
@@ -348,7 +401,7 @@ class LoggingConfigDict(dict):
 
     def config(self,    # *,
                disable_existing_loggers=None):
-        """Call ``logging.dictConfig()`` with the dict we've built.
+        """Call ``logging.config.dictConfig()`` with the dict we've built.
 
         :param disable_existing_loggers: Last chance to change this setting.
 
@@ -356,7 +409,7 @@ class LoggingConfigDict(dict):
 
             ``self['disable_existing_loggers'] == False``
 
-        (The ``logging`` module defaults this setting to ``True``.)
+        The ``logging`` module defaults this setting to ``True``.
         """
         if disable_existing_loggers is not None:
             self['disable_existing_loggers'] = bool(disable_existing_loggers)
@@ -373,4 +426,111 @@ class LoggingConfigDict(dict):
               + pformat(dict(self)) + '\n'
               + '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<.'     #, flush=True
         )
+        return self
+
+    # TODO: Or, make this a global function?
+    def check(self, verbose=True):
+        """Check for consistency: names used to refer to entities (formatters,
+        handlers, filters) must exist/must actually have been added.
+
+        :param verbose: If true, write details of all problems to ``stderr``.
+        :return: ``self`` if self is consistent.
+
+        Raises ``KeyError`` (?) if self is not consistent.
+        """
+        from collections import namedtuple
+        Problem = namedtuple("Problem",
+                             "owner_kind, owner_name, owned_kind, bad_name")
+        problems = []   # type: list[Problem]
+
+        filters_ = self.filters
+        handlers_ = self.handlers
+
+        # HANDLERS -- formatter, filters
+
+        formatters_ = self.formatters
+
+        for hname in handlers_:
+            hdict = handlers_[hname]    # type: dict
+            # make sure any/all formatters on hname exists // in formatters_
+            hform_name = hdict.get('formatter', None)
+            if hform_name not in formatters_:
+                problems.append(
+                    Problem('handler', hname, 'formatter', hform_name)
+                )
+
+            # make sure any/all filters on hname all exist (in filters_)
+            hfilters = hdict.get('filters', [])
+            for hfilt_name in hfilters:
+                if hfilt_name not in filters_:
+                    problems.append(
+                        Problem('handler', hname, 'filter', hfilt_name)
+                    )
+
+        # LOGGERS -- filters, handlers
+
+        loggers_ = self.loggers
+
+        for lname in loggers_:
+            ldict = loggers_[lname]
+            # if ldict has filters   (has a 'filters' key)
+            #    make sure they all exist // in filters_
+            lfilters = ldict.get('filters', [])
+            for lfilt_name in lfilters:
+                if lfilt_name not in filters_:
+                    problems.append(
+                        Problem('logger', lname, 'filter', lfilt_name)
+                    )
+
+            # ldict may or may not have a 'handlers' key.
+            lhandlers = ldict.get('handlers', [])
+            # make sure that every handler lhname in lhandlers exists // in handlers_
+            for lhname in lhandlers:
+                if lhname not in handlers_:
+                    problems.append(
+                        Problem('logger', lname, 'handler', lhname)
+                    )
+
+        # ROOT logger -- filters, handlers
+
+        root_ = self.root
+
+        # if root_ has filters, make sure they all exist // in filters_
+        rfilters = root_.get('filters', [])
+        for rfilt_name in rfilters:
+            if rfilt_name not in filters_:
+                problems.append(
+                    Problem('logger', '', 'filter', rfilt_name)
+                )
+
+        # Assume root_ has a 'handlers' key.
+        # for every handler hn in root_['handlers']
+        #    make sure hn exists // in handlers_
+        rhandlers = root_['handlers']
+        for rhname in rhandlers:
+            if rhname not in handlers_:
+                problems.append(
+                    Problem('logger', '', 'handler', rhname)
+                )
+
+        # ------------------------------
+
+        def print_err(msg, **kwargs):
+            import sys
+            if IS_PY2:                  # pragma: no cover
+                msg = unicode(msg)
+            print(msg, file=sys.stderr, **kwargs)
+
+        if problems:
+            if verbose:
+                print_err("Problems -- nonexistent things mentioned")
+                for prob in problems:
+                    print_err(
+                        "%(owner_kind)10s %(owner_name)15r mentions %(owned_kind)10s %(bad_name)r"
+                        % prob._asdict()
+                    )
+            raise KeyError("names were used for which no such entities were added")
+
+        # ------------------------------
+
         return self
