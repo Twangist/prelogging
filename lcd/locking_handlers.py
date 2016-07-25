@@ -25,7 +25,8 @@ __all__ = [
 class MPLock_Mixin():
     """Mix in to a class with an instance attribute ``_mp_lock_``.
 
-    Each ``Locking*Handler`` class subclasses both this and a Handler class of the `logging` module.
+    Each ``Locking*Handler`` class subclasses both this and a Handler class
+    of the `logging` module.
     """
     def _acquire_(self):
         if self._mp_lock_:

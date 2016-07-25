@@ -20,7 +20,8 @@ back references to things "already defined".
 Although dicts are unordered, when configuring logging there's a precedence ordering
 for specifying objects:
 
-    1. Create a ``LoggingConfigDict``, optionally specifying the level of the root handler.
+    1. Create a ``LoggingConfigDict``, optionally specifying the level of
+       the root handler.
 
     2. Add formatter specifications with ``add_formatter()``.
 
@@ -32,9 +33,9 @@ for specifying objects:
     *In steps 2. – 4. you give each thing specified a name, by which you refer to it
     in subsequent steps when associating the thing with other, higher-level things.*
 
-    5. If desired, configure the root logger using ``attach_root_handlers()``, ``attach_root_filters()``
-       and/or ``set_root_level()``, referring by name to handlers and filters already specified
-       in previous steps.
+    5. If desired, configure the root logger using ``attach_root_handlers()``,
+       ``attach_root_filters()`` and/or ``set_root_level()``, referring by name
+       to handlers and filters already specified in previous steps.
 
     6. Add specifications for any non-root loggers with ``add_logger()``.
        Specify the handlers and filters of a logger by name, using the ``handlers``
@@ -60,32 +61,35 @@ class LoggingConfigDict(dict):
     """
     .. include:: _global.rst
 
-    A general class that simplifies building a logging config dict, modularly and incrementally,
-    for ultimate use with the ``config()`` method of this class, which simply calls
+    A general class that simplifies building a logging config dict, modularly
+    and incrementally, for ultimate use with the ``config()`` method of this
+    class, which simply calls
     `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
-    The methods of ``LoggingConfigDict`` let you dispense with lots (and lots) of nested
-    curly braces and single-quotes around keywords.
+    The methods of ``LoggingConfigDict`` let you dispense with lots (and lots)
+    of nested curly braces and single-quotes around keywords.
 
-    *   In this class as well as in :ref:`LoggingConfigDictEx`, "level" always means the
-        ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric value ``logging.DEBUG``.
-        A level name, in short — one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``, ``'ERROR'``,
-        ``'CRITICAL'``, or ``'NOTSET'``.
+    *   In this class as well as in :ref:`LoggingConfigDictEx`, "level" always
+        means the ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric
+        value ``logging.DEBUG``. A level name, in short — one of ``'DEBUG'``,
+        ``'INFO'``, ``'WARNING'``, ``'ERROR'``, ``'CRITICAL'``, or ``'NOTSET'``.
 
-    *   Except for ``config()`` and the properties ``formatters``, ``filters``, ``handlers``,
-        ``loggers`` and ``root``, all public methods of this class and of
-        :ref:`LoggingConfigDictEx` return ``self``, to allow chaining.
+    *   Except for ``config()`` and the properties ``formatters``, ``filters``,
+        ``handlers``, ``loggers`` and ``root``, all public methods of this class
+        and of :ref:`LoggingConfigDictEx` return ``self``, to allow chaining.
 
-    *   The (leaf) values in logging config dicts are almost all strings. The exceptions are
-        ``bool`` values and actual streams allowed as the value of ``'stream'``
-        in a handler subdictionary (e.g. ``stream=sys.stdout``). This package uses ``bool``
-        values, but not actual streams, preferring the text equivalents accepted
-        by the `logging` module's ``configDict()`` method:
+    *   The (leaf) values in logging config dicts are almost all strings. The
+        exceptions are ``bool`` values and actual streams allowed as the value
+        of ``'stream'`` in a handler subdictionary (e.g. ``stream=sys.stdout``).
+        This package uses ``bool`` values, but not actual streams, preferring
+        the text equivalents accepted by the `logging` module's ``configDict()``
+        method:
 
             instead of ``stream=sys.stdout``, we use ``stream='ext://sys.stdout'``.
 
         The reason: the ``clone_handler()`` method of the subclass ``LoggingConfigDictEx``
-        uses ``deepcopy()``, and streams can't be deep-copied. We recommend that you not use
-        actual streams, but rather the text equivalents, as shown in the example just given.
+        uses ``deepcopy()``, and streams can't be deep-copied. We recommend
+        that you not use actual streams, but rather the text equivalents, as
+        shown in the example just given.
 
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
@@ -96,9 +100,10 @@ class LoggingConfigDict(dict):
                 ):
         """
         :param root_level: a ``str`` name of a loglevel.
-        :param disable_existing_loggers: corresponds to the ``logging.config.dictConfig()``
-               keyword parameter of the same name. Using the default value ``None``
-               causes the `logging` module's default value ``True`` to be used.
+        :param disable_existing_loggers: corresponds to
+            the ``logging.config.dictConfig()`` keyword parameter of the
+            same name. Using the default value ``None`` causes the `logging`
+            module's default value ``True`` to be used.
         """
         assert root_level in self._level_names
         super(LoggingConfigDict, self).__init__()
@@ -112,8 +117,9 @@ class LoggingConfigDict(dict):
                             handlers=[])
         # Note: though it sounds promising, 'incremental' is not very useful.
         # From the logging.config docs:
-        # "because objects such as filters and formatters are anonymous, once a configuration is set up,
-        #  it is not possible to refer to such anonymous objects when augmenting a configuration."
+        # "because objects such as filters and formatters are anonymous, once
+        #  a configuration is set up, it is not possible to refer to such
+        #  anonymous objects when augmenting a configuration."
         self['incremental'] = False         # logging default value
 
         # self['disable_existing_loggers'] can also be set
@@ -157,7 +163,8 @@ class LoggingConfigDict(dict):
         Set the loglevel of the root handler.
         Given that ``__init__`` has a ``root_level`` parameter, this isn't really needed.
 
-        :param root_level: an explicit value. The default set in ``__init__`` is ``'WARNING'``.
+        :param root_level: an explicit value. The default set in ``__init__``
+            is ``'WARNING'``.
         :return: ``self``
         """
         assert root_level in self._level_names
@@ -258,16 +265,16 @@ class LoggingConfigDict(dict):
         :param filter_dict: keyword/value pairs (values are generally strings)
         :return: ``self``
         """
-        ##assert 'class' not in filter_dict
-        ## Todo: does this even work? logging docs stink re filters.
+        # assert 'class' not in filter_dict
+        # if 'class_' in filter_dict:
+        #     filter_dict['class'] = filter_dict.pop('class_')
+        ## Todo: does this even work? logging docs kinda stink re filters.
         ## We can add a filter as in test_filters_on_logger in tests/test_LoggingConfigDict.py
         ##      ** {'()': lambda: _count_debug }
         ## and
         ##    ** {'()': CountInfo
         ## but 'class_' doesn't do the right thing, nor does 'name' (see logging source)
         ## SO the hell with it.
-        # if 'class_' in filter_dict:
-        #     filter_dict['class'] = filter_dict.pop('class_')
 
         self.filters[filter_name] = filter_dict.copy()
         return self
@@ -279,9 +286,9 @@ class LoggingConfigDict(dict):
         :param str_or_seq: a name of a thing (filter, handler),
                             or a sequence of names of homogeneous things,
                             or None.
-        :return: sequence of names. If ``str_or_seq`` is a ``str``, return ``[str_or_seq]``;
-                 if ``str_or_seq`` is ``None``, return ``[]``;
-                 otherwise, return ``str_or_seq``.
+        :return: sequence of names. If ``str_or_seq`` is a ``str``,
+            return ``[str_or_seq]``; if ``str_or_seq`` is ``None``, return ``[]``;
+            otherwise, return ``str_or_seq``.
         """
         if isinstance(str_or_seq, str):
             str_or_seq = [str_or_seq]
@@ -294,9 +301,10 @@ class LoggingConfigDict(dict):
 
         :param handler_name: just that
         :param formatter: name of a previously added formatter
-        :param filters: the name of a filter, or a sequence of names of filters, to be used by the handler
+        :param filters: the name of a filter, or a sequence of names of filters,
+            to be used by the handler
         :param ** handler_dict: keyword/value pairs (values are generally strings)
-                    For the special keyword ``class``, use ``class_``.
+            For the special keyword ``class``, use ``class_``.
         :return: ``self``
         """
         assert 'class' not in handler_dict
@@ -323,10 +331,12 @@ class LoggingConfigDict(dict):
         :param handler_name: just that
         :param filename: The name of the file to which this handler should log messages.
             It may contain an absolute or relative path, as well.
-        :param formatter: The name of a previously added formatter, to be used by this handler.
+        :param formatter: The name of a previously added formatter, to be used
+            by this handler.
         :param mode: The mode for writing.
         :param level: The loglevel of this file handler.
-        :param delay: If True, the file will be created lazily, only when actually written to.
+        :param delay: If True, the file will be created lazily, only when actually
+            written to.
         :param kwargs: Any other key/value pairs to pass to ``add_handler()``.
         :return: ``self``
         """
@@ -386,9 +396,11 @@ class LoggingConfigDict(dict):
 
     def set_logger_level(self, logger_name,     # *,
                          level):
-        """If ``logger_name`` is empty, set the loglevel of the root handler to ``level``,
-        else set the loglevel of handler ``logger_name`` to ``level``.
+        """If ``logger_name`` is empty, set the loglevel of the root handler to
+        ``level``, else set the loglevel of handler ``logger_name`` to ``level``.
+
         Raise ``KeyError`` if no such logger.
+
         :return: ``self``
         """
         assert level in self._level_names
@@ -452,7 +464,7 @@ class LoggingConfigDict(dict):
 
         for hname in handlers_:
             hdict = handlers_[hname]    # type: dict
-            # make sure any/all formatters on hname exists // in formatters_
+            # make sure any/all formatters on hname exists in formatters_
             hform_name = hdict.get('formatter', None)
             if hform_name not in formatters_:
                 problems.append(
@@ -474,7 +486,7 @@ class LoggingConfigDict(dict):
         for lname in loggers_:
             ldict = loggers_[lname]
             # if ldict has filters   (has a 'filters' key)
-            #    make sure they all exist // in filters_
+            #    make sure they all exist in filters_
             lfilters = ldict.get('filters', [])
             for lfilt_name in lfilters:
                 if lfilt_name not in filters_:
@@ -484,7 +496,7 @@ class LoggingConfigDict(dict):
 
             # ldict may or may not have a 'handlers' key.
             lhandlers = ldict.get('handlers', [])
-            # make sure that every handler lhname in lhandlers exists // in handlers_
+            # make sure that every handler lhname in lhandlers exists in handlers_
             for lhname in lhandlers:
                 if lhname not in handlers_:
                     problems.append(
@@ -495,7 +507,7 @@ class LoggingConfigDict(dict):
 
         root_ = self.root
 
-        # if root_ has filters, make sure they all exist // in filters_
+        # if root_ has filters, make sure they all exist in filters_
         rfilters = root_.get('filters', [])
         for rfilt_name in rfilters:
             if rfilt_name not in filters_:
@@ -526,7 +538,8 @@ class LoggingConfigDict(dict):
                 print_err("Problems -- nonexistent things mentioned")
                 for prob in problems:
                     print_err(
-                        "%(owner_kind)10s %(owner_name)15r mentions %(owned_kind)10s %(bad_name)r"
+                        "%(owner_kind)10s %(owner_name)15r "
+                        "mentions %(owned_kind)10s %(bad_name)r"
                         % prob._asdict()
                     )
             raise KeyError("names were used for which no such entities were added")
