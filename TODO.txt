@@ -1,10 +1,22 @@
 TODOs
 =====
 
+Multi-package, multi-module configuration
+
+*   A ``Configurator`` class, which packages/modules subclass
+    ``Configurator`` can then iterate through its subclasses
+    and call a **classmethod** on each, say ``add_to_lcd(lcd)``,
+    provided the subclass actually implements that classmethod
+
+
 Package name:
 
 *   keep name `lcd`?  rename back to `logging_config_dict` ???
     or something better?
+
+Class names:
+
+*   ¿Not ``LoggingConfigDict`` etc but ``LCD``, ``LCDEx"?
 
 Examples:
 

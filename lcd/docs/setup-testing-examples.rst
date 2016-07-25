@@ -54,9 +54,16 @@ in the top level directory of the repository:
 Coverage from tests
 ~~~~~~~~~~~~~~~~~~~
 
-    :``logging_config_dict.py``:      100%
-    :``logging_config_dict_ex.py``:    98%
-    :``locking_handlers.py``:          92%
+`lcd` contains a very small amount of Python-2-only code, workarounds
+for Py2 shortcomings.
+
++--------------------------------+--------+-------+
+|| Module                        || Py 3  || Py 2 |
++================================+========+=======+
+|| ``logging_config_dict.py``    || \99%  || 100% |
+|| ``logging_config_dict_ex.py`` || \96%  || \98% |
+|| ``locking_handlers.py``       || 100%  || 100% |
++--------------------------------+--------+-------+
 
 
 Running examples
@@ -81,5 +88,13 @@ or ``run_all.py``.
 Coverage from tests + examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-All modules in `lcd` are 100% covered by running both tests and examples.
+Three lines of Python-2-only code prevent `lcd`  from having 100% coverage on both
+language versions.
 
++--------------------------------+--------+-------+
+|| Module                        || Py 3  || Py 2 |
++================================+========+=======+
+|| ``logging_config_dict.py``    || \99%  || 100% |
+|| ``logging_config_dict_ex.py`` || \97%  || 100% |
+|| ``locking_handlers.py``       || 100%  || 100% |
++--------------------------------+--------+-------+

@@ -529,8 +529,8 @@ class LoggingConfigDict(dict):
 
         def print_err(msg, **kwargs):
             import sys
-            if IS_PY2:                  # pragma: no cover
-                msg = unicode(msg)
+            if IS_PY2:
+                    msg = unicode(msg)
             print(msg, file=sys.stderr, **kwargs)
 
         if problems:

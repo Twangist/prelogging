@@ -495,10 +495,9 @@ equal the function itself.
 Defining filters
 ++++++++++++++++++++++++++++++++
 
-Here are a couple of examples of filters. These never suppress
-logging of a message, as they always return ``True``. Each has
-side effects: printing messages, and incrementing a distinct
-global variable::
+Here are a couple of examples of filters, both of which suppress
+certain kinds of messages. Each has the side effect of incrementing
+a distinct global variable::
 
     _info_count = 0
     _debug_count = 0
@@ -581,25 +580,34 @@ This passage writes the following to ``stdout``::
     _debug_count: 5
     _info_count: 5
 
+.. note::
+    This example **is** the test ``test_add_xxx_filter.py``, with little modification.
+
 
 Filters on a non-root logger
 +++++++++++++++++++++++++++++
 
 Adding the example filters to a non-root logger ``'mylogger'`` requires just one
-change. Instead of using ``attach_root_filters('count_d', 'count_i')`` to add the
-filters to the root logger, add them when calling ``add_logger`` for ``'mylogger'``::
+change: instead of using ``attach_root_filters('count_d', 'count_i')`` to add the
+filters to the root logger, now we have to add the filters to an arbitrary logger.
+This can be accomplished in two ways:
+
+1. Add the filters when calling ``add_logger`` for ``'mylogger'``, using the
+   ``filters`` keyword parameter::
 
     lcd_ex.add_logger('mylogger',
                       filters=['count_d', 'count_i'],
                       ... )
 
+2. Add the logger with ``add_logger``::
 
-Alternately, use [NEW< TODO] ``attach_logger_filters('mylogger',
-                                                     'count_d', 'count_i')``
-signature should be
-    def attach_logger_filters(self, logger_name, *filter_names)
-& similarly
-    def attach_logger_handlers(self, logger_name, *handler_names)
+    lcd_ex.add_logger('mylogger',
+                      ... )
+
+   and then attach the filters using ``attach_logger_filters``::
+
+    attach_logger_filters('mylogger',
+                          'count_d', 'count_i')
 
 .. _tr-filters-handler:
 
