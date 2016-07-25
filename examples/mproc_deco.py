@@ -49,7 +49,7 @@ def config_logging(use_locking):
     logfilename = 'logfile (%s).log' % ('LOCKING' if use_locking else 'NOLOCKING')
     lcd_ex = LoggingConfigDictEx(log_path='_log/mproc_deco/',
                                  root_level='DEBUG',
-                                 add_handlers_to_root=True,
+                                 attach_handlers_to_root=True,
                                  locking=use_locking)
     # Set up console handler to show process name, time, handler name
     lcd_ex.add_stderr_console_handler(

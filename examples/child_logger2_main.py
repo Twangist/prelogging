@@ -32,7 +32,7 @@ def config_logging(logfilename):
 def init_logging_config(logfilename):
 
     lcd_ex = LoggingConfigDictEx(log_path=LOG_PATH,
-                                 add_handlers_to_root=True)
+                                 attach_handlers_to_root=True)
     lcd_ex.set_root_level('DEBUG')
 
     # Change format of console handler to show logger `name` and loglevel `levelname`.

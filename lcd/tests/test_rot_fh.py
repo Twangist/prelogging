@@ -27,9 +27,9 @@ def config_logging():
     Root logger level will be DEBUG.
     """
     # Defaults:
-    #   add_handlers_to_root=False,
+    #   attach_handlers_to_root=False,
     lcd_ex = LoggingConfigDictEx(log_path=LOG_PATH,
-                                 add_handlers_to_root=True,
+                                 attach_handlers_to_root=True,
                                  locking=True,
                                  root_level='DEBUG')
 

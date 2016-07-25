@@ -51,7 +51,7 @@ def config_logging(use_locking):
     log_path = os.path.join('_log/mproc_deco_rot_fh', 'LOCKING' if use_locking else 'NOLOCKING')
     lcd_ex = LoggingConfigDictEx(log_path=log_path,
                                  root_level='DEBUG',
-                                 add_handlers_to_root=True,
+                                 attach_handlers_to_root=True,
                                  locking=use_locking)
     # Set up console handler to show process name, time, handler name
     lcd_ex.add_stderr_console_handler(

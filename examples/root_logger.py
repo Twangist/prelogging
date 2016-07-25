@@ -21,9 +21,9 @@ def config_logging(log_path, logfilename=''):
     Root logger level will be INFO.
     """
     # Defaults:
-    #   add_handlers_to_root=False,
+    #   attach_handlers_to_root=False,
     lcd_ex = LoggingConfigDictEx(log_path=log_path,
-                                 add_handlers_to_root=True,
+                                 attach_handlers_to_root=True,
                                  root_level='INFO')
     lcd_ex.add_stdout_console_handler('console', formatter='minimal')
     # add a file handler, which will write to log_path + '/' + logfilename

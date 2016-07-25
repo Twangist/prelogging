@@ -35,20 +35,20 @@ class LoggingConfigDictEx(LoggingConfigDict):
     In addition to the parameters ``root_level`` and ``disable_existing_loggers``
     recognized by :ref:`LoggingConfigDict`, the constructor of this class accepts a few more::
 
-            add_handlers_to_root (bool)
+            attach_handlers_to_root (bool)
             locking              (bool)
             log_path             (str)
 
-    When ``add_handlers_to_root`` is true, by default the other methods of this class
+    When ``attach_handlers_to_root`` is true, by default the other methods of this class
     automatically add handlers to the root logger as well as to the ``handlers`` subdictionary.
-    By default, ``add_handlers_to_root`` is False.
+    By default, ``attach_handlers_to_root`` is False.
 
     When ``locking`` is true, by default the other methods of this class
     add :ref:`locking handlers <locking-handlers>`; if it's false, handlers instantiate
     the "usual" classes defined by `logging`. (See the :ref:`class inheritance diagram <lcd-all-classes>`.)
     By default, ``locking`` is False.
 
-    All of the methods that add a handler take parameters ``add_to_root`` and ``locking``,
+    All of the methods that add a handler take parameters ``attach_to_root`` and ``locking``,
     each a ``bool`` or ``None``; these allow overriding of the values established by ``__init__``.
     Thus, for example, callers can add a non-locking handler even if ``self.locking`` is true,
     or a locking handler even if ``self.locking`` is false. The default value of these parameters
@@ -126,7 +126,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                  root_level='WARNING',       # == logging default level
                  log_path='',
                  locking=False,
-                 add_handlers_to_root=False,
+                 attach_handlers_to_root=False,
                  disable_existing_loggers=False):  # logging default value is True
         """
         :param root_level: one of 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET'
@@ -138,7 +138,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
             and file handlers created by ``add_file_handler`` and ``add_rotating_file_handler``
             use locking file handlers, UNLESS ``locking=False`` is passed to the calls that
             create those handlers.
-        :param add_handlers_to_root: If true, by default the other methods of this class
+        :param attach_handlers_to_root: If true, by default the other methods of this class
             will automatically add handlers to the root logger, as well as to the ``handlers``
             subdictionary.
         :param disable_existing_loggers: corresponds to logging dict-config key(/value).
@@ -154,7 +154,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                         disable_existing_loggers=disable_existing_loggers)
         self.log_path = log_path
         self.locking = locking
-        self.add_handlers_to_root = add_handlers_to_root
+        self.attach_handlers_to_root = attach_handlers_to_root
 
         # Include some batteries (Formatters) --
         # The default is class_='logging.Formatter'
@@ -162,10 +162,17 @@ class LoggingConfigDictEx(LoggingConfigDict):
             self.add_formatter(formatter_name,
                                format=self.format_strs[formatter_name])
 
+    def _attach_to_root(self, attach):
+        """
+        :param attach: Any; but really, ``bool`` or None.
+        :return: self.attach_handlers_to_root if attach is None else bool(attach)
+        """
+        return self.attach_handlers_to_root if attach is None else bool(attach)
+
     def clone_handler(self,     # *,
                       clone,
                       handler,
-                      add_to_root=None):
+                      attach_to_root=None):
         """Add a handler named by ``clone`` whose handler dictionary is a deep copy of
         the dictionary of the handler named by ``handler``.
 
@@ -175,12 +182,13 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :param clone: name of a (usually new) handler — the target.
         :param handler: name of existing, source handler. Raise ``KeyError``
             if no such handler has been added.
-        :param add_to_root: If true, add the ``clone`` handler to the root logger.
+        :param attach_to_root: If true, add the ``clone`` handler to the root logger;
+            if ``None``, do what self.attach_handlers_to_root says;
+            if false, don't add clone to root.
         :return: ``self``
         """
-        add_to_root = (self.add_handlers_to_root
-                       if add_to_root is None else
-                       bool(add_to_root))
+        attach_to_root = self._attach_to_root(attach_to_root)
+
         clone_dict = deepcopy(self.handlers[handler])
         # Change any 'class' key back into 'class_'
         assert 'class_' not in clone_dict
@@ -188,22 +196,19 @@ class LoggingConfigDictEx(LoggingConfigDict):
             clone_dict['class_'] = clone_dict.pop('class')
         # Now defer:
         self.add_handler(clone,
-                         add_to_root=add_to_root,
+                         attach_to_root=attach_to_root,
                          ** clone_dict)
         return self
 
     def add_handler(self, handler_name,     # *,
-                    add_to_root=None,
+                    attach_to_root=None,
                     ** handler_dict):
-        """Virtual; adds the ``add_to_root`` parameter to ``LoggingConfigDict.add_handler()``.
+        """Virtual; adds the ``attach_to_root`` parameter to ``LoggingConfigDict.add_handler()``.
 
         :return: ``self``
         """
         super(LoggingConfigDictEx, self).add_handler(handler_name, ** handler_dict)
-        add_to_root = (self.add_handlers_to_root
-                       if add_to_root is None else
-                       bool(add_to_root))
-        if add_to_root:
+        if self._attach_to_root(attach_to_root):
             super(LoggingConfigDictEx, self).attach_root_handlers(handler_name)
         return self
 
@@ -212,7 +217,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                              formatter=None,    # 'logger_level_msg' or 'process_logger_level_msg'
                              level='WARNING',   # logging module default: 'NOTSET'
                              locking=None,      # 0.2.5 was True
-                             add_to_root=None,
+                             attach_to_root=None,
                              **kwargs):
         """
         :param handler_name:
@@ -221,16 +226,16 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :param level:
         :param locking: If true, this handler will be a :ref:`LockingStreamHandler`;
             if false, the handler will be a ``logging.StreamHandler``.
-        :param add_to_root:
+        :param attach_to_root: If true, add the ``clone`` handler to the root logger;
+            if ``None``, do what self.attach_handlers_to_root says;
+            if false, don't add clone to root.
         :param kwargs:
         :return: ``self``
         """
         # So: self can be created with (self.)locking=False,
         # but a handler can be locking.
         locking = self.locking if locking is None else bool(locking)
-        add_to_root = (self.add_handlers_to_root
-                       if add_to_root is None else
-                       bool(add_to_root))
+        attach_to_root = self._attach_to_root(attach_to_root)
 
         if formatter is None:
             formatter = ('process_logger_level_msg'
@@ -245,7 +250,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
 
         self.add_handler(handler_name,
                          stream=stream,
-                         add_to_root=add_to_root,
+                         attach_to_root=attach_to_root,
                          ** con_dict)
         return self
 
@@ -253,7 +258,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                              formatter=None,    # 'logger_level_msg' or 'process_logger_level_msg'
                              level='WARNING',
                              locking=None,
-                             add_to_root=None,
+                             attach_to_root=None,
                              **kwargs):
         """Add a console (stream) handler that writes to ``sys.stdout``.
 
@@ -264,7 +269,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                                   formatter=formatter,
                                   level=level,
                                   locking=locking,
-                                  add_to_root=add_to_root,
+                                  attach_to_root=attach_to_root,
                                   **kwargs)
         return self
 
@@ -272,7 +277,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                              formatter=None,    # 'logger_level_msg' or 'process_logger_level_msg'
                              level='WARNING',
                              locking=None,
-                             add_to_root=None,
+                             attach_to_root=None,
                              **kwargs):
         """Add a console (stream) handler that writes to ``sys.stderr``.
 
@@ -283,7 +288,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                                   formatter=formatter,
                                   level=level,
                                   locking=locking,
-                                  add_to_root=add_to_root,
+                                  attach_to_root=attach_to_root,
                                   **kwargs)
         return self
 
@@ -294,9 +299,9 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          level='NOTSET',    # log everything: logging module default
                          delay=False,       # logging module default
                          locking=None,
-                         add_to_root=None,
+                         attach_to_root=None,
                          **kwargs):
-        """Virtual; adds keyword parameters ``locking`` and ``add_to_root``
+        """Virtual; adds keyword parameters ``locking`` and ``attach_to_root``
         to the parameters of ``LoggingConfigDict.add_file_handler()``.
 
         :return: ``self``
@@ -304,9 +309,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
         # So: self can be created with (self.)locking=False,
         # but a handler can be locking.
         locking = self.locking if locking is None else bool(locking)
-        add_to_root = (self.add_handlers_to_root
-                       if add_to_root is None else
-                       bool(add_to_root))
+        attach_to_root = self._attach_to_root(attach_to_root)
 
         if not formatter:
             formatter = ('process_time_logger_level_msg'
@@ -319,7 +322,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          level=level,
                          formatter=formatter,
                          delay=delay,
-                         add_to_root=add_to_root,
+                         attach_to_root=attach_to_root,
                          **kwargs)
         if locking:
             del self.handlers[handler_name]['class']
@@ -336,7 +339,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          level='NOTSET',
                          delay=False,       # logging module default
                          locking=None,
-                         add_to_root=None,
+                         attach_to_root=None,
                          **kwargs):
         """
         :param handler_name: just that
@@ -360,16 +363,16 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :param delay: if True, the log file won't be created until it's actually written to
         :param locking: Mandatory if multiprocessing -- things won't even work,
                           logfile can't be found: FileNotFoundError: [Errno 2]...
-        :param add_to_root: whether or not to add this handler to the root logger
+        :param attach_to_root: If true, add the ``clone`` handler to the root logger;
+            if ``None``, do what self.attach_handlers_to_root says;
+            if false, don't add clone to root.
         :param kwargs: additional key/value pairs
         :return: ``self``
         """
         # So: self can be created with (self.)locking=False,
         # but a handler can be locking.
         locking = self.locking if locking is None else bool(locking)
-        add_to_root = (self.add_handlers_to_root
-                       if add_to_root is None else
-                       bool(add_to_root))
+        attach_to_root = self._attach_to_root(attach_to_root)
 
         if not formatter:
             formatter = ('process_time_logger_level_msg'
@@ -382,7 +385,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          level=level,
                          formatter=formatter,
                          delay=delay,
-                         add_to_root=add_to_root,
+                         attach_to_root=attach_to_root,
                          maxBytes=max_bytes,
                          backupCount=backup_count,
                          **kwargs)

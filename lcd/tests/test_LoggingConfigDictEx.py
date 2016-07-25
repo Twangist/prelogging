@@ -92,7 +92,7 @@ class TestLoggingConfigDictEx(TestCase):
         """
         DO add handlers to root, locking=True
         """
-        lcd = LoggingConfigDictEx(add_handlers_to_root=True,
+        lcd = LoggingConfigDictEx(attach_handlers_to_root=True,
                                   locking=True)
 
         # lcd.dump()      # | DEBUG comment out
@@ -188,7 +188,7 @@ class TestLoggingConfigDictEx_check(TestCase):
     def test_check_bad1(self):
 
         lcd_ex = LoggingConfigDictEx(
-            add_handlers_to_root=True,
+            attach_handlers_to_root=True,
             root_level='DEBUG')
 
         #  NOW SCREW IT UP:

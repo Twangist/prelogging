@@ -56,7 +56,7 @@ def test_xxx_filter():
     >>> debug_count = 0
 
     >>> lcd_ex = LoggingConfigDictEx(
-    ...     add_handlers_to_root=True,
+    ...     attach_handlers_to_root=True,
     ...     root_level='DEBUG')
 
     >>> _ = lcd_ex.add_stdout_console_handler(

@@ -189,7 +189,7 @@ The following example illustrates the general technique:
 
     >>> from lcd import LoggingConfigDictEx
     >>> import logging
-    >>> lcd_ex = LoggingConfigDictEx(add_handlers_to_root=True)
+    >>> lcd_ex = LoggingConfigDictEx(attach_handlers_to_root=True)
     >>> lcd_ex.add_stdout_console_handler('con', formatter='logger_level_msg')
     >>> lcd_ex.config()
 
@@ -277,7 +277,7 @@ subdirectory of the current directory::
 
     lcd_ex = LoggingConfigDictEx(log_path='_log/',
                                  root_level='DEBUG',
-                                 add_handlers_to_root=True)
+                                 attach_handlers_to_root=True)
 
 Set up the root logger with a ``stderr`` console handler and a file handler,
 at their respective default loglevels ``'WARNING'`` and ``'NOTSET'``::
@@ -289,12 +289,12 @@ at their respective default loglevels ``'WARNING'`` and ``'NOTSET'``::
 
 Add an ``'extra'`` logger, with loglevel ''`DEBUG`'',
 which will write to a different file using a handler at default loglevel ``'NOTSET'``.
-Note the use of parameters ``add_to_root`` and ``propagate``:
+Note the use of parameters ``attach_to_root`` and ``propagate``:
 
-    * in the ``add_file_handler`` call, passing ``add_to_root=False`` ensures that
+    * in the ``add_file_handler`` call, passing ``attach_to_root=False`` ensures that
       this handler *won't* be added to the root logger,
       overriding the ``lcd_ex`` default value established by
-      ``add_handlers_to_root=True`` above;
+      ``attach_handlers_to_root=True`` above;
 
     * in the ``add_logger`` call, ``propagate=False`` ensures that messages logged
       by ``'extra'`` don't also write to the root and its handlers:
@@ -304,7 +304,7 @@ Note the use of parameters ``add_to_root`` and ``propagate``:
         lcd_ex.add_file_handler('extra_fh',
                                 filename='extra.log',
                                 formatter='logger_level_msg',
-                                add_to_root=False
+                                attach_to_root=False
                                )
         lcd_ex.add_logger('extra',
                           handlers=['extra_fh'],
@@ -331,11 +331,11 @@ To use the loggers, access them by name::
     # Root writes "ho hum" to `_LOG/root.log` only:
     logging.getLogger().debug("ho hum")
 
-**Exercise**: Verify the claimed effects of the ``add_to_root`` and ``propagate``
+**Exercise**: Verify the claimed effects of the ``attach_to_root`` and ``propagate``
 parameters in the two calls that configure the ``'extra_fh'`` handler and the
 ``'extra'`` logger.
 
-    1. Comment out ``add_to_root=False`` from the ``add_file_handler`` call
+    1. Comment out ``attach_to_root=False`` from the ``add_file_handler`` call
        for ``'extra_fh'``.
 
        Now, ``'extra_fh'`` is a handler of the root logger *too*, so
@@ -357,7 +357,7 @@ parameters in the two calls that configure the ``'extra_fh'`` handler and the
 
             UH OH
 
-    2. Uncomment ``add_to_root=False`` in the ``add_file_handler`` call,
+    2. Uncomment ``attach_to_root=False`` in the ``add_file_handler`` call,
        and comment out ``propagate=False`` from the ``add_logger`` call.
 
        Now, ``'extra'`` writes to the root's handlers as well as its own,
@@ -543,7 +543,7 @@ Filters on the root logger
 Let's configure the root logger to use both filters shown above::
 
     lcd_ex = LoggingConfigDictEx(
-        add_handlers_to_root=True,
+        attach_handlers_to_root=True,
         root_level='DEBUG')
 
     lcd_ex.add_stdout_console_handler(

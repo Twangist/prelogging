@@ -21,7 +21,7 @@ def logging_config_sub(lcd_ex,
 
     # clone console handler, set loglevel = DEBUG
     #### # lcd_ex.handlers['console_DEBUG']['level'] = 'DEBUG'
-    lcd_ex.clone_handler(clone='console_DEBUG', handler='console', add_to_root=False)
+    lcd_ex.clone_handler(clone='console_DEBUG', handler='console', attach_to_root=False)
     lcd_ex.set_handler_level('console_DEBUG', 'DEBUG')
 
     # Use handlers 'console_DEBUG' and file handler file_handler

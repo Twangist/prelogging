@@ -244,7 +244,7 @@ else receives reasonable, expected defaults. Using the "batteries included"
     from lcd import LoggingConfigDictEx
 
     lcd_ex = LoggingConfigDictEx(root_level='DEBUG',
-                                 add_handlers_to_root=True)
+                                 attach_handlers_to_root=True)
     lcd_ex.add_stderr_console_handler(
                     'console',
                     formatter='minimal',
@@ -257,7 +257,7 @@ else receives reasonable, expected defaults. Using the "batteries included"
     lcd_ex.config()
 
 Here, we use a couple of the builtin ``Formatter``\s supplied by ``LoggingConfigDictEx``.
-Because we pass the flag ``add_handlers_to_root=True`` when creating the instance ``lcd_ex``,
+Because we pass the flag ``attach_handlers_to_root=True`` when creating the instance ``lcd_ex``,
 every handler we add to ``lcd_ex`` is automatically added to the root logger.
 Later, we'll :ref:`revisit this example <overview-example-using-only-LoggingConfigDict>`,
 to see how the same result can be achieved using only ``LoggingConfigDict``.

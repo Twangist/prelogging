@@ -15,7 +15,7 @@ def configure_logging(log_path, logfilename=''):
     """
     lcd_ex = LoggingConfigDictEx(log_path=log_path,
                                  root_level='DEBUG',
-                                 add_handlers_to_root=True)
+                                 attach_handlers_to_root=True)
     lcd_ex.add_stdout_console_handler('con', formatter='minimal', level='DEBUG')
 
     if logfilename:
@@ -26,7 +26,7 @@ def configure_logging(log_path, logfilename=''):
         )
         # Defaults:
         #   level='DEBUG',
-        #   add_to_root=True
+        #   attach_to_root=True
         lcd_ex.add_file_handler(
             'app_file',
             filename=logfilename,

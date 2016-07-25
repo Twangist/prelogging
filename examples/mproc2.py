@@ -121,7 +121,7 @@ def config_logging(use_locking):
 
     lcd_ex = LoggingConfigDictEx(log_path=LOG_PATH,
                                  locking=use_locking,
-                                 add_handlers_to_root=True,
+                                 attach_handlers_to_root=True,
                                  root_level='DEBUG')
     # add main file handler, which will write to LOG_PATH + '/' + logfilename
     lcd_ex.add_stderr_console_handler(
