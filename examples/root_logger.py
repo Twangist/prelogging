@@ -3,7 +3,6 @@
 __author__ = 'brianoneill'
 
 import logging
-from pprint import pformat
 
 try:
     import lcd

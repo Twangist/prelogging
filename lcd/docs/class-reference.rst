@@ -10,5 +10,6 @@ Class Reference
     LoggingConfigDict
     LoggingConfigDictEx
     locking_handlers
+    ConfiguratorABC
 
 
