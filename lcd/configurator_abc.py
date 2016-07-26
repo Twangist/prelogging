@@ -8,17 +8,14 @@ class ConfiguratorABC(metaclass=ABCMeta):
     .. include:: _global.rst
 
     A class for automating multi-package / multi-module logging configuration.
-    Every package/module that wants a say in the configuration of logging
-    should define its own (sub*)subclass of ConfiguratorABC, which overrides
-    the method
+    ``ConfiguratorABC`` is an abstract base class: its metaclass is ``ABCMeta``,
+    defined in ``_collections_abc.py`` of the standard library. You can't
+    directly instantiate this class: it has an `abstractmethod`
+    ``add_to_lcd(lcdx: LoggingConfigDictEx)``. Every package or module that
+    wants a say in the configuration of logging should define its own
+    (sub*)subclass of ``ConfiguratorABC`` which implements ``add_to_lcd``.
 
-    .. code::
-
-        @classmethod
-        def add_to_lcd(lcd: LoggingConfigDict):
-            pass
-
-    Once and once only, the application should call ``configure_logging()``,
+    Once (and once only), the application should call ``configure_logging()``,
     a classmethod which
 
         * creates a "blank" ``LoggingConfigDict``, ``lcdx``, and then
@@ -40,13 +37,13 @@ class ConfiguratorABC(metaclass=ABCMeta):
     ``ConfiguratorPackage``, in some order; then on ``ConfiguratorSubPackage``.
 
     See the test ``test_configurator.py`` for a multi-module example
-    of this facility.
+    that uses these capabilities.
     |hr|
     """
     @classmethod
     @abstractmethod
     def add_to_lcd(cls, lcdx):          # pragma: no cover
-        """(Virtual callout) Customize the passed ``LoggingConfigDictEx``.
+        """(abstractmethod) Customize the passed ``LoggingConfigDictEx``.
 
         :param lcdx: a ``LoggingConfigDictEx``
 
