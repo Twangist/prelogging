@@ -161,7 +161,7 @@ where its originating logging call was issued.
 Configuring the root logger
 ------------------------------------------
 
-We already saw `one example <example-overview-config>` of how easy it is to
+We already saw :ref:`one example <example-overview-config>` of how easy it is to
 configure the root logger with both a console handler and a file handler.
 
 .. _tr-easy-config-root-add-console:
