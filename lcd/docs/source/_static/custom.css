@@ -44,12 +44,16 @@ h6 {
 span.literal {
     /*color: #0044DD !important;*/
     /*color: #003aa9 !important;*/
-    color: #003398 !important;
+    /*color: #003398 !important;*/
+    /*color: #3D4B66 !important;*/
+    color: #3D4B6E !important;
+
     /*background-color: #efefff;*/
     /*background-color: #f0f0ff;*/
     background-color: #f3f4fc;
+    /*background-color: #f6f7ff;*/
     /*font-size: 110% !important;*/
-    font-size: 110% !important;
+    font-size: 105% !important;
 }
 
 /* TRY THIS -- tighten padding, on right?
@@ -61,8 +65,11 @@ span.literal {
 }
 
 code.literal {
-    color: #003398 !important;
+    /*color: #003398 !important;*/
+    /*color: #3D4B66 !important;*/
+    color: #3D4B6E !important;
     background-color: #f3f4fc;
+    /*background-color: #f6f7ff;*/
     /*font-size: 87% !important */
     /*font-size: 87% !important;*/
     font-size: 90% !important;
