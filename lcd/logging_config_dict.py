@@ -449,12 +449,12 @@ class LoggingConfigDict(dict):
     # TODO: Or, make this a global function?
     def check(self, verbose=True):
         """Check for consistency: names used to refer to entities (formatters,
-        handlers, filters) must exist/must actually have been added.
+        handlers, filters) must exist (must actually have been added).
 
         :param verbose: If true, write details of all problems to ``stderr``.
         :return: ``self`` if self is consistent.
 
-        Raises ``KeyError`` (?) if self is not consistent.
+        Raises ``KeyError`` (?) if ``self`` is not consistent.
         """
         from collections import namedtuple
         Problem = namedtuple("Problem",
