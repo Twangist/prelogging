@@ -648,10 +648,10 @@ There are two ways to attach filters to a handler:
 2. Add the handler using any ``add_*_handler`` method, then use
    ``add_handler_filters`` to attach filters to the handler. For example::
 
-    lcd_ex.add_handler('myhandler',
-                       ...
-    ).attach_handler_filters('myhandler',
-                             'count_d', 'count_i')
+    lcd_ex.add_file_handler('myhandler',
+                            filename='mylogfile.log')
+    lcd_ex.attach_handler_filters('myhandler',
+                                  'count_d', 'count_i')
 
 ----------------------------------
 
@@ -660,7 +660,21 @@ There are two ways to attach filters to a handler:
 Using ``ConfiguratorABC``
 -------------------------------
 
-.. todo::
-    Commentary on ``test_configurator.py``
+A single ``LoggingConfigDictEx`` can be passed around to different "areas"
+of a program, each area contributing specifications of its desired formatters,
+filters, handlers and loggers. The ``ConfiguratorABC`` class provides a
+framework that automates this approach: each area of a program need only
+define a ``ConfiguratorABC`` subclass and override its method
+``add_to_lcd(lcd)``, where it contributes its specifications by calling
+methods on ``lcd``.
 
-    Blah blah
+The :ref:`ConfiguratorABC` documentation describes how that class and its two
+methods operate. The test ``tests/test_configurator.py`` exemplifies using
+the class to configure logging across multiple modules.
+
+.. todo::
+    "using the class to configure logging **across** multiple modules" -- SIC.
+    That's not quite right -- "across"? no
+
+    ¿¿ Commentary on ``test_configurator.py`` ??
+
