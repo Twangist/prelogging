@@ -88,18 +88,18 @@ class LoggingConfigDict(dict):
 
             instead of ``stream=sys.stdout``, we use ``stream='ext://sys.stdout'``.
 
-        The reason: the ``clone_handler()`` method of the subclass ``LoggingConfigDictEx``
-        uses ``deepcopy()``, and streams can't be deep-copied. We recommend
-        that you not use actual streams, but rather the text equivalents, as
-        shown in the example just given.
+        The reason: the ``clone_handler()`` method of the subclass
+        ``LoggingConfigDictEx`` uses ``deepcopy()``, and streams can't be
+        deep-copied. We recommend that you not use actual streams, but rather
+        the text equivalents, as shown in the example just given.
 
     |hr|
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
 
     def __init__(self,      # *,
-                 root_level='WARNING',              # == logging default level
-                 disable_existing_loggers=None      # logging default value is True
+                 root_level='WARNING',              # == logging default
+                 disable_existing_loggers=None      # logging default: True
                 ):
         """
         :param root_level: a ``str`` name of a loglevel.
@@ -164,7 +164,8 @@ class LoggingConfigDict(dict):
     def set_root_level(self, root_level):
         """
         Set the loglevel of the root handler.
-        Given that ``__init__`` has a ``root_level`` parameter, this isn't really needed.
+        Given that ``__init__`` has a ``root_level`` parameter, this isn't
+        really needed.
 
         :param root_level: an explicit value. The default set in ``__init__``
             is ``'WARNING'``.
@@ -249,9 +250,10 @@ class LoggingConfigDict(dict):
         """Add a formatter to the ``'formatters'`` subdictionary.
 
         :param formatter_name: just that
-        :param ** format_dict: keyword/value pairs (values are generally strings)
-                    For the special keyword `class`, which is a Python reserved word
-                    and therefore can't be used as a keyword parameter, use `class_`.
+        :param ** format_dict: keyword/value pairs (values are generally
+            strings). For the special keyword `class`, which is a Python
+            reserved word and therefore can't be used as a keyword parameter,
+            use `class_`.
         :return: ``self``
         """
         assert 'class' not in format_dict
@@ -284,14 +286,14 @@ class LoggingConfigDict(dict):
 
     @staticmethod
     def _to_seq(str_or_seq):
-        """Utility function that lets methods allow parameters to be either a name
-         or a sequence of names. Return a list of names.
+        """Utility function that lets methods allow parameters to be either
+        a name or a sequence of names. Return a list of names.
         :param str_or_seq: a name of a thing (filter, handler),
                             or a sequence of names of homogeneous things,
                             or None.
         :return: sequence of names. If ``str_or_seq`` is a ``str``,
-            return ``[str_or_seq]``; if ``str_or_seq`` is ``None``, return ``[]``;
-            otherwise, return ``str_or_seq``.
+            return ``[str_or_seq]``; if ``str_or_seq`` is ``None``,
+            return ``[]``; otherwise, return ``str_or_seq``.
         """
         if isinstance(str_or_seq, str):
             str_or_seq = [str_or_seq]
@@ -306,8 +308,8 @@ class LoggingConfigDict(dict):
         :param formatter: name of a previously added formatter
         :param filters: the name of a filter, or a sequence of names of filters,
             to be used by the handler
-        :param ** handler_dict: keyword/value pairs (values are generally strings)
-            For the special keyword ``class``, use ``class_``.
+        :param ** handler_dict: keyword/value pairs (values are generally
+            strings). For the special keyword ``class``, use ``class_``.
         :return: ``self``
         """
         assert 'class' not in handler_dict
@@ -328,18 +330,19 @@ class LoggingConfigDict(dict):
                          level='NOTSET',    # log everything: logging module default
                          delay=False,
                          **kwargs):
-        """Add a handler with the given name, with class ``'logging.FileHandler'``,
-        using the filename, formatter, and other data provided.
+        """Add a handler with the given name, with class
+        ``'logging.FileHandler'``, using the filename, formatter, and other data
+        provided.
 
         :param handler_name: just that
-        :param filename: The name of the file to which this handler should log messages.
-            It may contain an absolute or relative path, as well.
+        :param filename: The name of the file to which this handler should log
+            messages. It may contain an absolute or relative path, as well.
         :param formatter: The name of a previously added formatter, to be used
             by this handler.
         :param mode: The mode for writing.
         :param level: The loglevel of this file handler.
-        :param delay: If True, the file will be created lazily, only when actually
-            written to.
+        :param delay: If True, the file will be created lazily, only when
+            actually written to.
         :param kwargs: Any other key/value pairs to pass to ``add_handler()``.
         :return: ``self``
         """
@@ -467,14 +470,14 @@ class LoggingConfigDict(dict):
 
         for hname in handlers_:
             hdict = handlers_[hname]    # type: dict
-            # make sure any/all formatters on hname exists in formatters_
+            # ensure any/all formatters on hname exists in formatters_
             hform_name = hdict.get('formatter', None)
             if hform_name not in formatters_:
                 problems.append(
                     Problem('handler', hname, 'formatter', hform_name)
                 )
 
-            # make sure any/all filters on hname all exist (in filters_)
+            # ensure any/all filters on hname all exist (in filters_)
             hfilters = hdict.get('filters', [])
             for hfilt_name in hfilters:
                 if hfilt_name not in filters_:
@@ -489,7 +492,7 @@ class LoggingConfigDict(dict):
         for lname in loggers_:
             ldict = loggers_[lname]
             # if ldict has filters   (has a 'filters' key)
-            #    make sure they all exist in filters_
+            #    ensure they all exist in filters_
             lfilters = ldict.get('filters', [])
             for lfilt_name in lfilters:
                 if lfilt_name not in filters_:
@@ -499,7 +502,7 @@ class LoggingConfigDict(dict):
 
             # ldict may or may not have a 'handlers' key.
             lhandlers = ldict.get('handlers', [])
-            # make sure that every handler lhname in lhandlers exists in handlers_
+            # ensure that every handler lhname in lhandlers exists in handlers_
             for lhname in lhandlers:
                 if lhname not in handlers_:
                     problems.append(
@@ -510,7 +513,7 @@ class LoggingConfigDict(dict):
 
         root_ = self.root
 
-        # if root_ has filters, make sure they all exist in filters_
+        # if root_ has filters, ensure they all exist in filters_
         rfilters = root_.get('filters', [])
         for rfilt_name in rfilters:
             if rfilt_name not in filters_:
@@ -520,7 +523,7 @@ class LoggingConfigDict(dict):
 
         # Assume root_ has a 'handlers' key.
         # for every handler hn in root_['handlers']
-        #    make sure hn exists // in handlers_
+        #    ensure hn exists // in handlers_
         rhandlers = root_['handlers']
         for rhname in rhandlers:
             if rhname not in handlers_:
@@ -545,7 +548,7 @@ class LoggingConfigDict(dict):
                         "mentions %(owned_kind)10s %(bad_name)r"
                         % prob._asdict()
                     )
-            raise KeyError("names were used for which no such entities were added")
+            raise KeyError("names used that correspond to no added entities")
 
         # ------------------------------
 
