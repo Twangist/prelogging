@@ -599,7 +599,8 @@ arbitrary logger. This can be accomplished in two ways:
 
     lcd_ex.add_logger('mylogger',
                       filters=['count_d', 'count_i'],
-                      ... )
+                      ...
+                     )
 
 2. Add the logger with ``add_logger``, without using the ``filters`` parameter::
 
