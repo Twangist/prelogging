@@ -392,10 +392,8 @@ handler and the ``'extra'`` logger.
 .. _tr-propagate-docs:
 
 .. index:: Logger.propagate property
-
-.. index:: Propagation, best practices
-
-.. index:: Placement of handlers when using multiple loggers, best practices
+.. index:: Propagation — best practices
+.. index:: Placement of handlers when using multiple loggers — best practices
 
 .. topic:: Best practices for propagation and handler placement
 
