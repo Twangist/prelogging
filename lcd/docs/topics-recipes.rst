@@ -53,6 +53,9 @@ Topics and Recipes
         * :ref:`tr-filters-logger`
         * :ref:`tr-filters-handler`
 
+* Configuration distributed across multiple modules or packages
+    * :ref:`config-abc`
+
 --------------------------------------------------
 
 .. _tr-basic-usage-LCD:
@@ -649,3 +652,15 @@ There are two ways to attach filters to a handler:
                        ...
     ).attach_handler_filters('myhandler',
                              'count_d', 'count_i')
+
+----------------------------------
+
+.. _config-abc:
+
+Using ``ConfiguratorABC``
+-------------------------------
+
+.. todo::
+    Commentary on ``test_configurator.py``
+
+    Blah blah
