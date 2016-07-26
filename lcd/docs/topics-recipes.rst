@@ -142,7 +142,7 @@ Using formatters
 
 Using builtin formatters
 ++++++++++++++++++++++++++
-qwerty
+<<<<< TODO >>>>>
 
 .. _tr-LCDEx-defining-new-formatters:
 
@@ -392,8 +392,8 @@ handler and the ``'extra'`` logger.
 .. _tr-propagate-docs:
 
 .. index:: Logger.propagate property
-
-.. index:: Placement of handlers when using multiple loggers, best practice
+.. index:: Propagation, best practices
+.. index:: Placement of handlers when using multiple loggers, best practices
 
 .. topic:: Best practices for propagation and handler placement
 
