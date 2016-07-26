@@ -478,21 +478,18 @@ xyz
 Filters
 --------
 
-see tests, test_LoggingConfigDict.py ...
-for examples of how to set up a logger filter or a handler filter
+There are two principle kinds of filters: instances of ``logging.Filter``,
+and callables of signature ``LogRecord`` -> ``bool``. `lcd` provides a pair
+of convenience methods ``add_class_filter`` and ``add_function_filter``
+which are somewhat easier to use than its lower-level ``add_filter`` method.
 
 ``logging.Filter`` objects have a ``filter(record)`` method
 which takes a ``logging.LogRecord`` and returns ``bool``.
-In Py3, you can supply any callable ``LogRecord`` -> ``bool``
-as a filter.
-In Py2, you can supply anything that has ``.filter`` attribute,
-and then, that attribute is *called* with a ``LogRecord``
-and expected to return ``bool``.
 
-The Py2 workaround: to use a function as a filter,
-give it the attribute ``filter`` and let the value of that attribute
-equal the function itself.
-
+In Python 2, the `logging` module imposes a fussy requirement on callables
+that can be used as filters, which Python 3 implementation of `logging` removes.
+``add_function_filter`` addresses the Python 2 requirement, providing a single
+interface for adding callable filters that works in both Python versions.
 
 .. _filter-setup:
 
@@ -506,7 +503,7 @@ a distinct global variable::
     _info_count = 0
     _debug_count = 0
 
-Classic filters are subclasses of logging.Filter::
+Classic filters are subclasses of ``logging.Filter``::
 
     class CountInfoSquelchOdd(logging.Filter):
         def filter(self_, record):
