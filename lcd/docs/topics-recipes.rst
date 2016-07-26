@@ -79,10 +79,10 @@ achieved using only ``LoggingConfigDict``.
 The Overview example, using only ``LoggingConfigDict``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-If we were to use just the base class ``LoggingConfigDict``, the Overview example
-becomes just a little less concise. Now, we have to add two formatters, and
-we must explicitly add the two handlers to the root logger (two passages which
-we've commented as ``# NEW``):
+If we were to use just the base class ``LoggingConfigDict``, the Overview
+example becomes just a little less concise. Now, we have to add two formatters,
+and we must explicitly attach the two handlers to the root logger (two passages
+which we've commented as ``# NEW``):
 
 .. code::
 
@@ -176,14 +176,14 @@ Adding a file handler
 Using non-root (named, child) loggers without configuring them
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-A typical, useful approach is to add handlers only to the root logger,
+A typical, useful approach is to attach handlers only to the root logger,
 and then have each module log messages using ``logging.getLogger(__name__)``.
 These "child" loggers require no configuration; they use the handlers
 of the root because by default loggers are created with ``propagate=True``.
 
-If the formatters of the handlers include the logger name — as does ``logger_level_msg``
-of ``LoggingConfigDictEx`` objects, for example — each logged message will relate
-which module wrote it.
+If the formatters of the handlers include the logger name — as does
+``logger_level_msg`` of ``LoggingConfigDictEx`` objects, for example — each
+logged message will relate which module wrote it.
 
 The following example illustrates the general technique:
 
@@ -210,9 +210,9 @@ Configuring and using non-root loggers
 
 Reasons to do so:
 
-    * in a particular module or package, you want to use a different loglevel from
-      that of the root logger, using the same handlers as the root (& so, writing
-      to the same destination(s));
+    * in a particular module or package, you want to use a different loglevel
+      from that of the root logger, using the same handlers as the root (& so,
+      writing to the same destination(s));
 
     * you want to write to destinations other than those of the root,
       either instead of or in addition to those.
@@ -244,15 +244,16 @@ fdsa
 A "discrete" non-root logger
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-In this example we use two loggers: the root, and another logger that's "discrete"
-from the root, and indeed from any ancestor logger, in the sense that:
+In this example we use two loggers: the root, and another logger that's
+"discrete" from the root, and indeed from any ancestor logger, in the sense
+that:
 
     * it doesn't share any handlers with any ancestor, and
     * it doesn't propagate to any ancestor.
 
 As the root is an ancestor of every logger, in particular we'll require that
-the added logger should *not* add its handlers to the root, and that it should
-not "propagate" to its parent (the root, in this example).
+the added logger should *not* attach its handlers to the root, and that it
+should not "propagate" to its parent (the root, in this example).
 
 
 Requirements
@@ -262,7 +263,8 @@ Root logger with a ``stderr`` console handler and a file handler,
 at their respective `lcd` default loglevels ``'WARNING'`` and ``'NOTSET'``;
 
 a discrete logger, named let's say ``'extra'``, with loglevel ''`DEBUG`'',
-which will write to a different file using a handler at default loglevel ``'NOTSET'``.
+which will write to a different file using a handler at default loglevel
+``'NOTSET'``.
 
 How-to
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -287,17 +289,17 @@ at their respective default loglevels ``'WARNING'`` and ``'NOTSET'``::
                             filename='root.log',
                             formatter='logger_level_msg')
 
-Add an ``'extra'`` logger, with loglevel ''`DEBUG`'',
-which will write to a different file using a handler at default loglevel ``'NOTSET'``.
+Add an ``'extra'`` logger, with loglevel ''`DEBUG`'', which will write to a
+different file using a handler at default loglevel ``'NOTSET'``.
 Note the use of parameters ``attach_to_root`` and ``propagate``:
 
-    * in the ``add_file_handler`` call, passing ``attach_to_root=False`` ensures that
-      this handler *won't* be added to the root logger,
-      overriding the ``lcd_ex`` default value established by
-      ``attach_handlers_to_root=True`` above;
+    * in the ``add_file_handler`` call, passing ``attach_to_root=False`` ensures
+      that this handler *won't* be attached to the root logger, overriding the
+      ``lcd_ex`` default value established by ``attach_handlers_to_root=True``
+      above;
 
-    * in the ``add_logger`` call, ``propagate=False`` ensures that messages logged
-      by ``'extra'`` don't also write to the root and its handlers:
+    * in the ``add_logger`` call, ``propagate=False`` ensures that messages
+      logged by ``'extra'`` don't also write to the root and its handlers:
 
 .. code::
 
@@ -317,8 +319,8 @@ Finally, call ``config()`` to create actual objects of `logging` types —
 
     lcd_ex.config()
 
-Now ``lcd_ex`` is actually no longer needed (we don't do 'incremental' configuration,
-but then, arguably, neither does `logging`).
+Now ``lcd_ex`` is actually no longer needed (we don't do 'incremental'
+configuration, but then, arguably, neither does `logging`).
 
 To use the loggers, access them by name::
 
@@ -331,9 +333,9 @@ To use the loggers, access them by name::
     # Root writes "ho hum" to `_LOG/root.log` only:
     logging.getLogger().debug("ho hum")
 
-**Exercise**: Verify the claimed effects of the ``attach_to_root`` and ``propagate``
-parameters in the two calls that configure the ``'extra_fh'`` handler and the
-``'extra'`` logger.
+**Exercise**: Verify the claimed effects of the ``attach_to_root`` and
+``propagate`` parameters in the two calls that configure the ``'extra_fh'``
+handler and the ``'extra'`` logger.
 
     1. Comment out ``attach_to_root=False`` from the ``add_file_handler`` call
        for ``'extra_fh'``.
@@ -361,7 +363,8 @@ parameters in the two calls that configure the ``'extra_fh'`` handler and the
        and comment out ``propagate=False`` from the ``add_logger`` call.
 
        Now, ``'extra'`` writes to the root's handlers as well as its own,
-       so it logs a warning ``"Hi there."`` to both ``stderr`` and ``_LOG/root.log``.
+       so it logs a warning ``"Hi there."`` to both ``stderr`` and
+       ``_LOG/root.log``.
 
        ``_LOG/root.log`` contains::
 
@@ -399,8 +402,9 @@ parameters in the two calls that configure the ``'extra_fh'`` handler and the
 
     |br|
     This suggests that truly intricate, and no doubt surprising, configurations
-    can be achieved using propagation and fussy placements of handlers on loggers.
-    The **Note** at the end of the above link clearly states best practice:
+    can be achieved using propagation and fussy placements of handlers on
+    loggers. The **Note** at the end of the above link clearly states best
+    practice:
 
     | If you attach a handler to a logger and one or more of its ancestors,
     | it may emit the same record multiple times. In general, you should not
@@ -581,47 +585,49 @@ This passage writes the following to ``stdout``::
     _info_count: 5
 
 .. note::
-    This example **is** the test ``test_add_xxx_filter.py``, with little modification.
+    This example **is** the test ``test_add_xxx_filter.py``, with little
+    modification.
 
 
 Filters on a non-root logger
 +++++++++++++++++++++++++++++
 
-Adding the example filters to a non-root logger ``'mylogger'`` requires just one
-change: instead of using ``attach_root_filters('count_d', 'count_i')`` to add the
-filters to the root logger, now we have to add the filters to an arbitrary logger.
-This can be accomplished in two ways:
+Attaching the example filters to a non-root logger ``'mylogger'`` requires just
+one change: instead of using ``attach_root_filters('count_d', 'count_i')`` to
+attach the filters to the root logger, now we have to attach them to an
+arbitrary logger. This can be accomplished in two ways:
 
-1. Add the filters when calling ``add_logger`` for ``'mylogger'``, using the
+1. Attach the filters when calling ``add_logger`` for ``'mylogger'``, using the
    ``filters`` keyword parameter::
 
     lcd_ex.add_logger('mylogger',
                       filters=['count_d', 'count_i'],
                       ... )
 
-2. Add the logger with ``add_logger``::
+2. Add the logger with ``add_logger``, without using the ``filters`` parameter::
 
-    lcd_ex.add_logger('mylogger',
-                      ... )
+    lcd_ex.add_logger('mylogger', ... )
 
-   and then attach the filters using ``attach_logger_filters``::
+   and then attach filters to it with ``attach_logger_filters``::
 
-    attach_logger_filters('mylogger',
-                          'count_d', 'count_i')
+    lcd_ex.attach_logger_filters('mylogger',
+                                 'count_d', 'count_i')
 
 .. _tr-filters-handler:
 
 Filters on a handler
 +++++++++++++++++++++++++++++
 
-To add filters to a handler, use the ``filters`` keyword parameter to
-**any** ``add_*_handler`` method. All such methods funnel through
-``LoggingConfigDict.add_handler``. The ``filters`` parameter can be
-either the name of a filter (a ``str``) or a sequence (``list``, ``tuple``, etc.)
-of names of filters.
+There are two ways to attach filters to a handler:
 
-Using our two example filters, each of the following method calls adds a handler
-with just the ``'count_d'`` filter attached::
+1. Attach the filters in the same method call that adds the handler.
+   Use the ``filters`` keyword parameter to **any** ``add_*_handler`` method.
+   All such methods funnel through ``LoggingConfigDict.add_handler``. The
+   value of the ``filters`` parameter can be either the name of a single filter
+   (a ``str``) or a sequence (list, tuple, etc.) of names of filters.
+
+   For example, using our two example filters, each of the following method
+   calls adds a handler with just the ``'count_d'`` filter attached::
 
     lcd_ex.add_stderr_console_handler('con-err',
                                       filters='count_d')
@@ -629,10 +635,19 @@ with just the ``'count_d'`` filter attached::
                             filename='some-logfile.log',
                             filters=['count_d'])
 
-The following statement adds a rotating file handler with both filters attached::
+   The following statement adds a rotating file handler with both filters
+   attached::
 
     lcd_ex.add_rotating_file_handler('rfh',
                                      filename='some-rotating-logfile.log',
                                      max_bytes=1024,
                                      backup_count=5,
                                      filters=['count_i', 'count_d'])
+
+2. Add the handler using any ``add_*_handler`` method, then use
+   ``add_handler_filters`` to attach filters to the handler. For example::
+
+    lcd_ex.add_handler('myhandler',
+                       ...
+    ).attach_handler_filters('myhandler',
+                             'count_d', 'count_i')
