@@ -70,7 +70,7 @@ for Py2 shortcomings.
 || ``logging_config_dict.py``    || \99%  || 100% |
 || ``logging_config_dict_ex.py`` || \96%  || \98% |
 || ``locking_handlers.py``       || 100%  || 100% |
-|| ``configurator.py``           || 100%  || 100% |
+|| ``configurator_abc.py``       || 100%  || 100% |
 +--------------------------------+--------+-------+
 
 
@@ -107,5 +107,5 @@ both language versions.
 || ``logging_config_dict.py``    || \99%  || 100% |
 || ``logging_config_dict_ex.py`` || \97%  || 100% |
 || ``locking_handlers.py``       || 100%  || 100% |
-|| ``configurator.py``           || 100%  || 100% |
+|| ``configurator_abc.py``       || 100%  || 100% |
 +--------------------------------+--------+-------+

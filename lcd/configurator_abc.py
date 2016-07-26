@@ -7,54 +7,51 @@ class ConfiguratorABC():
     """
     A class for automatic multi-package / multi-module logging configuration.
     Every package/module that wants a say in the configuration of logging
-    defines its own subclass ConfiguratorABC, which overrides the method
+    should define its own (sub*)subclass of ConfiguratorABC, which overrides
+    the method
 
-        @abstractmethod
+    .. code::
+
         @classmethod
         def add_to_lcd(lcd: LoggingConfigDict):
             pass
 
-    The application should call ``configure_logging()``, a driver classmethod
-    which creates a "blank" LoggingConfigDict ``lcdx``, then calls
-    ``subcls.add_to_lcd(lcdx)`` on every subclass ``subcls``,
-    in a breadth-first way. For example, given the inheritance diagram ("<"
-    means "is a superclass of":
+    Once and once only, the application should call ``configure_logging()``,
+    a classmethod which
+
+        * creates a "blank" ``LoggingConfigDict``, ``lcdx``, and then
+        * calls ``subcls.add_to_lcd(lcdx)`` on every subclass ``subcls``
+          that implements ``add_to_lcd``, in a breadth-first way.
+
+    For example, given the following inheritance tree (where "<" means
+    "is a superclass of"):
+
+    .. code::
 
         ConfiguratorABC < MainConfigurator < ConfiguratorModuleA
                                            < ConfiguratorModuleB
                                            < ConfiguratorPackage < ConfiguratorSubPackage
 
-    ``add_to_lcd`` will be called first on MainConfigurator; then on
-    ConfiguratorModuleA, ConfiguratorModuleB, and ConfiguratorPackage,
-    in some order; then on ConfiguratorSubPackage.
+    Assuming that all classes shown implement ``add_to_lcd``, that method
+    will be called first on ``MainConfigurator``; then on
+    ``ConfiguratorModuleA``, ``ConfiguratorModuleB``, and
+    ``ConfiguratorPackage``, in some order; then on ``ConfiguratorSubPackage``.
 
-    One possible approach:
-
-         MainConfigurator adds all loggers used by the app, and configures
-         them sufficiently for the top level. The more-derived subclasses
-         might add handlers and attach them to loggers added by
-         MainConfigurator, assuming some conventions about the name(s) of
-         those loggers.
-
-    __init__
-
+    See the test ``test_configurator.py`` for a multi-module example
+    of this facility.
     """
-    def __init__(self):
 
-        pass
-
-    # @abstractmethod
     @classmethod
     def add_to_lcd(cls, lcdx):          # pragma: no cover
-        """(Virtual callout)
+        """(Virtual callout) Customize the passed ``LoggingConfigDictEx``.
+
+        :param lcdx: a ``LoggingConfigDictEx``
 
         ``configure_logging`` calls this method
         on every ``ConfiguratorABC`` subclass that implements it.
-        All implementations are passed the same ``LoggingConfigDictEx``.
-        Implementations should call ``LoggingConfigDictEx`` methods to
-        further augment and customize ``lcdx``.
-
-        :param lcdx: a ``LoggingConfigDictEx``
+        All implementations are passed the same object ``lcdx``.
+        Implementations should call ``LoggingConfigDictEx`` methods
+        on ``lcdx`` to further augment and customize it.
         """
         pass
 
@@ -65,7 +62,11 @@ class ConfiguratorABC():
                    locking=False,
                    attach_handlers_to_root=False,
                    disable_existing_loggers=False):
-        """This "driver" method creates a LoggingConfigDictEx ``lcdx``,
+        """A single method which creates a ``LoggingConfigDictEx``,
+        calls all ``add_to_lcd`` methods with that object, and then
+        configures logging using that object.
+
+        This method creates a ``LoggingConfigDictEx`` ``lcdx``,
         and calls ``subcls.add_to_lcd(lcdx)`` on all subclasses ``subcls``
         of ``ConfiguratorABC`` *which implement the method*, in breadth-first
         order, passing the same ``LoggingConfigDictEx`` instance to each.

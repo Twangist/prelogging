@@ -1,7 +1,7 @@
 Class Reference
 =========================
 
-`lcd` is a small package: five small classes in three small modules.
+`lcd` is a small package: six small classes in four small modules.
 
 
 .. toctree::
@@ -11,5 +11,3 @@ Class Reference
     LoggingConfigDictEx
     locking_handlers
     ConfiguratorABC
-
-

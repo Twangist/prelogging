@@ -411,11 +411,38 @@ class LoggingConfigDictEx(LoggingConfigDict):
     # .          weird syntax, & so that we don't have to explain it in docs.
 
     def add_class_filter(self, filter_name, filter_class, ** filter_dict):
+        """A convenience method for adding a class filter, an instance of
+        a subclass of ``logging.Filter``. This method spares you from having
+        to write code like the following:
+
+            ``self.add_filter(filter_name, ** {'()': filter_class})``
+
+        :param filter_name: name of the filter (for attaching it to handlers
+            and loggers)
+        :param filter_class: a class, subclass of ``logging.Filter``.
+        :param filter_dict: any other parameters to be passed to ``add_filter``.
+        :return: ``self``
+        """
         filter_dict['()'] = filter_class
         return self.add_filter(filter_name, ** filter_dict)
 
     def add_function_filter(self, filter_name, filter_fn, ** filter_dict):
-        if IS_PY2:
+        """A convenience method for adding a callable filter, of signature
+        ``logging.LogRecord -> bool``. This method spares you from having
+        to write code like the following:
+
+            ``self.add_filter(filter_name, ** {'()': lambda: filter_fn})``
+
+        It also papers over a difference between how Python 2 and Python 3
+        handle callable filters.
+
+        :param filter_name: name of the filter (for attaching it to handlers
+            and loggers)
+        :param filter_fn: a callable, of signature ``logging.LogRecord -> bool``
+        :param filter_dict: any other parameters to be passed to ``add_filter``.
+        :return: ``self``
+        """
+        if IS_PY2:      # curious lil hack
             if not hasattr(filter_fn, 'filter'):
                 setattr(filter_fn, 'filter', filter_fn)
         filter_dict['()'] = lambda: filter_fn

@@ -3,9 +3,7 @@
 ConfiguratorABC
 ===============================
 
-This class resides in ``configurator.py``.
+This class resides in ``configurator_abc.py``.
 
-.. automodule:: lcd.configurator
-
-.. autoclass:: lcd.configurator.ConfiguratorABC
+.. autoclass:: lcd.configurator_abc.ConfiguratorABC
     :members:
