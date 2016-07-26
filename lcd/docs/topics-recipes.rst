@@ -123,6 +123,8 @@ which we've commented as ``# NEW``):
 What ``LoggingConfigDictEx`` contributes
 ---------------------------------------------------------
 
+<<<<< TODO >>>>> 
+
 .. todo::
     intro blather re  ``LoggingConfigDictEx``: why this superclass,
     what does it do, offer?
@@ -134,7 +136,7 @@ What ``LoggingConfigDictEx`` contributes
 Using formatters
 -------------------------------------------------------
 
-asfasdf
+<<<<< TODO >>>>> 
 
 .. _tr-LCDEx-using-builtin-formatters:
 
@@ -168,11 +170,13 @@ configure the root logger with both a console handler and a file handler.
 
 Adding a console handler
 ++++++++++++++++++++++++++
+<<<<< TODO >>>>> 
 
 .. _tr-easy-config-root-add-file:
 
 Adding a file handler
 ++++++++++++++++++++++++++
+<<<<< TODO >>>>> 
 
 .. _tr-config-root-use-children:
 
@@ -235,11 +239,11 @@ One which propagates, and (two possibilities)
 
 Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-asdf
+<<<<< TODO >>>>> 
 
 How-to
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-fdsa
+<<<<< TODO >>>>> 
 
 
 .. _tr-config-discrete-non-root:
@@ -425,7 +429,7 @@ handler and the ``'extra'`` logger.
 Using a rotating file handler
 ------------------------------------
 
-rotating fh blah blah
+<<<<< TODO >>>>> 
 
 --------------------------------------------------
 
@@ -459,19 +463,19 @@ vs
 
 Using a locking console handler
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-123
+<<<<< TODO >>>>> 
 
 .. _tr-mp-fh:
 
 Using a locking file handler
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-abc
+<<<<< TODO >>>>> 
 
 .. _tr-mp-rot-fh:
 
 Using a locking rotating file handler
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-xyz
+<<<<< TODO >>>>> 
 
 --------------------------------------------------
 
@@ -678,3 +682,4 @@ the class to configure logging across multiple modules.
 
     ¿¿ Commentary on ``test_configurator.py`` ??
 
+    <<<<< TODO >>>>> 
