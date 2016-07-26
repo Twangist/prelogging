@@ -1,9 +1,9 @@
 __author__ = 'brianoneill'
 
 from .logging_config_dict_ex import LoggingConfigDictEx
+from _collections_abc import ABCMeta, abstractmethod
 
-
-class ConfiguratorABC():
+class ConfiguratorABC(metaclass=ABCMeta):
     """
     .. include:: _global.rst
 
@@ -43,8 +43,8 @@ class ConfiguratorABC():
     of this facility.
     |hr|
     """
-
     @classmethod
+    @abstractmethod
     def add_to_lcd(cls, lcdx):          # pragma: no cover
         """(Virtual callout) Customize the passed ``LoggingConfigDictEx``.
 
@@ -54,7 +54,7 @@ class ConfiguratorABC():
         on every ``ConfiguratorABC`` subclass that implements it.
         All implementations are passed the same object ``lcdx``.
         Implementations should call ``LoggingConfigDictEx`` methods
-        on ``lcdx`` to further augment and customize it.
+        on ``lcdx`` to augment and customize it.
         """
         pass
 
@@ -68,7 +68,7 @@ class ConfiguratorABC():
         """A single method which creates a ``LoggingConfigDictEx``,
         calls all ``add_to_lcd`` methods with that object, and then
         configures logging using that object. Your program should call
-        this method once and once only.
+        this method once (only).
 
         Parameters are as for ``LoggingConfigDictEx``.
 

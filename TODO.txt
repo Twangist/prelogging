@@ -14,9 +14,26 @@ Package name:
 *   keep name `lcd`?  rename back to `logging_config_dict` ???
     or something better?
 
-Class names:
+
+Class names, LCD:
 
 *   ¿Not ``LoggingConfigDict`` etc but ``LCD``, ``LCDEx"?
+
+OR
+
+*   Call the base class something different,
+    e.g. ``LoggingConfigDict_`` (or ``LCD_``),
+    and call ``LoggingConfigDictEx`` actually ``LoggingConfigDict``
+        (or ``LCD``)
+
+    LoggingConfigDict   |---------->  LoggingConfigDict_      or
+                                      LoggingConfigDictBase   or
+                                      LoggingConfigDict_Base  or
+                                      LCD_
+
+    LoggingConfigDictEx |---------->  LoggingConfigDict       or
+                                      LCD
+
 
 Examples:
 
