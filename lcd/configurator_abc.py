@@ -47,11 +47,13 @@ class ConfiguratorABC(metaclass=ABCMeta):
 
         :param lcdx: a ``LoggingConfigDictEx``
 
-        ``configure_logging`` calls this method
-        on every ``ConfiguratorABC`` subclass that implements it.
-        All implementations are passed the same object ``lcdx``.
-        Implementations should call ``LoggingConfigDictEx`` methods
-        on ``lcdx`` to augment and customize it.
+        ``configure_logging`` calls this method on every ``ConfiguratorABC``
+        subclass that implements it. All implementations are passed the same
+        object ``lcdx``. Implementations should call ``LoggingConfigDictEx``
+        methods on ``lcdx`` to augment and customize it.
+
+        **Note**: Implementations should *not* call ``super().add_to_lcd`` —
+        it has already been called by ``configure_logging``!
         """
         pass
 
@@ -102,4 +104,3 @@ class ConfiguratorABC(metaclass=ABCMeta):
             derived_classes.extend(subcls.__subclasses__())
 
         lcdx.config()
-
