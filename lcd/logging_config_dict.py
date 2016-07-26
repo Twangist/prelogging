@@ -18,7 +18,8 @@ the data, as back-references to things "already defined".
 ``- - - - - - - - - - - - - - - - - - - - - - - - -``
 
 Although dicts are unordered, when configuring logging there's a precedence
-ordering for specifying objects:
+ordering for specifying objects. ``LoggingConfigDict`` breaks down the process
+of specifying these objects into basic steps performed by its methods:
 
     1. Create a ``LoggingConfigDict``, optionally specifying the level of
        the root handler.
@@ -29,7 +30,8 @@ ordering for specifying objects:
 
     4. Add handler specifications with ``add_handler()`` and/or
        ``add_file_handler()``, referring by name to formatters and filters
-       already specified in previous steps.
+       already specified in previous steps. You can attach filters to a handler
+       with ``add_handler_filters``.
 
     *In steps 2. – 4. you give each thing specified a name, by which you refer
     to it in subsequent steps when attaching the thing to other, higher-level
@@ -41,7 +43,9 @@ ordering for specifying objects:
 
     6. Add specifications for any non-root loggers with ``add_logger()``.
        Specify the handlers and filters of a logger by name, using the
-       ``handlers`` and ``filters`` keyword parameters.
+       ``handlers`` and ``filters`` keyword parameters. You can also attach
+       handlers and filters to a logger with the methods
+       ``attach_logger_handlers()`` and ``attach_logger_filters()``.
 
     *Steps 2. and 3. can be interchanged, likewise Steps 5. and 6.*
 
