@@ -4,3 +4,7 @@
 .. |br| raw:: html
 
    <br />
+
+.. |hr| raw:: html
+
+   <hr>

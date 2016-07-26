@@ -6,8 +6,6 @@ from copy import deepcopy
 from .logging_config_dict import LoggingConfigDict
 from ._version import IS_PY2
 
-
-# NOTE: Available if you want it:
 __doc__ = """\
 """
 
@@ -33,9 +31,9 @@ class LoggingConfigDictEx(LoggingConfigDict):
     ``__init__`` **keyword parameters**  |br|
     ``- - - - - - - - - - - - - - - - - - - - - - - - -``
 
-    In addition to the parameters ``root_level`` and ``disable_existing_loggers``
-    recognized by :ref:`LoggingConfigDict`, the constructor of this class accepts
-    a few more::
+    In addition to the parameters ``root_level`` and
+    ``disable_existing_loggers`` recognized by :ref:`LoggingConfigDict`,
+    the constructor of this class accepts a few more::
 
             attach_handlers_to_root (bool)
             locking                 (bool)
@@ -124,7 +122,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
         'process_logger_level_msg':
             '%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s',
         'process_time_logger_level_msg':
-            '%(processName)-10s: %(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s',
+            '%(processName)-10s: %(asctime)s:'
+            ' %(name)-20s: %(levelname)-8s: %(message)s',
         'time_logger_level_msg':
             '%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s',
     }
@@ -136,13 +135,13 @@ class LoggingConfigDictEx(LoggingConfigDict):
                  attach_handlers_to_root=False,
                  disable_existing_loggers=False):  # logging default value is True
         """
-        :param root_level: one of 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL',
-            'NOTSET'
+        :param root_level: one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``,
+            ``'ERROR'``, ``'CRITICAL'``, ``'NOTSET'``
         :param log_path: is a path, absolute or relative, where logfiles will
             be created. ``add_file_handler`` prepends ``log_path`` to its
-            ``filename`` parameter and uses that as the value of the ``'filename'``
-            key. Prepending uses ``os.path.join``. The directory specified by
-            ``log_path`` must already exist.
+            ``filename`` parameter and uses that as the value of the
+            ``'filename'`` key. Prepending uses ``os.path.join``. The directory
+            specified by ``log_path`` must already exist.
         :param locking: if True, console handlers use locking stream handlers,
             and file handlers created by ``add_file_handler`` and
             ``add_rotating_file_handler`` use locking file handlers, **unless**
@@ -151,10 +150,10 @@ class LoggingConfigDictEx(LoggingConfigDict):
             of this class will automatically add handlers to the root logger,
             as well as to the ``handlers`` subdictionary.
         :param disable_existing_loggers: corresponds to the logging dict-config
-            key(/value) of the same name. This default value is ``False`` so that
-            separate packages can use this class to create their own ("private")
-            loggers before or after their clients do their own logging config.
-            The `logging` default value is ``True``.
+            key(/value) of the same name. This default value is ``False`` so
+            that separate packages can use this class to create their own
+            ("private") loggers before or after their clients do their own
+            logging configuration. The `logging` default value is ``True``.
 
         See also :ref:`__init__ keyword parameters <LoggingConfigDictEx-init-params>`
         above, in the class's docstring.
@@ -192,8 +191,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :param clone: name of a (usually new) handler — the target.
         :param handler: name of existing, source handler. Raise ``KeyError``
             if no such handler has been added.
-        :param attach_to_root: If true, add the ``clone`` handler to the root logger;
-            if ``None``, do what self.attach_handlers_to_root says;
+        :param attach_to_root: If true, add the ``clone`` handler to the root
+            logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
             if false, don't add clone to root.
         :return: ``self``
         """
@@ -235,10 +234,11 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :param stream:
         :param formatter:
         :param level:
-        :param locking: If true, this handler will be a :ref:`LockingStreamHandler`;
-            if false, the handler will be a ``logging.StreamHandler``.
-        :param attach_to_root: If true, add the ``clone`` handler to the root logger;
-            if ``None``, do what self.attach_handlers_to_root says;
+        :param locking: If true, this handler will be a
+            :ref:`LockingStreamHandler`; if false, the handler will be a
+            ``logging.StreamHandler``.
+        :param attach_to_root: If true, add the ``clone`` handler to the root
+            logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
             if false, don't add clone to root.
         :param kwargs:
         :return: ``self``
@@ -365,8 +365,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
             a new `lf.log` is created and written to.
             The logging module calls this parameter `maxBytes`;
             it also defaults to 0.
-        :param backup_count: (max) n)umber of backup files to create and maintain.
-            The logging module calls this parameter `backupCount`;
+        :param backup_count: (max) n)umber of backup files to create and
+            maintain. The logging module calls this parameter `backupCount`;
             it also defaults to 0.
         :param formatter: the name of the formatter that this handler will use
         :param mode: NOTE -- mode is `append`, logging module default
@@ -375,8 +375,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
             actually written to
         :param locking: Mandatory if multiprocessing -- things won't even work,
             logfile can't be found: FileNotFoundError: [Errno 2]...
-        :param attach_to_root: If true, add the ``clone`` handler to the root logger;
-            if ``None``, do what self.attach_handlers_to_root says;
+        :param attach_to_root: If true, add the ``clone`` handler to the root
+            logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
             if false, don't add clone to root.
         :param kwargs: additional key/value pairs
         :return: ``self``

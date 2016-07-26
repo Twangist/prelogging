@@ -5,6 +5,8 @@ from .logging_config_dict_ex import LoggingConfigDictEx
 
 class ConfiguratorABC():
     """
+    .. include:: _global.rst
+
     A class for automating multi-package / multi-module logging configuration.
     Every package/module that wants a say in the configuration of logging
     should define its own (sub*)subclass of ConfiguratorABC, which overrides
@@ -39,6 +41,7 @@ class ConfiguratorABC():
 
     See the test ``test_configurator.py`` for a multi-module example
     of this facility.
+    |hr|
     """
 
     @classmethod
@@ -78,7 +81,8 @@ class ConfiguratorABC():
         this method calls ``lcdx.config()`` to configure logging.
 
         **Note**: ``configure_logging()`` will call ``add_to_lcd`` only on
-        ``ConfiguratorABC`` subclasses that have actually been imported.
+        ``ConfiguratorABC`` subclasses that have actually been imported
+        at the time ``configure_logging()`` is called.
         Thus, make sure that your program has imported all such subclasses
         before it calls this method. If the contributions of the ``add_to_lcd``
         method of some such subclass have no effect — its handlers and/or

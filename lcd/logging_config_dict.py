@@ -91,6 +91,7 @@ class LoggingConfigDict(dict):
         that you not use actual streams, but rather the text equivalents, as
         shown in the example just given.
 
+    |hr|
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
 
