@@ -37,8 +37,9 @@ directory, and run::
 
     $ ./setup.py install
 
-The latter approach lets you review the examples, which are not installed.
-Whichever way you choose, ideally you'll do it in a virtual environment.
+The latter approach lets you review and run the examples, which are not
+installed. Whichever way you choose, ideally you'll do it in a virtual
+environment.
 
 
 Running tests and examples
@@ -92,7 +93,7 @@ different processes will barge in on each other. The subdirectories
 ``_log--2.7-runs``, ``_log--3.5-runs (I)`` and ``_log--3.5-runs (II)`` of
 ``examples/`` capture several instances of this misbehavior. Though your mileage
 may vary, experience has shown that this expected misbehavior is more likely
-when these examples are run individually, than when they're run via
+when these examples are run individually than when they're run via
 ``run_examples.py`` or ``run_all.py``.
 
 Coverage from tests + examples
