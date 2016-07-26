@@ -5,7 +5,7 @@ from .logging_config_dict_ex import LoggingConfigDictEx
 
 class ConfiguratorABC():
     """
-    A class for automatic multi-package / multi-module logging configuration.
+    A class for automating multi-package / multi-module logging configuration.
     Every package/module that wants a say in the configuration of logging
     should define its own (sub*)subclass of ConfiguratorABC, which overrides
     the method
@@ -64,7 +64,10 @@ class ConfiguratorABC():
                    disable_existing_loggers=False):
         """A single method which creates a ``LoggingConfigDictEx``,
         calls all ``add_to_lcd`` methods with that object, and then
-        configures logging using that object.
+        configures logging using that object. Your program should call
+        this method once and once only.
+
+        Parameters are as for ``LoggingConfigDictEx``.
 
         This method creates a ``LoggingConfigDictEx`` ``lcdx``,
         and calls ``subcls.add_to_lcd(lcdx)`` on all subclasses ``subcls``
@@ -74,7 +77,13 @@ class ConfiguratorABC():
         After calling all the ``add_to_lcd`` implementations,
         this method calls ``lcdx.config()`` to configure logging.
 
-        Parameters are as for ``LoggingConfigDictEx``.
+        **Note**: ``configure_logging()`` will call ``add_to_lcd`` only on
+        ``ConfiguratorABC`` subclasses that have actually been imported.
+        Thus, make sure that your program has imported all such subclasses
+        before it calls this method. If the contributions of the ``add_to_lcd``
+        method of some such subclass have no effect — its handlers and/or
+        loggers do nothing — it may be because the subclass wasn't
+        imported when ``configure_logging()`` was called.
         """
         lcdx = LoggingConfigDictEx(
                     root_level=root_level,
