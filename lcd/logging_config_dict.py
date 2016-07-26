@@ -19,7 +19,7 @@ the data, as back-references to things "already defined".
 
 Although dicts are unordered, when configuring logging there's a precedence
 ordering for specifying objects. ``LoggingConfigDict`` breaks down the process
-of specifying these objects into basic steps performed by its methods:
+of creating a logging config dict into basic steps performed by its methods:
 
     1. Create a ``LoggingConfigDict``, optionally specifying the level of
        the root handler.
