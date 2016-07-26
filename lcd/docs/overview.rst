@@ -36,7 +36,7 @@ for the first time, the ``Logger`` named ``'mylogger'`` is created
 accessing it will "just work", and then, at least by default, that logger will
 use the handlers of it's *parent handler*. The parent of ``'mylogger'`` is the
 root logger, ``logging.getLogger()``. In many cases, to configure logging it's
-sufficient just to add a handler or two to the root.
+sufficient just to add a handler or two and attach them to the root.
 
 .. topic:: `logging` shorthands and defaults
 
@@ -139,7 +139,7 @@ lower-level objects by name.
 objects, so they should be defined first. Next, define ``Handler``\s, and
 finally, ``Logger``\s that use already-defined ``Handler``\s (and, perhaps,
 ``Filter``\s). `lcd` supplies dedicated methods for configuring the root logger
-(setting its level, adding handlers and filters to it), but often a
+(setting its level, attaching handlers and filters to it), but often a
 general-purpose `lcd` method can also be used, by referring to the root logger
 by name: ``''``.
 
@@ -273,7 +273,7 @@ else receives reasonable, expected defaults. Using the "batteries included"
 Here, we use a couple of the builtin ``Formatter``\s supplied by
 ``LoggingConfigDictEx``. Because we pass the flag
 ``attach_handlers_to_root=True`` when creating the instance ``lcd_ex``,
-every handler we add to ``lcd_ex`` is automatically added to the root logger.
+every handler we add to ``lcd_ex`` is automatically attached to the root logger.
 Later, we'll
 :ref:`revisit this example <overview-example-using-only-LoggingConfigDict>`,
 to see how the same result can be achieved using only ``LoggingConfigDict``.
