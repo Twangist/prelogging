@@ -1,9 +1,34 @@
+# coding=utf-8
+
 __author__ = 'brianoneill'
 
 from .logging_config_dict_ex import LoggingConfigDictEx
-from _collections_abc import ABCMeta, abstractmethod
+from ._version import IS_PY2
+if IS_PY2:                      # pragma: no cover
+    from abc import ABCMeta, abstractmethod
+else:                           # pragma: no cover
+    from _collections_abc import ABCMeta, abstractmethod
 
-class ConfiguratorABC(metaclass=ABCMeta):
+
+# From `six` 1.10.0:
+def add_metaclass(metaclass):       # pragma: no cover
+    """Class decorator for creating a class with a metaclass."""
+    def wrapper(cls):
+        orig_vars = cls.__dict__.copy()
+        slots = orig_vars.get('__slots__')
+        if slots is not None:
+            if isinstance(slots, str):
+                slots = [slots]
+            for slots_var in slots:
+                orig_vars.pop(slots_var)
+        orig_vars.pop('__dict__', None)
+        orig_vars.pop('__weakref__', None)
+        return metaclass(cls.__name__, cls.__bases__, orig_vars)
+    return wrapper
+
+
+@add_metaclass(ABCMeta)
+class ConfiguratorABC():
     """
     .. include:: _global.rst
 

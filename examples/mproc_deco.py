@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 __author__ = 'brianoneill'
 __version__ = '0.2'
 
@@ -69,7 +71,7 @@ def main(use_locking=None):
     :param use_locking: bool
     """
     if use_locking is None:
-        use_locking = get_locking_pref(version=__version__)
+        use_locking = get_locking_pref()
 
     config_logging(use_locking)
 

@@ -67,7 +67,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
 
     .. _builtin-formatters:
 
-    .. index:: Builtin Formatters (LoggingConfigDictEx)
+    .. index:: Builtin formatters (LoggingConfigDictEx)
 
     **Formatters provided** |br|
     ``- - - - - - - - - - - - - - - - - - - - - - - - -``
@@ -162,8 +162,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
                         root_level=root_level,
                         disable_existing_loggers=disable_existing_loggers)
         self.log_path = log_path
-        self.locking = locking
-        self.attach_handlers_to_root = attach_handlers_to_root
+        self._locking = locking
+        self._attach_handlers_to_root = attach_handlers_to_root
 
         # Include some batteries (Formatters) --
         # The default is class_='logging.Formatter'
@@ -171,12 +171,43 @@ class LoggingConfigDictEx(LoggingConfigDict):
             self.add_formatter(formatter_name,
                                format=self.format_strs[formatter_name])
 
-    def _attach_to_root(self, attach):
+    @property
+    def attach_handlers_to_root(self):
+        """
+        Return this logging config dict's default `attach_to_root` setting,
+        used by handler-adding methods when their ``attach_to_root`` parameter
+        is ``None``.
+
+        :return: ``self._attach_to_root``, the value of
+            ``attach_handlers_to_root`` passed to the constructor
+        """
+        return self._attach_handlers_to_root
+
+    @property
+    def locking(self):
+        """
+        Return this logging config dict's default `locking` setting,
+        used by handler-adding methods when their ``locking`` parameter
+        is ``None``.
+
+        :return: ``self._locking``, the value of ``locking`` passed to
+            the constructor
+        """
+        return self._locking
+
+    def _attach_to_root__adjust(self, attach):
         """
         :param attach: Any; but really, ``bool`` or None.
         :return: self.attach_handlers_to_root if attach is None else bool(attach)
         """
-        return self.attach_handlers_to_root if attach is None else bool(attach)
+        return self._attach_handlers_to_root if attach is None else bool(attach)
+
+    def _locking__adjust(self, locking):
+        """
+        :param locking: Any; but really, ``bool`` or None.
+        :return: self.locking if attach is None else bool(locking)
+        """
+        return self._locking if locking is None else bool(locking)
 
     def clone_handler(self,     # *,
                       clone,
@@ -196,7 +227,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
             if false, don't add clone to root.
         :return: ``self``
         """
-        attach_to_root = self._attach_to_root(attach_to_root)
+        attach_to_root = self._attach_to_root__adjust(attach_to_root)
 
         clone_dict = deepcopy(self.handlers[handler])
         # Change any 'class' key back into 'class_'
@@ -218,7 +249,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :return: ``self``
         """
         super(LoggingConfigDictEx, self).add_handler(handler_name, ** handler_dict)
-        if self._attach_to_root(attach_to_root):
+        if self._attach_to_root__adjust(attach_to_root):
             super(LoggingConfigDictEx, self).attach_root_handlers(handler_name)
         return self
 
@@ -245,8 +276,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
         """
         # So: self can be created with (self.)locking=False,
         # but a handler can be locking.
-        locking = self.locking if locking is None else bool(locking)
-        attach_to_root = self._attach_to_root(attach_to_root)
+        locking = self._locking__adjust(locking)
+        attach_to_root = self._attach_to_root__adjust(attach_to_root)
 
         if formatter is None:
             formatter = ('process_logger_level_msg'
@@ -319,8 +350,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
         """
         # So: self can be created with (self.)locking=False,
         # but a handler can be locking.
-        locking = self.locking if locking is None else bool(locking)
-        attach_to_root = self._attach_to_root(attach_to_root)
+        locking = self._locking__adjust(locking)
+        attach_to_root = self._attach_to_root__adjust(attach_to_root)
 
         if not formatter:
             formatter = ('process_time_logger_level_msg'
@@ -383,8 +414,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
         """
         # So: self can be created with (self.)locking=False,
         # but a handler can be locking.
-        locking = self.locking if locking is None else bool(locking)
-        attach_to_root = self._attach_to_root(attach_to_root)
+        locking = self._locking__adjust(locking)
+        attach_to_root = self._attach_to_root__adjust(attach_to_root)
 
         if not formatter:
             formatter = ('process_time_logger_level_msg'

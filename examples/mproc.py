@@ -145,7 +145,7 @@ NUM_DOCS_TOTAL = 80     # 64
 
 def main(use_locking=None):
     if use_locking is None:
-        use_locking = get_locking_pref(version=__version__)
+        use_locking = get_locking_pref()
 
     config_logging(use_locking)
 
@@ -168,5 +168,6 @@ def main(use_locking=None):
 
 
 if __name__ == '__main__':
-    main(use_locking=True)
-    main(use_locking=False)
+    # main(use_locking=True)
+    # main(use_locking=False)
+    main()

@@ -43,6 +43,9 @@ class TestLoggingConfigDictEx(TestCase):
         """
         lcd = LoggingConfigDictEx(root_level='DEBUG')
 
+        self.assertEqual(lcd.locking, False)
+        self.assertEqual(lcd.attach_handlers_to_root, False)
+
         # lcd.dump()      # | DEBUG comment out
 
         expected = self.get_expected_starting_dict('DEBUG')
@@ -94,6 +97,9 @@ class TestLoggingConfigDictEx(TestCase):
         """
         lcd = LoggingConfigDictEx(attach_handlers_to_root=True,
                                   locking=True)
+
+        self.assertEqual(lcd.locking, True)
+        self.assertEqual(lcd.attach_handlers_to_root, True)
 
         # lcd.dump()      # | DEBUG comment out
 

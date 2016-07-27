@@ -10,17 +10,10 @@ Requirements
 The `lcd` package requires only Python 2.7 or 3.4+. It has no external
 dependencies.
 
-However, all examples (in the ``examples/`` subdirectory of the repository top
-level) require `docopt`, and two examples require the `deco` package.
-
-.. todo::
-    Maybe change this: get rid of `docopt` dependency, use `argparse` instead.
-    (Better just to use the standard library, yes?)
-    Doing this only requires modifying one function:
-
-        ``get_locking_pref(version='1') -> bool``
-
-    in ``examples/_get_locking_pref.py``.
+The `lcd` repository contains an ``examples/`` subdirectory. Two examples
+require the `deco` package, which simplifies the use of multiprocessing.
+However, the examples are just for illustration (and code coverage), and aren't
+installed with the `lcd` package.
 
 
 Installation
@@ -38,8 +31,8 @@ directory, and run::
     $ ./setup.py install
 
 The latter approach lets you review and run the examples, which are not
-installed. Whichever way you choose, ideally you'll do it in a virtual
-environment.
+installed by ``pip`` or ``setup.py``. Whichever way you choose, ideally you'll
+do it in a virtual environment.
 
 
 Running tests and examples
