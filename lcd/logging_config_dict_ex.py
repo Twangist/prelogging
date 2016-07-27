@@ -174,9 +174,9 @@ class LoggingConfigDictEx(LoggingConfigDict):
     @property
     def attach_handlers_to_root(self):
         """
-        Return this logging config dict's default `attach_to_root` setting,
-        used by handler-adding methods when their ``attach_to_root`` parameter
-        is ``None``.
+        (r/o Property) Return this logging config dict's default
+        `attach_to_root` setting, used by handler-adding methods when their
+        ``attach_to_root`` parameter is ``None``.
 
         :return: ``self._attach_to_root``, the value of
             ``attach_handlers_to_root`` passed to the constructor
@@ -186,8 +186,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
     @property
     def locking(self):
         """
-        Return this logging config dict's default `locking` setting,
-        used by handler-adding methods when their ``locking`` parameter
+        (r/o Property) Return this logging config dict's default `locking`
+        setting, used by handler-adding methods when their ``locking`` parameter
         is ``None``.
 
         :return: ``self._locking``, the value of ``locking`` passed to
