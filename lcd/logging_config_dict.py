@@ -1,6 +1,9 @@
 # coding=utf-8
 
 from __future__ import print_function
+from .six import PY2
+import logging
+import logging.config
 
 __author__ = "Brian O'Neill"
 
@@ -55,9 +58,6 @@ for a call to
 `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
 """
 
-import logging
-import logging.config
-from ._version import IS_PY2
 
 class LoggingConfigDict(dict):
     """
@@ -535,7 +535,7 @@ class LoggingConfigDict(dict):
 
         def print_err(msg, **kwargs):
             import sys
-            if IS_PY2:
+            if PY2:
                     msg = unicode(msg)
             print(msg, file=sys.stderr, **kwargs)
 

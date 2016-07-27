@@ -1,14 +1,13 @@
 __author__ = 'brianoneill'
 
+from lcd import LoggingConfigDict
+from lcd.six import PY2
+
 from unittest import TestCase
 import logging
-
-from lcd import LoggingConfigDict
-
 import sys
 import io   # for io.StringIO
 
-_IS_PY2 = (sys.version_info.major == 2)
 
 #############################################################################
 
@@ -190,7 +189,7 @@ class TestLoggingConfigDict(TestCase):
         # .     any callable taking a logging record as arg;
         # .     it must have an attribute .filter
         # .     which must be a callable taking a logging record as arg.
-        if _IS_PY2:
+        if PY2:
             _count_debug.filter = _count_debug
 
         lcd = LoggingConfigDict()
@@ -226,7 +225,7 @@ class TestLoggingConfigDict(TestCase):
         lcd.config(disable_existing_loggers=False)
         logger = logging.getLogger('h')
 
-        if _IS_PY2:
+        if PY2:
             logger.debug(u"Hi 1")
             logger.debug(u"Hi 2")
             logger.info(u"Hi 3")
@@ -282,7 +281,7 @@ class TestLoggingConfigDict(TestCase):
         lcd.config()
 
         logger = logging.getLogger('abc')
-        if _IS_PY2:
+        if PY2:
             logger.debug(u"Yo 1")
             logger.debug(u"Yo 2")
             logger.info(u"Yo 3")
@@ -332,7 +331,7 @@ class TestLoggingConfigDict(TestCase):
 
         lcd.config()
         logger = logging.getLogger()
-        if _IS_PY2:
+        if PY2:
             logger.debug(u"Hi 1")
             logger.debug(u"Hi 2")
             logger.info(u"Hi 3")
@@ -404,7 +403,7 @@ class TestLoggingConfigDict(TestCase):
         logger = logging.getLogger()
         logger.debug("Hi 0")
         logger.debug("Hi 1")
-        if _IS_PY2:
+        if PY2:
             logger.info(u"0")     # passes filter
             logger.info(u"1")
             logger.info(u"2")     # passes filter

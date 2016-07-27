@@ -4,7 +4,7 @@ import os
 from copy import deepcopy
 
 from .logging_config_dict import LoggingConfigDict
-from ._version import IS_PY2
+from .six import PY2
 
 __doc__ = """\
 """
@@ -53,7 +53,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
 
     All of the methods that add a handler take parameters ``attach_to_root``
     and ``locking``, each a ``bool`` or ``None``; these allow overriding of
-    the values established by ``__init__``. Thus, for example, callers can
+    the values passed to the constructor. Thus, for example, callers can
     add a non-locking handler even if ``self.locking`` is true, or a locking
     handler even if ``self.locking`` is false. The default value of these
     parameters of handler-adding methods is ``None``, meaning: use the value
@@ -474,7 +474,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :param filter_dict: any other parameters to be passed to ``add_filter``.
         :return: ``self``
         """
-        if IS_PY2:      # curious lil hack
+        if PY2:      # curious lil hack
             if not hasattr(filter_fn, 'filter'):
                 setattr(filter_fn, 'filter', filter_fn)
         filter_dict['()'] = lambda: filter_fn
