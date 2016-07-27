@@ -1,5 +1,5 @@
 # Our version:
-__version__ = '0.2.7b5'
+__version__ = '0.2.7b6'
 
 # Python version:
 import sys
