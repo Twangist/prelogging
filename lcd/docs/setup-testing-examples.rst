@@ -10,11 +10,17 @@ Requirements
 The `lcd` package requires only Python 2.7 or 3.4+. It has no external
 dependencies.
 
-The `lcd` repository contains an ``examples/`` subdirectory. Two examples
-require the `deco` package, which simplifies the use of multiprocessing.
-However, the examples are just for illustration (and code coverage), and aren't
-installed with the `lcd` package.
+Backwards compatibility with 2.7 is provided with some reluctance, and mostly
+"by hand". The package includes a copy of the module ``six.py`` (version 1.10.0,
+for what it's worth), but uses only two things from it: its ``add_metaclass``
+decorator, so that we can define an abstract base class in the "right way";
+and its flag ``PY2``, whose value is the obvious one-liner.
 
+The `lcd` repository contains an ``examples/`` subdirectory. Two examples
+use the (excellent) new `deco <https://github.com/alex-sherman/deco>`_ package,
+which provides a "simplified parallel computing model for Python". However, the
+examples are just for illustration (and code coverage), and aren't installed
+with the `lcd` package.
 
 Installation
 ---------------
