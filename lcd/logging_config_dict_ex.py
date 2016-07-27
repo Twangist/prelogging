@@ -39,16 +39,17 @@ class LoggingConfigDictEx(LoggingConfigDict):
             locking                 (bool)
             log_path                (str)
 
-    When ``attach_handlers_to_root`` is true, by default the other methods
-    of this class automatically add handlers to the root logger as well as
-    to the ``handlers`` subdictionary. By default, ``attach_handlers_to_root``
-    is ``False``.
+    When ``attach_handlers_to_root`` is true [default: False], by default the
+    other methods of this class automatically add handlers to the root logger
+    as well as to the ``handlers`` subdictionary. The read-only property
+    ``attach_to_root`` saves the value passed to the constructor as
+    ``attach_handlers_to_root``.
 
-    When ``locking`` is true, by default the other methods of this class
-    add :ref:`locking handlers <locking-handlers>`; if it's false, handlers
-    instantiate the "usual" classes defined by `logging`. (See the
-    :ref:`class inheritance diagram <lcd-all-classes>`.)
-    By default, ``locking`` is ``False``.
+    When ``locking`` is true [default: False], by default the other methods of
+    this class add :ref:`locking handlers <locking-handlers>`; if it's false,
+    handlers instantiate the "usual" classes defined by `logging`. (See the
+    :ref:`class inheritance diagram <lcd-all-classes>`.) The read-only property
+    ``locking`` saves the value passed to the constructor as ``locking``.
 
     All of the methods that add a handler take parameters ``attach_to_root``
     and ``locking``, each a ``bool`` or ``None``; these allow overriding of
@@ -174,7 +175,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
     @property
     def attach_handlers_to_root(self):
         """
-        (r/o Property) Return this logging config dict's default
+        (r/o property) Return this logging config dict's default
         `attach_to_root` setting, used by handler-adding methods when their
         ``attach_to_root`` parameter is ``None``.
 
@@ -186,7 +187,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
     @property
     def locking(self):
         """
-        (r/o Property) Return this logging config dict's default `locking`
+        (r/o property) Return this logging config dict's default `locking`
         setting, used by handler-adding methods when their ``locking`` parameter
         is ``None``.
 
