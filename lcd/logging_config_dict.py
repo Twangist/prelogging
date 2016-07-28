@@ -55,7 +55,7 @@ of creating a logging config dict into basic steps:
        ``handlers`` and ``filters`` keyword parameters. You can also attach
        handlers and filters to an already-added logger, and set its loglevel.
 
-    *Steps 2. and 3. can be interchanged, likewise Steps 5. and 6.*
+    *Steps 2. and 3. can be interchanged, likewise 5. and 6.*
 
 Keyword parameters of the ``add_*`` methods are the very same keys that occur in
 the sub-subdictionaries of the corresponding kind of logging entities (with just
@@ -77,22 +77,14 @@ class LoggingConfigDict(dict):
     """
     .. include:: _global.rst
 
-    A general class that simplifies building a logging config dict, modularly
-    and incrementally, for ultimate use with the ``config()`` method of this
-    class, which simply calls
-    `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
-    The methods of ``LoggingConfigDict`` let you dispense with lots (and lots)
-    of nested curly braces, colons, single-quotes around keywords, and
-    boilerplate key/value pairs.
-
     *   In this class as well as in :ref:`LoggingConfigDictEx`, "level" always
         means the ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric
         value ``logging.DEBUG``. A level name, in short — one of ``'DEBUG'``,
         ``'INFO'``, ``'WARNING'``, ``'ERROR'``, ``'CRITICAL'``, or ``'NOTSET'``.
 
-    *   Except for ``config()`` and the properties ``formatters``, ``filters``,
-        ``handlers``, ``loggers`` and ``root``, all public methods of this class
-        and of :ref:`LoggingConfigDictEx` return ``self``, to allow chaining.
+    *   Except for properties and the ``__init__`` and ``config`` methods, all
+        public methods of this class (and similarly of
+        :ref:`LoggingConfigDictEx`) return ``self``, to allow chaining.
 
     *   The (leaf) values in logging config dicts are almost all strings. The
         exceptions are ``bool`` values and actual streams allowed as the value
@@ -258,6 +250,13 @@ class LoggingConfigDict(dict):
         self.handlers[handler_name] = handler_dict.copy()
         return self
 
+    # << TODO >> What is logging default? It's 'a', isn't it.
+    # << TODO >> mode='w' ---- DOCUMENT: differs from logging default ('a')
+    # << TODO >> Change this to mode='a' ???  That may well be what people
+    #      |     want for production. It makes testing a nuisance --
+    #      |     anyway, we'd have to add explicit mode='w' to (almost?) all
+    #      |     file handlers used in tests.
+    #      |     [and what about examples?]
     def add_file_handler(self, handler_name,    # *,
                          filename,
                          formatter,

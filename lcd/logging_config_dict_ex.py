@@ -20,9 +20,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
     .. include:: _global.rst
 
     Except for ``__init__`` and ``add_*_filter`` methods, every method of this
-    class adds a handler of some kind. All methods except ``__init__`` return
-    ``self``.
-
+    class adds a handler of some kind. Except for properties and the
+    ``__init__`` method, all public methods return ``self``.
 
     .. _LoggingConfigDictEx-init-params:
 

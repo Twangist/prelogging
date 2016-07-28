@@ -1,13 +1,6 @@
 TODOs
 =====
 
-Multi-package, multi-module configuration
-
-*   A ``Configurator`` class, which packages/modules subclass
-    ``Configurator`` can then iterate through its subclasses
-    and call a **classmethod** on each, say ``add_to_lcd(lcd)``,
-    provided the subclass actually implements that classmethod
-
 
 Package name:
 
@@ -37,23 +30,57 @@ OR
 
 Examples:
 
-* Put `examples/` folder inside `lcd/` ???
+*   DOCUMENT (e.g. in examples-topics?)
+    The logging module provides several handler classes beyond those represented (sic?)
+    in `lcd`. See the docs for ``logging.handlers``, which also documents the
+    standard handlers in ``logging``:
 
-*   examples:
-    Investigate getting rid of `docopt` dependency, just use argparse -- right?
-    As much as possible, just use the standard library.
+            https://docs.python.org/3/library/logging.handlers.html#module-logging.handlers
+
+    Give an example or two of creating handlers of other classes provided by `logging`
+    using ``add_handler`` with the appropriate value of ``class_`` (see below)
+
+    E.g. class_='ext://logging.NullHandler'
+         class_='ext://logging.handlers.SMTPHandler'(loglevel CRITICAL or ERROR)
+
+    This would be *VERY* informative.
+
+    FROM DOCS:
+        class logging.handlers.SMTPHandler(mailhost, fromaddr, toaddrs, subject,
+                                           credentials=None, secure=None, timeout=1.0)
+
+        Returns a new instance of the SMTPHandler class. The instance is
+        initialized with the from and to addresses and subject line of the email.
+        The toaddrs should be a list of strings. To specify a non-standard SMTP
+        port, use the (host, port) tuple format for the mailhost argument. If
+        you use a string, the standard SMTP port is used. If your SMTP server
+        requires authentication, you can specify a (username, password) tuple
+        for the credentials argument.
+
+    TRY AN SMTP HANDLER ! :):):)):):):)
 
 *   Write up a guide to the examples?
     main module, + a brief description of what each does
     Separate file / chapter?  A table (shudder)?
 
 
+* Todo: document that all are executable (``$ ./blah.py ...``)
+   |    and that the mproc examples take a command line arg, -l / --locking,
+   |    -n / --nolocking, --help  (case-insensitive,
+   |        and that any prefix of 'locking', 'nolocking' will do
+
+
+*   Put `examples/` folder inside `lcd/` ???
+    (Note, Tending toward NOT doing this.)
+
+
 IDEAS
------
+======
 
 Default is to NOT add handlers to root. This is in general good for packages,
 which should use/add their own "private", "personal" logger, created as in
 examples child_logger_* and mproc_*.
+
 Initialization order concerns -- Can a package and an app (lets say) that
 uses the package *both* use ConfigSettingsDict*?  By default, `logging`'s
 dict-based configuration has limitations...
@@ -64,3 +91,39 @@ if non-None is passed, its bool value is used.  disable_existing_loggers should
 be set to False by packages that want to use this package but also want to play
 nicely with other packages and client apps that also use the package (or, more
 generally, those that use logging's dict-config).
+
+Feature "requests"
+===================
+
+Support for
+    logging.NullHandler ?
+        probably no need to "support" it (and no way to, really,
+        either), but maybe give an example
+        which would be *very* informative (use of ``class_`` kwarg)
+
+    logging.handlers.WatchedFileHandler ?
+    logging.handlers.TimedRotatingFileHandler ?
+    logging.handlers.SocketHandler
+    logging.handlers.DatagramHandler
+    logging.handlers.SysLogHandler
+    logging.handlers.NTEventLogHandler
+    logging.handlers.SMTPHandler
+    logging.handlers.MemoryHandler
+    logging.handlers.HTTPHandler
+    logging.handlers.QueueHandler
+    (logging.handlers.QueueListener)
+
+LCDEx methods to add them?
+    In any case, cite
+
+        https://docs.python.org/3/library/logging.handlers.html#module-logging.handlers
+
+    and document that all those handlers can be created using ``add_handler``
+    with the appropriate value of ``class_``
+
+    An example or two of this would be *VERY* informative (use of ``class_`` kwarg)
+
+Locking* versions?
+    not sure about MemoryHandler -- inefficient? bad idea?
+
+
