@@ -41,10 +41,24 @@ Examples:
     using ``add_handler`` with the appropriate value of ``class_`` (see below)
 
     E.g. class_='ext://logging.NullHandler'
-         class_='ext://logging.handlers.SMTPHandler'(loglevel CRITICAL or ERROR)
+       ¿ class_='ext://logging.handlers.SMTPHandler'(loglevel CRITICAL or ERROR)
 
     This would be *VERY* informative.
 
+    For NullHandler, refer to/cite/see
+        Configuring Logging for a Library¶
+        https://docs.python.org/3/howto/logging.html#configuring-logging-for-a-library
+        Example might be:
+        Suppose a library/package `foo` does THIS, at some point (maybe __init__.py ?)
+            import logging
+            logging.getLogger('foo').addHandler(logging.NullHandler())
+
+        How does this interact with use of `lcd`?
+            What if this happens BEFORE lcd config() is called?
+            What about `disable_existing_loggers` ?
+                does it preserve existing handlers? if false? if true?
+
+    fwiw,
     FROM DOCS:
         class logging.handlers.SMTPHandler(mailhost, fromaddr, toaddrs, subject,
                                            credentials=None, secure=None, timeout=1.0)
