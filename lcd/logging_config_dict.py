@@ -8,21 +8,26 @@ import logging.config
 __author__ = "Brian O'Neill"
 
 __doc__ = """ \
-The methods of this class —``add_formatter``, ``add_filter``,
-``add_handler``, ``add_logger``, and so on — operate on the underlying
-dictionary. That dict is significantly nested, and keys often appear among
+``LoggingConfigDict`` provides an API for building dictionaries that specify
+Python logging configuration -- *logging config dicts*.
+
+Entering a logging config dict as static data requires many nested curly
+braces, colons, single-quoted keywords, and boilerplate default key/value pairs.
+Such dicts are significantly nested, and keys often appear among
 the data, as back-references to things "already defined".
 
-.. _Using-a-LoggingConfigDict:
+But logging configuration involves a small hierarchy of only four kinds of
+entities — formatters, handlers, loggers and, optionally, filters —
+which can be specified in a layered way.
 
-.. index:: Using a LoggingConfigDict
+``LoggingConfigDict`` lets you build a logging config dict modularly and
+incrementally. It flattens the process of specifying the dict, letting you
+define each entity one by one, instead of entering a thicket of nested dicts.
 
-**Using a** ``LoggingConfigDict``  |br|
-``- - - - - - - - - - - - - - - - - - - - - - - - -``
-
-Although dicts are unordered, when configuring logging there's a precedence
-ordering for specifying objects. ``LoggingConfigDict`` breaks down the process
-of creating a logging config dict into basic steps performed by its methods:
+A ``LoggingConfigDict`` instance *is* a logging config dict. It inherits from
+``dict``, and its methods —``add_formatter``, ``add_handler``, ``add_logger``,
+and so on — operate on the underlying dictionary, breaking down the process
+of creating a logging config dict into basic steps:
 
     1. Create a ``LoggingConfigDict``, optionally specifying the level of
        the root handler.
@@ -47,15 +52,24 @@ of creating a logging config dict into basic steps performed by its methods:
     6. Add specifications for any non-root loggers with ``add_logger()``.
        Specify the handlers and filters of a logger by name, using the
        ``handlers`` and ``filters`` keyword parameters. You can also attach
-       handlers and filters to a logger with the methods
+       handlers and filters to an already-added logger with the methods
        ``attach_logger_handlers()`` and ``attach_logger_filters()``.
 
     *Steps 2. and 3. can be interchanged, likewise Steps 5. and 6.*
 
-Once a ``LoggingConfigDict`` has been populated, it can be used to configure
-logging by calling its ``config()`` method, which is basically just shorthand
-for a call to
+Keyword parameters of the ``add_*`` methods are the very same keys that occur in
+the sub-subdictionaries of the corresponding kind of logging entities (with just
+one exception: ``class_`` instead of ``class``). All receive correct and/or
+sensible default values.
+
+Once you've built a ``LoggingConfigDict`` meeting your requirements, you
+configure logging by calling the object's ``config`` method, which simply
+passes itself (a dict) to
 `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
+
+**Note**: The `lcd` class :ref:`ConfiguratorABC` defines an alternate,
+higher-level mini-framework for configuring logging, which calls ``config``
+for you.
 """
 
 
@@ -68,7 +82,8 @@ class LoggingConfigDict(dict):
     class, which simply calls
     `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
     The methods of ``LoggingConfigDict`` let you dispense with lots (and lots)
-    of nested curly braces and single-quotes around keywords.
+    of nested curly braces, colons, single-quotes around keywords, and
+    boilerplate key/value pairs.
 
     *   In this class as well as in :ref:`LoggingConfigDictEx`, "level" always
         means the ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric
@@ -124,6 +139,8 @@ class LoggingConfigDict(dict):
         # "because objects such as filters and formatters are anonymous, once
         #  a configuration is set up, it is not possible to refer to such
         #  anonymous objects when augmenting a configuration."
+        # That is, ``dictConfig`` doesn't retain the names used for formatters,
+        # filters and handlers in the logging config dict it processes.
         self['incremental'] = False         # logging default value
 
         # self['disable_existing_loggers'] can also be set
@@ -161,92 +178,6 @@ class LoggingConfigDict(dict):
     def root(self):
         """(Property) Return the ``'root'`` subdictionary."""
         return self['root']
-
-    def set_root_level(self, root_level):
-        """
-        Set the loglevel of the root handler.
-        Given that ``__init__`` has a ``root_level`` parameter, this isn't
-        really needed.
-
-        :param root_level: an explicit value. The default set in ``__init__``
-            is ``'WARNING'``.
-        :return: ``self``
-        """
-        assert root_level in self._level_names
-        self.root['level'] = root_level
-        return self
-
-    def attach_root_handlers(self, * handler_names):
-        """Add handlers in ``handler_names`` to the root logger.
-
-        :return: ``self``
-        """
-        self.root['handlers'].extend(handler_names)
-        return self
-
-    def attach_root_filters(self, * filter_names):
-        """Add filters in ``filter_names`` to the root logger.
-
-        :return: ``self``
-        """
-        if not filter_names:
-            return self
-        root_filters_list = self.root.setdefault('filters', [])
-        root_filters_list.extend(filter_names)
-        return self
-
-    # Note, 0.2.7 By analogy, add_logger_*s methods
-
-    def attach_logger_handlers(self, logger_name, * handler_names):
-        """
-        Add handlers in ``handler_names`` to the logger named ``logger_name``.
-
-        :param logger_name: (``str``) name of logger to attach handlers to
-        :param handler_names: sequence of handler names
-        :return: ``self``
-        """
-        if not logger_name:
-            self.attach_root_handlers(* handler_names)
-        elif handler_names:
-            logger_handlers_list = self.loggers[logger_name].setdefault(
-                                                                'handlers', [])
-            logger_handlers_list.extend(handler_names)
-        return self
-
-    def attach_logger_filters(self, logger_name, * filter_names):
-        """Add filters in ``filter_names`` to the logger named ``logger_name``.
-
-        :param logger_name: (``str``) name of logger to attach filters to
-        :param filter_names: sequence of filter names
-        :return: ``self``
-        """
-        if not filter_names:
-            return self
-
-        if not logger_name:
-            self.attach_root_filters(* filter_names)
-        else:
-            logger_dict = self.loggers[logger_name]
-            logger_filters_list = logger_dict.setdefault('filters', [])
-            logger_filters_list.extend(filter_names)
-
-        return self
-
-    def attach_handler_filters(self, handler_name, * filter_names):
-        """
-        Add filters in ``filter_names`` to the handler named ``handler_name``.
-
-        :param handler_name: (``str``) name of handler to attach filters to
-        :param filter_names: sequence of filter names
-        :return: ``self``
-        """
-        if not filter_names:
-            return self
-
-        handler_dict = self.handlers[handler_name]
-        handler_filters_list = handler_dict.setdefault('filters', [])
-        handler_filters_list.extend(filter_names)
-        return self
 
     def add_formatter(self, formatter_name,     # *,
                       class_='logging.Formatter',   # the typical case
@@ -360,6 +291,67 @@ class LoggingConfigDict(dict):
                          **kwargs)
         return self
 
+    def attach_handler_filters(self, handler_name, * filter_names):
+        """
+        Add filters in ``filter_names`` to the handler named ``handler_name``.
+
+        :param handler_name: (``str``) name of handler to attach filters to
+        :param filter_names: sequence of filter names
+        :return: ``self``
+        """
+        if not filter_names:
+            return self
+
+        handler_dict = self.handlers[handler_name]
+        handler_filters_list = handler_dict.setdefault('filters', [])
+        handler_filters_list.extend(filter_names)
+        return self
+
+    def set_handler_level(self, handler_name, level):
+        """Set the loglevel of handler `handler_name`.
+        Raise KeyError if no such handler.
+
+        :param handler_name: name of handler.
+        :param level: loglevel (as ``str``)
+        :return: ``self``
+        """
+        assert level in self._level_names
+        self.handlers[handler_name]['level'] = level
+        return self
+
+    def attach_root_handlers(self, * handler_names):
+        """Add handlers in ``handler_names`` to the root logger.
+
+        :return: ``self``
+        """
+        self.root['handlers'].extend(handler_names)
+        return self
+
+    def attach_root_filters(self, * filter_names):
+        """Add filters in ``filter_names`` to the root logger.
+
+        :return: ``self``
+        """
+        if not filter_names:
+            return self
+        root_filters_list = self.root.setdefault('filters', [])
+        root_filters_list.extend(filter_names)
+        return self
+
+    def set_root_level(self, root_level):
+        """
+        Set the loglevel of the root handler.
+        Given that ``__init__`` has a ``root_level`` parameter, this isn't
+        really needed.
+
+        :param root_level: an explicit value. The default set in ``__init__``
+            is ``'WARNING'``.
+        :return: ``self``
+        """
+        assert root_level in self._level_names
+        self.root['level'] = root_level
+        return self
+
     def add_logger(self,
                    logger_name,     # *,
                    handlers=None,
@@ -393,16 +385,41 @@ class LoggingConfigDict(dict):
         self.loggers[logger_name] = d
         return self
 
-    def set_handler_level(self, handler_name, level):
-        """Set the loglevel of handler `handler_name`.
-        Raise KeyError if no such handler.
+    # By analogy with the attach_root_*s methods:
 
-        :param handler_name: name of handler.
-        :param level: loglevel (as ``str``)
+    def attach_logger_handlers(self, logger_name, * handler_names):
+        """
+        Add handlers in ``handler_names`` to the logger named ``logger_name``.
+
+        :param logger_name: (``str``) name of logger to attach handlers to
+        :param handler_names: sequence of handler names
         :return: ``self``
         """
-        assert level in self._level_names
-        self.handlers[handler_name]['level'] = level
+        if not logger_name:
+            self.attach_root_handlers(* handler_names)
+        elif handler_names:
+            logger_handlers_list = self.loggers[logger_name].setdefault(
+                                                                'handlers', [])
+            logger_handlers_list.extend(handler_names)
+        return self
+
+    def attach_logger_filters(self, logger_name, * filter_names):
+        """Add filters in ``filter_names`` to the logger named ``logger_name``.
+
+        :param logger_name: (``str``) name of logger to attach filters to
+        :param filter_names: sequence of filter names
+        :return: ``self``
+        """
+        if not filter_names:
+            return self
+
+        if not logger_name:
+            self.attach_root_filters(* filter_names)
+        else:
+            logger_dict = self.loggers[logger_name]
+            logger_filters_list = logger_dict.setdefault('filters', [])
+            logger_filters_list.extend(filter_names)
+
         return self
 
     def set_logger_level(self, logger_name,     # *,
