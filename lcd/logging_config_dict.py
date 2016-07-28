@@ -37,9 +37,10 @@ of creating a logging config dict into basic steps:
     3. Add any filter specifications with ``add_filter()``.
 
     4. Add handler specifications with ``add_handler()`` and/or
-       ``add_file_handler()``, referring by name to formatters and filters
-       already specified in previous steps. You can attach filters to a handler
-       with ``add_handler_filters``.
+       ``add_file_handler()``, specifying its loglevel, and referring by name to
+       a formatter (and possibly filters) already specified in previous steps.
+       Other methods let you attach filters to a previously added handler
+       and set its loglevel.
 
     *In steps 2. – 4. you give each thing specified a name, by which you refer
     to it in subsequent steps when attaching the thing to other, higher-level
@@ -52,8 +53,7 @@ of creating a logging config dict into basic steps:
     6. Add specifications for any non-root loggers with ``add_logger()``.
        Specify the handlers and filters of a logger by name, using the
        ``handlers`` and ``filters`` keyword parameters. You can also attach
-       handlers and filters to an already-added logger with the methods
-       ``attach_logger_handlers()`` and ``attach_logger_filters()``.
+       handlers and filters to an already-added logger, and set its loglevel.
 
     *Steps 2. and 3. can be interchanged, likewise Steps 5. and 6.*
 
