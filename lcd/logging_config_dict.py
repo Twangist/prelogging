@@ -86,7 +86,8 @@ class LoggingConfigDict(dict):
         the text equivalents accepted by the `logging` module's ``configDict()``
         method:
 
-            instead of ``stream=sys.stdout``, we use ``stream='ext://sys.stdout'``.
+            instead of ``stream=sys.stdout``,
+            we use ``stream='ext://sys.stdout'``.
 
         The reason: the ``clone_handler()`` method of the subclass
         ``LoggingConfigDictEx`` uses ``deepcopy()``, and streams can't be
@@ -197,7 +198,8 @@ class LoggingConfigDict(dict):
     # Note, 0.2.7 By analogy, add_logger_*s methods
 
     def attach_logger_handlers(self, logger_name, * handler_names):
-        """Add handlers in ``handler_names`` to the logger named ``logger_name``.
+        """
+        Add handlers in ``handler_names`` to the logger named ``logger_name``.
 
         :param logger_name: (``str``) name of logger to attach handlers to
         :param handler_names: sequence of handler names
@@ -206,7 +208,8 @@ class LoggingConfigDict(dict):
         if not logger_name:
             self.attach_root_handlers(* handler_names)
         elif handler_names:
-            logger_handlers_list = self.loggers[logger_name].setdefault('handlers', [])
+            logger_handlers_list = self.loggers[logger_name].setdefault(
+                                                                'handlers', [])
             logger_handlers_list.extend(handler_names)
         return self
 
@@ -230,7 +233,8 @@ class LoggingConfigDict(dict):
         return self
 
     def attach_handler_filters(self, handler_name, * filter_names):
-        """Add filters in ``filter_names`` to the handler named ``handler_name``.
+        """
+        Add filters in ``filter_names`` to the handler named ``handler_name``.
 
         :param handler_name: (``str``) name of handler to attach filters to
         :param filter_names: sequence of filter names
@@ -325,9 +329,9 @@ class LoggingConfigDict(dict):
 
     def add_file_handler(self, handler_name,    # *,
                          filename,
-                         formatter,     # ='process_logger_level_msg'
+                         formatter,
                          mode='w',
-                         level='NOTSET',    # log everything: logging module default
+                         level='NOTSET',    # log everything: `logging` default
                          delay=False,
                          **kwargs):
         """Add a handler with the given name, with class
@@ -392,6 +396,7 @@ class LoggingConfigDict(dict):
     def set_handler_level(self, handler_name, level):
         """Set the loglevel of handler `handler_name`.
         Raise KeyError if no such handler.
+
         :param handler_name: name of handler.
         :param level: loglevel (as ``str``)
         :return: ``self``
@@ -403,7 +408,8 @@ class LoggingConfigDict(dict):
     def set_logger_level(self, logger_name,     # *,
                          level):
         """If ``logger_name`` is empty, set the loglevel of the root handler to
-        ``level``, else set the loglevel of handler ``logger_name`` to ``level``.
+        ``level``, else set the loglevel of handler ``logger_name`` to
+        ``level``.
 
         Raise ``KeyError`` if no such logger.
 
