@@ -56,6 +56,14 @@ Topics and Recipes
 * Configuration distributed across multiple modules or packages
     * :ref:`config-abc`
 
+* Using other `logging` handler classes
+    .. hlist::
+        :columns: 3
+
+        * :ref:`null-handler`
+        * :ref:`smtp-handler`
+
+
 --------------------------------------------------
 
 .. _tr-basic-usage-LCD:
@@ -683,3 +691,149 @@ the class to configure logging across multiple modules.
     ¿¿ Commentary on ``test_configurator.py`` ??
 
     <<<<< TODO >>>>> 
+
+.. _using-other-logging-handler-classes:
+
+Using other `logging` handler classes
+----------------------------------------
+
+.. todo::
+    How you say in Inglese? --
+
+BLAH BLAH BLAH -- use ``add_handler``, using keyword arguments to specify
+class-specific key/value pairs, and specifying the appropriate handler class
+with the ``class_`` keyword.
+
+.. _null-handler:
+
+NullHandler
++++++++++++++++++++++++++++++
+class: ``logging.NullHandler``
+
+.. _smtp-handler:
+
+SMTPHandler
++++++++++++++++++++++++++++++
+class: ``logging.handlers.NullHandler``
+
+.. _smtp-handler-one:
+
+Using a single SMTPHandler
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. todo:: comment on the following code
+
+.. code::
+
+    SMTP_USERNAME = 'john.doe'      # assuming your sending email address is 'john.doe@gmail.com'
+    SMTP_PASSWORD = 'password'      # your gmail password
+    FROM_ADDRESS =  SMTP_USERNAME + '@gmail.com'
+
+    TEST_TO_ADDRESS = SMTP_USERNAME + '@gmail.com'
+
+
+    lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
+    lcdx.add_stderr_console_handler('con-err', formatter='minimal')
+    # root, console handler levels: WARNING.
+
+    # Add an SMTPHandler,
+    #    which will email technical staff with logged messages of levels >= ERROR
+    lcdx.add_handler(
+        'email-handler',
+        class_='logging.handlers.SMTPHandler',
+        level='ERROR',
+        formatter='time_logger_level_msg',
+        # SMTPHandler-specific kwargs:
+        mailhost='smtp.gmail.com',
+        fromaddr=FROM_ADDRESS,
+        toaddrs=[TEST_TO_ADDRESS, 'problems@kludgesoft.com'], # string or list of strings
+        subject='Alert from SMTPHandler',
+        secure=(),
+        credentials=(SMTP_USERNAME, SMTP_PASSWORD)
+    )
+    lcdx.config()
+
+    root = logging.getLogger()
+    root.debug("1.")        # not logged (loglevel too low)
+    root.info("2.")         # ditto
+    root.warning("3.")      # logged to console
+    root.error("4.")        # logged to console, emailed
+    root.critical("5.")     # ditto
+
+
+.. _smtp-handlers-two-error-and-critical:
+
+Using two SMTPHandlers, one filtered
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. todo:: comment on the following code
+
+.. code::
+
+    SMTP_USERNAME = 'john.doe'      # assuming your sending email address is 'john.doe@gmail.com'
+    SMTP_PASSWORD = 'password'      # your gmail password
+
+    FROM_ADDRESS =  SMTP_USERNAME + '@gmail.com'
+
+    # for testing/trying it the example
+    TEST_TO_ADDRESS = SMTP_USERNAME + '@gmail.com'
+
+    def filter_error_only(record):
+        "Let only ERROR messages through"
+        return record.levelname  == 'ERROR'
+
+    def add_smtp_handler(lcdx,
+                         handler_name,
+                         level,
+                         toaddrs,        # string or list of strings
+                         subject,
+                         filters=()):
+        """Factor out calls to ``add_handler``: in this example,
+        more than half of its arguments are the same for both smtp handlers.
+        """
+        lcdx.add_handler(
+            handler_name,
+            class_='logging.handlers.SMTPHandler',
+            level=level,
+            formatter='time_logger_level_msg',
+            filters=filters,
+            # SMTPHandler-specific kwargs:
+            mailhost='smtp.gmail.com',
+            fromaddr=FROM_ADDRESS,
+            toaddrs=toaddrs,
+            subject=subject,
+            secure=(),
+            credentials=(SMTP_USERNAME, SMTP_PASSWORD)
+        )
+
+    lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
+    lcdx.add_stderr_console_handler('con-err', formatter='level_msg')
+    # root, console handler levels: WARNING.
+
+    # Add TWO SMTPHandlers, one for each level ERROR and CRITICAL,
+    #    which will email technical staff with logged messages of levels >= ERROR.
+    # We use a filter to make the first handler squelch CRITICAL messages:
+    lcdx.add_function_filter("filter-error-only", filter_error_only)
+
+    # TEST_TO_ADDRESS included just for testing/trying out the example
+    basic_toaddrs = [TEST_TO_ADDRESS, 'problems@kludgesoft.com']
+
+    # add error-only SMTP handler
+    add_smtp_handler(lcdx,
+                     'email-error',
+                     level='ERROR',
+                     toaddrs=basic_toaddrs,
+                     subject='ERROR (Alert from SMTPHandler)',
+                     filters=['filter-error-only'])
+    # add critical-only SMTP handler
+    add_smtp_handler(lcdx,
+                     'email-critical',
+                     level='CRITICAL',
+                     toaddrs=basic_toaddrs + ['cto@kludgesoft.com'],
+                     subject='CRITICAL (Alert from SMTPHandler)')
+    lcdx.config()
+
+    root = logging.getLogger()
+    root.warning("Be careful")                  # logged to console
+    root.error("Something bad just happened")   # logged to console, emailed
+    root.critical("Time to restart")            # ditto
