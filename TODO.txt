@@ -23,6 +23,8 @@ OR
                                       LoggingConfigDictBase   or
                                       LoggingConfigDict_Base  or
                                       LCD_
+                                      LCD_Base
+                                      LCDBase
 
     LoggingConfigDictEx |---------->  LoggingConfigDict       or
                                       LCD
@@ -31,14 +33,20 @@ OR
 Examples:
 
 *   DOCUMENT (e.g. in examples-topics?)
-    The logging module provides several handler classes beyond those represented (sic?)
-    in `lcd`. See the docs for ``logging.handlers``, which also documents the
-    standard handlers in ``logging``:
+
+    The logging module provides several handler classes beyond those
+    represented (sic?) in `lcd`. See the docs for ``logging.handlers``, which
+     also documents the standard handlers in ``logging``:
 
             https://docs.python.org/3/library/logging.handlers.html#module-logging.handlers
 
-    Give an example or two of creating handlers of other classes provided by `logging`
-    using ``add_handler`` with the appropriate value of ``class_`` (see below)
+    Give an example or two of creating handlers of other classes provided by
+    `logging` using ``add_handler`` with the appropriate value of ``class_``
+    (see list below -- omits StreamHandler, FileHandler, RotatingFileHandler.
+
+     TODO complete the list (/table), and include it in docs somewhere
+      |   (in the``add_handler`` docstring, presumably)
+    )
 
     E.g. class_='ext://logging.NullHandler'
        ¿ class_='ext://logging.handlers.SMTPHandler'(loglevel CRITICAL or ERROR)
@@ -46,17 +54,49 @@ Examples:
     This would be *VERY* informative.
 
     For NullHandler, refer to/cite/see
+
         Configuring Logging for a Library¶
         https://docs.python.org/3/howto/logging.html#configuring-logging-for-a-library
+
+        If you want YOUR library to write logging messages ONLY if its user
+        has configured logging, you should add a NullHandler, only, to the
+        top-level logger for the library.
+
+        -------
+
         Example might be:
-        Suppose a library/package `foo` does THIS, at some point (maybe __init__.py ?)
+
+        Suppose a library/package `foo` does THIS, at some point (maybe
+        __init__.py ?) For simplicity assume that's the name of the library's
+        top-level logger too.
+
             import logging
             logging.getLogger('foo').addHandler(logging.NullHandler())
 
         How does this interact with use of `lcd`?
+
+            If the library adds a null handler AFTER `lcd` has configured
+            logging, obviously there's no problem.
+
             What if this happens BEFORE lcd config() is called?
-            What about `disable_existing_loggers` ?
-                does it preserve existing handlers? if false? if true?
+            Using ``disable_existing_loggers=False`` would work???
+                that preserves existing handlers too?
+
+        According to a sidebar in
+            https://docs.python.org/3/howto/logging.html,
+
+        >> [setting disable_existing_loggers=True] will cause any loggers
+           existing before the fileConfig() [or dictConfig()] call to be
+           disabled unless they (or an ancestor) are explicitly named in the
+           configuration.
+
+        SOOOOO,
+        Now a library user can add a "real" handler to logger 'foo'
+        and can use `lcd` to do it, in logging config dict
+        From the above, it sounds like it's NOT NECESSARY to set
+        ``disable_existing_loggers=False``
+        as 'foo' "will be explicitly named in the configuration".
+
 
     fwiw,
     FROM DOCS:
