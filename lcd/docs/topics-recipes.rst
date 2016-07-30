@@ -199,7 +199,7 @@ Selecting the style of the format string
             >>> lcdx = lcd.LoggingConfigDictEx(attach_handlers_to_root=True)
             # >>> lcdx.add_formatter('testform', format='{levelname} {name} {message}', style='{')
             >>> lcdx.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
-            >>> lcdx.add_stderr_console_handler('con', formatter='testform')
+            >>> lcdx.add_stderr_handler('con', formatter='testform')
             >>> lcdx.config()
             >>> root = logging.getLogger()
             >>> root.warning('Hi there')
@@ -263,7 +263,7 @@ The following example illustrates the general technique:
     >>> from lcd import LoggingConfigDictEx
     >>> import logging
     >>> lcd_ex = LoggingConfigDictEx(attach_handlers_to_root=True)
-    >>> lcd_ex.add_stdout_console_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
     >>> lcd_ex.config()
 
     >>> logging.getLogger().warning("Look out!")
@@ -357,7 +357,7 @@ subdirectory of the current directory::
 Set up the root logger with a ``stderr`` console handler and a file handler,
 at their respective default loglevels ``'WARNING'`` and ``'NOTSET'``::
 
-    lcd_ex.add_stderr_console_handler('console', formatter='minimal')
+    lcd_ex.add_stderr_handler('console', formatter='minimal')
     lcd_ex.add_file_handler('root_fh',
                             filename='root.log',
                             formatter='logger_level_msg')
@@ -624,7 +624,7 @@ Let's configure the root logger to use both filters shown above::
         attach_handlers_to_root=True,
         root_level='DEBUG')
 
-    lcd_ex.add_stdout_console_handler(
+    lcd_ex.add_stdout_handler(
         'console',
         level='DEBUG',
         formatter='level_msg')
@@ -705,7 +705,7 @@ There are two ways to attach filters to a handler:
    For example, using our two example filters, each of the following method
    calls adds a handler with just the ``'count_d'`` filter attached::
 
-    lcd_ex.add_stderr_console_handler('con-err',
+    lcd_ex.add_stderr_handler('con-err',
                                       filters='count_d')
     lcd_ex.add_file_handler('fh',
                             filename='some-logfile.log',
@@ -793,24 +793,15 @@ Using a single SMTPHandler
 
 .. code::
 
-    #
-    # NOTE: EDIT THESE TWO VARIABLES to try this example
-    #
-    SMTP_USERNAME = 'john.doe'      # assuming your sending email address is 'john.doe@gmail.com'
-    SMTP_PASSWORD = 'password'      # your gmail password
-    #
-    # AND THESE TWO TOO if necessary
-    #
-    FROM_ADDRESS =  SMTP_USERNAME + '@gmail.com'
-    SMTP_SERVER = 'smtp.gmail.com'
+    from lcd import LoggingConfigDictEx
+    from _smtp_credentials import *
 
-    # for testing/trying it the example
+    # for testing/trying the example
     TEST_TO_ADDRESS = FROM_ADDRESS
-
 
     # root, console handler levels: WARNING.
     lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
-    lcdx.add_stderr_console_handler('con-err',
+    lcdx.add_stderr_handler('con-err',
                                     formatter='minimal'
     ).add_smtp_handler('email-handler',
         level='ERROR',
@@ -821,8 +812,7 @@ Using a single SMTPHandler
         toaddrs=[TEST_TO_ADDRESS, 'uh.oh@kludge.ly'], # string or list of strings
         subject='Alert from SMTPHandler',
         username=SMTP_USERNAME,
-        password=SMTP_PASSWORD,
-       timeout=1.0
+        password=SMTP_PASSWORD
     )
 
     lcdx.config()
@@ -834,7 +824,6 @@ Using a single SMTPHandler
     root.error("4.")        # logged to console, emailed
     root.critical("5.")     # ditto
 
-
 .. _smtp-handlers-two-error-and-critical:
 
 Using two SMTPHandlers, one filtered
@@ -845,16 +834,10 @@ Comment on the example ``SMTP_handler_two.py``
 .. todo:: comment on the following code
 
 .. code::
-    #
-    # NOTE: EDIT THESE TWO VARIABLES to try this example
-    #
-    SMTP_USERNAME = 'john.doe'      # assuming your sending email address is 'john.doe@gmail.com'
-    SMTP_PASSWORD = 'password'      # your gmail password
-    #
-    # AND THESE TWO TOO if necessary
-    #
-    FROM_ADDRESS =  SMTP_USERNAME + '@gmail.com'
-    SMTP_SERVER = 'smtp.gmail.com'
+
+    from lcd import LoggingConfigDictEx
+
+    from _smtp_credentials import *
 
     # for testing/trying it the example
     TEST_TO_ADDRESS = FROM_ADDRESS
@@ -891,7 +874,7 @@ Comment on the example ``SMTP_handler_two.py``
 
     def configure_logging():
         lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
-        lcdx.add_stderr_console_handler('con-err', formatter='level_msg')
+        lcdx.add_stderr_handler('con-err', formatter='level_msg')
         # root, console handler levels: WARNING.
 
         # Add TWO SMTPHandlers, one for each level ERROR and CRITICAL,
@@ -917,7 +900,6 @@ Comment on the example ``SMTP_handler_two.py``
                          level='CRITICAL',
                          toaddrs=basic_toaddrs + ['cto@kludge.ly'],
                          subject='CRITICAL (Alert from SMTPHandler)')
-        lcdx.dump()
         lcdx.config()
 
     # -----------------------------------------
@@ -928,7 +910,6 @@ Comment on the example ``SMTP_handler_two.py``
     root.warning("Be careful")                  # logged to console
     root.error("Something bad just happened")   # logged to console, emailed
     root.critical("Time to restart")            # ditto
-
 
 .. _smtp-handler-custom-keywords-in-formatter-filter-adds-info:
 

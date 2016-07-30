@@ -11,17 +11,7 @@ except ImportError:
     sys.path[0:0] = ['..']          # , '../..'
 from lcd import LoggingConfigDictEx
 
-
-#
-# NOTE: EDIT THESE TWO VARIABLES to try this example
-#
-SMTP_USERNAME = 'john.doe'      # assuming your sending email address is 'john.doe@gmail.com'
-SMTP_PASSWORD = 'password'      # your gmail password
-#
-# AND THESE TWO TOO if necessary
-#
-FROM_ADDRESS =  SMTP_USERNAME + '@gmail.com'
-SMTP_SERVER = 'smtp.gmail.com'
+from _smtp_credentials import *
 
 # for testing/trying it the example
 TEST_TO_ADDRESS = FROM_ADDRESS
@@ -58,7 +48,7 @@ def filter_error_only(record):
 
 def configure_logging():
     lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
-    lcdx.add_stderr_console_handler('con-err', formatter='level_msg')
+    lcdx.add_stderr_handler('con-err', formatter='level_msg')
     # root, console handler levels: WARNING.
 
     # Add TWO SMTPHandlers, one for each level ERROR and CRITICAL,
@@ -84,7 +74,6 @@ def configure_logging():
                      level='CRITICAL',
                      toaddrs=basic_toaddrs + ['cto@kludge.ly'],
                      subject='CRITICAL (Alert from SMTPHandler)')
-    lcdx.dump()
     lcdx.config()
 
 # -----------------------------------------

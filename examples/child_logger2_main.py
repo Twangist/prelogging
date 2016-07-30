@@ -39,7 +39,7 @@ def init_logging_config(logfilename):
     ## Make sure 'console' handler level is higher than DEBUG
     lcd_ex.add_formatter('busier_console_fmt',
                          format='%(name)-34s: %(levelname)-8s: %(message)s')
-    lcd_ex.add_stderr_console_handler('console',
+    lcd_ex.add_stderr_handler('console',
                                       formatter='busier_console_fmt',
                                       level='INFO')
 

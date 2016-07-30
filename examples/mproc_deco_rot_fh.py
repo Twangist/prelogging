@@ -56,7 +56,7 @@ def config_logging(use_locking):
                                  attach_handlers_to_root=True,
                                  locking=use_locking)
     # Set up console handler to show process name, time, handler name
-    lcd_ex.add_stderr_console_handler(
+    lcd_ex.add_stderr_handler(
         'console', formatter='process_level_msg', level='INFO'
     )
     # Add main file handler, which will write to log_path + '/' + logfilename

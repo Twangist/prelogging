@@ -296,7 +296,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          ** con_dict)
         return self
 
-    def add_stdout_console_handler(self, handler_name,  # *,
+    def add_stdout_handler(self, handler_name,  # *,
                              formatter=None,
                              level='WARNING',
                              locking=None,
@@ -315,7 +315,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                                   **kwargs)
         return self
 
-    def add_stderr_console_handler(self, handler_name,  # *,
+    def add_stderr_handler(self, handler_name,  # *,
                              formatter=None,
                              level='WARNING',
                              locking=None,
@@ -478,24 +478,6 @@ class LoggingConfigDictEx(LoggingConfigDict):
                 setattr(filter_fn, 'filter', filter_fn)
         filter_dict['()'] = lambda: filter_fn
         return self.add_filter(filter_name, ** filter_dict)
-
-    def add_null_handler(self,
-                         handler_name,  # *
-                         level='NOTSET',
-                         **kwargs):
-        """Add a ``logging.NullHandler``.
-
-        :param handler_name: name of the handler
-        :param level: the handler's loglevel
-        :param kwargs: any additional key/value pairs for add_handler
-            (typically none)
-        :return: ``self``
-        """
-        return self.add_handler(
-            handler_name,
-            class_='logging.NullHandler',
-            level=level,
-            **kwargs)
 
     def add_smtp_handler(self,
                          handler_name,  # *

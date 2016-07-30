@@ -179,7 +179,7 @@ class LoggingConfigDict(dict):
                       class_='logging.Formatter',   # the typical case
                       format=None,
                       dateformat=None,
-                      style='%',
+                      style='%',            # Only '%' works in Py2
                       ** format_dict):
         """Add a formatter to the ``'formatters'`` subdictionary.
 
@@ -199,8 +199,8 @@ class LoggingConfigDict(dict):
             for which ``dateformat`` is a synonym. In this case,
             "datefmt" takes precedence over "dateformat" if both are given.
 
-        :param style: One of '%', '{' or '$' to specify the formatting style
-            used by the format string.
+        :param style: (*Python 3 only*) One of '%', '{' or '$' to specify the
+            formatting style used by the format string.
 
         :param format_dict: Any other key/value pairs (for custom
             subclasses, perhaps)
@@ -326,6 +326,24 @@ class LoggingConfigDict(dict):
                          delay=delay,
                          **kwargs)
         return self
+
+    def add_null_handler(self,
+                         handler_name,  # *
+                         level='NOTSET',
+                         **kwargs):
+        """Add a ``logging.NullHandler``.
+
+        :param handler_name: name of the handler
+        :param level: the handler's loglevel
+        :param kwargs: any additional key/value pairs for add_handler
+            (typically none)
+        :return: ``self``
+        """
+        return self.add_handler(
+            handler_name,
+            class_='logging.NullHandler',
+            level=level,
+            **kwargs)
 
     def attach_handler_filters(self, handler_name, * filter_names):
         """

@@ -37,7 +37,7 @@ def main():
     lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
     lcdx.add_formatter(
         'fmtr', format='%(threadName)s: %(message)s'
-    ).add_stderr_console_handler(
+    ).add_stderr_handler(
         'con', formatter='fmtr'
     ).add_queue_handler(
         'qhandler', queue=q

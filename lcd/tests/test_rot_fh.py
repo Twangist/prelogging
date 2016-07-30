@@ -33,7 +33,7 @@ def config_logging():
                                  locking=True,
                                  root_level='DEBUG')
 
-    lcd_ex.add_stdout_console_handler('console', formatter='minimal')
+    lcd_ex.add_stdout_handler('console', formatter='minimal')
 
     # add a file handler, which will write to log_path + '/' + logfilename
     lcd_ex.add_formatter(

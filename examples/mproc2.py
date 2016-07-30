@@ -124,7 +124,7 @@ def config_logging(use_locking):
                                  attach_handlers_to_root=True,
                                  root_level='DEBUG')
     # add main file handler, which will write to LOG_PATH + '/' + logfilename
-    lcd_ex.add_stderr_console_handler(
+    lcd_ex.add_stderr_handler(
         'console', formatter='minimal', level='DEBUG'
     ).add_formatter(
         'my_file_formatter',

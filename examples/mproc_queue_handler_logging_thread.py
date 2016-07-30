@@ -69,7 +69,7 @@ def main_process_config_logging():
                     format='%(name)-15s %(levelname)-8s '
                            '%(processName)-10s %(message)s')
 
-    lcd.add_stderr_console_handler('console', level='INFO',
+    lcd.add_stderr_handler('console', level='INFO',
                                               formatter='less-detailed'
     ).add_file_handler('file', filename='mplog.log',
                                formatter='detailed'

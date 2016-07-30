@@ -119,7 +119,7 @@ def config_logging(use_locking):
     ## Add 'console' handler with level higher than 'DEBUG';
     # add main file handler, which will write to '_log/' + logfilename;
     # add logger that uses them.
-    lcd_ex.add_stdout_console_handler(
+    lcd_ex.add_stdout_handler(
         'console',
         formatter='minimal',
         level='INFO'

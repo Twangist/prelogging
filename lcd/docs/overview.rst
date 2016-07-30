@@ -259,7 +259,7 @@ else receives reasonable, expected defaults. Using the "batteries included"
 
     lcd_ex = LoggingConfigDictEx(root_level='DEBUG',
                                  attach_handlers_to_root=True)
-    lcd_ex.add_stderr_console_handler(
+    lcd_ex.add_stderr_handler(
                     'console',
                     formatter='minimal',
                     level='INFO'

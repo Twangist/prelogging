@@ -16,7 +16,7 @@ def configure_logging(log_path, logfilename=''):
                                  attach_handlers_to_root=True,
                                  root_level='CRITICAL')     # . temporary; cuz of lcd_ex.set_logger_level(...) below
                                  # root_level='INFO')
-    lcd_ex.add_stdout_console_handler('con', formatter="minimal")
+    lcd_ex.add_stdout_handler('con', formatter="minimal")
 
     lcd_ex.set_logger_level(None, 'INFO')    # . coverage ho'
 

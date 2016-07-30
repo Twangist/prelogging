@@ -59,7 +59,7 @@ def test_xxx_filter():
     ...     attach_handlers_to_root=True,
     ...     root_level='DEBUG')
 
-    >>> _ = lcd_ex.add_stdout_console_handler(
+    >>> _ = lcd_ex.add_stdout_handler(
     ...     'console',
     ...     level='DEBUG',
     ...     formatter='level_msg')

@@ -86,6 +86,11 @@ script ``run_all.py`` in the repository directory:
 
     ``$ ./run_all.py``
 
+Two examples use the ``add_email_handler`` method to send emails. **In order to
+run these without errors, you must first edit the file**
+``examples/_smtp_credentials.py`` **to contain a username, password and SMTP
+server that work.**
+
 When run without locking, the multiprocessing examples will eventually
 misbehave -- NUL bytes will appear in the logged output, and messages logged by
 different processes will barge in on each other. The subdirectories

@@ -51,7 +51,7 @@ class TestLoggingConfigDictEx(TestCase):
         expected = self.get_expected_starting_dict('DEBUG')
         self.assertEqual(lcd, expected)
 
-        lcd.add_stderr_console_handler(
+        lcd.add_stderr_handler(
             'console', formatter='minimal'
         ).add_file_handler(
             'default_file',
@@ -106,7 +106,7 @@ class TestLoggingConfigDictEx(TestCase):
         expected = self.get_expected_starting_dict()
         self.assertEqual(lcd, expected)
 
-        lcd.add_stderr_console_handler(
+        lcd.add_stderr_handler(
             'console',
             # No formatter, use default
         ).add_file_handler(
@@ -171,7 +171,7 @@ class TestLoggingConfigDictEx(TestCase):
         expected = self.get_expected_starting_dict()
         self.assertEqual(lcd, expected)
 
-        lcd.add_stdout_console_handler('con', formatter='minimal')
+        lcd.add_stdout_handler('con', formatter='minimal')
         lcd.clone_handler(clone='con2', handler='con')
 
         # lcd.dump()      # | DEBUG comment out
@@ -231,7 +231,7 @@ class TestLoggingConfigDictEx_check(TestCase):
 
         lcd_ex = LoggingConfigDictEx()
         # handler w/bad formatter
-        lcd_ex.add_stdout_console_handler('con', formatter='no-such-formatter')
+        lcd_ex.add_stdout_handler('con', formatter='no-such-formatter')
 
         # non-root logger
         lcd_ex.add_logger(

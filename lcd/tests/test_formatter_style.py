@@ -4,35 +4,41 @@ import sys
 sys.path[0:0] = ['../..']          # prepend
 from lcd import LoggingConfigDictEx
 import logging
+from lcd.six import PY2
 
+if PY2:
+    def test_formatter_style():
+        """
+        """
+        pass
+else:
+    def test_formatter_style():
+        """
+        >>> lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
 
-def test_formatter_style():
-    """
-    >>> lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
+        >>> # style='%' is the default, & could be omitted
+        >>> _ = lcdx.add_formatter('testform-%',
+        ...                        format='%(levelname)s: %(name)s: %(message)s',
+        ...                        style='%')
+        >>> _ = lcdx.add_formatter('testform-{',
+        ...                        format='{levelname}: {name}: {message}',
+        ...                        style='{')
+        >>> _ = lcdx.add_formatter('testform-$',
+        ...                        format='$levelname: $name: $message',
+        ...                        style='$')
 
-    >>> # style='%' is the default, & could be omitted
-    >>> _ = lcdx.add_formatter('testform-%',
-    ...                        format='%(levelname)s: %(name)s: %(message)s',
-    ...                        style='%')
-    >>> _ = lcdx.add_formatter('testform-{',
-    ...                        format='{levelname}: {name}: {message}',
-    ...                        style='{')
-    >>> _ = lcdx.add_formatter('testform-$',
-    ...                        format='$levelname: $name: $message',
-    ...                        style='$')
+        >>> _ = lcdx.add_stdout_handler('con-%', formatter='testform-%')
+        >>> _ = lcdx.add_stdout_handler('con-{', formatter='testform-{')
+        >>> _ = lcdx.add_stdout_handler('con-$', formatter='testform-$')
+        >>> _ = lcdx.config()
 
-    >>> _ = lcdx.add_stdout_console_handler('con-%', formatter='testform-%')
-    >>> _ = lcdx.add_stdout_console_handler('con-{', formatter='testform-{')
-    >>> _ = lcdx.add_stdout_console_handler('con-$', formatter='testform-$')
-    >>> _ = lcdx.config()
-
-    >>> root = logging.getLogger()
-    >>> root.warning('Hi there')
-    WARNING: root: Hi there
-    WARNING: root: Hi there
-    WARNING: root: Hi there
-    """
-    pass
+        >>> root = logging.getLogger()
+        >>> root.warning('Hi there')
+        WARNING: root: Hi there
+        WARNING: root: Hi there
+        WARNING: root: Hi there
+        """
+        pass
 
 
 ##############################################################################

@@ -20,7 +20,7 @@ class Configurator(ConfiguratorABC):
 
         :param lcdx: a ``LoggingConfigDictEx``
         """
-        lcdx.add_stdout_console_handler('con-out',
+        lcdx.add_stdout_handler('con-out',
                                         formatter='logger_level_msg',
                                         attach_to_root=True)
 

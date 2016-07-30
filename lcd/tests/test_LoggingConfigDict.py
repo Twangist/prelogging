@@ -198,12 +198,9 @@ class TestLoggingConfigDict(TestCase):
         lcd.add_formatter(
             'minimal',
             format='%(message)s'
-        ).add_handler(
+        ).add_null_handler(
             'console',
-            # class_='logging.StreamHandler',
-            class_='logging.NullHandler',   # . <-- suppress output
             level='INFO',
-            formatter='minimal'
         ).set_handler_level(
             'console', 'DEBUG')
 

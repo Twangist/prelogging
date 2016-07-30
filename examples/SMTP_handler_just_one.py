@@ -11,26 +11,15 @@ except ImportError:
     sys.path[0:0] = ['..']          # , '../..'
 from lcd import LoggingConfigDictEx
 
+from _smtp_credentials import *
 
-#
-# NOTE: EDIT THESE TWO VARIABLES to try this example
-#
-SMTP_USERNAME = 'john.doe'      # assuming your sending email address is 'john.doe@gmail.com'
-SMTP_PASSWORD = 'password'      # your gmail password
-#
-# AND THESE TWO TOO if necessary
-#
-FROM_ADDRESS =  SMTP_USERNAME + '@gmail.com'
-SMTP_SERVER = 'smtp.gmail.com'
-
-# for testing/trying it the example
+# for testing/trying the example
 TEST_TO_ADDRESS = FROM_ADDRESS
-
 
 def main():
     # root, console handler levels: WARNING.
     lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
-    lcdx.add_stderr_console_handler('con-err',
+    lcdx.add_stderr_handler('con-err',
                                     formatter='minimal'
     ).add_smtp_handler('email-handler',
         level='ERROR',
@@ -41,8 +30,7 @@ def main():
         toaddrs=[TEST_TO_ADDRESS, 'uh.oh@kludge.ly'], # string or list of strings
         subject='Alert from SMTPHandler',
         username=SMTP_USERNAME,
-        password=SMTP_PASSWORD,
-       timeout=1.0
+        password=SMTP_PASSWORD
     )
 
     lcdx.config()
