@@ -48,8 +48,8 @@ Examples:
       |   (in the``add_handler`` docstring, presumably)
     )
 
-    E.g. class_='ext://logging.NullHandler'
-       ¿ class_='ext://logging.handlers.SMTPHandler'(loglevel CRITICAL or ERROR)
+    E.g. class_='logging.NullHandler'
+       ¿ class_='logging.handlers.SMTPHandler'(loglevel CRITICAL or ERROR)
 
     This would be *VERY* informative.
 

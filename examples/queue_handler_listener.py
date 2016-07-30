@@ -28,11 +28,21 @@ except ImportError:
     sys.path[0:0] = ['..']          # , '../..'
 from lcd import LoggingConfigDictEx
 
-import queue
+from lcd.six import PY2
 
+if PY2:
+    from Queue import Queue
+else:
+    from queue import Queue
 
 def main():
-    q = queue.Queue(-1)  # no limit on size
+    if PY2:
+        import sys
+        print("%s: logging.handlers.QueueHandler doesn't exist in Python 2"
+              % __file__)
+        return
+
+    q = Queue(-1)  # no limit on size
 
     lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
     lcdx.add_formatter(

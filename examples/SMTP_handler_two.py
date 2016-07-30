@@ -11,7 +11,7 @@ except ImportError:
     sys.path[0:0] = ['..']          # , '../..'
 from lcd import LoggingConfigDictEx
 
-from _smtp_credentials import *
+from ._smtp_credentials import *
 
 # for testing/trying it the example
 TEST_TO_ADDRESS = FROM_ADDRESS
@@ -24,9 +24,9 @@ def add_smtp_handler_to_lcd(
                      toaddrs,        # string or list of strings
                      subject,
                      filters=()):
-    """Factor out calls to ``add_smtp_handler``.
+    """Factor out calls to ``add_email_handler``.
     """
-    lcdx.add_smtp_handler(
+    lcdx.add_email_handler(
         handler_name,
         level=level,
         filters=filters,

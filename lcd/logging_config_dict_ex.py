@@ -479,22 +479,22 @@ class LoggingConfigDictEx(LoggingConfigDict):
         filter_dict['()'] = lambda: filter_fn
         return self.add_filter(filter_name, ** filter_dict)
 
-    def add_smtp_handler(self,
-                         handler_name,  # *
-                         level='NOTSET',
-                         formatter=None,    # str, name of formatter
-                         # filters=None,
-                         # SMTPHandler-specific:
-                         mailhost=None,  # e.g. 'smtp.gmail.com'
-                         fromaddr=None,     # str
-                         toaddrs=None,      # str or list of strs
-                         subject=None,      # str
-                         secure=(),         #
-                         # credentials=(SMTP_USERNAME, SMTP_PASSWORD),
-                         username=None,     # str
-                         password=None,     # str
-                         timeout=None,      # sec
-                         **kwargs):
+    def add_email_handler(self,
+                          handler_name,  # *
+                          level='NOTSET',
+                          formatter=None,    # str, name of formatter
+                          # filters=None,
+                          # SMTPHandler-specific:
+                          mailhost=None,  # e.g. 'smtp.gmail.com'
+                          fromaddr=None,     # str
+                          toaddrs=None,      # str or list of strs
+                          subject=None,      # str
+                          secure=(),         #
+                          # credentials=(SMTP_USERNAME, SMTP_PASSWORD),
+                          username=None,     # str
+                          password=None,     # str
+                          timeout=None,      # sec
+                          **kwargs):
         """Add specifications for an
         `SMTPHandler <https://docs.python.org/3/library/logging.handlers.html#smtphandler>`_
         to the logging config dict.
@@ -551,7 +551,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
                           # QueueHandler-specific:
                           queue=None,
                           **kwargs):
-        """
+        """(*Python 3 only*)
+
         :param handler_name: the name of this handler
         :param level: the loglevel of this handler (best left at its default)
         :param queue: an actual queue object (``multiproccessing.Queue``).
@@ -560,6 +561,9 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :param kwargs: any other key/value pairs for add_handler
         :return: ``self``
         """
+        if PY2:
+            raise NotImplementedError("logging.handlers.QueueHandler doesn't exist in Python 2")
+
         return self.add_handler(
             handler_name,
             class_='logging.handlers.QueueHandler',

@@ -17,6 +17,7 @@ except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
 from lcd import LoggingConfigDictEx
+from lcd.six import PY2
 
 import logging
 import logging.handlers
@@ -86,6 +87,12 @@ def main_process_config_logging():
 
 
 def main():
+    if PY2:
+        import sys
+        print("%s: logging.handlers.QueueHandler doesn't exist in Python 2"
+              % __file__)
+        return
+
     main_process_config_logging()
 
     q = Queue()

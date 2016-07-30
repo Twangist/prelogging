@@ -76,7 +76,7 @@ except Exception as e:
     # raise
 
 # New kids:
-mproc_queue_handler_logging_thread.main()
 queue_handler_listener.main()
+mproc_queue_handler_logging_thread.main()
 SMTP_handler_just_one.main()
 SMTP_handler_two.main()

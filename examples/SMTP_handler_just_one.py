@@ -11,7 +11,7 @@ except ImportError:
     sys.path[0:0] = ['..']          # , '../..'
 from lcd import LoggingConfigDictEx
 
-from _smtp_credentials import *
+from ._smtp_credentials import *
 
 # for testing/trying the example
 TEST_TO_ADDRESS = FROM_ADDRESS
@@ -21,7 +21,7 @@ def main():
     lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
     lcdx.add_stderr_handler('con-err',
                                     formatter='minimal'
-    ).add_smtp_handler('email-handler',
+    ).add_email_handler('email-handler',
         level='ERROR',
         formatter='time_logger_level_msg',
         # SMTPHandler-specific kwargs:

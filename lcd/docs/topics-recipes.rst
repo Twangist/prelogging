@@ -502,8 +502,26 @@ Using a rotating file handler
 
 .. _tr-mp:
 
-Multiprocessing — using locking handlers
+Multiprocessing — two approaches
 ----------------------------------------------
+Refer to "multiple handlers logging to the same file" (sic)
+PROVIDE A LINK, and/or quote from it. That section of the docs discusses
+three approaches:
+    1. one based on ``SocketHandler``
+    2. locking versions of handlers, which our locking handlers implement
+    3. (*Python 3 only*) using a ``QueueHandler`` in each process, all writing
+       to a common Queue, and then either a ``QueueListener``
+       or a dedicated thread in another process (e.g. the main one)
+       to extract ``LogRecord``s from the queue and log them.
+
+**Note**: the third approach is unavailable in Python 2, as the class
+``QueueHandler`` is Python 3 only.
+
+In this section we'll discuss the second and third approaches.
+
+
+Locking handlers
++++++++++++++++++++++
 
 (MP blather)
 
@@ -528,20 +546,38 @@ vs
 .. _tr-mp-console:
 
 Using a locking console handler
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 <<<<< TODO >>>>> 
 
 .. _tr-mp-fh:
 
 Using a locking file handler
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 <<<<< TODO >>>>> 
 
 .. _tr-mp-rot-fh:
 
 Using a locking rotating file handler
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 <<<<< TODO >>>>> 
+
+
+Using QueueHandlers (*Python 3 only*)
+++++++++++++++++++++++++++++++++++++++++++
+Cf. LCDEx method ``add_queue_handler``
+
+Examples:
+
+    ``queue_handler_listener.py`` doesn't multiprocess but shows basic usage
+        of queue handler as well as how to use ``QueueListener`` in conjunction
+        with `lcd`
+
+    ``mproc_queue_handler_logging_thread.py`` is a multiprocessing example
+        blah blah
+
+        .. todo:: DIAGRAM of
+            * what we first imagine as the setup/config
+            * how we actually configure logging in this example
 
 --------------------------------------------------
 
@@ -781,7 +817,16 @@ class: ``logging.NullHandler``
 SMTPHandler
 +++++++++++++++++++++++++++++
 class: ``logging.handlers.NullHandler``
+
 docs: `<https://docs.python.org/3/library/logging.handlers.html#module-logging.handlers>`_
+
+Use the queue handler approach to send emails from a thread other than the main
+one (and other than the UI thread).  Sending an email can take a comparatively
+long time, so you'll want to do that "in the background", and not have other
+processes, or the UI, block and stutter whenever an email is sent.
+
+
+
 
 .. _smtp-handler-one:
 
@@ -803,7 +848,7 @@ Using a single SMTPHandler
     lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
     lcdx.add_stderr_handler('con-err',
                                     formatter='minimal'
-    ).add_smtp_handler('email-handler',
+    ).add_email_handler('email-handler',
         level='ERROR',
         formatter='time_logger_level_msg',
         # SMTPHandler-specific kwargs:
@@ -843,16 +888,16 @@ Comment on the example ``SMTP_handler_two.py``
     TEST_TO_ADDRESS = FROM_ADDRESS
 
 
-    def add_smtp_handler_to_lcd(
+    def add_email_handler_to_lcd(
                          lcdx,          # *
                          handler_name,
                          level,
                          toaddrs,        # string or list of strings
                          subject,
                          filters=()):
-        """Factor out calls to ``add_smtp_handler``.
+        """Factor out calls to ``add_email_handler``.
         """
-        lcdx.add_smtp_handler(
+        lcdx.add_email_handler(
             handler_name,
             level=level,
             filters=filters,
@@ -886,7 +931,7 @@ Comment on the example ``SMTP_handler_two.py``
         basic_toaddrs = [TEST_TO_ADDRESS, 'problems@kludge.ly']
 
         # add error-only SMTP handler
-        add_smtp_handler_to_lcd(
+        add_email_handler_to_lcd(
                          lcdx,
                          'email-error',
                          level='ERROR',
@@ -894,7 +939,7 @@ Comment on the example ``SMTP_handler_two.py``
                          subject='ERROR (Alert from SMTPHandler)',
                          filters=['filter-error-only'])
         # add critical-only SMTP handler
-        add_smtp_handler_to_lcd(
+        add_email_handler_to_lcd(
                          lcdx,
                          'email-critical',
                          level='CRITICAL',

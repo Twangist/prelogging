@@ -6,7 +6,7 @@
         add_rotating_file_handler (logging_config_dict_ex.py)
 
 0.2.5
-    use 'ext://'-prefixed strings for streams and callables,
+    use (possibly 'ext://'-prefixed) strings for streams and callables,
     in case of clone_handler(), which uses deepcopy --
     LockingStreamHandler, sys.std*** are not deepcopy-able/serializable.
 
