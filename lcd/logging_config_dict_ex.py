@@ -479,4 +479,111 @@ class LoggingConfigDictEx(LoggingConfigDict):
         filter_dict['()'] = lambda: filter_fn
         return self.add_filter(filter_name, ** filter_dict)
 
+    def add_null_handler(self,
+                         handler_name,  # *
+                         level='NOTSET',
+                         **kwargs):
+        """Add a ``logging.NullHandler``.
+
+        :param handler_name: name of the handler
+        :param level: the handler's loglevel
+        :param kwargs: any additional key/value pairs for add_handler
+            (typically none)
+        :return: ``self``
+        """
+        return self.add_handler(
+            handler_name,
+            class_='logging.NullHandler',
+            level=level,
+            **kwargs)
+
+    def add_smtp_handler(self,
+                         handler_name,  # *
+                         level='NOTSET',
+                         formatter=None,    # str, name of formatter
+                         # filters=None,
+                         # SMTPHandler-specific:
+                         mailhost=None,  # e.g. 'smtp.gmail.com'
+                         fromaddr=None,     # str
+                         toaddrs=None,      # str or list of strs
+                         subject=None,      # str
+                         secure=(),         #
+                         # credentials=(SMTP_USERNAME, SMTP_PASSWORD),
+                         username=None,     # str
+                         password=None,     # str
+                         timeout=None,      # sec
+                         **kwargs):
+        """Add specifications for an
+        `SMTPHandler <https://docs.python.org/3/library/logging.handlers.html#smtphandler>`_
+        to the logging config dict.
+
+        :param handler_name: mame of this handler
+        :param level: loglevel of this handler
+        :param formatter: ``str``, name of formatter
+
+        SMTPHandler-specific parameters:
+
+        :param mailhost: name of SMTP server e.g. 'smtp.gmail.com'
+        :param fromaddr: email address of sender (``str``)
+        :param toaddrs:  email recipients (``str`` or ``list`` of ``str``s)
+        :param subject:  subject of the email (``str``)
+
+        :param secure: To specify the use of a secure protocol (TLS), pass in
+            a tuple to the secure argument. This will only be used when
+            authentication credentials are supplied. The tuple should be either
+            an empty tuple, or a single-value tuple with the name of a keyfile,
+            or a 2-value tuple with the names of the keyfile and certificate
+            file. (This tuple is passed to the smtplib.SMTP.starttls() method.)
+
+        :param username: SMTP username of sender
+        :param password: SMTP password of sender with username provided.
+            As a tuple, ``username`` and ``password`` form the `credentials`
+            parameter expected by the SMTPHandler constructor
+        :param timeout: Timeout (seconds) for communication with the SMTP server
+            or 0.0 or 0 or None or < 0 to indicate "no timeout"
+        :param kwargs: Any other keyword arguments to be passed to
+            ``add_handler``, such as ``filters``
+        :return: ``self``
+        """
+        if timeout is not None and timeout != 0.0 and int(timeout) != 0 and timeout > 0:
+            kwargs['timeout'] = timeout
+
+        return self.add_handler(
+            handler_name,
+            class_='logging.handlers.SMTPHandler',
+            level=level,
+            formatter=formatter,
+            # SMTPHandler-specific kwargs:
+            mailhost=mailhost,
+            fromaddr=fromaddr,
+            toaddrs=toaddrs,
+            subject=subject,
+            secure=secure,
+            credentials=(username, password),
+            # timeout=timeout,
+            **kwargs)
+
+    def add_queue_handler(self,
+                          handler_name,
+                          level='NOTSET',
+                          # QueueHandler-specific:
+                          queue=None,
+                          **kwargs):
+        """
+        :param handler_name: the name of this handler
+        :param level: the loglevel of this handler (best left at its default)
+        :param queue: an actual queue object (``multiproccessing.Queue``).
+            Thus, **don't** use ``clone_handler`` on a queue handler!
+
+        :param kwargs: any other key/value pairs for add_handler
+        :return: ``self``
+        """
+        return self.add_handler(
+            handler_name,
+            class_='logging.handlers.QueueHandler',
+            level=level,
+            queue=queue,
+            **kwargs)
+
+
 # TODO  Support for  ColorizedStreamHandler?

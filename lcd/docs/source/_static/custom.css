@@ -85,6 +85,10 @@ div[aria-label="breadcrumbs navigation"] {
     display: none
 }
 
+/* Code-block comments: */
+.c1 {
+    color: #6f83d2;
+}
 /*
 Make HRs more visible, they're ridiculous with 'border-top: 1px solid #e1e4e5;''
 */

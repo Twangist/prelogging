@@ -163,6 +163,64 @@ that can appear in formatters — for a complete list, see the documentation for
 Each logged message can even include the name of the function, and/or the line number,
 where its originating logging call was issued.
 
+    .. note::
+        `logger` parameter names are all over the place. We allow
+        fmt, format -- synonyms
+        datefmt, dateformat -- synonyms
+
+
+Selecting the style of the format string
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. todo::
+    INCORPORATE :
+
+    The ``style`` parameter to ``Formatter.__init__`` lets you use any of
+    Python's three format styles in the format string used by a ``Formatter``.
+    Although the documentation for logging configuration doesn't mention it,
+    ``style`` also works in logging config dicts.
+
+    .. note:: SUB-TODO:
+            It IS implemented ( in Py3.5, anyway:
+            Check/ TEST that/ IF it works in Py2.7 ALSO. )
+
+            TODO Do a test too (Py2.7 support?)
+
+    The value of ``style`` can be one of the following:
+
+    |    ``'%'``     old-style, ``%``-based formatting
+    |    ``'{'``     new-style formatting, using ``str.format``
+    |    ``'$'``     template-based formatting
+
+        A little example:
+
+            >>> import lcd
+            >>> import logging
+            >>> lcdx = lcd.LoggingConfigDictEx(attach_handlers_to_root=True)
+            # >>> lcdx.add_formatter('testform', format='{levelname} {name} {message}', style='{')
+            >>> lcdx.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
+            >>> lcdx.add_stderr_console_handler('con', formatter='testform')
+            >>> lcdx.config()
+            >>> root = logging.getLogger()
+            >>> root.warning('Hi there')
+            WARNING Hi there
+
+        <<<<<<< See IF it works on Py2.7 >>>>>>>
+
+        style: Try all 3 styles
+            '%' old-style
+            '{' new-style       # checked, works
+            '$' (template-based... easy enough to figure out, maybe don't go on about it)
+
+    Using 'datefmt' (and 'dateformat') parameter
+        Give a reference (link) to what this string can be (Py logging docs)
+
+    Using 'fmt'
+
+    Using both ``format`` and ``fmt`` (``format`` wins)
+    Using both ``datefmt`` and ``dateformat`` (``datefmt`` wins)
+
+
 --------------------------------------------------
 
 
@@ -518,12 +576,15 @@ a distinct global variable::
     _info_count = 0
     _debug_count = 0
 
-Classic filters are subclasses of ``logging.Filter``::
+Classic filters are subclasses of ``logging.Filter``:
+
+.. code::
 
     class CountInfoSquelchOdd(logging.Filter):
         def filter(self_, record):
             """Suppress odd-numbered messages (records) whose level == INFO,
             where the "first" message is the 0-th hence is even-numbered.
+
             :param self_: "self" for the CountInfo object (unused)
             :param record: logging.LogRecord
             :return: bool -- True ==> let record through, False ==> squelch
@@ -535,7 +596,9 @@ Classic filters are subclasses of ``logging.Filter``::
             else:
                 return True
 
-A filter can also be a function::
+A filter can also be a function:
+
+.. code::
 
     def count_debug_allow_2(record):
         """
@@ -684,23 +747,26 @@ The :ref:`ConfiguratorABC` documentation describes how that class and its two
 methods operate. The test ``tests/test_configurator.py`` exemplifies using
 the class to configure logging across multiple modules.
 
-.. todo::
-    "using the class to configure logging **across** multiple modules" -- SIC.
-    That's not quite right -- "across"? no
-
-    ¿¿ Commentary on ``test_configurator.py`` ??
-
-    <<<<< TODO >>>>> 
+    <<<<< TODO -- more... how much more? >>>>>
+    <<<<< Walk through code? Simplified further if possible >>>>>
+    <<<<< Go look...  >>>>>
 
 .. _using-other-logging-handler-classes:
 
-Using other `logging` handler classes
-----------------------------------------
+Using other `logging` ``Handler`` classes
+--------------------------------------------
 
 .. todo::
     How you say in Inglese? --
 
-BLAH BLAH BLAH -- use ``add_handler``, using keyword arguments to specify
+The `logging` package defines about a dozen handler classes — subclasses of
+``logging.Handler`` — in the modules ``logging`` and ``logging.handlers``.
+``logging`` defines the basic handler classes ... TODO ...
+
+which log to more exotic destinations than just files
+and the console.
+
+— use ``add_handler``, using keyword arguments to specify
 class-specific key/value pairs, and specifying the appropriate handler class
 with the ``class_`` keyword.
 
@@ -715,6 +781,7 @@ class: ``logging.NullHandler``
 SMTPHandler
 +++++++++++++++++++++++++++++
 class: ``logging.handlers.NullHandler``
+docs: `<https://docs.python.org/3/library/logging.handlers.html#module-logging.handlers>`_
 
 .. _smtp-handler-one:
 
@@ -722,35 +789,42 @@ Using a single SMTPHandler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. todo:: comment on the following code
+    Commentary on example ``SMTP_handler_just_one.py``
 
 .. code::
 
+    #
+    # NOTE: EDIT THESE TWO VARIABLES to try this example
+    #
     SMTP_USERNAME = 'john.doe'      # assuming your sending email address is 'john.doe@gmail.com'
     SMTP_PASSWORD = 'password'      # your gmail password
+    #
+    # AND THESE TWO TOO if necessary
+    #
     FROM_ADDRESS =  SMTP_USERNAME + '@gmail.com'
+    SMTP_SERVER = 'smtp.gmail.com'
 
-    TEST_TO_ADDRESS = SMTP_USERNAME + '@gmail.com'
+    # for testing/trying it the example
+    TEST_TO_ADDRESS = FROM_ADDRESS
 
 
-    lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
-    lcdx.add_stderr_console_handler('con-err', formatter='minimal')
     # root, console handler levels: WARNING.
-
-    # Add an SMTPHandler,
-    #    which will email technical staff with logged messages of levels >= ERROR
-    lcdx.add_handler(
-        'email-handler',
-        class_='logging.handlers.SMTPHandler',
+    lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
+    lcdx.add_stderr_console_handler('con-err',
+                                    formatter='minimal'
+    ).add_smtp_handler('email-handler',
         level='ERROR',
         formatter='time_logger_level_msg',
         # SMTPHandler-specific kwargs:
         mailhost='smtp.gmail.com',
         fromaddr=FROM_ADDRESS,
-        toaddrs=[TEST_TO_ADDRESS, 'problems@kludgesoft.com'], # string or list of strings
+        toaddrs=[TEST_TO_ADDRESS, 'uh.oh@kludge.ly'], # string or list of strings
         subject='Alert from SMTPHandler',
-        secure=(),
-        credentials=(SMTP_USERNAME, SMTP_PASSWORD)
+        username=SMTP_USERNAME,
+        password=SMTP_PASSWORD,
+       timeout=1.0
     )
+
     lcdx.config()
 
     root = logging.getLogger()
@@ -766,74 +840,117 @@ Using a single SMTPHandler
 Using two SMTPHandlers, one filtered
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Comment on the example ``SMTP_handler_two.py``
+
 .. todo:: comment on the following code
 
 .. code::
-
+    #
+    # NOTE: EDIT THESE TWO VARIABLES to try this example
+    #
     SMTP_USERNAME = 'john.doe'      # assuming your sending email address is 'john.doe@gmail.com'
     SMTP_PASSWORD = 'password'      # your gmail password
-
+    #
+    # AND THESE TWO TOO if necessary
+    #
     FROM_ADDRESS =  SMTP_USERNAME + '@gmail.com'
+    SMTP_SERVER = 'smtp.gmail.com'
 
     # for testing/trying it the example
-    TEST_TO_ADDRESS = SMTP_USERNAME + '@gmail.com'
+    TEST_TO_ADDRESS = FROM_ADDRESS
 
-    def filter_error_only(record):
-        "Let only ERROR messages through"
-        return record.levelname  == 'ERROR'
 
-    def add_smtp_handler(lcdx,
+    def add_smtp_handler_to_lcd(
+                         lcdx,          # *
                          handler_name,
                          level,
                          toaddrs,        # string or list of strings
                          subject,
                          filters=()):
-        """Factor out calls to ``add_handler``: in this example,
-        more than half of its arguments are the same for both smtp handlers.
+        """Factor out calls to ``add_smtp_handler``.
         """
-        lcdx.add_handler(
+        lcdx.add_smtp_handler(
             handler_name,
-            class_='logging.handlers.SMTPHandler',
             level=level,
-            formatter='time_logger_level_msg',
             filters=filters,
-            # SMTPHandler-specific kwargs:
-            mailhost='smtp.gmail.com',
-            fromaddr=FROM_ADDRESS,
+
             toaddrs=toaddrs,
             subject=subject,
-            secure=(),
-            credentials=(SMTP_USERNAME, SMTP_PASSWORD)
+
+            formatter='time_logger_level_msg',
+            fromaddr=FROM_ADDRESS,
+            mailhost=SMTP_SERVER,
+            username=SMTP_USERNAME,
+            password=SMTP_PASSWORD
         )
 
-    lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
-    lcdx.add_stderr_console_handler('con-err', formatter='level_msg')
-    # root, console handler levels: WARNING.
+    def filter_error_only(record):
+        "Let only ERROR messages through"
+        return record.levelname  == 'ERROR'
 
-    # Add TWO SMTPHandlers, one for each level ERROR and CRITICAL,
-    #    which will email technical staff with logged messages of levels >= ERROR.
-    # We use a filter to make the first handler squelch CRITICAL messages:
-    lcdx.add_function_filter("filter-error-only", filter_error_only)
 
-    # TEST_TO_ADDRESS included just for testing/trying out the example
-    basic_toaddrs = [TEST_TO_ADDRESS, 'problems@kludgesoft.com']
+    def configure_logging():
+        lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
+        lcdx.add_stderr_console_handler('con-err', formatter='level_msg')
+        # root, console handler levels: WARNING.
 
-    # add error-only SMTP handler
-    add_smtp_handler(lcdx,
-                     'email-error',
-                     level='ERROR',
-                     toaddrs=basic_toaddrs,
-                     subject='ERROR (Alert from SMTPHandler)',
-                     filters=['filter-error-only'])
-    # add critical-only SMTP handler
-    add_smtp_handler(lcdx,
-                     'email-critical',
-                     level='CRITICAL',
-                     toaddrs=basic_toaddrs + ['cto@kludgesoft.com'],
-                     subject='CRITICAL (Alert from SMTPHandler)')
-    lcdx.config()
+        # Add TWO SMTPHandlers, one for each level ERROR and CRITICAL,
+        #    which will email technical staff with logged messages of levels >= ERROR.
+        # We use a filter to make the first handler squelch CRITICAL messages:
+        lcdx.add_function_filter("filter-error-only", filter_error_only)
+
+        # TEST_TO_ADDRESS included just for testing/trying out the example
+        basic_toaddrs = [TEST_TO_ADDRESS, 'problems@kludge.ly']
+
+        # add error-only SMTP handler
+        add_smtp_handler_to_lcd(
+                         lcdx,
+                         'email-error',
+                         level='ERROR',
+                         toaddrs=basic_toaddrs,
+                         subject='ERROR (Alert from SMTPHandler)',
+                         filters=['filter-error-only'])
+        # add critical-only SMTP handler
+        add_smtp_handler_to_lcd(
+                         lcdx,
+                         'email-critical',
+                         level='CRITICAL',
+                         toaddrs=basic_toaddrs + ['cto@kludge.ly'],
+                         subject='CRITICAL (Alert from SMTPHandler)')
+        lcdx.dump()
+        lcdx.config()
+
+    # -----------------------------------------
+
+    configure_logging()
 
     root = logging.getLogger()
     root.warning("Be careful")                  # logged to console
     root.error("Something bad just happened")   # logged to console, emailed
     root.critical("Time to restart")            # ditto
+
+
+.. _smtp-handler-custom-keywords-in-formatter-filter-adds-info:
+
+SMTPHandler logging custom fields using a custom formatter and filter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. todo::
+    Use `lcd` to realize the example described in:
+
+            https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information
+
+
+QueueHandler, QueueListener
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+It's not easy to provide support here:
+
+Once it has been created, a QueueListener has to be stopped and started, using
+its ``stop`` and ``start`` methods. However, as we've noted elsewhere, handler
+objects are anonymous, and there's no (straightforward) way to obtain a reference
+to the specified ``QueueListener`` once it's created.
+
+**If** the ``QueueListener`` is the only handler of a particular logger — or,
+more generally, if it's the only QueueListener attached as a handler to a
+particular logger — then yes, a reference can be obtained.
+

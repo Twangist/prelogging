@@ -171,21 +171,58 @@ class LoggingConfigDict(dict):
         """(Property) Return the ``'root'`` subdictionary."""
         return self['root']
 
+    # TODO docstring: add links to Py docs for
+    #  |   ``Formatter.__init__``
+    #  |   logging config, formatters (which doesn't mention 'style')
+
     def add_formatter(self, formatter_name,     # *,
                       class_='logging.Formatter',   # the typical case
+                      format=None,
+                      dateformat=None,
+                      style='%',
                       ** format_dict):
         """Add a formatter to the ``'formatters'`` subdictionary.
 
         :param formatter_name: just that
-        :param ** format_dict: keyword/value pairs (values are generally
-            strings). For the special keyword `class`, which is a Python
-            reserved word and therefore can't be used as a keyword parameter,
-            use `class_`.
+
+        Other explicit keyword parameters correspond to the  parameters used by
+        ``Formatter.__init__`` and by ``dictConfig``, offering improvings
+        to those different and inconsistent names. You can still use
+        ``datefmt``, but you can also use ``fmt`` and ``dateformat``.
+
+        :param format: the format string. ``Formatter.__init__`` calls this
+            ``fmt``. This method recognizes ``fmt`` too, as a synonym;
+            "format" takes precedence over "fmt" if both are given.
+
+        :param dateformat; a format string for dates and times, Both
+            ``Formatter.__init__`` and ``dictConfig`` call this ``datefmt``,
+            for which ``dateformat`` is a synonym. In this case,
+            "datefmt" takes precedence over "dateformat" if both are given.
+
+        :param style: One of '%', '{' or '$' to specify the formatting style
+            used by the format string.
+
+        :param format_dict: Any other key/value pairs (for custom
+            subclasses, perhaps)
+
         :return: ``self``
         """
         assert 'class' not in format_dict
         assert 'class_' not in format_dict
         format_dict['class'] = class_
+
+        # . v0.7.7b7
+        # "fmt" is recognized too;
+        # "format" takes precedence over "fmt" if both are given
+        format_dict['format'] = format or format_dict.get('fmt', None)
+
+        # However, "datefmt" takes precedence over "dateformat" if both are given
+        dfmt = format_dict.get('datefmt', None) or dateformat
+        if dfmt:
+            format_dict['datefmt'] = dfmt
+        if style != '%':
+            format_dict['style'] = style
+
         self.formatters[formatter_name] = format_dict.copy()
         return self
 
@@ -264,7 +301,7 @@ class LoggingConfigDict(dict):
                          level='NOTSET',    # log everything: `logging` default
                          delay=False,
                          **kwargs):
-        """Add a handler with the given name, with class
+        """Add a handler with the given name, of class
         ``'logging.FileHandler'``, using the filename, formatter, and other data
         provided.
 
@@ -558,7 +595,7 @@ class LoggingConfigDict(dict):
         def print_err(msg, **kwargs):
             import sys
             if PY2:
-                    msg = unicode(msg)
+                msg = unicode(msg)
             print(msg, file=sys.stderr, **kwargs)
 
         if problems:
