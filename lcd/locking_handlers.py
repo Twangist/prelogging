@@ -17,7 +17,7 @@ __all__ = [
 
 #############################################################################
 # LockingStreamHandler, LockingFileHandler, LockingRotatingFileHandler --
-# locking subclasses of logging module's
+# locking subclasses of logging package's
 #       StreamHandler, FileHandler, RotatingFileHandler
 # MPLock_Mixin -- a helper class mixed in to the Locking*Handler classes
 #############################################################################

@@ -256,7 +256,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
     def _add_console_handler(self, handler_name,    # *,
                              stream,
                              formatter=None,
-                             level='WARNING',   # logging module default: 'NOTSET'
+                             level='WARNING',   # `logging` default: 'NOTSET'
                              locking=None,
                              attach_to_root=None,
                              **kwargs):
@@ -338,8 +338,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          filename,
                          formatter=None,
                          mode='w',
-                         level='NOTSET',    # log everything: logging module default
-                         delay=False,       # logging module default
+                         level='NOTSET',    # log everything: `logging` default
+                         delay=False,       # `logging` default
                          locking=None,
                          attach_to_root=None,
                          **kwargs):
@@ -379,7 +379,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          formatter=None,
                          mode='a',
                          level='NOTSET',
-                         delay=False,       # logging module default
+                         delay=False,       # `logging` default
                          locking=None,
                          attach_to_root=None,
                          **kwargs):
@@ -394,13 +394,13 @@ class LoggingConfigDictEx(LoggingConfigDict):
             are renamed to `lf.log.2`, `lf.log.3`, ... `lf.log.K`;
             `lf.log` is closed, and renamed to `lf.log.1`;
             a new `lf.log` is created and written to.
-            The logging module calls this parameter `maxBytes`;
+            The `logging` oackage calls this parameter `maxBytes`;
             it also defaults to 0.
         :param backup_count: (max) n)umber of backup files to create and
-            maintain. The logging module calls this parameter `backupCount`;
+            maintain. The `logging` package calls this parameter `backupCount`;
             it also defaults to 0.
         :param formatter: the name of the formatter that this handler will use
-        :param mode: NOTE -- mode is `append`, logging module default
+        :param mode: NOTE -- mode is `append`, the `logging` default
         :param level: the loglevel of this handler
         :param delay: if True, the log file won't be created until it's
             actually written to

@@ -34,7 +34,7 @@ Examples:
 
 *   DOCUMENT (e.g. in examples-topics?)
 
-    The logging module provides several handler classes beyond those
+    The Python `logging` package provides several handler classes beyond those
     represented (sic?) in `lcd`. See the docs for ``logging.handlers``, which
      also documents the standard handlers in ``logging``:
 
@@ -140,7 +140,7 @@ uses the package *both* use ConfigSettingsDict*?  By default, `logging`'s
 dict-based configuration has limitations...
 It seems the answer is, Yes, if they both use the disable_existing_loggers param
 to .config(); default is None, in which case the setting used is what was passed
-to __init__, default False [contra logging module, where default is True];
+to __init__, default False [contra `logging` package, where default is True];
 if non-None is passed, its bool value is used.  disable_existing_loggers should
 be set to False by packages that want to use this package but also want to play
 nicely with other packages and client apps that also use the package (or, more
