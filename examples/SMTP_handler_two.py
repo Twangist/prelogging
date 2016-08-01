@@ -54,10 +54,10 @@ def configure_logging():
     # Add TWO SMTPHandlers, one for each level ERROR and CRITICAL,
     #    which will email technical staff with logged messages of levels >= ERROR.
     # We use a filter to make the first handler squelch CRITICAL messages:
-    lcdx.add_function_filter("filter-error-only", filter_error_only)
+    lcdx.add_callable_filter("filter-error-only", filter_error_only)
 
     # TEST_TO_ADDRESS included just for testing/trying out the example
-    basic_toaddrs = [TEST_TO_ADDRESS, 'problems@kludge.ly']
+    basic_toaddrs = [TEST_TO_ADDRESS, 'admin@kludge.ly']
 
     # add error-only SMTP handler
     add_smtp_handler_to_lcd(

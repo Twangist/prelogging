@@ -243,7 +243,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
     def add_handler(self, handler_name,     # *,
                     attach_to_root=None,
                     ** handler_dict):
-        """Virtual; adds the ``attach_to_root`` parameter to
+        """
+        Virtual; adds the ``attach_to_root`` parameter to
         ``LoggingConfigDict.add_handler()``.
 
         :return: ``self``
@@ -441,7 +442,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
     # . 0.2.7 -- Two convenience methods, so callers don't have to copy/paste
     # .          weird syntax, & so that we don't have to explain it in docs.
 
-    def add_class_filter(self, filter_name, filter_class, ** filter_dict):
+    def add_class_filter(self, filter_name, filter_class, ** filter_init_kwargs):
         """A convenience method for adding a class filter, an instance of
         a subclass of ``logging.Filter``. This method spares you from having
         to write code like the following:
@@ -451,33 +452,70 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :param filter_name: name of the filter (for attaching it to handlers
             and loggers)
         :param filter_class: a class, subclass of ``logging.Filter``.
-        :param filter_dict: any other parameters to be passed to ``add_filter``.
+        :param filter_init_kwargs: any other parameters to be passed to ``add_filter``.
+            These will be passed to the ``filter_class`` constructor.
+            See the documentation for ``LoggingConfigDict.add_filter``.
         :return: ``self``
         """
-        filter_dict['()'] = filter_class
-        return self.add_filter(filter_name, ** filter_dict)
+        filter_init_kwargs['()'] = filter_class
+        return self.add_filter(filter_name, ** filter_init_kwargs)
 
-    def add_function_filter(self, filter_name, filter_fn, ** filter_dict):
+    def add_callable_filter(self, filter_name, filter_fn, ** filter_init_kwargs):
         """A convenience method for adding a callable filter, of signature
-        ``logging.LogRecord -> bool``. This method spares you from having
-        to write code like the following:
+        ``(logging.LogRecord, **kwargs) -> bool``. This method spares you from
+        having to write code like the following:
 
             ``self.add_filter(filter_name, ** {'()': lambda: filter_fn})``
 
-        It also papers over a difference between how Python 2 and Python 3
-        handle callable filters.
+        (in the case where filter_fn takes no kwargs).
 
         :param filter_name: name of the filter (for attaching it to handlers
             and loggers)
-        :param filter_fn: a callable, of signature ``logging.LogRecord -> bool``
-        :param filter_dict: any other parameters to be passed to ``add_filter``.
+        :param filter_fn: a callable, of signature
+            ``(logging.LogRecord, **kwargs) -> bool``.
+            A record is logged iff this callable returns true.
+        :param filter_init_kwargs: Keyword arguments that will be passed to
+            the filter_fn **each time it is called*. These are specified at
+            initialization, so to use values that change dynamically (from
+            call to call of the filter_fn) requires a level of indirection
+            E.g.
+                data1 = 17
+                ...
+                def my_filter_fn(record, data_wrapper=None):
+                    return (data_wrapper and data_wrapper[0] > 100)
+
+                lcdx.add_callable_filter('cfilter', my_filter_fn,
+                    data_wrapper=[data1]
+
+                # ... log something -- filter will return False
+                data1 = 150
+                # ... log something -- filter will return True
+
+            Note then that this method is like "partial": it provides a kind
+            of Currying.
         :return: ``self``
         """
-        if PY2:      # curious lil hack
-            if not hasattr(filter_fn, 'filter'):
-                setattr(filter_fn, 'filter', filter_fn)
-        filter_dict['()'] = lambda: filter_fn
-        return self.add_filter(filter_name, ** filter_dict)
+        class FilterMaker():
+            def __init__(self, callable_filter=None, ** callable_filter_kwargs):
+                self.callable_filter = callable_filter
+                self.filter_callable_kwargs = callable_filter_kwargs
+
+            def filter(self, record):
+                return self.callable_filter(record,
+                                            ** self.filter_callable_kwargs)
+
+        filter_init_kwargs['callable_filter'] = filter_fn
+        return self.add_class_filter(filter_name, FilterMaker, **filter_init_kwargs)
+
+        # Former implementation, pre-filter-kwargs, pre FilterMaker class:
+        # Paper over a difference between how Python 2 and Python 3
+        # handle callable filters:
+        #
+        # if PY2:      # curious lil hack
+        #     if not hasattr(filter_fn, 'filter'):
+        #         setattr(filter_fn, 'filter', filter_fn)
+        # filter_dict['()'] = lambda: filter_fn
+        # return self.add_filter(filter_name, ** filter_dict)
 
     def add_email_handler(self,
                           handler_name,  # *
@@ -527,7 +565,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
             ``add_handler``, such as ``filters``
         :return: ``self``
         """
-        if timeout is not None and timeout != 0.0 and int(timeout) != 0 and timeout > 0:
+        if (timeout is not None and timeout != 0.0
+            and int(timeout) != 0 and timeout > 0):
             kwargs['timeout'] = timeout
 
         return self.add_handler(
@@ -562,8 +601,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :return: ``self``
         """
         if PY2:
-            raise NotImplementedError("logging.handlers.QueueHandler doesn't exist in Python 2")
-
+            raise NotImplementedError("logging.handlers.QueueHandler"
+                                      " doesn't exist in Python 2")
         return self.add_handler(
             handler_name,
             class_='logging.handlers.QueueHandler',

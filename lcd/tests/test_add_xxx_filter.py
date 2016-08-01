@@ -66,7 +66,7 @@ def test_xxx_filter():
 
     # Configure the root logger to use both filters shown above:
     >>> _ = lcd_ex.add_class_filter('count_i', CountInfoSquelchOdd)
-    >>> _ = lcd_ex.add_function_filter('count_d', count_debug_allow_2)
+    >>> _ = lcd_ex.add_callable_filter('count_d', count_debug_allow_2)
     >>> _ = lcd_ex.attach_root_filters('count_i', 'count_d')
 
     # lcd_ex.dump()      # | DEBUG comment out
@@ -112,5 +112,4 @@ def load_tests(loader, tests, ignore):
     return tests
 
 if __name__ == '__main__':
-
     doctest.testmod()

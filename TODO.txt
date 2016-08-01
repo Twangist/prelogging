@@ -1,6 +1,22 @@
 TODOs
 =====
 
+*   Rename ``LoggingConfigDictEx.add_function_filter``
+        to ``add_callable_filter``
+
+* Examples -- Class Filter, Callable Filter
+    Class Filter    that's initialized with some date:
+                    using the keyword parameters for initialization
+
+    Callable filter  "    "     "       "         "     "
+
+*   EXPOSE the FilterMaker class (INSIDE ``LoggingConfigDictEx.add_callable_filter``)
+    It's pretty nice
+        (Django has a similar thing but it doesn't do Currying)
+
+*   Using `lcd` with `Django`
+    in Examples/Topics
+
 
 Package name:
 

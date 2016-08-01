@@ -35,6 +35,10 @@ Topics and Recipes
         * :ref:`tr-config-non-root-propagate`
         * :ref:`tr-config-discrete-non-root`
 
+* :ref:`using-lcd-with-django`
+
+|br|
+
 * Rotating file handlers
     * :ref:`tr-rot-fh`
 
@@ -52,6 +56,19 @@ Topics and Recipes
 
         * :ref:`tr-filters-logger`
         * :ref:`tr-filters-handler`
+
+    .. todo::
+        Filter examples:
+
+            Class Filter    that's initialized with some date:
+                            using the keyword parameters for initialization
+
+            Callable filter  "    "     "       "         "     "
+
+        The new version of ``add_function_filter`` (soon to be
+        ``add_callable_filter``) is pretty cool.
+
+
 
 * Configuration distributed across multiple modules or packages
     * :ref:`config-abc`
@@ -490,6 +507,59 @@ handler and the ``'extra'`` logger.
 
 --------------------------------------------------
 
+.. _using-lcd-with-django:
+
+Using `lcd` with `Django`
+------------------------------------
+
+.. todo::
+
+    This needs mention
+
+    Django uses logging config dicts, & it's path of least resistance
+    suggests using a big static dict
+    via a LOGGING variable in ``settings.py``.
+
+    ..note :: It would be great if LOGGING could be a callable,
+        as the other logging-related setting ______ can be.
+        That way, you could specify a callable (no args, say) that just returns
+        a logging config dict.
+
+    See blah for info:
+        https://docs.djangoproject.com/en/1.9/topics/logging/
+
+        also
+
+        https://docs.djangoproject.com/en/1.9/releases/1.9/#default-logging-changes-19
+
+    Illustrate how to use `lcd` with Django. In ``settings.py``:
+
+    .. code::
+
+        from mystuff import configure_logging
+        LOGGING = configure_logging()
+
+    Here, `configure_logging` is a function you supply which builds a logging
+    config dict but doesn't call its ``config`` method. Django will add its
+    logging specifications to the ``LOGGING`` dict and then pass that to
+    ``logging.config.dictConfig``.
+
+    From https://docs.djangoproject.com/en/1.9/topics/logging/:
+
+        If the disable_existing_loggers key in the LOGGING dictConfig is set to
+        ``True`` (which is the default) then all loggers from the default
+        configuration will be disabled. Disabled loggers are not the same as
+        removed; the logger will still exist, but will silently discard anything
+        logged to it, not even propagating entries to a parent logger. Thus you
+        should be very careful using ``'disable_existing_loggers': True``; it’s
+        probably not what you want. Instead, you can set
+        ``disable_existing_loggers`` to ``False`` and redefine some or all of
+        the default loggers; or you can set ``LOGGING_CONFIG`` to ``None`` and
+        handle logging config yourself.
+
+
+--------------------------------------------------
+
 .. _tr-rot-fh:
 
 Using a rotating file handler
@@ -507,12 +577,13 @@ Multiprocessing — two approaches
 Refer to "multiple handlers logging to the same file" (sic)
 PROVIDE A LINK, and/or quote from it. That section of the docs discusses
 three approaches:
+
     1. one based on ``SocketHandler``
     2. locking versions of handlers, which our locking handlers implement
     3. (*Python 3 only*) using a ``QueueHandler`` in each process, all writing
        to a common Queue, and then either a ``QueueListener``
        or a dedicated thread in another process (e.g. the main one)
-       to extract ``LogRecord``s from the queue and log them.
+       to extract ``LogRecord``\s from the queue and log them.
 
 **Note**: the third approach is unavailable in Python 2, as the class
 ``QueueHandler`` is Python 3 only.
@@ -589,7 +660,7 @@ Filters
 
 There are two principle kinds of filters: instances of ``logging.Filter``,
 and callables of signature ``LogRecord`` -> ``bool``. `lcd` provides a pair
-of convenience methods ``add_class_filter`` and ``add_function_filter``
+of convenience methods ``add_class_filter`` and ``add_callable_filter``
 which are somewhat easier to use than its lower-level ``add_filter`` method.
 
 ``logging.Filter`` objects have a ``filter(record)`` method
@@ -597,7 +668,7 @@ which takes a ``logging.LogRecord`` and returns ``bool``.
 
 In Python 2, the `logging` module imposes a fussy requirement on callables
 that can be used as filters, which Python 3 implementation of `logging` removes.
-``add_function_filter`` addresses the Python 2 requirement, providing a single
+``add_callable_filter`` addresses the Python 2 requirement, providing a single
 interface for adding callable filters that works in both Python versions.
 
 .. _filter-setup:
@@ -665,7 +736,7 @@ Let's configure the root logger to use both filters shown above::
         level='DEBUG',
         formatter='level_msg')
 
-    lcd_ex.add_function_filter('count_d', count_debug_allow_2)
+    lcd_ex.add_callable_filter('count_d', count_debug_allow_2)
     lcd_ex.add_class_filter('count_i', CountInfoSquelchOdd)
 
     lcd_ex.attach_root_filters('count_d', 'count_i')
@@ -925,7 +996,7 @@ Comment on the example ``SMTP_handler_two.py``
         # Add TWO SMTPHandlers, one for each level ERROR and CRITICAL,
         #    which will email technical staff with logged messages of levels >= ERROR.
         # We use a filter to make the first handler squelch CRITICAL messages:
-        lcdx.add_function_filter("filter-error-only", filter_error_only)
+        lcdx.add_callable_filter("filter-error-only", filter_error_only)
 
         # TEST_TO_ADDRESS included just for testing/trying out the example
         basic_toaddrs = [TEST_TO_ADDRESS, 'problems@kludge.ly']

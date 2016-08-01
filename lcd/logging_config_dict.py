@@ -231,20 +231,13 @@ class LoggingConfigDict(dict):
         """Add a filter to the ``'filters'`` subdictionary.
 
         :param filter_name: just that
-        :param filter_dict: keyword/value pairs (values are generally strings)
+        :param filter_dict: keyword/value pairs
+            The value of the key '()' is a callable that returns
+            the Filter class or callable filter;
+            other key/value pairs are arguments for this callable
+            (used once, to construct/initialize the filter).
         :return: ``self``
         """
-        # assert 'class' not in filter_dict
-        # if 'class_' in filter_dict:
-        #     filter_dict['class'] = filter_dict.pop('class_')
-        ## Todo: does this even work? logging docs kinda stink re filters.
-        ## We can add a filter as in test_filters_on_logger in tests/test_LoggingConfigDict.py
-        ##      ** {'()': lambda: _count_debug }
-        ## and
-        ##    ** {'()': CountInfo
-        ## but 'class_' doesn't do the right thing, nor does 'name' (see logging source)
-        ## SO the hell with it.
-
         self.filters[filter_name] = filter_dict.copy()
         return self
 

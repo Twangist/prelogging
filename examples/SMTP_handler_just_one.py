@@ -27,7 +27,7 @@ def main():
         # SMTPHandler-specific kwargs:
         mailhost='smtp.gmail.com',
         fromaddr=FROM_ADDRESS,
-        toaddrs=[TEST_TO_ADDRESS, 'uh.oh@kludge.ly'], # string or list of strings
+        toaddrs=[TEST_TO_ADDRESS, 'admin@kludge.ly'], # string or list of strings
         subject='Alert from SMTPHandler',
         username=SMTP_USERNAME,
         password=SMTP_PASSWORD
