@@ -238,7 +238,7 @@ class LoggingConfigDict(dict):
             (used once, to construct/initialize the filter).
         :return: ``self``
         """
-        self.filters[filter_name] = filter_dict.copy()
+        self.filters[filter_name] = filter_dict     #.copy()      <---- TODO?
         return self
 
     @staticmethod

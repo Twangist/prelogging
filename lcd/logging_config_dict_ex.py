@@ -244,7 +244,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                     attach_to_root=None,
                     ** handler_dict):
         """
-        Virtual; adds the ``attach_to_root`` parameter to
+        (Virtual) Adds the ``attach_to_root`` parameter to
         ``LoggingConfigDict.add_handler()``.
 
         :return: ``self``
@@ -344,7 +344,8 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          locking=None,
                          attach_to_root=None,
                          **kwargs):
-        """Virtual; adds keyword parameters ``locking`` and ``attach_to_root``
+        """
+        (Virtual) Adds keyword parameters ``locking`` and ``attach_to_root``
         to the parameters of ``LoggingConfigDict.add_file_handler()``.
 
         :return: ``self``
@@ -439,35 +440,42 @@ class LoggingConfigDictEx(LoggingConfigDict):
             self.handlers[handler_name]['create_lock'] = True
         return self
 
-    # . 0.2.7 -- Two convenience methods, so callers don't have to copy/paste
-    # .          weird syntax, & so that we don't have to explain it in docs.
+    def add_class_filter(self, filter_name, filter_class, **filter_init_kwargs):
+        """
+        A convenience method for adding a class filter, a class that implements
+        a ``filter`` method of signature ``(logging.LogRecord) -> bool``.
 
-    def add_class_filter(self, filter_name, filter_class, ** filter_init_kwargs):
-        """A convenience method for adding a class filter, an instance of
-        a subclass of ``logging.Filter``. This method spares you from having
-        to write code like the following:
+        This method spares you from writing:
 
             ``self.add_filter(filter_name, ** {'()': filter_class})``
 
+        (or even more elaborate code, if ``filter_class`` takes keyword
+        arguments, available in ``filter_init_kwargs``).
+
         :param filter_name: name of the filter (for attaching it to handlers
             and loggers)
-        :param filter_class: a class, subclass of ``logging.Filter``.
-        :param filter_init_kwargs: any other parameters to be passed to ``add_filter``.
-            These will be passed to the ``filter_class`` constructor.
-            See the documentation for ``LoggingConfigDict.add_filter``.
+        :param filter_class: a class implementing a ``filter`` method of
+            signature ``(logging.LogRecord) -> bool``.
+        :param filter_init_kwargs: any other parameters to be passed to
+            ``add_filter``. These will be passed to the ``filter_class``
+            constructor. See the documentation for
+            ``LoggingConfigDict.add_filter``.
         :return: ``self``
         """
         filter_init_kwargs['()'] = filter_class
-        return self.add_filter(filter_name, ** filter_init_kwargs)
+        return self.add_filter(filter_name, **filter_init_kwargs)
 
-    def add_callable_filter(self, filter_name, filter_fn, ** filter_init_kwargs):
+    def add_callable_filter(self, filter_name, filter_fn, **filter_init_kwargs):
         """A convenience method for adding a callable filter, of signature
         ``(logging.LogRecord, **kwargs) -> bool``. This method spares you from
         having to write code like the following:
 
             ``self.add_filter(filter_name, ** {'()': lambda: filter_fn})``
 
-        (in the case where filter_fn takes no kwargs).
+        (or worse, if ``filter_fn`` takes keyword arguments), and, under Python
+        2, having to also write
+
+            ``filter_fn.filter = filter_fn``.
 
         :param filter_name: name of the filter (for attaching it to handlers
             and loggers)
@@ -475,23 +483,11 @@ class LoggingConfigDictEx(LoggingConfigDict):
             ``(logging.LogRecord, **kwargs) -> bool``.
             A record is logged iff this callable returns true.
         :param filter_init_kwargs: Keyword arguments that will be passed to
-            the filter_fn **each time it is called*. These are specified at
-            initialization, so to use values that change dynamically (from
-            call to call of the filter_fn) requires a level of indirection
-            E.g.
-                data1 = 17
-                ...
-                def my_filter_fn(record, data_wrapper=None):
-                    return (data_wrapper and data_wrapper[0] > 100)
+            the filter_fn **each time it is called**. To pass dynamic data,
+            you can't just wrap it in a list or dict; use an object or callable
+            instead. See the documentation for more about this.
 
-                lcdx.add_callable_filter('cfilter', my_filter_fn,
-                    data_wrapper=[data1]
-
-                # ... log something -- filter will return False
-                data1 = 150
-                # ... log something -- filter will return True
-
-            Note then that this method is like "partial": it provides a kind
+            Note that this method is like "partial": it provides a kind
             of Currying.
         :return: ``self``
         """

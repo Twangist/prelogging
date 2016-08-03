@@ -35,6 +35,7 @@ Topics and Recipes
         * :ref:`tr-config-non-root-propagate`
         * :ref:`tr-config-discrete-non-root`
 
+
 * :ref:`using-lcd-with-django`
 
 |br|
@@ -56,18 +57,8 @@ Topics and Recipes
 
         * :ref:`tr-filters-logger`
         * :ref:`tr-filters-handler`
-
-    .. todo::
-        Filter examples:
-
-            Class Filter    that's initialized with some date:
-                            using the keyword parameters for initialization
-
-            Callable filter  "    "     "       "         "     "
-
-        The new version of ``add_function_filter`` (soon to be
-        ``add_callable_filter``) is pretty cool.
-
+        * :ref:`passing-initialization-data-to-a-filter`
+        * :ref:`passing-dynamic-data-to-a-filter`
 
 
 * Configuration distributed across multiple modules or packages
@@ -834,6 +825,157 @@ There are two ways to attach filters to a handler:
                             filename='mylogfile.log')
     lcd_ex.attach_handler_filters('myhandler',
                                   'count_d', 'count_i')
+
+
+.. index:: Filters -- passing initialization data
+
+.. _passing-initialization-data-to-a-filter:
+
+Passing initialization data to a filter
++++++++++++++++++++++++++++++++++++++++++++++
+Blah blah
+
+    .. todo::
+        Filter examples:
+
+            Class Filter    that's initialized with some data:
+                            using keyword parameters for initialization
+
+            Callable filter  "    "     "       "         "     "
+
+
+Class filter
+~~~~~~~~~~~~~~~~~~~
+<<<<< TODO >>>>>
+
+Callable filter
+~~~~~~~~~~~~~~~~~~~
+<<<<< TODO >>>>>
+    (Cool new feature of ``add_callable_filter``, that you can do this)
+
+
+.. index:: Filters -- passing dynamic data
+
+.. _passing-dynamic-data-to-a-filter:
+
+Passing dynamic data to a filter
+++++++++++++++++++++++++++++++++++++
+
+Sometimes you may want to pass a reference dynamic data to a filter, whose
+value may be different from one filter call to the next. A typical approach
+would be to wrap such data in a list or dict, as in the following code which
+uses a list:
+
+    >>> class A():
+    ...     def __init__(self, list1=None):
+    ...         self.list1 = list1
+    ...
+    ...     def method(self):
+    ...         print(self.list1[0])
+
+    >>> data_wrapper = [17]
+    >>> a = A(list1=data_wrapper)
+    >>> a.method()
+    17
+    >>> data_wrapper[0] = 101
+    >>> a.method()
+    101
+
+This will not work with logging configuration.
+
+Configuring logging "freezes" lists and dicts in the logging config dict
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+While you're still building a logging config dict, the dict for a filter will
+reflect changes to any data that's accessible through dict or list references
+you've passed. For example,
+
+    >>> def my_filter_fn(record, list1=None):
+    ...     assert list1
+    ...     print(list1[0])
+    ...     return list1[0] > 100
+
+    >>> data_wrapper = [17]
+    >>> lcdx = LoggingConfigDictEx(attach_handlers_to_root=True, root_level='DEBUG')
+    >>> lcdx.add_stdout_handler('con', formatter='minimal', level='DEBUG')
+    >>> lcdx.add_callable_filter('callable-filter',
+    ...                          my_filter_fn,
+    ...                          list1=data_wrapper)
+    >>> lcdx.attach_root_filters('callable-filter')
+    >>> lcdx.filters['callable-filter']['list1']
+    [17]
+    >>> data_wrapper[0] = 21
+    >>> lcdx.filters['callable-filter']['list1']
+    [21]
+
+However, once you configure logging, any such live references are broken,
+because the values in the dict are copied. Let's confirm this.
+First, configure logging with the dict we've built:
+
+    >>> lcdx.config()
+
+Now log something. The filter prints the value of ``list1[0]``, which is ``21``;
+thus it returns ``False``, so no message is logged:
+
+    >>> logging.getLogger().debug("data_wrapper = %r" % data_wrapper)
+    21
+
+Now change the value of ``data_wrapper[0]``:
+
+    >>> data_wrapper[0] = 101
+
+Prior to configuration, the filter's ``list1`` referred to ``data_wrapper``;
+but that's no longer true: ``list1[0]`` is still ``21``, not `101`, so the
+filter still returns ``False``:
+
+    >>> logging.getLogger().debug("data_wrapper = %r" % data_wrapper)
+    21
+
+Successfully passing dynamic data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The moral of the story: if you want to pass dynamic data to a filter, you
+can't use a list or dict as a container (nor, of course, a tuple). The
+following example shows a successful strategy, using a simple ad-hoc class
+as a container:
+
+    >>> class DataWrapper():
+    ...     def __init__(self, data=None):  self.data = data
+    ...     def __str__(self):              return "%r" % self.data
+
+    >>> def my_filter_fn(record, data_wrapper=None):
+    ...     assert data_wrapper
+    ...     print(data_wrapper)
+    ...     return isinstance(data_wrapper.data, int) and data_wrapper.data > 100
+
+    >>> dw = DataWrapper(17)
+
+    >>> lcdx = LoggingConfigDictEx(attach_handlers_to_root=True, root_level='DEBUG')
+    >>> lcdx.add_stdout_handler('con', formatter='minimal', level='DEBUG')
+    >>> lcdx.add_callable_filter('callable-filter',
+    ...                          my_filter_fn,
+    ...                          data_wrapper=dw)
+    >>> lcdx.attach_root_filters('callable-filter')
+    >>> lcdx.filters['callable-filter']['data_wrapper'])
+    17
+    >>> dw.data = 21
+    >>> lcdx.filters['callable-filter']['data_wrapper'])
+    21
+
+    >>> lcdx.config()
+
+    >>> # filter prints 21 and returns False:
+    >>> # in the filter, data_wrapper.data == 21
+    >>> logging.getLogger().debug("dw = %s" % dw)
+    21
+    dw.data = 101
+    >>> # In the filter, data_wrapper.data == 101,
+    >>> #  so message is logged:
+    logging.getLogger().debug("dw = %s" % dw)
+    101
+    dw = 101
+
+Of course, you could pass a data-returning callable rather than a container.
 
 ----------------------------------
 
