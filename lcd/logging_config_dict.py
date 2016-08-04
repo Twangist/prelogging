@@ -105,6 +105,45 @@ class LoggingConfigDict(dict):
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
 
+    _strict = False
+    _warn = False
+
+    @classmethod
+    def strict(cls, strict_val=None):
+        """Get or set the bool value of the class attribute ``_strict``. When
+        true, ``LoggingConfigDict`` will require that every name of an attached
+        entity must already be defined.
+
+        :param strict_val: If not ``None``, set ``cls._strict`` to
+            ``bool(strict_val)``.
+        type strict_val: bool or None
+        :return: ``cls._strict``
+        """
+        if strict_val is not None:
+            cls._strict = bool(strict_val)
+        return cls._strict
+
+    @classmethod
+    def warn(cls, warn_val=None):
+        """Get or set the bool value of the class attribute ``_warn``. When
+        true, ``LoggingConfigDict`` will write warnings when
+
+            * an entity (formatter, filter, etc.) is added that has already
+              been defined, possibly overwriting the existing definition;
+            * attaching a formatter to a handler replaces the handler's
+              existing, different formatter
+            * attaching a formatter to a handler that it's already attached to
+            * attaching a {filter/handler} to a {handler/logger} that it's
+            already attached to.
+
+        :param warn_val: If not ``None``, set ``cls._warn`` to ``bool(warn_val)``.
+        type warn_val: bool or None
+        :return: ``cls._warn``
+        """
+        if warn_val is not None:
+            cls._warn = bool(warn_val)
+        return cls._warn
+
     def __init__(self,      # *,
                  root_level='WARNING',              # == logging default
                  disable_existing_loggers=None      # logging default: True
@@ -207,6 +246,8 @@ class LoggingConfigDict(dict):
 
         :return: ``self``
         """
+        self._check_readd(self.formatters, formatter_name, 'formatter')
+
         assert 'class' not in format_dict
         assert 'class_' not in format_dict
         format_dict['class'] = class_
@@ -238,6 +279,7 @@ class LoggingConfigDict(dict):
             (used once, to construct/initialize the filter).
         :return: ``self``
         """
+        self._check_readd(self.filters, filter_name, 'filter')
         self.filters[filter_name] = filter_dict     #.copy()      <---- TODO?
         return self
 
@@ -257,6 +299,7 @@ class LoggingConfigDict(dict):
         return list(str_or_seq or [])
 
     def add_handler(self, handler_name,     # *,
+                    formatter=None,
                     filters=None,
                     ** handler_dict):
         """Add a handler to the ``'handlers'`` subdictionary.
@@ -269,15 +312,28 @@ class LoggingConfigDict(dict):
             strings). For the special keyword ``class``, use ``class_``.
         :return: ``self``
         """
+        self._check_readd(self.handlers, handler_name, 'handler')
+
         assert 'class' not in handler_dict
         if 'class_' in handler_dict:
             handler_dict['class'] = handler_dict.pop('class_')
 
+        if formatter:
+            handler_dict['formatter'] = formatter   # TODO: TEST
         filters = self._to_seq(filters)
+        filters = self._check_attach__clean_list(
+            existing_attachees=None,
+            attach_to=handler_name,
+            attach_to_kind='handler',
+            attachees=filters,
+            attachee_kind='filter'
+        )
+        # TODO strict...
+
         if filters:
             handler_dict['filters'] = filters
 
-        self.handlers[handler_name] = handler_dict.copy()
+        self.handlers[handler_name] = handler_dict  #.copy()    <---- TODO?
         return self
 
     # << TODO >> What is logging default? It's 'a', isn't it.
@@ -338,6 +394,26 @@ class LoggingConfigDict(dict):
             level=level,
             **kwargs)
 
+    # TODO: TEST
+    def attach_handler_formatter(self, handler_name, formatter_name):
+        """Attach formatter to handler.
+        Of course you can't attacha  formatter to anything other than a handler,
+        so admittedly the "_handler" part is redundant. In its defense,
+
+            * it's by analogy with all the other "attach_*" functions,
+              which are of the form "attach_toWhat_thingsToAttach"
+
+            * it tells you the order of parameters.
+
+        :param handler_name: name of handler to attach formatter to
+        ;param formatter_name: name of formatter
+        :return: ``self``
+        """
+        self._check_attach_formatter(handler_name, formatter_name)
+
+        self.handlers[handler_name]['formatter'] = formatter_name
+        return self
+
     def attach_handler_filters(self, handler_name, * filter_names):
         """
         Add filters in ``filter_names`` to the handler named ``handler_name``.
@@ -350,8 +426,20 @@ class LoggingConfigDict(dict):
             return self
 
         handler_dict = self.handlers[handler_name]
-        handler_filters_list = handler_dict.setdefault('filters', [])
-        handler_filters_list.extend(filter_names)
+        handler_filters = handler_dict.get('filters', None)
+
+        filter_names = self._check_attach__clean_list(
+            existing_attachees=handler_filters,
+            attach_to=handler_name,
+            attach_to_kind='handler',
+            attachees=filter_names,
+            attachee_kind='filter'
+        )
+        if not filter_names:
+            return self
+
+        handler_filters = handler_dict.setdefault('filters', [])
+        handler_filters.extend(filter_names)
         return self
 
     def set_handler_level(self, handler_name, level):
@@ -371,18 +459,41 @@ class LoggingConfigDict(dict):
 
         :return: ``self``
         """
-        self.root['handlers'].extend(handler_names)
+        root_handlers = self.root['handlers']
+
+        # check/clean duplicates from handler_names
+        handler_names = self._check_attach__clean_list(
+            existing_attachees=root_handlers,
+            attach_to='',
+            attach_to_kind='logger',
+            attachees=handler_names,
+            attachee_kind='handler'
+        )
+        root_handlers.extend(handler_names)
         return self
 
     def attach_root_filters(self, * filter_names):
         """Add filters in ``filter_names`` to the root logger.
 
+        :param filter_names: (vararg) tuple of filter names
         :return: ``self``
         """
         if not filter_names:
             return self
-        root_filters_list = self.root.setdefault('filters', [])
-        root_filters_list.extend(filter_names)
+        root_filters = self.root.get('filters', None)
+
+        # check/clean duplicates & reattachments from filter_names
+        filter_names = self._check_attach__clean_list(
+            existing_attachees=root_filters,
+            attach_to='',
+            attach_to_kind='logger',
+            attachees=filter_names,
+            attachee_kind='filter'
+        )
+        if not filter_names:
+            return self
+        root_filters = self.root.setdefault('filters', [])
+        root_filters.extend(filter_names)
         return self
 
     def set_root_level(self, root_level):
@@ -416,9 +527,18 @@ class LoggingConfigDict(dict):
         :param filters: a filter name, or sequence of filter names
         :return: ``self``
         """
+        self._check_readd(self.loggers, logger_name, 'logger')
         d = {'level': level}
 
         handlers = self._to_seq(handlers)
+        # check/clean handlers
+        handlers = self._check_attach__clean_list(
+            existing_attachees=None,
+            attach_to=logger_name,
+            attach_to_kind='logger',
+            attachees=handlers,
+            attachee_kind='handler'
+        )
         if handlers:
             d['handlers'] = handlers
 
@@ -426,6 +546,14 @@ class LoggingConfigDict(dict):
             d['propagate'] = propagate
 
         filters = self._to_seq(filters)
+        # check/clean filters
+        filters = self._check_attach__clean_list(
+            existing_attachees=None,
+            attach_to=logger_name,
+            attach_to_kind='logger',
+            attachees=filters,
+            attachee_kind='filter'
+        )
         if filters:
             d['filters'] = filters
 
@@ -443,11 +571,20 @@ class LoggingConfigDict(dict):
         :return: ``self``
         """
         if not logger_name:
-            self.attach_root_handlers(* handler_names)
-        elif handler_names:
-            logger_handlers_list = self.loggers[logger_name].setdefault(
-                                                                'handlers', [])
-            logger_handlers_list.extend(handler_names)
+            return self.attach_root_handlers(* handler_names)
+
+        if not handler_names:
+            return self
+
+        logger_handlers = self.loggers[logger_name].setdefault('handlers', [])
+        handler_names = self._check_attach__clean_list(
+            existing_attachees=logger_handlers,
+            attach_to=logger_name,
+            attach_to_kind='logger',
+            attachees=handler_names,
+            attachee_kind='handler'
+        )
+        logger_handlers.extend(handler_names)
         return self
 
     def attach_logger_filters(self, logger_name, * filter_names):
@@ -461,11 +598,21 @@ class LoggingConfigDict(dict):
             return self
 
         if not logger_name:
-            self.attach_root_filters(* filter_names)
-        else:
-            logger_dict = self.loggers[logger_name]
-            logger_filters_list = logger_dict.setdefault('filters', [])
-            logger_filters_list.extend(filter_names)
+            return self.attach_root_filters(* filter_names)
+
+        logger_dict = self.loggers[logger_name]
+        logger_filters = logger_dict.get('filters', None)
+        filter_names = self._check_attach__clean_list(
+            existing_attachees=logger_filters,
+            attach_to=logger_name,
+            attach_to_kind='logger',
+            attachees=filter_names,
+            attachee_kind='filter'
+        )
+        if not filter_names:
+            return self
+        logger_filters = logger_dict.setdefault('filters', [])
+        logger_filters.extend(filter_names)
 
         return self
 
@@ -516,7 +663,10 @@ class LoggingConfigDict(dict):
         )
         return self
 
-    # TODO: Or, make this a global function?
+    # -------------------------------------------------------
+    # Consistency checking
+    # -------------------------------------------------------
+
     def check(self, verbose=True):
         """Check for consistency: names used to refer to entities (formatters,
         handlers, filters) must exist (must actually have been added).
@@ -603,12 +753,6 @@ class LoggingConfigDict(dict):
 
         # ------------------------------
 
-        def print_err(msg, **kwargs):
-            import sys
-            if PY2:
-                msg = unicode(msg)
-            print(msg, file=sys.stderr, **kwargs)
-
         if problems:
             if verbose:
                 print_err("Problems -- nonexistent things mentioned")
@@ -623,3 +767,133 @@ class LoggingConfigDict(dict):
         # ------------------------------
 
         return self
+
+    @staticmethod
+    def _get_caller_srcfile_lineno(depth=3):
+        """Return source file name and line number from which this function
+            was called.
+
+        :param depth: how many levels in the call stack to go "down":
+            0 = this function, 1 = caller of this this function,
+            2 = caller's caller, etc. For the default of 3, we return
+            source file name and line number for the caller's caller's
+            caller.
+        :return: Tuple (srcfile, lineno) -- the source file name, and line
+            number, of the caller's ... caller (depending on ``depth``).
+        """
+        import sys
+        caller_n_frame = sys._getframe(depth)
+        # frame has
+        #     f_lineno    # curr line #
+        #     f_code      # code obj
+        # code obj has
+        #     co_filename
+        srcfile = caller_n_frame.f_code.co_filename
+        lineno = caller_n_frame.f_lineno
+        return srcfile, lineno
+
+    def _check_readd(self,
+                     subdict, key, kind):
+        """
+        :param subdict: self.formatters, self.handlers, etc.
+        :param key: name of formatter, handler, etc. Will be a key into subdict.
+        :param kind: "formatter", "handler", etc. for use in warning message
+        """
+        if not self._warn:
+            return
+        srcfile, lineno = self._get_caller_srcfile_lineno()
+        if key in subdict:
+            print_err(
+                "Warning (%s, line %d): redefinition of %s '%s'."
+                % (srcfile, lineno, kind, key)
+            )
+
+    def _check_attach_formatter(self, handler_name, formatter_name):
+        if not self._warn:
+            return
+        # If handler doesn't have a formatter yet, ok
+        existing_fname = self.handlers[handler_name].get('formatter', None)
+        if existing_fname is None:
+            return
+
+        # Two different warnings, depending on whether:
+        #   * formatter_name == existing_fname, or
+        #   * formatter_name != existing_fname
+        srcfile, lineno = self._get_caller_srcfile_lineno()
+        if formatter_name != existing_fname:
+            print_err(
+                "Warning (%s, line %d): formatter '%s' replaces '%s' in handler '%s'."
+                % (srcfile, lineno, formatter_name, existing_fname, handler_name)
+            )
+        else:
+            print_err(
+                "Warning (%s, line %d): formatter '%s' already attached to handler '%s'."
+                % (srcfile, lineno, formatter_name, handler_name)
+            )
+
+    def _check_attach__clean_list(self,     # *
+            existing_attachees=None,
+            attach_to=None,
+            attach_to_kind=None,
+            attachees=None,
+            attachee_kind=None):
+        """
+        :param existing_attachees: list/seq
+        :param attach_to: name of thing being attached to
+        :param attach_to_kind: 'handler' or 'logger'
+        :param attachees: list/sequence of names of things being attached
+        :param attachee_kind: 'filter', 'handler'
+        return: list -- attachees with duplicates removed
+            and with any items removed that are in ``existing_attachees``
+        """
+        existing_attachees = existing_attachees or []
+        # Remove duplicates, form list of them (for warning msg)
+        dups = []
+        cleaned = []
+        for name in attachees:
+            if name not in cleaned:
+                cleaned.append(name)
+            else:
+                dups.append(name)
+        # Warn if dups not empty
+        if self._warn and dups:
+            srcfile, lineno = self._get_caller_srcfile_lineno()
+            dups_str = str(dups)[1:-1]
+            print_err(
+                "Warning (%s, line %d):"
+                " list of %ss to attach to %s '%s' contains duplicates:"
+                " %s."
+                % (srcfile, lineno,
+                   attachee_kind, attach_to_kind, attach_to,
+                   dups_str)
+            )
+
+        # Check for reattachment, remove such
+        reattached = []
+        cleaned2 = []
+        for name in cleaned:
+            if name not in existing_attachees:
+                cleaned2.append(name)
+            else:
+                reattached.append(name)
+        # Warn if reattached not empty
+        if self._warn and reattached:
+            srcfile, lineno = self._get_caller_srcfile_lineno()
+            reattached_str = str(reattached)[1:-1]
+            print_err(
+                "Warning (%s, line %d):"
+                " these %ss are already attached to %s '%s':"
+                " %s."
+                % (srcfile, lineno,
+                   attachee_kind, attach_to_kind, attach_to,
+                   reattached_str)
+            )
+
+        return cleaned2
+
+
+def print_err(msg, **kwargs):
+    import sys
+    if PY2:
+        msg = unicode(msg)
+    print(msg, file=sys.stderr, **kwargs)

@@ -418,3 +418,554 @@ class TestLoggingConfigDict(TestCase):
         self.assertEqual(sio_err.getvalue(), "0\n2\n")
         self.assertEqual(self.info_count, 4)
         self.assertEqual(self.test_filters_on_handler__messages, [0, 2])
+
+
+class TestLoggingConfigDict_WarnStrict(TestCase):
+
+    def test_warn(self):
+        w = LoggingConfigDict.warn()
+        self.assertEqual(w, False)
+
+        wT = LoggingConfigDict.warn(True)
+        self.assertEqual(wT, True)
+        self.assertEqual(LoggingConfigDict.warn(), True)
+
+        wF = LoggingConfigDict.warn(False)
+        self.assertEqual(wF, False)
+        self.assertEqual(LoggingConfigDict.warn(), False)
+
+    def test_strict(self):
+        s = LoggingConfigDict.strict()
+        self.assertEqual(s, False)
+
+        sT = LoggingConfigDict.strict(True)
+        self.assertEqual(sT, True)
+        self.assertEqual(LoggingConfigDict.strict(), True)
+
+        sF = LoggingConfigDict.strict(False)
+        self.assertEqual(sF, False)
+        self.assertEqual(LoggingConfigDict.strict(), False)
+
+
+class TestLoggingConfigDict_Warnings(TestCase):
+    class F():
+        def filter(self, record):
+            return True
+
+    def setUp(self):
+        LoggingConfigDict.warn(True)
+        # Swap stderr, save existing:
+        self._stderr = sys.stderr
+        self.sio_err = io.StringIO()    # new "stderr"
+        sys.stderr = self.sio_err
+        # create an LCD
+        self.lcd = LoggingConfigDict()
+
+    def tearDown(self):
+        # restore
+        sys.stderr = self._stderr
+        LoggingConfigDict.warn(False)
+
+    #-------------------
+    # re-add
+    #-------------------
+
+    def test_warn_formatter_readd(self):
+
+        self.lcd.add_formatter('my_formatter', format='%(message)s')
+        # Now readd -- check for warning to stderr
+
+        self.lcd.add_formatter('my_formatter', format='%(message)s')
+
+        errmsg = self.sio_err.getvalue()
+        self.assertEqual(
+            errmsg.startswith("Warning")
+                and ": redefinition of formatter 'my_formatter'" in errmsg,
+            True
+        )
+
+    def test_warn_filter_readd(self):
+        self.lcd.add_filter('my_filter', ** {'()': self.F})
+        # Now readd -- check for warning to stderr
+        self.lcd.add_filter('my_filter', ** {'()': self.F})
+
+        errmsg = self.sio_err.getvalue()
+        self.assertEqual(
+            errmsg.startswith("Warning")
+                and ": redefinition of filter 'my_filter'" in errmsg,
+            True
+        )
+
+    def test_warn_handler_readd(self):
+        self.lcd.add_handler(
+                        'console',
+                        class_='logging.StreamHandler',
+                        stream='sys.stdout')
+        # Now readd -- check for warning to stderr
+        self.lcd.add_handler(
+                        'console',
+                        class_='logging.StreamHandler',
+                        stream='sys.stdout')
+
+        errmsg = self.sio_err.getvalue()
+        self.assertEqual(
+            errmsg.startswith("Warning")
+                and ": redefinition of handler 'console'" in errmsg,
+            True
+        )
+
+    def test_warn_logger_readd(self):
+        self.lcd = LoggingConfigDict()
+        self.lcd.add_logger('my_logger')
+        # Now readd -- check for warning to stderr
+        self.lcd.add_logger('my_logger')
+
+        errmsg = self.sio_err.getvalue()
+        self.assertEqual(
+            errmsg.startswith("Warning") and
+                ": redefinition of logger 'my_logger'" in errmsg,
+            True
+        )
+
+    #====================================
+    # test duplicates in add_* lists
+    #      and attach_*_* reattachments
+    #====================================
+
+    #-------------------
+    # handler/formatter
+    #-------------------
+
+    def test_warn_reattach_formatter(self):
+        # attach same formatter twice
+        self.lcd.add_formatter('f1',
+                               format='%(message)s'
+        ).add_handler('my_handler',
+                      formatter='f1')
+        # Now reattach -- check for warning to stderr
+        self.lcd.attach_handler_formatter('my_handler', 'f1')
+
+        errmsg = self.sio_err.getvalue()
+        self.assertEqual(
+            errmsg.startswith("Warning") and
+                ": formatter 'f1' already attached to handler 'my_handler'" in errmsg,
+            True
+        )
+
+    def test_warn_redefine_formatter(self):
+        # attach two diff formatters
+        self.lcd.add_formatter('f1',  format='%(message)s'
+        ).add_formatter('f2',  format=''
+        ).add_handler('my_handler',
+                      formatter='f1')
+        # Now attach f2 -- check for warning to stderr
+        self.lcd.attach_handler_formatter('my_handler', 'f2')
+
+        errmsg = self.sio_err.getvalue()
+        self.assertEqual(
+            errmsg.startswith("Warning") and
+                ": formatter 'f2' replaces 'f1' in handler 'my_handler'" in errmsg,
+            True
+        )
+
+    #-------------------
+    # handler/filters
+    #-------------------
+
+    def test_warn__add_handler__dup_filters(self):
+                # add_handler -- dup filters in list
+        self.lcd.add_filter('filter1', ** {'()': self.F}
+        ).add_filter('filter2', ** {'()': self.F})
+        self.lcd.add_handler('my_handler',
+                             filters=['filter1', 'filter2', 'filter1', 'filter2'])
+        errmsg = self.sio_err.getvalue()
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": list of filters to attach to handler 'my_handler'"
+                             " contains duplicates: 'filter1', 'filter2'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.handlers['my_handler']['filters'],
+            ['filter1', 'filter2']
+        )
+
+    def test_warn__attach_handler_filters__dup_filters(self):
+        self.lcd.add_filter('filter1', ** {'()': self.F}
+        ).add_handler('my_handler'
+        ).attach_handler_filters(
+            'my_handler',
+            'filter1', 'filter1'
+        )
+        errmsg = self.sio_err.getvalue()
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": list of filters to attach to handler 'my_handler'"
+                             " contains duplicates: 'filter1'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.handlers['my_handler']['filters'],
+            ['filter1']
+        )
+
+    def test_warn__attach_handler_filters__reattach_filters(self):
+        self.lcd.add_filter('filter1', ** {'()': self.F}
+        ).add_handler('my_handler',
+                      filters='filter1'
+        ).attach_handler_filters(
+            'my_handler',
+            'filter1'
+        )
+        errmsg = self.sio_err.getvalue()
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": these filters are already attached to handler 'my_handler'"
+                             ": 'filter1'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.handlers['my_handler']['filters'],
+            ['filter1']
+        )
+
+    def test_warn__attach_handler_filters__dup_filters_reattach_filters(self):
+        self.lcd.add_filter('filter1', ** {'()': self.F}
+        ).add_handler('my_handler',
+                      filters='filter1'
+        ).attach_handler_filters(
+            'my_handler',
+            'filter1', 'filter1'
+        )
+        errmsg = self.sio_err.getvalue()
+        # print(errmsg)           # TODO COMMENT OUT
+
+        errmsg1, errmsg2 = errmsg.splitlines()
+
+        self.assertEqual(
+            (errmsg1.startswith("Warning (") and
+             errmsg1.endswith(": list of filters to attach to handler 'my_handler'"
+                              " contains duplicates: 'filter1'.")
+            ),
+            True
+        )
+        self.assertEqual(
+            (errmsg2.startswith("Warning (") and
+             errmsg2.endswith(": these filters are already attached to handler 'my_handler'"
+                              ": 'filter1'.")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.handlers['my_handler']['filters'],
+            ['filter1']
+        )
+
+    #-------------------
+    # logger/filters
+    #-------------------
+
+    def test_warn__add_logger__dup_filters(self):
+                # add_handler -- dup filters in list
+        self.lcd.add_filter('filter1', ** {'()': self.F}
+        ).add_filter('filter2', ** {'()': self.F})
+        self.lcd.add_logger('my_logger',
+                            filters=['filter1', 'filter2', 'filter1', 'filter2'])
+        errmsg = self.sio_err.getvalue()
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": list of filters to attach to logger 'my_logger'"
+                             " contains duplicates: 'filter1', 'filter2'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.loggers['my_logger']['filters'],
+            ['filter1', 'filter2']
+        )
+
+    def test_warn__attach_logger_filters__dup_filters(self):
+        self.lcd.add_filter('filter1', ** {'()': self.F}
+        ).add_logger('my_logger'
+        ).attach_logger_filters(
+            'my_logger',
+            'filter1', 'filter1'
+        )
+        errmsg = self.sio_err.getvalue()
+
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": list of filters to attach to logger 'my_logger'"
+                             " contains duplicates: 'filter1'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.loggers['my_logger']['filters'],
+            ['filter1']
+        )
+
+    def test_warn__attach_logger_filters__reattach_filters(self):
+        self.lcd.add_filter('filter1', ** {'()': self.F}
+        ).add_logger('my_logger',
+                     filters='filter1'
+        ).attach_logger_filters(
+            'my_logger',
+            'filter1'
+        )
+        errmsg = self.sio_err.getvalue()
+
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": these filters are already attached to logger 'my_logger'"
+                             ": 'filter1'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.loggers['my_logger']['filters'],
+            ['filter1']
+        )
+
+    #-------------------
+    # logger/handlers
+    #-------------------
+
+    def test_warn__add_logger__dup_handlers(self):
+                # add_handler -- dup filters in list
+        self.lcd.add_handler('handler1'
+        ).add_handler('handler2')
+        self.lcd.add_logger('my_logger',
+                            handlers=['handler1', 'handler2', 'handler1', 'handler2'])
+        errmsg = self.sio_err.getvalue()
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": list of handlers to attach to logger 'my_logger'"
+                             " contains duplicates: 'handler1', 'handler2'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.loggers['my_logger']['handlers'],
+            ['handler1', 'handler2']
+        )
+
+    def test_warn__attach_logger_handlers__dup_handlers(self):
+        self.lcd.add_handler('handler1'
+        ).add_logger('my_logger'
+        ).attach_logger_handlers(
+            'my_logger',
+            'handler1', 'handler1'
+        )
+        errmsg = self.sio_err.getvalue()
+
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": list of handlers to attach to logger 'my_logger'"
+                             " contains duplicates: 'handler1'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.loggers['my_logger']['handlers'],
+            ['handler1']
+        )
+
+    def test_warn__attach_logger_handlers__reattach_handlers(self):
+        self.lcd.add_handler('handler1',
+        ).add_logger('my_logger',
+                     handlers='handler1'
+        ).attach_logger_handlers(
+            'my_logger',
+            'handler1'
+        )
+        errmsg = self.sio_err.getvalue()
+
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": these handlers are already attached to logger 'my_logger'"
+                             ": 'handler1'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.loggers['my_logger']['handlers'],
+            ['handler1']
+        )
+
+    #-------------------
+    # root/filters
+    #-------------------
+
+    def test_warn__add_root__dup_filters(self):
+                # add_handler -- dup filters in list
+        self.lcd.add_filter('filter1', ** {'()': self.F}
+        ).add_filter('filter2', ** {'()': self.F})
+        self.lcd.attach_root_filters('filter1', 'filter2', 'filter1', 'filter2')
+        errmsg = self.sio_err.getvalue()
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": list of filters to attach to logger ''"
+                             " contains duplicates: 'filter1', 'filter2'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.root['filters'],
+            ['filter1', 'filter2']
+        )
+
+    def test_warn__attach_root_filters__dup_filters(self):
+        self.lcd.add_filter('filter1', ** {'()': self.F}
+        ).attach_logger_filters(
+            '',
+            'filter1', 'filter1'
+        )
+        errmsg = self.sio_err.getvalue()
+
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": list of filters to attach to logger ''"
+                             " contains duplicates: 'filter1'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.root['filters'],
+            ['filter1']
+        )
+
+    def test_warn__attach_root_filters__reattach_filters(self):
+        self.lcd.add_filter('filter1', ** {'()': self.F}
+        ).attach_root_filters('filter1'
+        ).attach_root_filters('filter1'
+                              )
+        errmsg = self.sio_err.getvalue()
+
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": these filters are already attached to logger ''"
+                             ": 'filter1'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.root['filters'],
+            ['filter1']
+        )
+
+    #-------------------
+    # root/handlers
+    #-------------------
+
+    def test_warn__attach_root_handlers__dup_handlers(self):
+                # add_handler -- dup filters in list
+        self.lcd.add_handler('handler1'
+        ).add_handler('handler2')
+        self.lcd.attach_root_handlers(
+                            'handler1', 'handler2', 'handler1', 'handler2')
+        errmsg = self.sio_err.getvalue()
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": list of handlers to attach to logger ''"
+                             " contains duplicates: 'handler1', 'handler2'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.root['handlers'],
+            ['handler1', 'handler2']
+        )
+
+    def test_warn__attach_root_handlers__reattach_handlers(self):
+        self.lcd.add_handler('handler1',
+        ).attach_root_handlers('handler1'
+        ).attach_root_handlers('handler1'
+        )
+        errmsg = self.sio_err.getvalue()
+
+        # print(errmsg)           # TODO COMMENT OUT
+
+        self.assertEqual(
+            (errmsg.startswith("Warning (") and
+             errmsg.endswith(": these handlers are already attached to logger ''"
+                             ": 'handler1'.\n")
+            ),
+            True
+        )
+        self.assertEqual(
+            self.lcd.root['handlers'],
+            ['handler1']
+        )
+
+
+# TODO **also** test that dups are eliminated & entities aren't reattached,
+#  |   even when "warn" is false (no warnings are written to stderr in that case,
+#  |   but o/w no change in behavior)
+#  | SOOO, maybe put the tests in a mixin,
+#  |   and mix that into two classes which differ only in setUp/tearDown
+#  |   ("warn" stays false).
+
+
+# | <<<<<<<<<<<<<<<<<<<<<<<<<<< RESUME >>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+class TestLoggingConfigDict_StrictErrors(TestCase):
+
+    def setUp(self):
+        LoggingConfigDict.strict(True)
+        # Swap stderr, save existing:
+        self._stderr = sys.stderr
+        self.sio_err = io.StringIO()    # new "stderr"
+        sys.stderr = self.sio_err
+        # create an LCD
+        self.lcd = LoggingConfigDict()
+
+    def tearDown(self):
+        # restore
+        sys.stderr = self._stderr
+        LoggingConfigDict.strict(False)
+
+    def test_strict_attach_handler_formatter(self):
+        "with formatter undefined"
+        pass    # TODO
+
+    def test_strict_attach_handler_filters(self):
+        "with one or more filters undefined"
+        pass    # TODO
+
+    def test_strict_attach_logger_filters(self):
+        "with one or more filters undefined"
+        pass    # TODO
+
+    def test_strict_attach_logger_handlers(self):
+        "with one or more handlers undefined"
+        pass    # TODO
