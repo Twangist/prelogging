@@ -319,7 +319,14 @@ class LoggingConfigDict(dict):
             handler_dict['class'] = handler_dict.pop('class_')
 
         if formatter:
-            handler_dict['formatter'] = formatter   # TODO: TEST
+            self._if_strict_check_defined(
+                existing_attachees=self.formatters,
+                attach_to=handler_name,
+                attach_to_kind='handler',
+                attachees=[formatter],
+                attachee_kind='formatter')
+            handler_dict['formatter'] = formatter
+
         filters = self._to_seq(filters)
         filters = self._check_attach__clean_list(
             existing_attachees=None,
@@ -328,8 +335,12 @@ class LoggingConfigDict(dict):
             attachees=filters,
             attachee_kind='filter'
         )
-        # TODO strict...
-
+        self._if_strict_check_defined(
+            existing_attachees=self.filters,
+            attach_to=handler_name,
+            attach_to_kind='handler',
+            attachees=filters,
+            attachee_kind='filter')
         if filters:
             handler_dict['filters'] = filters
 
@@ -790,6 +801,7 @@ class LoggingConfigDict(dict):
         #     co_filename
         srcfile = caller_n_frame.f_code.co_filename
         lineno = caller_n_frame.f_lineno
+        # TODO? make path of srcfile relative to current directory?
         return srcfile, lineno
 
     def _check_readd(self,
@@ -890,6 +902,33 @@ class LoggingConfigDict(dict):
             )
 
         return cleaned2
+
+    def _if_strict_check_defined(self,
+            existing_attachees=None,
+            attach_to=None,
+            attach_to_kind=None,
+            attachees=None,
+            attachee_kind=None):
+        if not self._strict:
+            return
+        existing_attachees = existing_attachees or []
+
+        undefined = []
+        for item in attachees:
+            if item not in existing_attachees:
+                undefined.append(item)
+        if undefined:
+            srcfile, lineno = self._get_caller_srcfile_lineno()
+            undefined_str = str(undefined)[1:-1]
+            errmsg = (
+                "Error (%s, line %d):"
+                " attaching undefined %s%s (%s) to %s '%s'."
+                % (srcfile, lineno,
+                   attachee_kind, ('s' if len(undefined) > 1 else ''),
+                   undefined_str,
+                   attach_to_kind, attach_to)
+            )
+            raise KeyError(errmsg)
 
 
 def print_err(msg, **kwargs):
