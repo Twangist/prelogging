@@ -447,13 +447,15 @@ class TestLoggingConfigDict_WarnStrict(TestCase):
         self.assertEqual(LoggingConfigDict.strict(), False)
 
 
-class TestLoggingConfigDict_Warnings(TestCase):
+# class _TestLCD_Warn(TestCase):
+class TestLoggingConfigDict_NoWarnings(TestCase):
     class F():
         def filter(self, record):
             return True
 
     def setUp(self):
-        LoggingConfigDict.warn(True)
+        "Subclasses set LoggingConfigDict.warn(...)"
+
         # Swap stderr, save existing:
         self._stderr = sys.stderr
         self.sio_err = io.StringIO()    # new "stderr"
@@ -462,9 +464,20 @@ class TestLoggingConfigDict_Warnings(TestCase):
         self.lcd = LoggingConfigDict()
 
     def tearDown(self):
+        "Subclasses restore LoggingConfigDict.warn(...)"
         # restore
         sys.stderr = self._stderr
-        LoggingConfigDict.warn(False)
+
+    def _verify_errmsg(self, ends=''):
+        " utility method"
+        errmsg = self.sio_err.getvalue()
+        if self.lcd.warn():
+            self.assertEqual(
+                errmsg.startswith("Warning") and errmsg.endswith(ends),
+                True
+            )
+        else:
+            self.assertEqual(errmsg, '')
 
     #-------------------
     # re-add
@@ -477,26 +490,16 @@ class TestLoggingConfigDict_Warnings(TestCase):
 
         self.lcd.add_formatter('my_formatter', format='%(message)s')
 
-        errmsg = self.sio_err.getvalue()
-        self.assertEqual(
-            errmsg.startswith("Warning")
-                and ": redefinition of formatter 'my_formatter'" in errmsg,
-            True
-        )
-        self.assertEqual(self.lcd.formatters, ['my_formatter'])
+        self._verify_errmsg(": redefinition of formatter 'my_formatter'.\n")
+        self.assertEqual(list(self.lcd.formatters.keys()), ['my_formatter'])
 
     def test_warn_filter_readd(self):
         self.lcd.add_filter('my_filter', ** {'()': self.F})
         # Now readd -- check for warning to stderr
         self.lcd.add_filter('my_filter', ** {'()': self.F})
 
-        errmsg = self.sio_err.getvalue()
-        self.assertEqual(
-            errmsg.startswith("Warning")
-                and ": redefinition of filter 'my_filter'" in errmsg,
-            True
-        )
-        self.assertEqual(self.lcd.filters, ['my_filter'])
+        self._verify_errmsg(": redefinition of filter 'my_filter'.\n")
+        self.assertEqual(list(self.lcd.filters.keys()), ['my_filter'])
 
     def test_warn_handler_readd(self):
         self.lcd.add_handler(
@@ -509,13 +512,8 @@ class TestLoggingConfigDict_Warnings(TestCase):
                         class_='logging.StreamHandler',
                         stream='sys.stdout')
 
-        errmsg = self.sio_err.getvalue()
-        self.assertEqual(
-            errmsg.startswith("Warning")
-                and ": redefinition of handler 'my_handler'" in errmsg,
-            True
-        )
-        self.assertEqual(self.lcd.handlers, ['my_handler'])
+        self._verify_errmsg(": redefinition of handler 'my_handler'.\n")
+        self.assertEqual(list(self.lcd.handlers.keys()), ['my_handler'])
 
     def test_warn_logger_readd(self):
         self.lcd = LoggingConfigDict()
@@ -523,18 +521,8 @@ class TestLoggingConfigDict_Warnings(TestCase):
         # Now readd -- check for warning to stderr
         self.lcd.add_logger('my_logger')
 
-        errmsg = self.sio_err.getvalue()
-        self.assertEqual(
-            errmsg.startswith("Warning") and
-                ": redefinition of logger 'my_logger'" in errmsg,
-            True
-        )
-        self.assertEqual(self.lcd.loggers, ['my_logger'])
-
-    #====================================
-    # test duplicates in add_* lists
-    #      and attach_*_* reattachments
-    #====================================
+        self._verify_errmsg(": redefinition of logger 'my_logger'.\n")
+        self.assertEqual(list(self.lcd.loggers.keys()), ['my_logger'])
 
     #-------------------
     # handler/formatter
@@ -549,11 +537,10 @@ class TestLoggingConfigDict_Warnings(TestCase):
         # Now reattach -- check for warning to stderr
         self.lcd.attach_handler_formatter('my_handler', 'f1')
 
-        errmsg = self.sio_err.getvalue()
+        self._verify_errmsg(": formatter 'f1' already attached to handler 'my_handler'.\n")
         self.assertEqual(
-            errmsg.startswith("Warning") and
-                ": formatter 'f1' already attached to handler 'my_handler'" in errmsg,
-            True
+            self.lcd.handlers['my_handler']['formatter'],
+            'f1'
         )
 
     def test_warn_redefine_formatter(self):
@@ -565,12 +552,16 @@ class TestLoggingConfigDict_Warnings(TestCase):
         # Now attach f2 -- check for warning to stderr
         self.lcd.attach_handler_formatter('my_handler', 'f2')
 
-        errmsg = self.sio_err.getvalue()
+        self._verify_errmsg(": formatter 'f2' replaces 'f1' in handler 'my_handler'.\n")
         self.assertEqual(
-            errmsg.startswith("Warning") and
-                ": formatter 'f2' replaces 'f1' in handler 'my_handler'" in errmsg,
-            True
+            self.lcd.handlers['my_handler']['formatter'],
+            'f2'
         )
+
+    #====================================
+    # test duplicates in add_* lists
+    #      and attach_*_* reattachments
+    #====================================
 
     #-------------------
     # handler/filters
@@ -582,16 +573,9 @@ class TestLoggingConfigDict_Warnings(TestCase):
         ).add_filter('filter2', ** {'()': self.F})
         self.lcd.add_handler('my_handler',
                              filters=['filter1', 'filter2', 'filter1', 'filter2'])
-        errmsg = self.sio_err.getvalue()
-        # print(errmsg)           # TODO COMMENT OUT
 
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": list of filters to attach to handler 'my_handler'"
-                             " contains duplicates: 'filter1', 'filter2'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": list of filters to attach to handler 'my_handler'"
+                            " contains duplicates: 'filter1', 'filter2'.\n")
         self.assertEqual(
             self.lcd.handlers['my_handler']['filters'],
             ['filter1', 'filter2']
@@ -604,16 +588,8 @@ class TestLoggingConfigDict_Warnings(TestCase):
             'my_handler',
             'filter1', 'filter1'
         )
-        errmsg = self.sio_err.getvalue()
-        # print(errmsg)           # TODO COMMENT OUT
-
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": list of filters to attach to handler 'my_handler'"
-                             " contains duplicates: 'filter1'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": list of filters to attach to handler 'my_handler'"
+                            " contains duplicates: 'filter1'.\n")
         self.assertEqual(
             self.lcd.handlers['my_handler']['filters'],
             ['filter1']
@@ -627,16 +603,8 @@ class TestLoggingConfigDict_Warnings(TestCase):
             'my_handler',
             'filter1'
         )
-        errmsg = self.sio_err.getvalue()
-        # print(errmsg)           # TODO COMMENT OUT
-
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": these filters are already attached to handler 'my_handler'"
-                             ": 'filter1'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": these filters are already attached to handler 'my_handler'"
+                            ": 'filter1'.\n")
         self.assertEqual(
             self.lcd.handlers['my_handler']['filters'],
             ['filter1']
@@ -653,22 +621,25 @@ class TestLoggingConfigDict_Warnings(TestCase):
         errmsg = self.sio_err.getvalue()
         # print(errmsg)           # TODO COMMENT OUT
 
-        errmsg1, errmsg2 = errmsg.splitlines()
+        if self.lcd.warn():
+            errmsg1, errmsg2 = errmsg.splitlines()
+            self.assertEqual(
+                (errmsg1.startswith("Warning (") and
+                 errmsg1.endswith(": list of filters to attach to handler 'my_handler'"
+                                  " contains duplicates: 'filter1'.")
+                ),
+                True
+            )
+            self.assertEqual(
+                (errmsg2.startswith("Warning (") and
+                 errmsg2.endswith(": these filters are already attached to handler 'my_handler'"
+                                  ": 'filter1'.")
+                ),
+                True
+            )
+        else:
+            self.assertEqual(errmsg, '')
 
-        self.assertEqual(
-            (errmsg1.startswith("Warning (") and
-             errmsg1.endswith(": list of filters to attach to handler 'my_handler'"
-                              " contains duplicates: 'filter1'.")
-            ),
-            True
-        )
-        self.assertEqual(
-            (errmsg2.startswith("Warning (") and
-             errmsg2.endswith(": these filters are already attached to handler 'my_handler'"
-                              ": 'filter1'.")
-            ),
-            True
-        )
         self.assertEqual(
             self.lcd.handlers['my_handler']['filters'],
             ['filter1']
@@ -684,16 +655,8 @@ class TestLoggingConfigDict_Warnings(TestCase):
         ).add_filter('filter2', ** {'()': self.F})
         self.lcd.add_logger('my_logger',
                             filters=['filter1', 'filter2', 'filter1', 'filter2'])
-        errmsg = self.sio_err.getvalue()
-        # print(errmsg)           # TODO COMMENT OUT
-
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": list of filters to attach to logger 'my_logger'"
-                             " contains duplicates: 'filter1', 'filter2'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": list of filters to attach to logger 'my_logger'"
+                            " contains duplicates: 'filter1', 'filter2'.\n")
         self.assertEqual(
             self.lcd.loggers['my_logger']['filters'],
             ['filter1', 'filter2']
@@ -706,17 +669,8 @@ class TestLoggingConfigDict_Warnings(TestCase):
             'my_logger',
             'filter1', 'filter1'
         )
-        errmsg = self.sio_err.getvalue()
-
-        # print(errmsg)           # TODO COMMENT OUT
-
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": list of filters to attach to logger 'my_logger'"
-                             " contains duplicates: 'filter1'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": list of filters to attach to logger 'my_logger'"
+                            " contains duplicates: 'filter1'.\n")
         self.assertEqual(
             self.lcd.loggers['my_logger']['filters'],
             ['filter1']
@@ -730,17 +684,8 @@ class TestLoggingConfigDict_Warnings(TestCase):
             'my_logger',
             'filter1'
         )
-        errmsg = self.sio_err.getvalue()
-
-        # print(errmsg)           # TODO COMMENT OUT
-
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": these filters are already attached to logger 'my_logger'"
-                             ": 'filter1'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": these filters are already attached to logger 'my_logger'"
+                            ": 'filter1'.\n")
         self.assertEqual(
             self.lcd.loggers['my_logger']['filters'],
             ['filter1']
@@ -756,16 +701,9 @@ class TestLoggingConfigDict_Warnings(TestCase):
         ).add_handler('handler2')
         self.lcd.add_logger('my_logger',
                             handlers=['handler1', 'handler2', 'handler1', 'handler2'])
-        errmsg = self.sio_err.getvalue()
-        # print(errmsg)           # TODO COMMENT OUT
 
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": list of handlers to attach to logger 'my_logger'"
-                             " contains duplicates: 'handler1', 'handler2'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": list of handlers to attach to logger 'my_logger'"
+                            " contains duplicates: 'handler1', 'handler2'.\n")
         self.assertEqual(
             self.lcd.loggers['my_logger']['handlers'],
             ['handler1', 'handler2']
@@ -778,17 +716,9 @@ class TestLoggingConfigDict_Warnings(TestCase):
             'my_logger',
             'handler1', 'handler1'
         )
-        errmsg = self.sio_err.getvalue()
 
-        # print(errmsg)           # TODO COMMENT OUT
-
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": list of handlers to attach to logger 'my_logger'"
-                             " contains duplicates: 'handler1'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": list of handlers to attach to logger 'my_logger'"
+                            " contains duplicates: 'handler1'.\n")
         self.assertEqual(
             self.lcd.loggers['my_logger']['handlers'],
             ['handler1']
@@ -802,17 +732,8 @@ class TestLoggingConfigDict_Warnings(TestCase):
             'my_logger',
             'handler1'
         )
-        errmsg = self.sio_err.getvalue()
-
-        # print(errmsg)           # TODO COMMENT OUT
-
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": these handlers are already attached to logger 'my_logger'"
-                             ": 'handler1'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": these handlers are already attached to logger 'my_logger'"
+                            ": 'handler1'.\n")
         self.assertEqual(
             self.lcd.loggers['my_logger']['handlers'],
             ['handler1']
@@ -827,16 +748,9 @@ class TestLoggingConfigDict_Warnings(TestCase):
         self.lcd.add_filter('filter1', ** {'()': self.F}
         ).add_filter('filter2', ** {'()': self.F})
         self.lcd.attach_root_filters('filter1', 'filter2', 'filter1', 'filter2')
-        errmsg = self.sio_err.getvalue()
-        # print(errmsg)           # TODO COMMENT OUT
 
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": list of filters to attach to logger ''"
-                             " contains duplicates: 'filter1', 'filter2'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": list of filters to attach to logger ''"
+                            " contains duplicates: 'filter1', 'filter2'.\n")
         self.assertEqual(
             self.lcd.root['filters'],
             ['filter1', 'filter2']
@@ -848,17 +762,9 @@ class TestLoggingConfigDict_Warnings(TestCase):
             '',
             'filter1', 'filter1'
         )
-        errmsg = self.sio_err.getvalue()
 
-        # print(errmsg)           # TODO COMMENT OUT
-
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": list of filters to attach to logger ''"
-                             " contains duplicates: 'filter1'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": list of filters to attach to logger ''"
+                            " contains duplicates: 'filter1'.\n")
         self.assertEqual(
             self.lcd.root['filters'],
             ['filter1']
@@ -869,17 +775,8 @@ class TestLoggingConfigDict_Warnings(TestCase):
         ).attach_root_filters('filter1'
         ).attach_root_filters('filter1'
                               )
-        errmsg = self.sio_err.getvalue()
-
-        # print(errmsg)           # TODO COMMENT OUT
-
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": these filters are already attached to logger ''"
-                             ": 'filter1'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": these filters are already attached to logger ''"
+                            ": 'filter1'.\n")
         self.assertEqual(
             self.lcd.root['filters'],
             ['filter1']
@@ -895,16 +792,9 @@ class TestLoggingConfigDict_Warnings(TestCase):
         ).add_handler('handler2')
         self.lcd.attach_root_handlers(
                             'handler1', 'handler2', 'handler1', 'handler2')
-        errmsg = self.sio_err.getvalue()
-        # print(errmsg)           # TODO COMMENT OUT
 
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": list of handlers to attach to logger ''"
-                             " contains duplicates: 'handler1', 'handler2'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": list of handlers to attach to logger ''"
+                            " contains duplicates: 'handler1', 'handler2'.\n")
         self.assertEqual(
             self.lcd.root['handlers'],
             ['handler1', 'handler2']
@@ -915,29 +805,21 @@ class TestLoggingConfigDict_Warnings(TestCase):
         ).attach_root_handlers('handler1'
         ).attach_root_handlers('handler1'
         )
-        errmsg = self.sio_err.getvalue()
 
-        # print(errmsg)           # TODO COMMENT OUT
-
-        self.assertEqual(
-            (errmsg.startswith("Warning (") and
-             errmsg.endswith(": these handlers are already attached to logger ''"
-                             ": 'handler1'.\n")
-            ),
-            True
-        )
+        self._verify_errmsg(": these handlers are already attached to logger ''"
+                            ": 'handler1'.\n")
         self.assertEqual(
             self.lcd.root['handlers'],
             ['handler1']
         )
 
 
-# TODO **also** test that dups are eliminated & entities aren't reattached,
-#  |   even when "warn" is false (no warnings are written to stderr in that case,
-#  |   but o/w no change in behavior)
-#  | SOOO, maybe put the tests in a mixin,
-#  |   and mix that into two classes which differ only in setUp/tearDown
-#  |   ("warn" stays false).
+# class TestLoggingConfigDict_Warnings(_TestLCD_Warn):
+class TestLoggingConfigDict_Warnings(TestLoggingConfigDict_NoWarnings):
+
+    @classmethod
+    def setUpClass(cls):
+        LoggingConfigDict.warn(True)
 
 
 # | <<<<<<<<<<<<<<<<<<<<<<<<<<< RESUME >>>>>>>>>>>>>>>>>>>>>>>>>>>

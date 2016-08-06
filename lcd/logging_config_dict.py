@@ -320,7 +320,7 @@ class LoggingConfigDict(dict):
 
         if formatter:
             self._if_strict_check_defined(
-                existing_attachees=self.formatters,
+                defined=self.formatters,
                 attach_to=handler_name,
                 attach_to_kind='handler',
                 attachees=[formatter],
@@ -337,7 +337,7 @@ class LoggingConfigDict(dict):
         )
         if filters:
             self._if_strict_check_defined(
-                existing_attachees=self.filters,
+                defined=self.filters,
                 attach_to=handler_name,
                 attach_to_kind='handler',
                 attachees=filters,
@@ -422,7 +422,7 @@ class LoggingConfigDict(dict):
         """
         self._check_attach_formatter(handler_name, formatter_name)
         self._if_strict_check_defined(
-            existing_attachees=self.formatters,
+            defined=self.formatters,
             attach_to=handler_name,
             attach_to_kind='handler',
             attachees=[formatter_name],
@@ -455,7 +455,7 @@ class LoggingConfigDict(dict):
         if not filter_names:
             return self
         self._if_strict_check_defined(
-            existing_attachees=self.filters,
+            defined=self.filters,
             attach_to=handler_name,
             attach_to_kind='handler',
             attachees=filter_names,
@@ -492,7 +492,7 @@ class LoggingConfigDict(dict):
             attachee_kind='handler'
         )
         self._if_strict_check_defined(
-            existing_attachees=self.handlers,
+            defined=self.handlers,
             attach_to='',
             attach_to_kind='handler',
             attachees=handler_names,
@@ -521,7 +521,7 @@ class LoggingConfigDict(dict):
         if not filter_names:
             return self
         self._if_strict_check_defined(
-            existing_attachees=self.filters,
+            defined=self.filters,
             attach_to='',
             attach_to_kind='handler',
             attachees=filter_names,
@@ -567,9 +567,16 @@ class LoggingConfigDict(dict):
 
         handlers = self._to_seq(handlers)
         # check/clean handlers
+        handlers = self._check_attach__clean_list(
+            existing_attachees=None,
+            attach_to=logger_name,
+            attach_to_kind='logger',
+            attachees=handlers,
+            attachee_kind='handler'
+        )
         if handlers:
             self._if_strict_check_defined(
-                existing_attachees=self.handlers,
+                defined=self.handlers,
                 attach_to=logger_name,
                 attach_to_kind='logger',
                 attachees=handlers,
@@ -590,7 +597,7 @@ class LoggingConfigDict(dict):
         )
         if filters:
             self._if_strict_check_defined(
-                existing_attachees=self.filters,
+                defined=self.filters,
                 attach_to=logger_name,
                 attach_to_kind='logger',
                 attachees=filters,
@@ -625,7 +632,7 @@ class LoggingConfigDict(dict):
             attachee_kind='handler'
         )
         self._if_strict_check_defined(
-            existing_attachees=self.handlers,
+            defined=self.handlers,
             attach_to=logger_name,
             attach_to_kind='logger',
             attachees=handler_names,
@@ -658,7 +665,7 @@ class LoggingConfigDict(dict):
         if not filter_names:
             return self
         self._if_strict_check_defined(
-            existing_attachees=self.filters,
+            defined=self.filters,
             attach_to=logger_name,
             attach_to_kind='logger',
             attachees=filter_names,
@@ -946,18 +953,18 @@ class LoggingConfigDict(dict):
         return cleaned2
 
     def _if_strict_check_defined(self,
-            existing_attachees=None,
+            defined=None,
             attach_to=None,
             attach_to_kind=None,
             attachees=None,
             attachee_kind=None):
         if not self._strict:
             return
-        existing_attachees = existing_attachees or []
+        defined = defined or []
 
         undefined = []
         for item in attachees:
-            if item not in existing_attachees:
+            if item not in defined:
                 undefined.append(item)
         if undefined:
             srcfile, lineno = self._get_caller_srcfile_lineno()
