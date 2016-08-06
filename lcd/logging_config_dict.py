@@ -335,13 +335,13 @@ class LoggingConfigDict(dict):
             attachees=filters,
             attachee_kind='filter'
         )
-        self._if_strict_check_defined(
-            existing_attachees=self.filters,
-            attach_to=handler_name,
-            attach_to_kind='handler',
-            attachees=filters,
-            attachee_kind='filter')
         if filters:
+            self._if_strict_check_defined(
+                existing_attachees=self.filters,
+                attach_to=handler_name,
+                attach_to_kind='handler',
+                attachees=filters,
+                attachee_kind='filter')
             handler_dict['filters'] = filters
 
         self.handlers[handler_name] = handler_dict  #.copy()    <---- TODO?
@@ -421,6 +421,12 @@ class LoggingConfigDict(dict):
         :return: ``self``
         """
         self._check_attach_formatter(handler_name, formatter_name)
+        self._if_strict_check_defined(
+            existing_attachees=self.formatters,
+            attach_to=handler_name,
+            attach_to_kind='handler',
+            attachees=[formatter_name],
+            attachee_kind='formatter')
 
         self.handlers[handler_name]['formatter'] = formatter_name
         return self
@@ -448,7 +454,12 @@ class LoggingConfigDict(dict):
         )
         if not filter_names:
             return self
-
+        self._if_strict_check_defined(
+            existing_attachees=self.filters,
+            attach_to=handler_name,
+            attach_to_kind='handler',
+            attachees=filter_names,
+            attachee_kind='filter')
         handler_filters = handler_dict.setdefault('filters', [])
         handler_filters.extend(filter_names)
         return self
@@ -480,6 +491,12 @@ class LoggingConfigDict(dict):
             attachees=handler_names,
             attachee_kind='handler'
         )
+        self._if_strict_check_defined(
+            existing_attachees=self.handlers,
+            attach_to='',
+            attach_to_kind='handler',
+            attachees=handler_names,
+            attachee_kind='handler')
         root_handlers.extend(handler_names)
         return self
 
@@ -503,6 +520,13 @@ class LoggingConfigDict(dict):
         )
         if not filter_names:
             return self
+        self._if_strict_check_defined(
+            existing_attachees=self.filters,
+            attach_to='',
+            attach_to_kind='handler',
+            attachees=filter_names,
+            attachee_kind='filter')
+
         root_filters = self.root.setdefault('filters', [])
         root_filters.extend(filter_names)
         return self
@@ -543,14 +567,13 @@ class LoggingConfigDict(dict):
 
         handlers = self._to_seq(handlers)
         # check/clean handlers
-        handlers = self._check_attach__clean_list(
-            existing_attachees=None,
-            attach_to=logger_name,
-            attach_to_kind='logger',
-            attachees=handlers,
-            attachee_kind='handler'
-        )
         if handlers:
+            self._if_strict_check_defined(
+                existing_attachees=self.handlers,
+                attach_to=logger_name,
+                attach_to_kind='logger',
+                attachees=handlers,
+                attachee_kind='handler')
             d['handlers'] = handlers
 
         if propagate is not None:
@@ -566,6 +589,12 @@ class LoggingConfigDict(dict):
             attachee_kind='filter'
         )
         if filters:
+            self._if_strict_check_defined(
+                existing_attachees=self.filters,
+                attach_to=logger_name,
+                attach_to_kind='logger',
+                attachees=filters,
+                attachee_kind='filter')
             d['filters'] = filters
 
         self.loggers[logger_name] = d
@@ -595,6 +624,12 @@ class LoggingConfigDict(dict):
             attachees=handler_names,
             attachee_kind='handler'
         )
+        self._if_strict_check_defined(
+            existing_attachees=self.handlers,
+            attach_to=logger_name,
+            attach_to_kind='logger',
+            attachees=handler_names,
+            attachee_kind='handler')
         logger_handlers.extend(handler_names)
         return self
 
@@ -622,6 +657,13 @@ class LoggingConfigDict(dict):
         )
         if not filter_names:
             return self
+        self._if_strict_check_defined(
+            existing_attachees=self.filters,
+            attach_to=logger_name,
+            attach_to_kind='logger',
+            attachees=filter_names,
+            attachee_kind='filter')
+
         logger_filters = logger_dict.setdefault('filters', [])
         logger_filters.extend(filter_names)
 

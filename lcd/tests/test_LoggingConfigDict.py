@@ -483,6 +483,7 @@ class TestLoggingConfigDict_Warnings(TestCase):
                 and ": redefinition of formatter 'my_formatter'" in errmsg,
             True
         )
+        self.assertEqual(self.lcd.formatters, ['my_formatter'])
 
     def test_warn_filter_readd(self):
         self.lcd.add_filter('my_filter', ** {'()': self.F})
@@ -495,24 +496,26 @@ class TestLoggingConfigDict_Warnings(TestCase):
                 and ": redefinition of filter 'my_filter'" in errmsg,
             True
         )
+        self.assertEqual(self.lcd.filters, ['my_filter'])
 
     def test_warn_handler_readd(self):
         self.lcd.add_handler(
-                        'console',
+                        'my_handler',
                         class_='logging.StreamHandler',
                         stream='sys.stdout')
         # Now readd -- check for warning to stderr
         self.lcd.add_handler(
-                        'console',
+                        'my_handler',
                         class_='logging.StreamHandler',
                         stream='sys.stdout')
 
         errmsg = self.sio_err.getvalue()
         self.assertEqual(
             errmsg.startswith("Warning")
-                and ": redefinition of handler 'console'" in errmsg,
+                and ": redefinition of handler 'my_handler'" in errmsg,
             True
         )
+        self.assertEqual(self.lcd.handlers, ['my_handler'])
 
     def test_warn_logger_readd(self):
         self.lcd = LoggingConfigDict()
@@ -526,6 +529,7 @@ class TestLoggingConfigDict_Warnings(TestCase):
                 ": redefinition of logger 'my_logger'" in errmsg,
             True
         )
+        self.assertEqual(self.lcd.loggers, ['my_logger'])
 
     #====================================
     # test duplicates in add_* lists
@@ -942,17 +946,27 @@ class TestLoggingConfigDict_StrictErrors(TestCase):
 
     def setUp(self):
         LoggingConfigDict.strict(True)
-        # Swap stderr, save existing:
-        self._stderr = sys.stderr
-        self.sio_err = io.StringIO()    # new "stderr"
-        sys.stderr = self.sio_err
-        # create an LCD
         self.lcd = LoggingConfigDict()
 
     def tearDown(self):
         # restore
-        sys.stderr = self._stderr
         LoggingConfigDict.strict(False)
+
+    # TODO: There are 10 scenarios to test:
+    """
+    add_handler
+        formatter
+        filters
+    attach_handler_formatter
+    add_logger
+        filters
+        handlers
+    attach_handler_filters
+    attach_logger_filters
+    attach_logger_handlers
+    attach_root_filters
+    attach_root_handlers
+    """
 
     def test_strict_attach_handler_formatter(self):
         "with formatter undefined"
