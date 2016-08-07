@@ -118,11 +118,11 @@ class LoggingConfigDict(dict):
               existing, different formatter
             * attaching a formatter to a handler that it's already attached to
             * attaching a {filter/handler} to a {handler/logger} that it's
-            already attached to.
+              already attached to.
 
         :param warn_val: If not ``None``, set ``cls._warn`` to ``bool(warn_val)``.
         type warn_val: bool or None
-        :return: ``cls._warn``
+        :return: ``cls._warn`` (== ``warn_val`` if that is not ``None``)
         """
         if warn_val is not None:
             cls._warn = bool(warn_val)
@@ -193,10 +193,6 @@ class LoggingConfigDict(dict):
     def root(self):
         """(Property) Return the ``'root'`` subdictionary."""
         return self['root']
-
-    # TODO docstring: add links to Py docs for
-    #  |   ``Formatter.__init__``
-    #  |   logging config, formatters (which doesn't mention 'style')
 
     def add_formatter(self, formatter_name,     # *,
                       class_='logging.Formatter',   # the typical case
@@ -380,8 +376,11 @@ class LoggingConfigDict(dict):
     # TODO: TEST
     def attach_handler_formatter(self, handler_name, formatter_name):
         """Attach formatter to handler.
-        Of course you can't attacha  formatter to anything other than a handler,
-        so admittedly the "_handler" part is redundant. In its defense,
+        Raise ``KeyError`` if no such handler.
+
+        Of course you can't attach a formatter to anything other than a handler,
+        so admittedly the "_handler" part of the method name is redundant. In
+        its defense,
 
             * it's by analogy with all the other "attach_*" functions,
               which are of the form "attach_toWhat_thingsToAttach"
@@ -400,6 +399,7 @@ class LoggingConfigDict(dict):
     def attach_handler_filters(self, handler_name, * filter_names):
         """
         Add filters in ``filter_names`` to the handler named ``handler_name``.
+        Raise ``KeyError`` if no such handler.
 
         :param handler_name: (``str``) name of handler to attach filters to
         :param filter_names: sequence of filter names
@@ -548,6 +548,7 @@ class LoggingConfigDict(dict):
     def attach_logger_handlers(self, logger_name, * handler_names):
         """
         Add handlers in ``handler_names`` to the logger named ``logger_name``.
+        Raise ``KeyError`` if no such logger.
 
         :param logger_name: (``str``) name of logger to attach handlers to
         :param handler_names: sequence of handler names
@@ -572,6 +573,7 @@ class LoggingConfigDict(dict):
 
     def attach_logger_filters(self, logger_name, * filter_names):
         """Add filters in ``filter_names`` to the logger named ``logger_name``.
+        Raise ``KeyError`` if no such logger.
 
         :param logger_name: (``str``) name of logger to attach filters to
         :param filter_names: sequence of filter names
