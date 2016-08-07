@@ -757,7 +757,7 @@ class LoggingConfigDict(dict):
                     Problem('handler', hname, 'formatter', hform_name)
                 )
 
-            # ensure any/all filters on hname all exist (in filters_)
+            # ensure any/all filters on hname exist in filters_
             hfilters = hdict.get('filters', [])
             for hfilt_name in hfilters:
                 if hfilt_name not in filters_:
@@ -782,7 +782,7 @@ class LoggingConfigDict(dict):
 
             # ldict may or may not have a 'handlers' key.
             lhandlers = ldict.get('handlers', [])
-            # ensure that every handler lhname in lhandlers exists in handlers_
+            # ensure that every handler in lhandlers exists in handlers_
             for lhname in lhandlers:
                 if lhname not in handlers_:
                     problems.append(
@@ -802,8 +802,7 @@ class LoggingConfigDict(dict):
                 )
 
         # Assume root_ has a 'handlers' key.
-        # for every handler hn in root_['handlers']
-        #    ensure hn exists // in handlers_
+        # ensure every handler in root_['handlers'] exists in handlers_
         rhandlers = root_['handlers']
         for rhname in rhandlers:
             if rhname not in handlers_:
