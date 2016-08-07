@@ -420,7 +420,7 @@ class TestLoggingConfigDict(TestCase):
         self.assertEqual(self.test_filters_on_handler__messages, [0, 2])
 
 
-class TestLoggingConfigDict_WarnStrict(TestCase):
+class TestLoggingConfigDict_Warn_proper(TestCase):
 
     def test_warn(self):
         w = LoggingConfigDict.warn()
@@ -433,18 +433,6 @@ class TestLoggingConfigDict_WarnStrict(TestCase):
         wF = LoggingConfigDict.warn(False)
         self.assertEqual(wF, False)
         self.assertEqual(LoggingConfigDict.warn(), False)
-
-    def test_strict(self):
-        s = LoggingConfigDict.strict()
-        self.assertEqual(s, False)
-
-        sT = LoggingConfigDict.strict(True)
-        self.assertEqual(sT, True)
-        self.assertEqual(LoggingConfigDict.strict(), True)
-
-        sF = LoggingConfigDict.strict(False)
-        self.assertEqual(sF, False)
-        self.assertEqual(LoggingConfigDict.strict(), False)
 
 
 # class _TestLCD_Warn(TestCase):
@@ -821,47 +809,3 @@ class TestLoggingConfigDict_Warnings(TestLoggingConfigDict_NoWarnings):
     def setUpClass(cls):
         LoggingConfigDict.warn(True)
 
-
-# | <<<<<<<<<<<<<<<<<<<<<<<<<<< RESUME >>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-class TestLoggingConfigDict_StrictErrors(TestCase):
-
-    def setUp(self):
-        LoggingConfigDict.strict(True)
-        self.lcd = LoggingConfigDict()
-
-    def tearDown(self):
-        # restore
-        LoggingConfigDict.strict(False)
-
-    # TODO: There are 10 scenarios to test:
-    """
-    add_handler
-        formatter
-        filters
-    attach_handler_formatter
-    add_logger
-        filters
-        handlers
-    attach_handler_filters
-    attach_logger_filters
-    attach_logger_handlers
-    attach_root_filters
-    attach_root_handlers
-    """
-
-    def test_strict_attach_handler_formatter(self):
-        "with formatter undefined"
-        pass    # TODO
-
-    def test_strict_attach_handler_filters(self):
-        "with one or more filters undefined"
-        pass    # TODO
-
-    def test_strict_attach_logger_filters(self):
-        "with one or more filters undefined"
-        pass    # TODO
-
-    def test_strict_attach_logger_handlers(self):
-        "with one or more handlers undefined"
-        pass    # TODO

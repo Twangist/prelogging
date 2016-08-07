@@ -105,23 +105,7 @@ class LoggingConfigDict(dict):
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
 
-    _strict = False
     _warn = False
-
-    @classmethod
-    def strict(cls, strict_val=None):
-        """Get or set the bool value of the class attribute ``_strict``. When
-        true, ``LoggingConfigDict`` will require that every name of an attached
-        entity must already be defined.
-
-        :param strict_val: If not ``None``, set ``cls._strict`` to
-            ``bool(strict_val)``.
-        type strict_val: bool or None
-        :return: ``cls._strict``
-        """
-        if strict_val is not None:
-            cls._strict = bool(strict_val)
-        return cls._strict
 
     @classmethod
     def warn(cls, warn_val=None):
@@ -319,12 +303,6 @@ class LoggingConfigDict(dict):
             handler_dict['class'] = handler_dict.pop('class_')
 
         if formatter:
-            self._if_strict_check_defined(
-                defined=self.formatters,
-                attach_to=handler_name,
-                attach_to_kind='handler',
-                attachees=[formatter],
-                attachee_kind='formatter')
             handler_dict['formatter'] = formatter
 
         filters = self._to_seq(filters)
@@ -336,12 +314,6 @@ class LoggingConfigDict(dict):
             attachee_kind='filter'
         )
         if filters:
-            self._if_strict_check_defined(
-                defined=self.filters,
-                attach_to=handler_name,
-                attach_to_kind='handler',
-                attachees=filters,
-                attachee_kind='filter')
             handler_dict['filters'] = filters
 
         self.handlers[handler_name] = handler_dict  #.copy()    <---- TODO?
@@ -421,12 +393,6 @@ class LoggingConfigDict(dict):
         :return: ``self``
         """
         self._check_attach_formatter(handler_name, formatter_name)
-        self._if_strict_check_defined(
-            defined=self.formatters,
-            attach_to=handler_name,
-            attach_to_kind='handler',
-            attachees=[formatter_name],
-            attachee_kind='formatter')
 
         self.handlers[handler_name]['formatter'] = formatter_name
         return self
@@ -454,12 +420,6 @@ class LoggingConfigDict(dict):
         )
         if not filter_names:
             return self
-        self._if_strict_check_defined(
-            defined=self.filters,
-            attach_to=handler_name,
-            attach_to_kind='handler',
-            attachees=filter_names,
-            attachee_kind='filter')
         handler_filters = handler_dict.setdefault('filters', [])
         handler_filters.extend(filter_names)
         return self
@@ -491,12 +451,6 @@ class LoggingConfigDict(dict):
             attachees=handler_names,
             attachee_kind='handler'
         )
-        self._if_strict_check_defined(
-            defined=self.handlers,
-            attach_to='',
-            attach_to_kind='handler',
-            attachees=handler_names,
-            attachee_kind='handler')
         root_handlers.extend(handler_names)
         return self
 
@@ -520,12 +474,6 @@ class LoggingConfigDict(dict):
         )
         if not filter_names:
             return self
-        self._if_strict_check_defined(
-            defined=self.filters,
-            attach_to='',
-            attach_to_kind='handler',
-            attachees=filter_names,
-            attachee_kind='filter')
 
         root_filters = self.root.setdefault('filters', [])
         root_filters.extend(filter_names)
@@ -575,12 +523,6 @@ class LoggingConfigDict(dict):
             attachee_kind='handler'
         )
         if handlers:
-            self._if_strict_check_defined(
-                defined=self.handlers,
-                attach_to=logger_name,
-                attach_to_kind='logger',
-                attachees=handlers,
-                attachee_kind='handler')
             d['handlers'] = handlers
 
         if propagate is not None:
@@ -596,12 +538,6 @@ class LoggingConfigDict(dict):
             attachee_kind='filter'
         )
         if filters:
-            self._if_strict_check_defined(
-                defined=self.filters,
-                attach_to=logger_name,
-                attach_to_kind='logger',
-                attachees=filters,
-                attachee_kind='filter')
             d['filters'] = filters
 
         self.loggers[logger_name] = d
@@ -631,12 +567,6 @@ class LoggingConfigDict(dict):
             attachees=handler_names,
             attachee_kind='handler'
         )
-        self._if_strict_check_defined(
-            defined=self.handlers,
-            attach_to=logger_name,
-            attach_to_kind='logger',
-            attachees=handler_names,
-            attachee_kind='handler')
         logger_handlers.extend(handler_names)
         return self
 
@@ -664,12 +594,6 @@ class LoggingConfigDict(dict):
         )
         if not filter_names:
             return self
-        self._if_strict_check_defined(
-            defined=self.filters,
-            attach_to=logger_name,
-            attach_to_kind='logger',
-            attachees=filter_names,
-            attachee_kind='filter')
 
         logger_filters = logger_dict.setdefault('filters', [])
         logger_filters.extend(filter_names)
@@ -704,10 +628,12 @@ class LoggingConfigDict(dict):
 
             ``self['disable_existing_loggers'] == False``
 
-        The ``logging`` module defaults this setting to ``True``.
+        The `logging` module defaults this setting to ``True``.
         """
         if disable_existing_loggers is not None:
             self['disable_existing_loggers'] = bool(disable_existing_loggers)
+        if self.warn():     # 0.2.7b13
+            self.check()    # 0.2.7b13
         logging.config.dictConfig(dict(self))
 
     def dump(self):                                     # pragma: no cover
@@ -950,33 +876,6 @@ class LoggingConfigDict(dict):
             )
 
         return cleaned2
-
-    def _if_strict_check_defined(self,
-            defined=None,
-            attach_to=None,
-            attach_to_kind=None,
-            attachees=None,
-            attachee_kind=None):
-        if not self._strict:
-            return
-        defined = defined or []
-
-        undefined = []
-        for item in attachees:
-            if item not in defined:
-                undefined.append(item)
-        if undefined:
-            srcfile, lineno = self._get_caller_srcfile_lineno()
-            undefined_str = str(undefined)[1:-1]
-            errmsg = (
-                "Error (%s, line %d):"
-                " attaching undefined %s%s (%s) to %s '%s'."
-                % (srcfile, lineno,
-                   attachee_kind, ('s' if len(undefined) > 1 else ''),
-                   undefined_str,
-                   attach_to_kind, attach_to)
-            )
-            raise KeyError(errmsg)
 
 
 def print_err(msg, **kwargs):
