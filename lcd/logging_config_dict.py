@@ -67,7 +67,7 @@ configure logging by calling the object's ``config`` method, which simply
 passes itself (a dict) to
 `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
 
-**Note**: The `lcd` class :ref:`ConfiguratorABC` defines an alternate,
+**Note**: The `lcd` class :ref:`LCDBuilderABC` defines an alternate,
 higher-level mini-framework for configuring logging, which calls ``config``
 for you.
 """

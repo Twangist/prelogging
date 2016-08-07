@@ -87,7 +87,7 @@ def test_xxx_filter():
 
 *** NOTE Filters on the root will hang around, even into other tests!!!! ***
 
-Do configure_logging() for, say, test_root_logger.py and get the root logger:
+Do build_lcd() for, say, test_root_logger.py and get the root logger:
 it will still have the two filters!, from the above/this module.
 
 Simply ensuring that the default is used "disable_existing_loggers=True"

@@ -527,10 +527,10 @@ Using `lcd` with `Django`
 
     .. code::
 
-        from mystuff import configure_logging
-        LOGGING = configure_logging()
+        from mystuff import build_lcd
+        LOGGING = build_lcd()
 
-    Here, `configure_logging` is a function you supply which builds a logging
+    Here, `build_lcd` is a function you supply which builds a logging
     config dict but doesn't call its ``config`` method. Django will add its
     logging specifications to the ``LOGGING`` dict and then pass that to
     ``logging.config.dictConfig``.
@@ -981,18 +981,18 @@ Of course, you could pass a data-returning callable rather than a container.
 
 .. _config-abc:
 
-Using ``ConfiguratorABC``
+Using ``LCDBuilderABC``
 -------------------------------
 
 A single ``LoggingConfigDictEx`` can be passed around to different "areas"
 of a program, each area contributing specifications of its desired formatters,
-filters, handlers and loggers. The ``ConfiguratorABC`` class provides a
+filters, handlers and loggers. The ``LCDBuilderABC`` class provides a
 framework that automates this approach: each area of a program need only
-define a ``ConfiguratorABC`` subclass and override its method
+define a ``LCDBuilderABC`` subclass and override its method
 ``add_to_lcd(lcd)``, where it contributes its specifications by calling
 methods on ``lcd``.
 
-The :ref:`ConfiguratorABC` documentation describes how that class and its two
+The :ref:`LCDBuilderABC` documentation describes how that class and its two
 methods operate. The test ``tests/test_configurator.py`` exemplifies using
 the class to configure logging across multiple modules.
 
@@ -1130,7 +1130,7 @@ Comment on the example ``SMTP_handler_two.py``
         return record.levelname  == 'ERROR'
 
 
-    def configure_logging():
+    def build_lcd():
         lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
         lcdx.add_stderr_handler('con-err', formatter='level_msg')
         # root, console handler levels: WARNING.
@@ -1162,7 +1162,7 @@ Comment on the example ``SMTP_handler_two.py``
 
     # -----------------------------------------
 
-    configure_logging()
+    build_lcd()
 
     root = logging.getLogger()
     root.warning("Be careful")                  # logged to console

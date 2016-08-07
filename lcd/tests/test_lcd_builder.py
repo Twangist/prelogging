@@ -8,13 +8,13 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
-from lcd import LoggingConfigDictEx, ConfiguratorABC
+from lcd import LoggingConfigDictEx, LCDBuilderABC
 
 ##############################################################################
 
-from test_configurators_top import Configurator
-import test_configurator_SubA
-import test_configurator_SubB
+from test_lcd_builders_top import LCDBuilder
+import test_lcd_builder_SubA
+import test_lcd_builder_SubB
 
 ##############################################################################
 # test(s)
@@ -24,11 +24,12 @@ def test_configurator():
     """
     >>> LOG_PATH = '_testlogs/configurator'
 
-    >>> Configurator.configure_logging(
+    >>> lcdx = LCDBuilder.build_lcd(
     ...     root_level='WARNING',
     ...     log_path=LOG_PATH,
     ...     locking=False,
     ...     attach_handlers_to_root=False)
+    >>> lcdx.config()
 
 Now log some messages
 
@@ -93,9 +94,9 @@ if __name__ == "__main__":
 
     # LOG_PATH = '_testlogs/configurator'
     #
-    # from test_configurators_top import Configurator
+    # from test_configurators_top import LCDBuilder
     #
-    # Configurator.configure_logging(
+    # LCDBuilder.build_lcd(
     #     root_level='WARNING',
     #     log_path=LOG_PATH,
     #     locking=False,

@@ -12,7 +12,7 @@ Introduction: `lcd` does... *what*?
     Why not
 
         * config_logging
-        * configure_logging
+        * build_lcd
         * ...
 
     so that we don't have to explain / answer this question

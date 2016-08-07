@@ -9,40 +9,45 @@ from abc import ABCMeta, abstractmethod
 
 
 @add_metaclass(ABCMeta)
-class ConfiguratorABC():
+class LCDBuilderABC():
     """
     .. include:: _global.rst
 
     A class for automating multi-package / multi-module logging configuration.
-    ``ConfiguratorABC`` is an abstract base class: its metaclass is ``ABCMeta``,
+    ``LCDBuilderABC`` is an abstract base class: its metaclass is ``ABCMeta``,
     defined in ``_collections_abc.py`` of the standard library. You can't
     directly instantiate this class: it has an `abstractmethod`
     ``add_to_lcd(lcdx: LoggingConfigDictEx)``. Every package or module that
     wants a say in the configuration of logging should define its own
-    (sub*)subclass of ``ConfiguratorABC`` which implements ``add_to_lcd``.
+    (sub*)subclass of ``LCDBuilderABC`` which implements ``add_to_lcd``.
 
-    Once (and once only), the application should call ``configure_logging()``,
+    Once (and once only), the application should call ``build_lcd()``,
     a classmethod which
 
-        * creates a "blank" ``LoggingConfigDict``, ``lcdx``, and then
+        * creates a "blank" ``LoggingConfigDictEx``, ``lcdx``;
         * calls ``subcls.add_to_lcd(lcdx)`` on every subclass ``subcls``
-          that implements ``add_to_lcd``, in a breadth-first way.
+          that implements ``add_to_lcd``, in a breadth-first way;
+        * returns ``lcdx``, the logging config dict built by the previous
+          steps.
+
+    Your program should then call ``config()`` on the returned logging config
+    dict.
 
     For example, given the following inheritance tree (where "<" means
     "is a superclass of"):
 
     .. code::
 
-        ConfiguratorABC < MainConfigurator < ConfiguratorModuleA
-                                           < ConfiguratorModuleB
-                                           < ConfiguratorPackage < ConfiguratorSubPackage
+        LCDBuilderABC < MainBuilder < BuilderModuleA
+                                    < BuilderModuleB
+                                    < BuilderPackage < BuilderSubPackage
 
     Assuming that all classes shown implement ``add_to_lcd``, that method
-    will be called first on ``MainConfigurator``; then on
-    ``ConfiguratorModuleA``, ``ConfiguratorModuleB``, and
-    ``ConfiguratorPackage``, in some order; then on ``ConfiguratorSubPackage``.
+    will be called first on ``MainBuilder``; then on
+    ``BuilderModuleA``, ``BuilderModuleB``, and
+    ``BuilderPackage``, in some order; then on ``BuilderSubPackage``.
 
-    See the test ``test_configurator.py`` for a multi-module example
+    See the test ``test_lcd_builder.py`` for a multi-module example
     that uses these capabilities.
     |hr|
     """
@@ -53,46 +58,45 @@ class ConfiguratorABC():
 
         :param lcdx: a ``LoggingConfigDictEx``
 
-        ``configure_logging`` calls this method on every ``ConfiguratorABC``
+        ``build_lcd`` calls this method on every ``LCDBuilderABC``
         subclass that implements it. All implementations are passed the same
         object ``lcdx``. Implementations should call ``LoggingConfigDictEx``
         methods on ``lcdx`` to augment and customize it.
 
         **Note**: Implementations should *not* call ``super().add_to_lcd`` —
-        it has already been called by ``configure_logging``!
+        it has already been called by ``build_lcd``!
         """
         pass
 
     @classmethod
-    def configure_logging(cls,
+    def build_lcd(cls,
                    root_level='WARNING',
                    log_path='',
                    locking=False,
                    attach_handlers_to_root=False,
                    disable_existing_loggers=False):
         """A single method which creates a ``LoggingConfigDictEx``,
-        calls all ``add_to_lcd`` methods with that object, and then
-        configures logging using that object. Your program should call
-        this method once (only).
+        calls all ``add_to_lcd`` methods with that object. Your program
+        should call this method once (only), and then call ``config()``
+        on the returned logging config dict.
 
         Parameters are as for ``LoggingConfigDictEx``.
 
         This method creates a ``LoggingConfigDictEx`` ``lcdx``,
         and calls ``subcls.add_to_lcd(lcdx)`` on all subclasses ``subcls``
-        of ``ConfiguratorABC`` *which implement the method*, in breadth-first
+        of ``LCDBuilderABC`` *which implement the method*, in breadth-first
         order, passing the same ``LoggingConfigDictEx`` instance to each.
 
-        After calling all the ``add_to_lcd`` implementations,
-        this method calls ``lcdx.config()`` to configure logging.
-
-        **Note**: ``configure_logging()`` will call ``add_to_lcd`` only on
-        ``ConfiguratorABC`` subclasses that have actually been imported
-        at the time ``configure_logging()`` is called.
+        **Note**: ``build_lcd()`` will call ``add_to_lcd`` only on
+        ``LCDBuilderABC`` subclasses that have actually been imported
+        at the time ``build_lcd()`` is called.
         Thus, make sure that your program has imported all such subclasses
         before it calls this method. If the contributions of the ``add_to_lcd``
         method of some such subclass have no effect — its handlers and/or
-        loggers do nothing — it may be because the subclass wasn't
-        imported when ``configure_logging()`` was called.
+        loggers do nothing — it's quite likely because the subclass wasn't
+        imported when ``build_lcd()`` was called.
+
+        return: the built ``LoggingConfigDictEx``
         """
         lcdx = LoggingConfigDictEx(
                     root_level=root_level,
@@ -101,7 +105,7 @@ class ConfiguratorABC():
                     attach_handlers_to_root=attach_handlers_to_root,
                     disable_existing_loggers=disable_existing_loggers
         )
-        derived_classes = ConfiguratorABC.__subclasses__()
+        derived_classes = LCDBuilderABC.__subclasses__()
 
         while derived_classes:
             subcls = derived_classes.pop()
@@ -109,4 +113,5 @@ class ConfiguratorABC():
                 subcls.add_to_lcd(lcdx)
             derived_classes.extend(subcls.__subclasses__())
 
-        lcdx.config()
+        # lcdx.config()
+        return lcdx

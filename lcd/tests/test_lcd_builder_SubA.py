@@ -1,9 +1,9 @@
 __author__ = 'brianoneill'
 
-from test_configurators_top import ConfiguratorSub
+from test_lcd_builders_top import LCDBuilderSub
 
 
-class ConfiguratorSubA(ConfiguratorSub):
+class LCDBuilderSubA(LCDBuilderSub):
     @classmethod
     def add_to_lcd(cls, lcdx):
         """(Virtual) Call ``LoggingConfigDictEx`` methods to augment ``lcdx``.
