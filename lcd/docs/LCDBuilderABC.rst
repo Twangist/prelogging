@@ -1,4 +1,4 @@
-.. _BuilderABC:
+.. _LCDBuilderABC:
 
 LCDBuilderABC
 ===============================
