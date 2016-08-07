@@ -57,10 +57,10 @@ of creating a logging config dict into basic steps:
 
     *Steps 2. and 3. can be interchanged, likewise 5. and 6.*
 
-Keyword parameters of the ``add_*`` methods are the very same keys that occur in
-the sub-subdictionaries of the corresponding kind of logging entities (with just
-one exception: ``class_`` instead of ``class``). All receive correct and/or
-sensible default values.
+Keyword parameters of the ``add_*`` methods are, with a few, documented exceptions,
+the very same keys that occur in the sub-subdictionaries of the corresponding
+kind of logging entities (with just one exception: ``class_`` instead of
+``class``). All receive correct and/or sensible default values.
 
 Once you've built a ``LoggingConfigDict`` meeting your requirements, you
 configure logging by calling the object's ``config`` method, which simply
