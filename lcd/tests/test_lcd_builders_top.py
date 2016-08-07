@@ -16,9 +16,9 @@ from lcd import LCDBuilderABC
 class LCDBuilder(LCDBuilderABC):
     @classmethod
     def add_to_lcd(cls, lcdx):
-        """(Virtual) Call ``LoggingConfigDictEx`` methods to augment ``lcdx``.
+        """(Virtual) Call ``LCDEx`` methods to augment ``lcdx``.
 
-        :param lcdx: a ``LoggingConfigDictEx``
+        :param lcdx: a ``LCDEx``
         """
         lcdx.add_stdout_handler('con-out',
                                         formatter='logger_level_msg',

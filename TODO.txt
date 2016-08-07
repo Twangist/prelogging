@@ -1,7 +1,7 @@
 TODOs
 =====
 
-*   Rename ``LoggingConfigDictEx.add_function_filter``
+*   Rename ``LCDEx.add_function_filter``
         to ``add_callable_filter``
 
 * Examples -- Class Filter, Callable Filter
@@ -10,7 +10,7 @@ TODOs
 
     Callable filter  "    "     "       "         "     "
 
-*   EXPOSE the FilterMaker class (INSIDE ``LoggingConfigDictEx.add_callable_filter``)
+*   EXPOSE the FilterMaker class (INSIDE ``LCDEx.add_callable_filter``)
     It's pretty nice
         (Django has a similar thing but it doesn't do Currying)
 
@@ -32,7 +32,7 @@ OR
 
 *   Call the base class something different,
     e.g. ``LoggingConfigDict_`` (or ``LCD_``),
-    and call ``LoggingConfigDictEx`` actually ``LoggingConfigDict``
+    and call ``LCDEx`` actually ``LCD``
         (or ``LCD``)
 
     LoggingConfigDict   |---------->  LoggingConfigDict_      or

@@ -9,7 +9,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
-from lcd import LoggingConfigDictEx
+from lcd import LCDEx
 
 from ._smtp_credentials import *
 
@@ -47,7 +47,7 @@ def filter_error_only(record):
 
 
 def configure_logging():
-    lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
+    lcdx = LCDEx(attach_handlers_to_root=True)
     lcdx.add_stderr_handler('con-err', formatter='level_msg')
     # root, console handler levels: WARNING.
 

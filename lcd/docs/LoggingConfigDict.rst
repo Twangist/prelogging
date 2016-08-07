@@ -1,6 +1,6 @@
-.. _LoggingConfigDict:
+.. _LCD:
 
-LoggingConfigDict
+LCD
 ===============================
 
 This class resides in ``logging_config_dict.py``.
@@ -8,7 +8,7 @@ This class resides in ``logging_config_dict.py``.
 .. automodule:: lcd.logging_config_dict
 
 
-.. autoclass:: lcd.logging_config_dict.LoggingConfigDict
+.. autoclass:: lcd.logging_config_dict.LCD
     :members: __init__, formatters, filters, handlers, loggers, root,
               set_root_level,
               attach_root_filters, attach_root_handlers,

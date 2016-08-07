@@ -3,7 +3,7 @@ __author__ = 'brianoneill'
 import sys
 sys.path[0:0] = ['../..']
 
-from lcd import LoggingConfigDictEx
+from lcd import LCDEx
 
 #############################################################################
 
@@ -12,10 +12,12 @@ def configure_logging(log_path, logfilename=''):
     and, if logfilename is not empty, a file handler with level=DEBUG.
     Root logger level will be INFO.
     """
-    lcd_ex = LoggingConfigDictEx(log_path=log_path,
-                                 attach_handlers_to_root=True,
-                                 root_level='CRITICAL')     # . temporary; cuz of lcd_ex.set_logger_level(...) below
-                                 # root_level='INFO')
+    # . Just for coverage:
+    # .     root_level='CRITICAL')
+    # . Temporary, cuz of lcd_ex.set_logger_level(...) below.
+    lcd_ex = LCDEx(log_path=log_path,
+                   attach_handlers_to_root=True,
+                   root_level='CRITICAL')
     lcd_ex.add_stdout_handler('con', formatter="minimal")
 
     lcd_ex.set_logger_level(None, 'INFO')    # . coverage ho'

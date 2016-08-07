@@ -6,9 +6,9 @@ from test_lcd_builders_top import LCDBuilderSub
 class LCDBuilderSubA(LCDBuilderSub):
     @classmethod
     def add_to_lcd(cls, lcdx):
-        """(Virtual) Call ``LoggingConfigDictEx`` methods to augment ``lcdx``.
+        """(Virtual) Call ``LCDEx`` methods to augment ``lcdx``.
 
-        :param lcdx: a ``LoggingConfigDictEx``
+        :param lcdx: a ``LCDEx``
         """
         # Set up a logger 'subA' and a file handler it exclusively uses.
         # Assume the code that uses this module is well-debugged and stable,

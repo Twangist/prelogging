@@ -181,7 +181,7 @@ precepts, you must create a medium-sized ``dict`` containing several nested
 a thicket of curly braces, quotes and colons, which you finally pass to
 ``dictConfig()``.
 
-`lcd` defines two classes, ``LoggingConfigDict`` and ``LoggingConfigDictEx``,
+`lcd` defines two classes, ``LCD`` and ``LCDEx``,
 which represent logging configuration dictionaries — *logging config dicts*,
 for short:
 
@@ -189,7 +189,7 @@ for short:
 
 You use the methods of these classes to add specifications of named
 ``Formatter``\s, ``Handler``\s, ``Logger``\s, and optional ``Filter``\s. Once
-you've done so, calling the ``config()`` method of a ``LoggingConfigDict``
+you've done so, calling the ``config()`` method of a ``LCD``
 configures logging by passing the object (itself, as a ``dict``) to
 ``logging.config.dictConfig()``. This call creates all the objects and linkages
 specified by the underlying dictionary.
@@ -251,13 +251,13 @@ Configuration with `lcd`
 down into easy, natural steps. As much as is possible, with `lcd` you only have
 to specify the objects you care about and what's special about them; everything
 else receives reasonable, expected defaults. Using the "batteries included"
-``lcd.LoggingConfigDictEx`` class lets us concisely specify the desired setup:
+``lcd.LCDEx`` class lets us concisely specify the desired setup:
 
 .. code::
 
-    from lcd import LoggingConfigDictEx
+    from lcd import LCDEx
 
-    lcd_ex = LoggingConfigDictEx(root_level='DEBUG',
+    lcd_ex = LCDEx(root_level='DEBUG',
                                  attach_handlers_to_root=True)
     lcd_ex.add_stderr_handler(
                     'console',
@@ -271,20 +271,20 @@ else receives reasonable, expected defaults. Using the "batteries included"
     lcd_ex.config()
 
 Here, we use a couple of the builtin ``Formatter``\s supplied by
-``LoggingConfigDictEx``. Because we pass the flag
+``LCDEx``. Because we pass the flag
 ``attach_handlers_to_root=True`` when creating the instance ``lcd_ex``,
 every handler we add to ``lcd_ex`` is automatically attached to the root logger.
 Later, we'll
-:ref:`revisit this example <overview-example-using-only-LoggingConfigDict>`,
-to see how the same result can be achieved using only ``LoggingConfigDict``.
+:ref:`revisit this example <overview-example-using-only-LCD>`,
+to see how the same result can be achieved using only ``LCD``.
 
 Remarks
 ^^^^^^^^^^
 
-To allow chaining, as in the above example, the methods of ``LoggingConfigDict``
-and ``LoggingConfigDictEx`` generally return ``self``.
+To allow chaining, as in the above example, the methods of ``LCD``
+and ``LCDEx`` generally return ``self``.
 
-You can use the ``dump()`` method of a ``LoggingConfigDict`` to prettyprint its
+You can use the ``dump()`` method of a ``LCD`` to prettyprint its
 underlying ``dict``. In fact, that's how we determined the value of
 ``config_dict`` for the following subsection.
 

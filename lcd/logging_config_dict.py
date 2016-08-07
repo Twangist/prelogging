@@ -8,7 +8,7 @@ import logging.config
 __author__ = "Brian O'Neill"
 
 __doc__ = """ \
-``LoggingConfigDict`` provides an API for building dictionaries that specify
+``LCD`` provides an API for building dictionaries that specify
 Python logging configuration -- *logging config dicts*.
 
 Entering a logging config dict as static data requires many nested curly
@@ -20,16 +20,16 @@ But logging configuration involves a small hierarchy of only four kinds of
 entities — formatters, handlers, loggers and, optionally, filters —
 which can be specified in a layered way.
 
-``LoggingConfigDict`` lets you build a logging config dict modularly and
+``LCD`` lets you build a logging config dict modularly and
 incrementally. It flattens the process of specifying the dict, letting you
 define each entity one by one, instead of entering a thicket of nested dicts.
 
-A ``LoggingConfigDict`` instance *is* a logging config dict. It inherits from
+A ``LCD`` instance *is* a logging config dict. It inherits from
 ``dict``, and its methods —``add_formatter``, ``add_handler``, ``add_logger``,
 and so on — operate on the underlying dictionary, breaking down the process
 of creating a logging config dict into basic steps:
 
-    1. Create a ``LoggingConfigDict``, optionally specifying the level of
+    1. Create a ``LCD``, optionally specifying the level of
        the root handler.
 
     2. Add formatter specifications with ``add_formatter()``.
@@ -62,7 +62,7 @@ the very same keys that occur in the sub-subdictionaries of the corresponding
 kind of logging entities (with just one exception: ``class_`` instead of
 ``class``). All receive correct and/or sensible default values.
 
-Once you've built a ``LoggingConfigDict`` meeting your requirements, you
+Once you've built a ``LCD`` meeting your requirements, you
 configure logging by calling the object's ``config`` method, which simply
 passes itself (a dict) to
 `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
@@ -73,18 +73,18 @@ for you.
 """
 
 
-class LoggingConfigDict(dict):
+class LCD(dict):
     """
     .. include:: _global.rst
 
-    *   In this class as well as in :ref:`LoggingConfigDictEx`, "level" always
+    *   In this class as well as in :ref:`LCDEx`, "level" always
         means the ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric
         value ``logging.DEBUG``. A level name, in short — one of ``'DEBUG'``,
         ``'INFO'``, ``'WARNING'``, ``'ERROR'``, ``'CRITICAL'``, or ``'NOTSET'``.
 
     *   Except for properties and the ``__init__`` and ``config`` methods, all
         public methods of this class (and similarly of
-        :ref:`LoggingConfigDictEx`) return ``self``, to allow chaining.
+        :ref:`LCDEx`) return ``self``, to allow chaining.
 
     *   The (leaf) values in logging config dicts are almost all strings. The
         exceptions are ``bool`` values and actual streams allowed as the value
@@ -97,7 +97,7 @@ class LoggingConfigDict(dict):
             we use ``stream='ext://sys.stdout'``.
 
         The reason: the ``clone_handler()`` method of the subclass
-        ``LoggingConfigDictEx`` uses ``deepcopy()``, and streams can't be
+        ``LCDEx`` uses ``deepcopy()``, and streams can't be
         deep-copied. We recommend that you not use actual streams, but rather
         the text equivalents, as shown in the example just given.
 
@@ -110,7 +110,7 @@ class LoggingConfigDict(dict):
     @classmethod
     def warn(cls, warn_val=None):
         """Get or set the bool value of the class attribute ``_warn``. When
-        true, ``LoggingConfigDict`` will write warnings when
+        true, ``LCD`` will write warnings when
 
             * an entity (formatter, filter, etc.) is added that has already
               been defined, possibly overwriting the existing definition;
@@ -140,7 +140,7 @@ class LoggingConfigDict(dict):
             module's default value ``True`` to be used.
         """
         assert root_level in self._level_names
-        super(LoggingConfigDict, self).__init__()
+        super(LCD, self).__init__()
         self['version'] = 1
         # self['disable_existing_loggers'] = True
         self['formatters'] = {}
@@ -626,7 +626,7 @@ class LoggingConfigDict(dict):
 
         :param disable_existing_loggers: Last chance to change this setting.
 
-        By default, LoggingConfigDicts are created with
+        By default, LCDs are created with
 
             ``self['disable_existing_loggers'] == False``
 

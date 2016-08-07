@@ -2,7 +2,7 @@
 
 __author__ = 'brianoneill'
 
-from .logging_config_dict_ex import LoggingConfigDictEx
+from .logging_config_dict_ex import LCDEx
 from .six import add_metaclass
 
 from abc import ABCMeta, abstractmethod
@@ -17,14 +17,14 @@ class LCDBuilderABC():
     ``LCDBuilderABC`` is an abstract base class: its metaclass is ``ABCMeta``,
     defined in ``_collections_abc.py`` of the standard library. You can't
     directly instantiate this class: it has an `abstractmethod`
-    ``add_to_lcd(lcdx: LoggingConfigDictEx)``. Every package or module that
+    ``add_to_lcd(lcdx: LCDEx)``. Every package or module that
     wants a say in the configuration of logging should define its own
     (sub*)subclass of ``LCDBuilderABC`` which implements ``add_to_lcd``.
 
     Once (and once only), the application should call ``build_lcd()``,
     a classmethod which
 
-        * creates a "blank" ``LoggingConfigDictEx``, ``lcdx``;
+        * creates a "blank" ``LCDEx``, ``lcdx``;
         * calls ``subcls.add_to_lcd(lcdx)`` on every subclass ``subcls``
           that implements ``add_to_lcd``, in a breadth-first way;
         * returns ``lcdx``, the logging config dict built by the previous
@@ -54,13 +54,13 @@ class LCDBuilderABC():
     @classmethod
     @abstractmethod
     def add_to_lcd(cls, lcdx):          # pragma: no cover
-        """(abstractmethod) Customize the passed ``LoggingConfigDictEx``.
+        """(abstractmethod) Customize the passed ``LCDEx``.
 
-        :param lcdx: a ``LoggingConfigDictEx``
+        :param lcdx: a ``LCDEx``
 
         ``build_lcd`` calls this method on every ``LCDBuilderABC``
         subclass that implements it. All implementations are passed the same
-        object ``lcdx``. Implementations should call ``LoggingConfigDictEx``
+        object ``lcdx``. Implementations should call ``LCDEx``
         methods on ``lcdx`` to augment and customize it.
 
         **Note**: Implementations should *not* call ``super().add_to_lcd`` —
@@ -75,17 +75,17 @@ class LCDBuilderABC():
                    locking=False,
                    attach_handlers_to_root=False,
                    disable_existing_loggers=False):
-        """A single method which creates a ``LoggingConfigDictEx``,
+        """A single method which creates a ``LCDEx``,
         calls all ``add_to_lcd`` methods with that object. Your program
         should call this method once (only), and then call ``config()``
         on the returned logging config dict.
 
-        Parameters are as for ``LoggingConfigDictEx``.
+        Parameters are as for ``LCDEx``.
 
-        This method creates a ``LoggingConfigDictEx`` ``lcdx``,
+        This method creates a ``LCDEx`` ``lcdx``,
         and calls ``subcls.add_to_lcd(lcdx)`` on all subclasses ``subcls``
         of ``LCDBuilderABC`` *which implement the method*, in breadth-first
-        order, passing the same ``LoggingConfigDictEx`` instance to each.
+        order, passing the same ``LCDEx`` instance to each.
 
         **Note**: ``build_lcd()`` will call ``add_to_lcd`` only on
         ``LCDBuilderABC`` subclasses that have actually been imported
@@ -96,9 +96,9 @@ class LCDBuilderABC():
         loggers do nothing — it's quite likely because the subclass wasn't
         imported when ``build_lcd()`` was called.
 
-        return: the built ``LoggingConfigDictEx``
+        return: the built ``LCDEx``
         """
-        lcdx = LoggingConfigDictEx(
+        lcdx = LCDEx(
                     root_level=root_level,
                     log_path=log_path,
                     locking=locking,

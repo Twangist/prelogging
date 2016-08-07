@@ -1,6 +1,6 @@
 __author__ = 'brianoneill'
 
-from lcd import LoggingConfigDict
+from lcd import LCD
 from lcd.six import PY2
 
 from unittest import TestCase
@@ -11,7 +11,7 @@ import io   # for io.StringIO
 
 #############################################################################
 
-class TestLoggingConfigDict(TestCase):
+class TestLCD(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -27,7 +27,7 @@ class TestLoggingConfigDict(TestCase):
         self.test_filters_on_handler__messages = []
 
     def test_1(self):
-        lcd = LoggingConfigDict(root_level='DEBUG',
+        lcd = LCD(root_level='DEBUG',
                                 disable_existing_loggers=False)
         lcd.add_formatter(
             'minimal',
@@ -125,7 +125,7 @@ class TestLoggingConfigDict(TestCase):
 
     def test_add_logger_one_handler(self):
 
-        lcd = LoggingConfigDict(root_level='DEBUG')
+        lcd = LCD(root_level='DEBUG')
         lcd.add_formatter(
             'minimal',
             format='%(message)s'
@@ -192,7 +192,7 @@ class TestLoggingConfigDict(TestCase):
         if PY2:
             _count_debug.filter = _count_debug
 
-        lcd = LoggingConfigDict()
+        lcd = LCD()
         lcd.set_root_level('DEBUG')
 
         lcd.add_formatter(
@@ -247,7 +247,7 @@ class TestLoggingConfigDict(TestCase):
                     self.info_count += 1
                 return True
 
-        lcd = LoggingConfigDict(root_level='DEBUG')
+        lcd = LCD(root_level='DEBUG')
 
         lcd.add_formatter(
             'minimal',
@@ -302,7 +302,7 @@ class TestLoggingConfigDict(TestCase):
                     self.ge_warning_count += 1
                 return True
 
-        lcd = LoggingConfigDict(root_level='DEBUG')
+        lcd = LCD(root_level='DEBUG')
 
         lcd.add_formatter(
             'minimal',
@@ -368,7 +368,7 @@ class TestLoggingConfigDict(TestCase):
                     self.test_filters_on_handler__messages.append(self.info_count - 1)
                 return self.info_count % 2
 
-        lcd = LoggingConfigDict()
+        lcd = LCD()
         lcd.set_root_level('DEBUG')
 
         lcd.add_filter(
@@ -420,39 +420,39 @@ class TestLoggingConfigDict(TestCase):
         self.assertEqual(self.test_filters_on_handler__messages, [0, 2])
 
 
-class TestLoggingConfigDict_Warn_proper(TestCase):
+class TestLCD_Warn_proper(TestCase):
 
     def test_warn(self):
-        w = LoggingConfigDict.warn()
+        w = LCD.warn()
         self.assertEqual(w, False)
 
-        wT = LoggingConfigDict.warn(True)
+        wT = LCD.warn(True)
         self.assertEqual(wT, True)
-        self.assertEqual(LoggingConfigDict.warn(), True)
+        self.assertEqual(LCD.warn(), True)
 
-        wF = LoggingConfigDict.warn(False)
+        wF = LCD.warn(False)
         self.assertEqual(wF, False)
-        self.assertEqual(LoggingConfigDict.warn(), False)
+        self.assertEqual(LCD.warn(), False)
 
 
 # class _TestLCD_Warn(TestCase):
-class TestLoggingConfigDict_NoWarnings(TestCase):
+class TestLCD_NoWarnings(TestCase):
     class F():
         def filter(self, record):
             return True
 
     def setUp(self):
-        "Subclasses set LoggingConfigDict.warn(...)"
+        "Subclasses set LCD.warn(...)"
 
         # Swap stderr, save existing:
         self._stderr = sys.stderr
         self.sio_err = io.StringIO()    # new "stderr"
         sys.stderr = self.sio_err
         # create an LCD
-        self.lcd = LoggingConfigDict()
+        self.lcd = LCD()
 
     def tearDown(self):
-        "Subclasses restore LoggingConfigDict.warn(...)"
+        "Subclasses restore LCD.warn(...)"
         # restore
         sys.stderr = self._stderr
 
@@ -504,7 +504,7 @@ class TestLoggingConfigDict_NoWarnings(TestCase):
         self.assertEqual(list(self.lcd.handlers.keys()), ['my_handler'])
 
     def test_warn_logger_readd(self):
-        self.lcd = LoggingConfigDict()
+        self.lcd = LCD()
         self.lcd.add_logger('my_logger')
         # Now readd -- check for warning to stderr
         self.lcd.add_logger('my_logger')
@@ -802,10 +802,10 @@ class TestLoggingConfigDict_NoWarnings(TestCase):
         )
 
 
-# class TestLoggingConfigDict_Warnings(_TestLCD_Warn):
-class TestLoggingConfigDict_Warnings(TestLoggingConfigDict_NoWarnings):
+# class TestLCD_Warnings(_TestLCD_Warn):
+class TestLCD_Warnings(TestLCD_NoWarnings):
 
     @classmethod
     def setUpClass(cls):
-        LoggingConfigDict.warn(True)
+        LCD.warn(True)
 

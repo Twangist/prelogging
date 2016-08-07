@@ -8,7 +8,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
-from lcd import LoggingConfigDictEx
+from lcd import LCDEx
 
 
 info_count = 0
@@ -55,7 +55,7 @@ def test_xxx_filter():
     >>> info_count = 0
     >>> debug_count = 0
 
-    >>> lcd_ex = LoggingConfigDictEx(
+    >>> lcd_ex = LCDEx(
     ...     attach_handlers_to_root=True,
     ...     root_level='DEBUG')
 

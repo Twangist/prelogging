@@ -2,7 +2,7 @@ __author__ = 'brianoneill'
 
 import sys
 sys.path[0:0] = ['../..']          # prepend
-from lcd import LoggingConfigDictEx
+from lcd import LCDEx
 import logging
 from lcd.six import PY2
 
@@ -14,7 +14,7 @@ if PY2:
 else:
     def test_formatter_style():
         """
-        >>> lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
+        >>> lcdx = LCDEx(attach_handlers_to_root=True)
 
         >>> # style='%' is the default, & could be omitted
         >>> _ = lcdx.add_formatter('testform-%',

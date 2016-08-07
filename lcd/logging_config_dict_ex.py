@@ -3,7 +3,7 @@
 import os
 from copy import deepcopy
 
-from .logging_config_dict import LoggingConfigDict
+from .logging_config_dict import LCD
 from .six import PY2
 
 __doc__ = """\
@@ -11,9 +11,9 @@ __doc__ = """\
 
 __author__ = "Brian O'Neill"
 
-class LoggingConfigDictEx(LoggingConfigDict):
+class LCDEx(LCD):
     """ \
-    A ``LoggingConfigDict`` subclass with a few batteries included — formatters,
+    A ``LCD`` subclass with a few batteries included — formatters,
     various handler-creators, multiprocessing-aware handlers that output to the
     console, to files and to rotating files.
 
@@ -23,15 +23,15 @@ class LoggingConfigDictEx(LoggingConfigDict):
     class adds a handler of some kind. Except for properties and the
     ``__init__`` method, all public methods return ``self``.
 
-    .. _LoggingConfigDictEx-init-params:
+    .. _LCDEx-init-params:
 
-    .. index:: __init__ keyword parameters (LoggingConfigDictEx)
+    .. index:: __init__ keyword parameters (LCDEx)
 
     ``__init__`` **keyword parameters**  |br|
     ``- - - - - - - - - - - - - - - - - - - - - - - - -``
 
     In addition to the parameters ``root_level`` and
-    ``disable_existing_loggers`` recognized by :ref:`LoggingConfigDict`,
+    ``disable_existing_loggers`` recognized by :ref:`LCD`,
     the constructor of this class accepts a few more::
 
             attach_handlers_to_root (bool)
@@ -67,7 +67,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
 
     .. _builtin-formatters:
 
-    .. index:: Builtin formatters (LoggingConfigDictEx)
+    .. index:: Builtin formatters (LCDEx)
 
     **Formatters provided** |br|
     ``- - - - - - - - - - - - - - - - - - - - - - - - -``
@@ -155,10 +155,10 @@ class LoggingConfigDictEx(LoggingConfigDict):
             ("private") loggers before or after their clients do their own
             logging configuration. The `logging` default value is ``True``.
 
-        See also :ref:`__init__ keyword parameters <LoggingConfigDictEx-init-params>`
+        See also :ref:`__init__ keyword parameters <LCDEx-init-params>`
         above, in the class's docstring.
         """
-        super(LoggingConfigDictEx, self).__init__(
+        super(LCDEx, self).__init__(
                         root_level=root_level,
                         disable_existing_loggers=disable_existing_loggers)
         self.log_path = log_path
@@ -245,13 +245,13 @@ class LoggingConfigDictEx(LoggingConfigDict):
                     ** handler_dict):
         """
         (Virtual) Adds the ``attach_to_root`` parameter to
-        ``LoggingConfigDict.add_handler()``.
+        ``LCD.add_handler()``.
 
         :return: ``self``
         """
-        super(LoggingConfigDictEx, self).add_handler(handler_name, ** handler_dict)
+        super(LCDEx, self).add_handler(handler_name, ** handler_dict)
         if self._attach_to_root__adjust(attach_to_root):
-            super(LoggingConfigDictEx, self).attach_root_handlers(handler_name)
+            super(LCDEx, self).attach_root_handlers(handler_name)
         return self
 
     def _add_console_handler(self, handler_name,    # *,
@@ -346,7 +346,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
                          **kwargs):
         """
         (Virtual) Adds keyword parameters ``locking`` and ``attach_to_root``
-        to the parameters of ``LoggingConfigDict.add_file_handler()``.
+        to the parameters of ``LCD.add_file_handler()``.
 
         :return: ``self``
         """
@@ -459,7 +459,7 @@ class LoggingConfigDictEx(LoggingConfigDict):
         :param filter_init_kwargs: any other parameters to be passed to
             ``add_filter``. These will be passed to the ``filter_class``
             constructor. See the documentation for
-            ``LoggingConfigDict.add_filter``.
+            ``LCD.add_filter``.
         :return: ``self``
         """
         filter_init_kwargs['()'] = filter_class

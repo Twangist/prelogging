@@ -8,7 +8,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
-from lcd import LoggingConfigDictEx, LCDBuilderABC
+from lcd import LCDEx, LCDBuilderABC
 
 ##############################################################################
 

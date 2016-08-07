@@ -16,7 +16,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
-from lcd import LoggingConfigDictEx
+from lcd import LCDEx
 from lcd.six import PY2
 
 import logging
@@ -29,7 +29,7 @@ import time
 
 
 def worker_config_logging(q):
-    lcd = LoggingConfigDictEx(attach_handlers_to_root=True, root_level='DEBUG')
+    lcd = LCDEx(attach_handlers_to_root=True, root_level='DEBUG')
     lcd.add_queue_handler('qhandler', queue=q)
     lcd.config()
 
@@ -61,7 +61,7 @@ def logging_thread(q):
 
 def main_process_config_logging():
     # DON'T attach handlers to root
-    lcd = LoggingConfigDictEx(log_path='_log/mproc_QHLT', root_level='DEBUG')
+    lcd = LCDEx(log_path='_log/mproc_QHLT', root_level='DEBUG')
 
     lcd.add_formatter('detailed',
                       format='%(asctime)s %(name)-15s %(levelname)-8s '

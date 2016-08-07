@@ -1,8 +1,8 @@
 __author__ = "Brian O'Neill"
 
 from ._version import __version__
-from .logging_config_dict import LoggingConfigDict
-from .logging_config_dict_ex import LoggingConfigDictEx
+from .logging_config_dict import LCD
+from .logging_config_dict_ex import LCDEx
 from .locking_handlers import (LockingStreamHandler,
                                LockingFileHandler, LockingRotatingFileHandler)
 from .lcd_builder_abc import LCDBuilderABC
@@ -12,8 +12,8 @@ from .lcd_builder_abc import LCDBuilderABC
 __all__ = [
     '__author__',
     '__version__',
-    'LoggingConfigDict',
-    'LoggingConfigDictEx',
+    'LCD',
+    'LCDEx',
     'LockingStreamHandler', 'LockingFileHandler', 'LockingRotatingFileHandler',
     # 'setup_logger'
 ]

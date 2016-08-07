@@ -3,14 +3,14 @@ Topics and Recipes
 
 .. include:: _global.rst
 
-* ``LoggingConfigDict``
+* ``LCD``
     .. hlist::
         :columns: 3
 
         * :ref:`Basic usage and principles<tr-basic-usage-LCD>`
-        * :ref:`overview-example-using-only-LoggingConfigDict`
+        * :ref:`overview-example-using-only-LCD`
 
-* ``LoggingConfigDictEx``
+* ``LCDEx``
     * :ref:`tr-basic-LCDEx`
 
 * Formatters
@@ -76,38 +76,38 @@ Topics and Recipes
 
 .. _tr-basic-usage-LCD:
 
-Basic usage of ``LoggingConfigDict``
+Basic usage of ``LCD``
 -------------------------------------------------------
 
 .. todo::
-    intro blather, basic usage of ``LoggingConfigDict``
+    intro blather, basic usage of ``LCD``
 
-Cite :ref:`LoggingConfigDict`: introduction for basic usage,
+Cite :ref:`LCD`: introduction for basic usage,
 and reference // OR (todo): move that material to here.
 ???
 
 The :ref:`overview` contains :ref:`an example <example-overview-config>` showing
-how easy it is using ``LoggingConfigDictEx`` to
+how easy it is using ``LCDEx`` to
 configure the root logger with both a console handler and a file handler.
 The solution shown there takes advantage of a few conveniences provided by
-``LoggingConfigDictEx``. It's instructive to see how the same result can be
-achieved using only ``LoggingConfigDict``.
+``LCDEx``. It's instructive to see how the same result can be
+achieved using only ``LCD``.
 
-.. _overview-example-using-only-LoggingConfigDict:
+.. _overview-example-using-only-LCD:
 
-The Overview example, using only ``LoggingConfigDict``
+The Overview example, using only ``LCD``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-If we were to use just the base class ``LoggingConfigDict``, the Overview
+If we were to use just the base class ``LCD``, the Overview
 example becomes just a little less concise. Now, we have to add two formatters,
 and we must explicitly attach the two handlers to the root logger (two passages
 which we've commented as ``# NEW``):
 
 .. code::
 
-    from lcd import LoggingConfigDict
+    from lcd import LCD
 
-    lcd = LoggingConfigDict(root_level='DEBUG')
+    lcd = LCD(root_level='DEBUG')
 
     # NEW
     lcd.add_formatter('minimal',
@@ -136,13 +136,13 @@ which we've commented as ``# NEW``):
 
 .. _tr-basic-LCDEx:
 
-What ``LoggingConfigDictEx`` contributes
+What ``LCDEx`` contributes
 ---------------------------------------------------------
 
 <<<<< TODO >>>>> 
 
 .. todo::
-    intro blather re  ``LoggingConfigDictEx``: why this superclass,
+    intro blather re  ``LCDEx``: why this superclass,
     what does it do, offer?
 
 --------------------------------------------------
@@ -204,7 +204,7 @@ Selecting the style of the format string
 
             >>> import lcd
             >>> import logging
-            >>> lcdx = lcd.LoggingConfigDictEx(attach_handlers_to_root=True)
+            >>> lcdx = lcd.LCDEx(attach_handlers_to_root=True)
             # >>> lcdx.add_formatter('testform', format='{levelname} {name} {message}', style='{')
             >>> lcdx.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
             >>> lcdx.add_stderr_handler('con', formatter='testform')
@@ -263,14 +263,14 @@ These "child" loggers require no configuration; they use the handlers
 of the root because, by default, loggers are created with ``propagate=True``.
 
 If the formatters of the handlers include the logger name — as does
-``logger_level_msg`` of ``LoggingConfigDictEx`` objects, for example — each
+``logger_level_msg`` of ``LCDEx`` objects, for example — each
 logged message will relate which module wrote it.
 
 The following example illustrates the general technique:
 
-    >>> from lcd import LoggingConfigDictEx
+    >>> from lcd import LCDEx
     >>> import logging
-    >>> lcd_ex = LoggingConfigDictEx(attach_handlers_to_root=True)
+    >>> lcd_ex = LCDEx(attach_handlers_to_root=True)
     >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
     >>> lcd_ex.config()
 
@@ -350,15 +350,15 @@ which will write to a different file using a handler at default loglevel
 How-to
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Start with a ``LoggingConfigDictEx`` that uses standard (non-locking) stream
+Start with a ``LCDEx`` that uses standard (non-locking) stream
 and file handlers; use root loglevel ``'DEBUG'``; put logfiles in the ``_log/``
 subdirectory of the current directory::
 
     import logging
-    from lcd import LoggingConfigDictEx
+    from lcd import LCDEx
 
 
-    lcd_ex = LoggingConfigDictEx(log_path='_log/',
+    lcd_ex = LCDEx(log_path='_log/',
                                  root_level='DEBUG',
                                  attach_handlers_to_root=True)
 
@@ -587,7 +587,7 @@ Locking handlers
 
 (MP blather)
 
-For a particular ``LoggingConfigDictEx``, there are two possibilities:
+For a particular ``LCDEx``, there are two possibilities:
 
 .. topic:: locking handlers used by default
     on every ``add_*_handler`` method call
@@ -718,7 +718,7 @@ Filters on the root logger
 
 Let's configure the root logger to use both filters shown above::
 
-    lcd_ex = LoggingConfigDictEx(
+    lcd_ex = LCDEx(
         attach_handlers_to_root=True,
         root_level='DEBUG')
 
@@ -796,7 +796,7 @@ There are two ways to attach filters to a handler:
 
 1. Attach the filters in the same method call that adds the handler.
    Use the ``filters`` keyword parameter to **any** ``add_*_handler`` method.
-   All such methods funnel through ``LoggingConfigDict.add_handler``. The
+   All such methods funnel through ``LCD.add_handler``. The
    value of the ``filters`` parameter can be either the name of a single filter
    (a ``str``) or a sequence (list, tuple, etc.) of names of filters.
 
@@ -896,7 +896,7 @@ you've passed. For example,
     ...     return list1[0] > 100
 
     >>> data_wrapper = [17]
-    >>> lcdx = LoggingConfigDictEx(attach_handlers_to_root=True, root_level='DEBUG')
+    >>> lcdx = LCDEx(attach_handlers_to_root=True, root_level='DEBUG')
     >>> lcdx.add_stdout_handler('con', formatter='minimal', level='DEBUG')
     >>> lcdx.add_callable_filter('callable-filter',
     ...                          my_filter_fn,
@@ -950,7 +950,7 @@ as a container:
 
     >>> dw = DataWrapper(17)
 
-    >>> lcdx = LoggingConfigDictEx(attach_handlers_to_root=True, root_level='DEBUG')
+    >>> lcdx = LCDEx(attach_handlers_to_root=True, root_level='DEBUG')
     >>> lcdx.add_stdout_handler('con', formatter='minimal', level='DEBUG')
     >>> lcdx.add_callable_filter('callable-filter',
     ...                          my_filter_fn,
@@ -984,7 +984,7 @@ Of course, you could pass a data-returning callable rather than a container.
 Using ``LCDBuilderABC``
 -------------------------------
 
-A single ``LoggingConfigDictEx`` can be passed around to different "areas"
+A single ``LCDEx`` can be passed around to different "areas"
 of a program, each area contributing specifications of its desired formatters,
 filters, handlers and loggers. The ``LCDBuilderABC`` class provides a
 framework that automates this approach: each area of a program need only
@@ -1051,14 +1051,14 @@ Using a single SMTPHandler
 
 .. code::
 
-    from lcd import LoggingConfigDictEx
+    from lcd import LCDEx
     from _smtp_credentials import *
 
     # for testing/trying the example
     TEST_TO_ADDRESS = FROM_ADDRESS
 
     # root, console handler levels: WARNING.
-    lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
+    lcdx = LCDEx(attach_handlers_to_root=True)
     lcdx.add_stderr_handler('con-err',
                                     formatter='minimal'
     ).add_email_handler('email-handler',
@@ -1093,7 +1093,7 @@ Comment on the example ``SMTP_handler_two.py``
 
 .. code::
 
-    from lcd import LoggingConfigDictEx
+    from lcd import LCDEx
 
     from _smtp_credentials import *
 
@@ -1131,7 +1131,7 @@ Comment on the example ``SMTP_handler_two.py``
 
 
     def build_lcd():
-        lcdx = LoggingConfigDictEx(attach_handlers_to_root=True)
+        lcdx = LCDEx(attach_handlers_to_root=True)
         lcdx.add_stderr_handler('con-err', formatter='level_msg')
         # root, console handler levels: WARNING.
 

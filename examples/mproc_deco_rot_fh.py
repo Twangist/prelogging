@@ -14,7 +14,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..', '../..']
-from lcd import LoggingConfigDictEx
+from lcd import LCDEx
 
 from examples._get_locking_pref import get_locking_pref
 
@@ -51,7 +51,7 @@ import os
 def config_logging(use_locking):
     # NOTE: log_path dir should already exist
     log_path = os.path.join('_log/mproc_deco_rot_fh', 'LOCKING' if use_locking else 'NOLOCKING')
-    lcd_ex = LoggingConfigDictEx(log_path=log_path,
+    lcd_ex = LCDEx(log_path=log_path,
                                  root_level='DEBUG',
                                  attach_handlers_to_root=True,
                                  locking=use_locking)

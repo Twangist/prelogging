@@ -1,6 +1,6 @@
 __author__ = 'brianoneill'
 
-from lcd import LoggingConfigDictEx
+from lcd import LCDEx
 from unittest import TestCase
 import logging
 import sys
@@ -8,7 +8,7 @@ import io
 
 #############################################################################
 
-class TestLoggingConfigDictEx(TestCase):
+class TestLCDEx(TestCase):
     # class attrs
 
     @classmethod
@@ -18,12 +18,12 @@ class TestLoggingConfigDictEx(TestCase):
 
     def get_expected_starting_dict(self, level='WARNING'):
         """."""
-        # use LoggingConfigDictEx.format_strs
+        # use LCDEx.format_strs
         formatters_dict = {
             formatter: {'class': 'logging.Formatter',
-                        'format': LoggingConfigDictEx.format_strs[formatter]
+                        'format': LCDEx.format_strs[formatter]
                        }
-            for formatter in LoggingConfigDictEx.format_strs
+            for formatter in LCDEx.format_strs
         }
 
         return {
@@ -41,7 +41,7 @@ class TestLoggingConfigDictEx(TestCase):
         """
         DON'T add handlers to root, locking=False
         """
-        lcd = LoggingConfigDictEx(root_level='DEBUG')
+        lcd = LCDEx(root_level='DEBUG')
 
         self.assertEqual(lcd.locking, False)
         self.assertEqual(lcd.attach_handlers_to_root, False)
@@ -95,7 +95,7 @@ class TestLoggingConfigDictEx(TestCase):
         """
         DO add handlers to root, locking=True
         """
-        lcd = LoggingConfigDictEx(attach_handlers_to_root=True,
+        lcd = LCDEx(attach_handlers_to_root=True,
                                   locking=True)
 
         self.assertEqual(lcd.locking, True)
@@ -166,7 +166,7 @@ class TestLoggingConfigDictEx(TestCase):
         """
         clone handler with locking=False (so 'class' is in its dict)
         """
-        lcd = LoggingConfigDictEx()
+        lcd = LCDEx()
 
         expected = self.get_expected_starting_dict()
         self.assertEqual(lcd, expected)
@@ -189,11 +189,11 @@ class TestLoggingConfigDictEx(TestCase):
         )
 
 
-class TestLoggingConfigDictEx_check(TestCase):
+class TestLCDEx_check(TestCase):
 
     def test_check_bad1(self):
 
-        lcd_ex = LoggingConfigDictEx(
+        lcd_ex = LCDEx(
             attach_handlers_to_root=True,
             root_level='DEBUG')
 
@@ -229,7 +229,7 @@ class TestLoggingConfigDictEx_check(TestCase):
 
     def test_check_bad2(self):
 
-        lcd_ex = LoggingConfigDictEx()
+        lcd_ex = LCDEx()
         # handler w/bad formatter
         lcd_ex.add_stdout_handler('con', formatter='no-such-formatter')
 
@@ -265,7 +265,7 @@ class TestLoggingConfigDictEx_check(TestCase):
 
     def test_check_ok(self):
 
-        lcd_ex = LoggingConfigDictEx()
+        lcd_ex = LCDEx()
         self.assertEqual(lcd_ex, lcd_ex.check())
 
 
