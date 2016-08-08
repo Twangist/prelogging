@@ -213,8 +213,10 @@ class LCD(dict):
             ``fmt``. This method recognizes ``fmt`` too, as a synonym;
             "format" takes precedence over "fmt" if both are given.
 
-        :param dateformat; a format string for dates and times, Both
-            ``Formatter.__init__`` and ``dictConfig`` call this ``datefmt``,
+        :param dateformat; a format string for dates and times, with the same
+            keys accepted by
+            `time.strftime <https://docs.python.org/3/library/time.html#time.strftime>`_.
+            Both ``Formatter.__init__`` and ``dictConfig`` call this ``datefmt``,
             for which ``dateformat`` is a synonym. In this case,
             "datefmt" takes precedence over "dateformat" if both are given.
 
@@ -373,7 +375,6 @@ class LCD(dict):
             level=level,
             **kwargs)
 
-    # TODO: TEST
     def attach_handler_formatter(self, handler_name, formatter_name):
         """Attach formatter to handler.
         Raise ``KeyError`` if no such handler.
@@ -557,9 +558,6 @@ class LCD(dict):
         if not logger_name:
             return self.attach_root_handlers(* handler_names)
 
-        if not handler_names:
-            return self
-
         logger_handlers = self.loggers[logger_name].setdefault('handlers', [])
         handler_names = self._check_attach__clean_list(
             existing_attachees=logger_handlers,
@@ -680,7 +678,7 @@ class LCD(dict):
             hdict = handlers_[hname]    # type: dict
             # ensure any/all formatters on hname exists in formatters_
             hform_name = hdict.get('formatter', None)
-            if hform_name not in formatters_:
+            if hform_name is not None and hform_name not in formatters_:
                 problems.append(
                     Problem('handler', hname, 'formatter', hform_name)
                 )
@@ -699,7 +697,7 @@ class LCD(dict):
 
         for lname in loggers_:
             ldict = loggers_[lname]
-            # if ldict has filters   (has a 'filters' key)
+            # if ldict has filters (has a 'filters' key)
             #    ensure they all exist in filters_
             lfilters = ldict.get('filters', [])
             for lfilt_name in lfilters:

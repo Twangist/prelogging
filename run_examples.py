@@ -10,11 +10,11 @@ from examples import child_logger2_main
 from examples import mproc
 from examples import mproc2
 from examples import mproc_deco
-from examples import  mproc_queue_handler_logging_thread
-from examples import  queue_handler_listener
-from examples import  SMTP_handler_just_one
-from examples import  SMTP_handler_two
-
+from examples import mproc_queue_handler_logging_thread
+from examples import queue_handler_listener
+from examples import SMTP_handler_just_one
+from examples import SMTP_handler_two
+from examples import dateformat
 from examples.check_for_NUL import check_for_NUL
 
 
@@ -76,6 +76,7 @@ except Exception as e:
     # raise
 
 # New kids:
+dateformat.main()
 queue_handler_listener.main()
 mproc_queue_handler_logging_thread.main()
 SMTP_handler_just_one.main()

@@ -61,16 +61,16 @@ You can run all the tests before installing `lcd` by running the script
 Coverage from tests
 ~~~~~~~~~~~~~~~~~~~
 
-`lcd` contains a very small amount of Python-2-only code, workarounds
-for Py2 shortcomings.
+`lcd` contains a very small amount of Python-2-only code (workarounds
+for Py2 shortcomings), and supports a few Python-3-only logging features.
 
 +--------------------------------+--------+-------+
 || Module                        || Py 3  || Py 2 |
 +================================+========+=======+
 || ``logging_config_dict.py``    || \99%  || 100% |
-|| ``logging_config_dict_ex.py`` || \96%  || \98% |
+|| ``logging_config_dict_ex.py`` || \92%  || \98% |
 || ``locking_handlers.py``       || 100%  || 100% |
-|| ``configurator_abc.py``       || 100%  || 100% |
+|| ``lcd_builder_abc.py``        || 100%  || 100% |
 +--------------------------------+--------+-------+
 
 
@@ -103,14 +103,13 @@ when these examples are run individually than when they're run via
 Coverage from tests + examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Three lines of Python-2-only code prevent `lcd`  from having 100% coverage on
-both language versions.
+A few passages of Python-version-specific code keep `lcd` shy of 100% coverage.
 
 +--------------------------------+--------+-------+
 || Module                        || Py 3  || Py 2 |
 +================================+========+=======+
-|| ``logging_config_dict.py``    || \99%  || 100% |
-|| ``logging_config_dict_ex.py`` || \97%  || 100% |
+|| ``logging_config_dict.py``    || \99%  || \99% |
+|| ``logging_config_dict_ex.py`` || \97%  || \95% |
 || ``locking_handlers.py``       || 100%  || 100% |
-|| ``configurator_abc.py``       || 100%  || 100% |
+|| ``lcd_builder_abc.py``        || 100%  || 100% |
 +--------------------------------+--------+-------+

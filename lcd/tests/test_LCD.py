@@ -126,16 +126,19 @@ class TestLCD(TestCase):
     def test_add_logger_one_handler(self):
 
         lcd = LCD(root_level='DEBUG')
+        lcd.warn(True)                  # coverage
         lcd.add_formatter(
             'minimal',
             format='%(message)s'
-        )
-        lcd.add_handler(
+        ).add_handler(
             'console',
             class_='logging.StreamHandler',
             level='INFO',
-            formatter='minimal'
+            # formatter='minimal'
+        ).attach_handler_formatter(     # coverage
+            'console', 'minimal'
         )
+        lcd.warn(False)                 # (restore)
         lcd.add_logger(
             'default',
             level='DEBUG',
