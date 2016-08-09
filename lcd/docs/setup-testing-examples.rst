@@ -32,7 +32,7 @@ You can install `lcd` from PyPI (the Python Package Index) using ``pip``::
 (Here and elsewhere, ``$`` at the beginning of a line indicates your command
 prompt, whatever that may be.) Alternately, you can download a ``.zip`` or
 ``.tar.gz`` archive of the repository from github, uncompress it to a fresh
-directory, and run::
+directory, ``cd`` to that directory, and run::
 
     $ ./setup.py install
 
@@ -77,19 +77,19 @@ for Py2 shortcomings), and supports a few Python-3-only logging features.
 Running examples
 ++++++++++++++++++
 
-All examples require `docopt`, and two examples (``mproc_deco*.py``) require
-the `deco` package. Examples are *not* installed; they're in the ``examples/``
-subdirectory of the repository/archive.
+Examples are *not* installed; they're in the ``examples/`` subdirectory of the
+repository/archive. As mentioned, two examples (``mproc_deco*.py``) require the
+`deco` package.
 
 You can run all the tests and examples before installing `lcd` by running the
 script ``run_all.py`` in the repository directory:
 
     ``$ ./run_all.py``
 
-Two examples use the ``add_email_handler`` method to send emails. **In order to
-run these without errors, you must first edit the file**
-``examples/_smtp_credentials.py`` **to contain a username, password and SMTP
-server that work.**
+Two examples use the ``add_email_handler`` method to send emails. *In order to
+run these without errors, you must first edit the file*
+``examples/_smtp_credentials.py`` *to contain a valid username, password and
+SMTP server.*
 
 When run without locking, the multiprocessing examples will eventually
 misbehave -- NUL bytes will appear in the logged output, and messages logged by
@@ -103,7 +103,7 @@ when these examples are run individually than when they're run via
 Coverage from tests + examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A few passages of Python-version-specific code keep `lcd` shy of 100% coverage.
+A few passages of Python-version-specific code keep `lcd` shy of 100% coverage:
 
 +--------------------------------+--------+-------+
 || Module                        || Py 3  || Py 2 |

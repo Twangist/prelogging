@@ -3,21 +3,86 @@
 Overview
 ===============
 
-Python's `logging` module provides a lot of functionality, exposed by an API
-which can seem awkward, complex or confusing. Once a program has configured
-logging as desired, use of loggers is generally straightforward. But setting up
-logging in a desired way often presents the major hurdle. `lcd` (for
+.. todo:: this section! (in progress)
+
+Logging is an important part of a program's internal operations, an essential
+tool for development, debugging and maintenance. It allows a program to
+record its successive states, and to report the context in which any
+anomalies, unexpected situations or errors occur. Messages can be logged to
+multiple destinations, and can be filtered by their severity and other,
+user-defined criteria. The logging facility is a very sophisticated version
+of using the `print` statement for debugging.
+
+Python's `logging` package is a very capable library, albeit an imperfect one.
+The purpose of Python's `logging` package is to provide *loggers* — objects that
+conditionally write or transmit structured text *messages* to zero or more
+destinations.
+
+In general, a program will *configure* logging once, at startup, by specifying
+message formats, destinations, loggers, and containment relations between
+those things. Once a program has set up logging as desired, use of loggers
+is generally straightforward. But setting up logging in a desired way often
+presents the major hurdle.
+
+There are two ways to configure logging: statically, with text or a dictionary;
+or dynamically, with code that uses the `logging` API.
+
+Configuring logging with code is arguably less flexible than doing so statically.
+(statically, every logging entity is identified by name)
+Benefits of dynamic configuration:
+
+    * you can take advantage of the reasonable defaults provided by the methods
+      of the `logging` API. When configuring logging statically, various fussy
+      defaults must be specified explicitly;
+
+    * you can configure the entities of logging (formatters, optional filters,
+      handlers, loggers) one by one, in order, starting with those that don't
+      depend on other entities, and proceeding to those that use entities
+      already defined.
+
+`lcd` occupies a middle ground: it provides a clean, consistent programmatic
+interface for incrementally constructing a dict to configure logging with
+statically.
+
+`logging` shortcomings
+    * API is at once complex and limited
+    * with static config, no warnings or error checking until dictConfig (or fileConfig) called
+    * awkward to extend
+    * entire library written in thoroughgoing camelCase (inconsistent, at that)
+
+
+`lcd` (for
 **l**\ogging **c**\onfig **d**\ict) provides a streamlined API for setting up
 logging, making it easy to use "advanced" features such as rotating log files.
 `lcd` also supplies missing functionality: the package provides
 multiprocessing-safe logging to the console, to files and to rotating files.
 
-
 It's not our purpose to rehash or repeat the extensive (and generally quite
 good) logging documentation; in fact, we presuppose that you're familiar with
-basic concepts and and standard use cases. At the end of this section we provide
-:ref:`links_to_sections_of_logging_docs`. Nevertheless, it will be helpful to
-review a few topics.
+basic concepts and standard use cases. At the end of this section we
+provide :ref:`links_to_sections_of_logging_docs`.
+Nevertheless, it will be helpful to review a few topics.
+
+
+
+Static used by Django, for example.
+
+`lcd` (for
+**l**\ogging **c**\onfig **d**\ict) provides a streamlined API for setting up
+logging statically. `lcd` makes it easy to use "advanced" features such as
+rotating log files.
+
+error-checking and warnings ! :)
+
+inconsistent camelCase <-- fixups
+
+
+`lcd` also supplies missing functionality: it provides
+multiprocessing-safe logging to the console, to files and to rotating files.
+
+
+`lcd`
+
 
 
 Logging a message
@@ -46,10 +111,15 @@ sufficient just to add a handler or two and attach them to the root.
         ``logging.error("Something went wrong")``
 
     and something plausible will happen (the string will be written to
-    ``stderr``). This statement is a shorthand which implicitly uses the "root
+    ``stderr``). This statement is a shorthand that implicitly uses the "root
     logger", which the `logging` module always creates. By default, the root
     logger writes messages to ``stderr``. All loggers are identified uniquely
     by name; the root logger's name is  ``''``.
+
+    .. todo:: The parent-child relationship among/between loggers, induced by their names;
+        There's a kind of "inheritance", though in the style of event handlers not OOP.
+        Complexity: by default, a logger delegates to its parent, but it also has a separate
+        'propagate' setting governing blah-blah
 
     The `logging.basicConfig() <https://docs.python.org/3/library/logging.html#logging.basicConfig>`_
     function lets you configure the root logger, anyway to a point, using

@@ -38,6 +38,8 @@ Topics and Recipes
 
 * :ref:`using-lcd-with-django`
 
+* :ref:`using-warnings`
+
 |br|
 
 * Rotating file handlers
@@ -359,8 +361,8 @@ subdirectory of the current directory::
 
 
     lcd_ex = LCDEx(log_path='_log/',
-                                 root_level='DEBUG',
-                                 attach_handlers_to_root=True)
+                   root_level='DEBUG',
+                   attach_handlers_to_root=True)
 
 Set up the root logger with a ``stderr`` console handler and a file handler,
 at their respective default loglevels ``'WARNING'`` and ``'NOTSET'``::
@@ -387,13 +389,11 @@ Note the use of parameters ``attach_to_root`` and ``propagate``:
         lcd_ex.add_file_handler('extra_fh',
                                 filename='extra.log',
                                 formatter='logger_level_msg',
-                                attach_to_root=False
-                               )
+                                attach_to_root=False)
         lcd_ex.add_logger('extra',
                           handlers=['extra_fh'],
                           level='DEBUG',
-                          propagate=False
-                         )
+                          propagate=False)
 
 Finally, call ``config()`` to create actual objects of `logging` types —
 ``logging.Formatter``, ``logging.Logger``, etc. ::
@@ -547,6 +547,21 @@ Using `lcd` with `Django`
         ``disable_existing_loggers`` to ``False`` and redefine some or all of
         the default loggers; or you can set ``LOGGING_CONFIG`` to ``None`` and
         handle logging config yourself.
+
+
+--------------------------------------------------
+
+.. _using-warnings:
+
+Using warnings: the ``LCD.warn()`` method
+-------------------------------------------
+
+<<<<< TODO >>>>>
+
+.. todo::
+    JUST A CLASS ATTR LCD.warn ?
+    Why all the fuss with the .warn() method?
+
 
 
 --------------------------------------------------

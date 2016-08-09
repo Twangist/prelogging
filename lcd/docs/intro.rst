@@ -6,18 +6,6 @@ Introduction: `lcd` does... *what*?
     Introduction to `lcd`: what  `lcd` is and does,
     blah blah
 
-    META-TODO -- CHANGE NAME OF PACKAGE?
-
-    "lcd" -- yeah?
-    Why not
-
-        * config_logging
-        * build_lcd
-        * ...
-
-    so that we don't have to explain / answer this question
-
-
 .. _lcd-all-classes:
 
 .. figure:: lcd_ALL_classes.png
@@ -32,4 +20,7 @@ Introduction: `lcd` does... *what*?
     +-----------------------+-----------------------+
     | .. image:: arruse.png | uses                  |
     +-----------------------+-----------------------+
+
+.. todo::
+    Redo/update this diagram
 
