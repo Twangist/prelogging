@@ -104,7 +104,8 @@ class LCD(dict):
     def __init__(self,      # *,
                  root_level='WARNING',              # == logging default
                  disable_existing_loggers=None,     # logging default: True
-                 warn=False
+                 warn=False,
+                 strict=False
                 ):
         """
         :param root_level: a ``str`` name of a loglevel.
@@ -126,8 +127,10 @@ class LCD(dict):
 
                 This value is saved; it can be read and written with the @warn
                 property.
+        :param strict:          <=============== TODO TODO TODO
         """
         # TODO: still true that we "warn" when "replacing a formatter"?
+        # Todo: doc :param strict" (above)
 
         assert root_level in self._level_names
         super(LCD, self).__init__()
@@ -154,6 +157,7 @@ class LCD(dict):
             self['disable_existing_loggers'] = bool(disable_existing_loggers)
 
         self._warn = bool(warn)
+        self._strict = bool(strict)
 
     @property
     def warn(self):
@@ -307,6 +311,12 @@ class LCD(dict):
             handler_dict['class'] = handler_dict.pop('class_')
 
         if formatter:
+            self._if_strict_check_defined(
+                defined=self.formatters,
+                attach_to=handler_name,
+                attach_to_kind='handler',
+                attachees=[formatter],
+                attachee_kind='formatter')
             handler_dict['formatter'] = formatter
 
         filters = self._to_seq(filters)
@@ -318,6 +328,12 @@ class LCD(dict):
             attachee_kind='filter'
         )
         if filters:
+            self._if_strict_check_defined(
+                defined=self.filters,
+                attach_to=handler_name,
+                attach_to_kind='handler',
+                attachees=filters,
+                attachee_kind='filter')
             handler_dict['filters'] = filters
 
         self.handlers[handler_name] = handler_dict  #.copy()    <---- TODO?
@@ -399,6 +415,12 @@ class LCD(dict):
         :return: ``self``
         """
         self._check_attach_formatter(handler_name, formatter_name)
+        self._if_strict_check_defined(
+            defined=self.formatters,
+            attach_to=handler_name,
+            attach_to_kind='handler',
+            attachees=[formatter_name],
+            attachee_kind='formatter')
 
         self.handlers[handler_name]['formatter'] = formatter_name
         return self
@@ -427,6 +449,12 @@ class LCD(dict):
         )
         if not filter_names:
             return self
+        self._if_strict_check_defined(
+            defined=self.filters,
+            attach_to=handler_name,
+            attach_to_kind='handler',
+            attachees=filter_names,
+            attachee_kind='filter')
         handler_filters = handler_dict.setdefault('filters', [])
         handler_filters.extend(filter_names)
         return self
@@ -458,6 +486,12 @@ class LCD(dict):
             attachees=handler_names,
             attachee_kind='handler'
         )
+        self._if_strict_check_defined(
+            defined=self.handlers,
+            attach_to='',
+            attach_to_kind='handler',
+            attachees=handler_names,
+            attachee_kind='handler')
         root_handlers.extend(handler_names)
         return self
 
@@ -481,6 +515,12 @@ class LCD(dict):
         )
         if not filter_names:
             return self
+        self._if_strict_check_defined(
+            defined=self.filters,
+            attach_to='',
+            attach_to_kind='handler',
+            attachees=filter_names,
+            attachee_kind='filter')
 
         root_filters = self.root.setdefault('filters', [])
         root_filters.extend(filter_names)
@@ -530,6 +570,12 @@ class LCD(dict):
             attachee_kind='handler'
         )
         if handlers:
+            self._if_strict_check_defined(
+                defined=self.handlers,
+                attach_to=logger_name,
+                attach_to_kind='logger',
+                attachees=handlers,
+                attachee_kind='handler')
             d['handlers'] = handlers
 
         if propagate is not None:
@@ -545,6 +591,12 @@ class LCD(dict):
             attachee_kind='filter'
         )
         if filters:
+            self._if_strict_check_defined(
+                defined=self.filters,
+                attach_to=logger_name,
+                attach_to_kind='logger',
+                attachees=filters,
+                attachee_kind='filter')
             d['filters'] = filters
 
         self.loggers[logger_name] = d
@@ -572,6 +624,12 @@ class LCD(dict):
             attachees=handler_names,
             attachee_kind='handler'
         )
+        self._if_strict_check_defined(
+            defined=self.handlers,
+            attach_to=logger_name,
+            attach_to_kind='logger',
+            attachees=handler_names,
+            attachee_kind='handler')
         logger_handlers.extend(handler_names)
         return self
 
@@ -600,6 +658,12 @@ class LCD(dict):
         )
         if not filter_names:
             return self
+        self._if_strict_check_defined(
+            defined=self.filters,
+            attach_to=logger_name,
+            attach_to_kind='logger',
+            attachees=filter_names,
+            attachee_kind='filter')
 
         logger_filters = logger_dict.setdefault('filters', [])
         logger_filters.extend(filter_names)
@@ -692,7 +756,7 @@ class LCD(dict):
             hdict = handlers_[hname]    # type: dict
             # ensure any/all formatters on hname exists in formatters_
             hform_name = hdict.get('formatter', None)
-            if hform_name is not None and hform_name not in formatters_:
+            if hform_name not in formatters_:
                 problems.append(
                     Problem('handler', hname, 'formatter', hform_name)
                 )
@@ -890,6 +954,33 @@ class LCD(dict):
             )
 
         return cleaned2
+
+    def _if_strict_check_defined(self,
+            defined=None,
+            attach_to=None,
+            attach_to_kind=None,
+            attachees=None,
+            attachee_kind=None):
+        if not self._strict:
+            return
+        defined = defined or []
+
+        undefined = []
+        for item in attachees:
+            if item not in defined:
+                undefined.append(item)
+        if undefined:
+            srcfile, lineno = self._get_caller_srcfile_lineno()
+            undefined_str = str(undefined)[1:-1]
+            errmsg = (
+                "Error (%s, line %d):"
+                " attaching undefined %s%s (%s) to %s '%s'."
+                % (srcfile, lineno,
+                   attachee_kind, ('s' if len(undefined) > 1 else ''),
+                   undefined_str,
+                   attach_to_kind, attach_to)
+            )
+            raise KeyError(errmsg)
 
 
 def print_err(msg, **kwargs):
