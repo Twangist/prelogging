@@ -66,10 +66,6 @@ Once you've built a ``LCD`` meeting your requirements, you
 configure logging by calling the object's ``config`` method, which simply
 passes itself (a dict) to
 `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
-
-**Note**: The `lcd` class :ref:`LCDBuilderABC` defines an alternate,
-higher-level mini-framework for configuring logging, which calls ``config``
-for you.
 """
 
 
@@ -124,6 +120,10 @@ class LCD(dict):
                   filter, etc.)
                 * replacing a formatter
 
+                When true, the :ref:`config<config-method>` method will call
+                the :ref:`check<check-method>` method before finally calling
+                ``logging.config.dictConfig``.
+
                 This value is saved; it can be read and written with the @warn
                 property.
         """
@@ -157,15 +157,15 @@ class LCD(dict):
 
     @property
     def warn(self):
-        """Read/write boolean property, set by __init__ to its ``warn``
-        parameter.
+        """Read/write boolean property, set by ``__init__`` from
+        its ``warn`` parameter.
         """
         return self._warn
 
     @warn.setter
     def warn(self, warn_val):
-        """Read/write boolean property, set by ``__init__`` to its ``warn``
-        parameter.
+        """Read/write boolean property, set by ``__init__`` from
+        its ``warn`` parameter.
         """
         self._warn = bool(warn_val)
 
@@ -626,7 +626,12 @@ class LCD(dict):
 
     def config(self,    # *,
                disable_existing_loggers=None):
-        """Call ``logging.config.dictConfig()`` with the dict we've built.
+        """
+        .. _config-method:
+
+        Call ``logging.config.dictConfig()`` with the dict we've built.
+        If ``self._warn`` is true (default: false), first call
+        ``check()`` to verify consistency.
 
         :param disable_existing_loggers: Last chance to change this setting.
 
@@ -660,13 +665,16 @@ class LCD(dict):
     # -------------------------------------------------------
 
     def check(self, verbose=True):
-        """Check for consistency: names used to refer to entities (formatters,
+        """
+        .. _check-method:
+
+        Check for consistency: names used to refer to entities (formatters,
         handlers, filters) must exist (must actually have been added).
 
         :param verbose: If true, write details of all problems to ``stderr``.
         :return: ``self`` if self is consistent.
 
-        Raises ``KeyError`` (?) if ``self`` is not consistent.
+        Raises ``KeyError`` if ``self`` is not consistent.
         """
         from collections import namedtuple
         Problem = namedtuple("Problem",
