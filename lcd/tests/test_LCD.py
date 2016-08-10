@@ -125,7 +125,7 @@ class TestLCD(TestCase):
 
     def test_add_logger_one_handler(self):
 
-        lcd = LCD(root_level='DEBUG', warn=True)
+        lcd = LCD(root_level='DEBUG')
         lcd.add_formatter(
             'minimal',
             format='%(message)s'
@@ -137,7 +137,7 @@ class TestLCD(TestCase):
         ).attach_handler_formatter(     # coverage
             'console', 'minimal'
         )
-        lcd.warn = False
+        lcd.warnings = 0
         lcd.add_logger(
             'default',
             level='DEBUG',
@@ -429,24 +429,24 @@ class TestLCD_NoWarnings(TestCase):
             return True
 
     def setUp(self):
-        "Subclasses set .warn property"
+        "Subclass(es) may change .warning property"
 
         # Swap stderr, save existing:
         self._stderr = sys.stderr
         self.sio_err = io.StringIO()    # new "stderr"
         sys.stderr = self.sio_err
-        # create an LCD
-        self.lcd = LCD()
+        # create an LCD that doesn't issue any warnings
+        self.lcd = LCD(warnings=0)      # 0 == LCD.WARNING.NONE
 
     def tearDown(self):
-        "Subclasses restore .warn property"
+        "."
         # restore
         sys.stderr = self._stderr
 
     def _verify_errmsg(self, ends=''):
         " utility method"
         errmsg = self.sio_err.getvalue()
-        if self.lcd.warn:
+        if self.lcd.warnings:
             self.assertEqual(
                 errmsg.startswith("Warning") and errmsg.endswith(ends),
                 True
@@ -596,7 +596,7 @@ class TestLCD_NoWarnings(TestCase):
         errmsg = self.sio_err.getvalue()
         # print(errmsg)           # TODO COMMENT OUT
 
-        if self.lcd.warn:
+        if self.lcd.warnings:
             errmsg1, errmsg2 = errmsg.splitlines()
             self.assertEqual(
                 (errmsg1.startswith("Warning (") and
@@ -788,6 +788,74 @@ class TestLCD_NoWarnings(TestCase):
             ['handler1']
         )
 
+# | <<<<<<<<<<<<<<<<<<<<<<<<<<< RESUME >>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+    # TODO: For UNDEFINED, there are 10 scenarios to test:
+    """
+    add_handler
+        formatter
+        filters
+
+    add_logger
+        filters
+        handlers
+
+    attach_handler_formatter
+    attach_handler_filters
+
+    attach_logger_filters
+    attach_logger_handlers
+
+    attach_root_filters
+    attach_root_handlers
+    """
+    def test_strict_add_handler_formatter(self):
+        "with formatter undefined"
+        pass    # TODO
+
+    def test_strict_add_handler_filters(self):
+        "with some filter undefined"
+        pass    # TODO
+
+
+
+    def test_strict_add_logger_filters(self):
+        "with some filter undefined"
+        pass    # TODO
+
+    def test_strict_add_logger_handlers(self):
+        "with some handler undefined"
+        pass    # TODO
+
+
+
+    def test_strict_attach_handler_formatter(self):
+        "with formatter undefined"
+        pass    # TODO
+
+    def test_strict_attach_handler_filters(self):
+        "with one or more filters undefined"
+        pass    # TODO
+
+
+
+    def test_strict_attach_logger_filters(self):
+        "with one or more filters undefined"
+        pass    # TODO
+
+    def test_strict_attach_logger_handlers(self):
+        "with one or more handlers undefined"
+        pass    # TODO
+
+
+    def test_strict_attach_root_filters(self):
+        "with one or more filters undefined"
+        pass    # TODO
+
+    def test_strict_attach_root_handlers(self):
+        "with one or more handlers undefined"
+        pass    # TODO
+
 
 # class TestLCD_Warnings(_TestLCD_Warn):
 class TestLCD_Warnings(TestLCD_NoWarnings):
@@ -795,5 +863,6 @@ class TestLCD_Warnings(TestLCD_NoWarnings):
     def setUp(self):
         # parent class creates self.lcd = LCD()
         super(TestLCD_Warnings, self).setUp()
-        # turn on warning
-        self.lcd.warn = True
+        # change warnings to ALL
+        self.lcd.warnings = LCD.WARNING.ALL
+

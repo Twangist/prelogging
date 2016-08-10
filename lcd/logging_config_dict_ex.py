@@ -30,8 +30,8 @@ class LCDEx(LCD):
     ``__init__`` **keyword parameters**  |br|
     ``- - - - - - - - - - - - - - - - - - - - - - - - -``
 
-    In addition to the parameters ``root_level`` and
-    ``disable_existing_loggers`` recognized by :ref:`LCD`,
+    In addition to the parameters ``root_level``,
+    ``disable_existing_loggers`` and ``warnings`` recognized by :ref:`LCD`,
     the constructor of this class accepts a few more::
 
             attach_handlers_to_root (bool)
@@ -133,7 +133,8 @@ class LCDEx(LCD):
                  log_path='',
                  locking=False,
                  attach_handlers_to_root=False,
-                 disable_existing_loggers=False):  # logging default value is True
+                 disable_existing_loggers=False,  # logging default value is True
+                 warnings=LCD.WARNING.DEFAULT):
         """
         :param root_level: one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``,
             ``'ERROR'``, ``'CRITICAL'``, ``'NOTSET'``
@@ -154,13 +155,15 @@ class LCDEx(LCD):
             that separate packages can use this class to create their own
             ("private") loggers before or after their clients do their own
             logging configuration. The `logging` default value is ``True``.
+        :param warnings: as for ``LCD``. See :ref:`WARNING<WARNING>``.
 
         See also :ref:`__init__ keyword parameters <LCDEx-init-params>`
         above, in the class's docstring.
         """
         super(LCDEx, self).__init__(
                         root_level=root_level,
-                        disable_existing_loggers=disable_existing_loggers)
+                        disable_existing_loggers=disable_existing_loggers,
+                        warnings=warnings)
         self.log_path = log_path
         self._locking = locking
         self._attach_handlers_to_root = attach_handlers_to_root

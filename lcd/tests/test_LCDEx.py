@@ -195,7 +195,8 @@ class TestLCDEx_check(TestCase):
 
         lcd_ex = LCDEx(
             attach_handlers_to_root=True,
-            root_level='DEBUG')
+            root_level='DEBUG',
+            warnings=0)
 
         #  NOW SCREW IT UP:
         lcd_ex.attach_root_filters('not-a-filter-1', 'not-a-filter-2')
@@ -229,7 +230,7 @@ class TestLCDEx_check(TestCase):
 
     def test_check_bad2(self):
 
-        lcd_ex = LCDEx()
+        lcd_ex = LCDEx(warnings=0)
         # handler w/bad formatter
         lcd_ex.add_stdout_handler('con', formatter='no-such-formatter')
 
@@ -264,8 +265,7 @@ class TestLCDEx_check(TestCase):
         sys.stderr = _stderr
 
     def test_check_ok(self):
-
-        lcd_ex = LCDEx()
+        lcd_ex = LCDEx(warnings=0)
         self.assertEqual(lcd_ex, lcd_ex.check())
 
 

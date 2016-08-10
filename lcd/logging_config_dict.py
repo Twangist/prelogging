@@ -101,11 +101,45 @@ class LCD(dict):
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
 
+    class WARNING():
+        """
+        .. _WARNINGS:
+
+        "Bit" values combined into the _warnings attribute of an LCD.
+        Each determines whether warnings are written to stderr for a particular
+        questionable practice:
+
+        +---------------------+--------+------------------------------------------+
+        || Warning "constant" || Value || Issue warning when...                   |
+        +=====================+========+==========================================+
+        || REATTACH           ||   1   || attaching a {formatter/filter/handler}  |
+        ||                    ||       || to a {handler/logger} that it's already |
+        ||                    ||       || attached to                             |
+        || REDEFINE           ||   2   || overwriting an existing definition of   |
+        ||                    ||       || an entity (formatter, filter, etc.)     |
+        || REPLACE_FORMATTER  ||   4   || changing a handler's formatter          |
+        || UNDEFINED          ||   8   || attaching a {formatter/filter/handler}  |
+        ||                    ||       || that hasn't yet been added (defined)    |
+        +---------------------+--------+------------------------------------------+
+
+        The default value is
+
+            ``DEFAULT = REATTACH + REDEFINE + UNDEFINED``.
+        """
+        NONE = 0
+        REATTACH            = 0b0001
+        REDEFINE            = 0b0010
+        REPLACE_FORMATTER   = 0b0100
+        UNDEFINED           = 0b1000
+
+        DEFAULT = REATTACH + REDEFINE + UNDEFINED
+        ALL = REATTACH + REDEFINE + REPLACE_FORMATTER + UNDEFINED
+
+
     def __init__(self,      # *,
                  root_level='WARNING',              # == logging default
                  disable_existing_loggers=None,     # logging default: True
-                 warn=False,
-                 strict=False
+                 warnings=WARNING.DEFAULT
                 ):
         """
         :param root_level: a ``str`` name of a loglevel.
@@ -113,24 +147,13 @@ class LCD(dict):
             the ``logging.config.dictConfig()`` keyword parameter of the
             same name. Using the default value ``None`` causes the `logging`
             module's default value ``True`` to be used.
-        :param warn: When true, an LCD will write warnings to stderr when
+        :param warnings: A bit field, a combination of values defined in
+            the inner class :ref:`WARNING<WARNING>`. The default value is
+            ``REATTACH + REDEFINE + UNDEFINED``.
 
-                * attaching a {formatter/filter/handler} to a {handler/logger}
-                  that it's already attached to;
-                * overwriting an existing definition of an entity (formatter,
-                  filter, etc.)
-                * replacing a formatter
-
-                When true, the :ref:`config<config-method>` method will call
-                the :ref:`check<check-method>` method before finally calling
-                ``logging.config.dictConfig``.
-
-                This value is saved; it can be read and written with the @warn
-                property.
-        :param strict:          <=============== TODO TODO TODO
+            This value is saved; it can be read and written with the @warnings
+            property.
         """
-        # TODO: still true that we "warn" when "replacing a formatter"?
-        # Todo: doc :param strict" (above)
 
         assert root_level in self._level_names
         super(LCD, self).__init__()
@@ -156,22 +179,37 @@ class LCD(dict):
         if disable_existing_loggers is not None:
             self['disable_existing_loggers'] = bool(disable_existing_loggers)
 
-        self._warn = bool(warn)
-        self._strict = bool(strict)
+        self._warnings = warnings
 
     @property
-    def warn(self):
-        """Read/write boolean property, set by ``__init__`` from
-        its ``warn`` parameter.
+    def warnings(self):
+        """Read/write property (bits, packed flags), set by ``__init__`` from
+        its ``warnings`` parameter.
         """
-        return self._warn
+        return self._warnings
 
-    @warn.setter
-    def warn(self, warn_val):
-        """Read/write boolean property, set by ``__init__`` from
-        its ``warn`` parameter.
+    @warnings.setter
+    def warnings(self, warnings_val):
+        """Read/write property (bits, packed flags), set by ``__init__`` from
+        its ``warnings`` parameter.
         """
-        self._warn = bool(warn_val)
+        self._warnings = warnings_val
+
+    @property
+    def _warn_reattach(self):
+        return self._warnings & self.WARNING.REATTACH
+
+    @property
+    def _warn_redefine(self):
+        return self._warnings & self.WARNING.REDEFINE
+
+    @property
+    def _warn_replace_formatter(self):
+        return self._warnings & self.WARNING.REPLACE_FORMATTER
+
+    @property
+    def _warn_undefined(self):
+        return self._warnings & self.WARNING.UNDEFINED
 
     # notational conveniences
     @property
@@ -311,7 +349,7 @@ class LCD(dict):
             handler_dict['class'] = handler_dict.pop('class_')
 
         if formatter:
-            self._if_strict_check_defined(
+            self._check_defined(
                 defined=self.formatters,
                 attach_to=handler_name,
                 attach_to_kind='handler',
@@ -328,7 +366,7 @@ class LCD(dict):
             attachee_kind='filter'
         )
         if filters:
-            self._if_strict_check_defined(
+            self._check_defined(
                 defined=self.filters,
                 attach_to=handler_name,
                 attach_to_kind='handler',
@@ -415,7 +453,7 @@ class LCD(dict):
         :return: ``self``
         """
         self._check_attach_formatter(handler_name, formatter_name)
-        self._if_strict_check_defined(
+        self._check_defined(
             defined=self.formatters,
             attach_to=handler_name,
             attach_to_kind='handler',
@@ -449,7 +487,7 @@ class LCD(dict):
         )
         if not filter_names:
             return self
-        self._if_strict_check_defined(
+        self._check_defined(
             defined=self.filters,
             attach_to=handler_name,
             attach_to_kind='handler',
@@ -486,7 +524,7 @@ class LCD(dict):
             attachees=handler_names,
             attachee_kind='handler'
         )
-        self._if_strict_check_defined(
+        self._check_defined(
             defined=self.handlers,
             attach_to='',
             attach_to_kind='handler',
@@ -515,7 +553,7 @@ class LCD(dict):
         )
         if not filter_names:
             return self
-        self._if_strict_check_defined(
+        self._check_defined(
             defined=self.filters,
             attach_to='',
             attach_to_kind='handler',
@@ -570,7 +608,7 @@ class LCD(dict):
             attachee_kind='handler'
         )
         if handlers:
-            self._if_strict_check_defined(
+            self._check_defined(
                 defined=self.handlers,
                 attach_to=logger_name,
                 attach_to_kind='logger',
@@ -591,7 +629,7 @@ class LCD(dict):
             attachee_kind='filter'
         )
         if filters:
-            self._if_strict_check_defined(
+            self._check_defined(
                 defined=self.filters,
                 attach_to=logger_name,
                 attach_to_kind='logger',
@@ -624,7 +662,7 @@ class LCD(dict):
             attachees=handler_names,
             attachee_kind='handler'
         )
-        self._if_strict_check_defined(
+        self._check_defined(
             defined=self.handlers,
             attach_to=logger_name,
             attach_to_kind='logger',
@@ -658,7 +696,7 @@ class LCD(dict):
         )
         if not filter_names:
             return self
-        self._if_strict_check_defined(
+        self._check_defined(
             defined=self.filters,
             attach_to=logger_name,
             attach_to_kind='logger',
@@ -694,8 +732,7 @@ class LCD(dict):
         .. _config-method:
 
         Call ``logging.config.dictConfig()`` with the dict we've built.
-        If ``self._warn`` is true (default: false), first call
-        ``check()`` to verify consistency.
+        If ``self._warnings`` is 0, first call ``check()`` to verify consistency.
 
         :param disable_existing_loggers: Last chance to change this setting.
 
@@ -707,8 +744,8 @@ class LCD(dict):
         """
         if disable_existing_loggers is not None:
             self['disable_existing_loggers'] = bool(disable_existing_loggers)
-        if self._warn:      # 0.2.7b13
-            self.check()    # 0.2.7b13
+        if self._warnings == 0:     # 0.2.7b13
+            self.check()            # 0.2.7b13
         logging.config.dictConfig(dict(self))
 
     def dump(self):                                     # pragma: no cover
@@ -863,7 +900,7 @@ class LCD(dict):
         :param key: name of formatter, handler, etc. Will be a key into subdict.
         :param kind: "formatter", "handler", etc. for use in warning message
         """
-        if not self._warn:
+        if not self._warn_redefine:
             return
         srcfile, lineno = self._get_caller_srcfile_lineno()
         if key in subdict:
@@ -873,7 +910,7 @@ class LCD(dict):
             )
 
     def _check_attach_formatter(self, handler_name, formatter_name):
-        if not self._warn:
+        if not self._warn_replace_formatter:
             return
         # If handler doesn't have a formatter yet, ok
         existing_fname = self.handlers[handler_name].get('formatter', None)
@@ -920,7 +957,7 @@ class LCD(dict):
             else:
                 dups.append(name)
         # Warn if dups not empty
-        if self._warn and dups:
+        if self._warn_reattach and dups:
             srcfile, lineno = self._get_caller_srcfile_lineno()
             dups_str = str(dups)[1:-1]
             print_err(
@@ -941,7 +978,7 @@ class LCD(dict):
             else:
                 reattached.append(name)
         # Warn if reattached not empty
-        if self._warn and reattached:
+        if self._warn_reattach and reattached:
             srcfile, lineno = self._get_caller_srcfile_lineno()
             reattached_str = str(reattached)[1:-1]
             print_err(
@@ -955,13 +992,20 @@ class LCD(dict):
 
         return cleaned2
 
-    def _if_strict_check_defined(self,
-            defined=None,
-            attach_to=None,
-            attach_to_kind=None,
-            attachees=None,
-            attachee_kind=None):
-        if not self._strict:
+    def _check_defined(self,
+                       defined=None,
+                       attach_to=None,
+                       attach_to_kind=None,
+                       attachees=None,
+                       attachee_kind=None):
+        """
+        :param defined:
+        :param attach_to:
+        :param attach_to_kind:
+        :param attachees:
+        :param attachee_kind:
+        """
+        if not self._warn_undefined:
             return
         defined = defined or []
 
@@ -973,15 +1017,15 @@ class LCD(dict):
             srcfile, lineno = self._get_caller_srcfile_lineno()
             undefined_str = str(undefined)[1:-1]
             errmsg = (
-                "Error (%s, line %d):"
+                "Warning (%s, line %d):"
                 " attaching undefined %s%s (%s) to %s '%s'."
                 % (srcfile, lineno,
                    attachee_kind, ('s' if len(undefined) > 1 else ''),
                    undefined_str,
                    attach_to_kind, attach_to)
             )
-            raise KeyError(errmsg)
-
+            # raise KeyError(errmsg)
+            print_err(errmsg)
 
 def print_err(msg, **kwargs):
     import sys
