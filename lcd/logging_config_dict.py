@@ -732,7 +732,8 @@ class LCD(dict):
         .. _config-method:
 
         Call ``logging.config.dictConfig()`` with the dict we've built.
-        If ``self._warnings`` is 0, first call ``check()`` to verify consistency.
+        If ``self._warn_undefined`` is false, first call ``check()`` to verify
+        consistency (that everything referred to exists).
 
         :param disable_existing_loggers: Last chance to change this setting.
 
@@ -744,8 +745,8 @@ class LCD(dict):
         """
         if disable_existing_loggers is not None:
             self['disable_existing_loggers'] = bool(disable_existing_loggers)
-        if self._warnings == 0:     # 0.2.7b13
-            self.check()            # 0.2.7b13
+        if not self._warn_undefined:    # 0.2.7b13
+            self.check()                # 0.2.7b13
         logging.config.dictConfig(dict(self))
 
     def dump(self):                                     # pragma: no cover
@@ -772,11 +773,17 @@ class LCD(dict):
         Check for consistency: names used to refer to entities (formatters,
         handlers, filters) must exist (must actually have been added).
 
+        Presently, this method doesn't check for duplicate attachments
+        of handlers (or filters).
+
         :param verbose: If true, write details of all problems to ``stderr``.
         :return: ``self`` if self is consistent.
 
         Raises ``KeyError`` if ``self`` is not consistent.
         """
+        # TODO maybe: Presently, this method doesn't check for duplicate
+        #  |          attachments of handlers or filters
+
         from collections import namedtuple
         Problem = namedtuple("Problem",
                              "owner_kind, owner_name, owned_kind, bad_name")
