@@ -251,16 +251,14 @@ precepts, you must create a medium-sized ``dict`` containing several nested
 a thicket of curly braces, quotes and colons, which you finally pass to
 ``dictConfig()``.
 
-`lcd` defines two classes, ``LCD`` and ``LCDEx``,
-which represent logging configuration dictionaries — *logging config dicts*,
-for short:
-
-.. figure:: lcd_dict_classes.png
+`lcd` defines two classes, a ``dict`` subclass ``LCD``, and `its` subclass
+``LCDEx``, which represent logging configuration dictionaries — *logging config
+dicts*, for short.
 
 You use the methods of these classes to add specifications of named
 ``Formatter``\s, ``Handler``\s, ``Logger``\s, and optional ``Filter``\s. Once
-you've done so, calling the ``config()`` method of a ``LCD``
-configures logging by passing the object (itself, as a ``dict``) to
+you've done so, calling the ``config()`` method of a ``LCD`` configures logging
+by passing the object (itself, as a ``dict``) to
 ``logging.config.dictConfig()``. This call creates all the objects and linkages
 specified by the underlying dictionary.
 

@@ -116,13 +116,16 @@ class LCD(dict):
             the ``logging.config.dictConfig()`` keyword parameter of the
             same name. Using the default value ``None`` causes the `logging`
             module's default value ``True`` to be used.
-        :param warn: When true, an LCD will write warnings when
+        :param warn: When true, an LCD will write warnings to stderr when
 
                 * attaching a {formatter/filter/handler} to a {handler/logger}
                   that it's already attached to;
                 * overwriting an existing definition of an entity (formatter,
                   filter, etc.)
                 * replacing a formatter
+
+                This value is saved; it can be read and written with the @warn
+                property.
         """
         # TODO: still true that we "warn" when "replacing a formatter"?
 
@@ -150,32 +153,21 @@ class LCD(dict):
         if disable_existing_loggers is not None:
             self['disable_existing_loggers'] = bool(disable_existing_loggers)
 
-        self._warn = warn
+        self._warn = bool(warn)
 
     @property
     def warn(self):
-        """Get the bool value of ``_warn``. When true, an LCD will write
-        warnings when
-
-            * attaching a {formatter/filter/handler} to a {handler/logger}
-              that it's already attached to;
-            * overwriting an existing definition of an entity (formatter, filter,
-              etc.)
-            * replacing a formatter
-
+        """Read/write boolean property, set by __init__ to its ``warn``
+        parameter.
         """
         return self._warn
 
     @warn.setter
     def warn(self, warn_val):
-        """Set the value of ``_warn``.
-
-        :param warn_val: If not ``None``, set ``cls._warn`` to ``bool(warn_val)``.
-        type warn_val: bool or None
-        :return:
+        """Read/write boolean property, set by ``__init__`` to its ``warn``
+        parameter.
         """
         self._warn = bool(warn_val)
-        return self._warn
 
     # notational conveniences
     @property
