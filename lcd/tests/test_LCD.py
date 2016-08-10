@@ -125,8 +125,7 @@ class TestLCD(TestCase):
 
     def test_add_logger_one_handler(self):
 
-        lcd = LCD(root_level='DEBUG')
-        lcd.warn(True)                  # coverage
+        lcd = LCD(root_level='DEBUG', warn=True)
         lcd.add_formatter(
             'minimal',
             format='%(message)s'
@@ -138,7 +137,7 @@ class TestLCD(TestCase):
         ).attach_handler_formatter(     # coverage
             'console', 'minimal'
         )
-        lcd.warn(False)                 # (restore)
+        lcd.warn = False
         lcd.add_logger(
             'default',
             level='DEBUG',
@@ -423,21 +422,6 @@ class TestLCD(TestCase):
         self.assertEqual(self.test_filters_on_handler__messages, [0, 2])
 
 
-class TestLCD_Warn_proper(TestCase):
-
-    def test_warn(self):
-        w = LCD.warn()
-        self.assertEqual(w, False)
-
-        wT = LCD.warn(True)
-        self.assertEqual(wT, True)
-        self.assertEqual(LCD.warn(), True)
-
-        wF = LCD.warn(False)
-        self.assertEqual(wF, False)
-        self.assertEqual(LCD.warn(), False)
-
-
 # class _TestLCD_Warn(TestCase):
 class TestLCD_NoWarnings(TestCase):
     class F():
@@ -445,7 +429,7 @@ class TestLCD_NoWarnings(TestCase):
             return True
 
     def setUp(self):
-        "Subclasses set LCD.warn(...)"
+        "Subclasses set .warn property"
 
         # Swap stderr, save existing:
         self._stderr = sys.stderr
@@ -455,14 +439,14 @@ class TestLCD_NoWarnings(TestCase):
         self.lcd = LCD()
 
     def tearDown(self):
-        "Subclasses restore LCD.warn(...)"
+        "Subclasses restore .warn property"
         # restore
         sys.stderr = self._stderr
 
     def _verify_errmsg(self, ends=''):
         " utility method"
         errmsg = self.sio_err.getvalue()
-        if self.lcd.warn():
+        if self.lcd.warn:
             self.assertEqual(
                 errmsg.startswith("Warning") and errmsg.endswith(ends),
                 True
@@ -612,7 +596,7 @@ class TestLCD_NoWarnings(TestCase):
         errmsg = self.sio_err.getvalue()
         # print(errmsg)           # TODO COMMENT OUT
 
-        if self.lcd.warn():
+        if self.lcd.warn:
             errmsg1, errmsg2 = errmsg.splitlines()
             self.assertEqual(
                 (errmsg1.startswith("Warning (") and
@@ -808,7 +792,8 @@ class TestLCD_NoWarnings(TestCase):
 # class TestLCD_Warnings(_TestLCD_Warn):
 class TestLCD_Warnings(TestLCD_NoWarnings):
 
-    @classmethod
-    def setUpClass(cls):
-        LCD.warn(True)
-
+    def setUp(self):
+        # parent class creates self.lcd = LCD()
+        super(TestLCD_Warnings, self).setUp()
+        # turn on warning
+        self.lcd.warn = True

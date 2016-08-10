@@ -38,7 +38,7 @@ Topics and Recipes
 
 * :ref:`using-lcd-with-django`
 
-* :ref:`using-warnings`
+* :ref:`error- checking`
 
 |br|
 
@@ -551,17 +551,12 @@ Using `lcd` with `Django`
 
 --------------------------------------------------
 
-.. _using-warnings:
+.. _error- checking:
 
-Using warnings: the ``LCD.warn()`` method
--------------------------------------------
+Error-checking: the ``warn`` property (default: False)
+-----------------------------------------------------------
 
 <<<<< TODO >>>>>
-
-.. todo::
-    JUST A CLASS ATTR LCD.warn ?
-    Why all the fuss with the .warn() method?
-
 
 
 --------------------------------------------------

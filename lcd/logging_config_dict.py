@@ -105,32 +105,10 @@ class LCD(dict):
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
 
-    _warn = False
-
-    @classmethod
-    def warn(cls, warn_val=None):
-        """Get or set the bool value of the class attribute ``_warn``. When
-        true, ``LCD`` will write warnings when
-
-            * an entity (formatter, filter, etc.) is added that has already
-              been defined, possibly overwriting the existing definition;
-            * attaching a formatter to a handler replaces the handler's
-              existing, different formatter
-            * attaching a formatter to a handler that it's already attached to
-            * attaching a {filter/handler} to a {handler/logger} that it's
-              already attached to.
-
-        :param warn_val: If not ``None``, set ``cls._warn`` to ``bool(warn_val)``.
-        type warn_val: bool or None
-        :return: ``cls._warn`` (== ``warn_val`` if that is not ``None``)
-        """
-        if warn_val is not None:
-            cls._warn = bool(warn_val)
-        return cls._warn
-
     def __init__(self,      # *,
                  root_level='WARNING',              # == logging default
-                 disable_existing_loggers=None      # logging default: True
+                 disable_existing_loggers=None,     # logging default: True
+                 warn=False
                 ):
         """
         :param root_level: a ``str`` name of a loglevel.
@@ -138,7 +116,16 @@ class LCD(dict):
             the ``logging.config.dictConfig()`` keyword parameter of the
             same name. Using the default value ``None`` causes the `logging`
             module's default value ``True`` to be used.
+        :param warn: When true, an LCD will write warnings when
+
+                * attaching a {formatter/filter/handler} to a {handler/logger}
+                  that it's already attached to;
+                * overwriting an existing definition of an entity (formatter,
+                  filter, etc.)
+                * replacing a formatter
         """
+        # TODO: still true that we "warn" when "replacing a formatter"?
+
         assert root_level in self._level_names
         super(LCD, self).__init__()
         self['version'] = 1
@@ -162,6 +149,33 @@ class LCD(dict):
         #  with .config(disable_existing_loggers=flag)
         if disable_existing_loggers is not None:
             self['disable_existing_loggers'] = bool(disable_existing_loggers)
+
+        self._warn = warn
+
+    @property
+    def warn(self):
+        """Get the bool value of ``_warn``. When true, an LCD will write
+        warnings when
+
+            * attaching a {formatter/filter/handler} to a {handler/logger}
+              that it's already attached to;
+            * overwriting an existing definition of an entity (formatter, filter,
+              etc.)
+            * replacing a formatter
+
+        """
+        return self._warn
+
+    @warn.setter
+    def warn(self, warn_val):
+        """Set the value of ``_warn``.
+
+        :param warn_val: If not ``None``, set ``cls._warn`` to ``bool(warn_val)``.
+        type warn_val: bool or None
+        :return:
+        """
+        self._warn = bool(warn_val)
+        return self._warn
 
     # notational conveniences
     @property
@@ -632,7 +646,7 @@ class LCD(dict):
         """
         if disable_existing_loggers is not None:
             self['disable_existing_loggers'] = bool(disable_existing_loggers)
-        if self.warn():     # 0.2.7b13
+        if self._warn:      # 0.2.7b13
             self.check()    # 0.2.7b13
         logging.config.dictConfig(dict(self))
 
