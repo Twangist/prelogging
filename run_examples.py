@@ -15,6 +15,9 @@ from examples import queue_handler_listener
 from examples import SMTP_handler_just_one
 from examples import SMTP_handler_two
 from examples import dateformat
+from examples import syslog
+from examples import mproc_deco_syslog
+
 from examples.check_for_NUL import check_for_NUL
 
 
@@ -81,3 +84,5 @@ queue_handler_listener.main()
 mproc_queue_handler_logging_thread.main()
 SMTP_handler_just_one.main()
 SMTP_handler_two.main()
+syslog.main()
+mproc_deco_syslog.main()

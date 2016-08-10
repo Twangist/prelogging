@@ -29,9 +29,9 @@ def config_logging():
     # Defaults:
     #   attach_handlers_to_root=False,
     lcd_ex = LCDEx(log_path=LOG_PATH,
-                                 attach_handlers_to_root=True,
-                                 locking=True,
-                                 root_level='DEBUG')
+                   attach_handlers_to_root=True,
+                   locking=True,
+                   root_level='DEBUG')
 
     lcd_ex.add_stdout_handler('console', formatter='minimal')
 

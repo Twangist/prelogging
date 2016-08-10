@@ -7,6 +7,9 @@ from .six import add_metaclass
 
 from abc import ABCMeta, abstractmethod
 
+__all__ = [
+    'LCDBuilderABC',
+]
 
 @add_metaclass(ABCMeta)
 class LCDBuilderABC():

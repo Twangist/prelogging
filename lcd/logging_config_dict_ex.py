@@ -342,8 +342,9 @@ class LCDEx(LCD):
                          filename,
                          formatter=None,
                          mode='w',
-                         level='NOTSET',    # log everything: `logging` default
+                         encoding=None,
                          delay=False,       # `logging` default
+                         level='NOTSET',    # log everything: `logging` default
                          locking=None,
                          attach_to_root=None,
                          **kwargs):
@@ -366,9 +367,10 @@ class LCDEx(LCD):
                          class_='logging.FileHandler',
                          filename=os.path.join(self.log_path, filename),
                          mode=mode,
+                         encoding=encoding,
+                         delay=delay,
                          level=level,
                          formatter=formatter,
-                         delay=delay,
                          attach_to_root=attach_to_root,
                          **kwargs)
         if locking:
@@ -383,8 +385,9 @@ class LCDEx(LCD):
                          backup_count=0,    # logging.handlers default
                          formatter=None,
                          mode='a',
-                         level='NOTSET',
+                         encoding=None,
                          delay=False,       # `logging` default
+                         level='NOTSET',
                          locking=None,
                          attach_to_root=None,
                          **kwargs):
@@ -406,9 +409,10 @@ class LCDEx(LCD):
             it also defaults to 0.
         :param formatter: the name of the formatter that this handler will use
         :param mode: NOTE -- mode is `append`, the `logging` default
-        :param level: the loglevel of this handler
+        :param encoding:
         :param delay: if True, the log file won't be created until it's
             actually written to
+        :param level: the loglevel of this handler
         :param locking: Mandatory if multiprocessing -- things won't even work,
             logfile can't be found: FileNotFoundError: [Errno 2]...
         :param attach_to_root: If true, add the ``clone`` handler to the root
@@ -430,9 +434,10 @@ class LCDEx(LCD):
                          class_='logging.handlers.RotatingFileHandler',
                          filename=os.path.join(self.log_path, filename),
                          mode=mode,
+                         encoding=encoding,
+                         delay=delay,
                          level=level,
                          formatter=formatter,
-                         delay=delay,
                          attach_to_root=attach_to_root,
                          maxBytes=max_bytes,
                          backupCount=backup_count,
@@ -443,78 +448,59 @@ class LCDEx(LCD):
             self.handlers[handler_name]['create_lock'] = True
         return self
 
-    def add_class_filter(self, filter_name, filter_class, **filter_init_kwargs):
+    import socket
+    from logging.handlers import SysLogHandler, SYSLOG_UDP_PORT
+
+    def add_syslog_handler(self, handler_name,   # *,
+                         address=('localhost', SYSLOG_UDP_PORT),
+                         facility=SysLogHandler.LOG_USER,
+                         socktype=socket.SOCK_DGRAM,
+                         formatter=None,
+                         level='DEBUG',
+                         locking=None,
+                         attach_to_root=None,
+                         **kwargs):
         """
-        A convenience method for adding a class filter, a class that implements
-        a ``filter`` method of signature ``(logging.LogRecord) -> bool``.
+        :param handler_name: just that
 
-        This method spares you from writing:
+        See the
+        `SysLogHandler documentation <https://docs.python.org/3/library/logging.handlers.html#logging.handlers.SysLogHandler>`_
+        for details about the next three parameters:
 
-            ``self.add_filter(filter_name, ** {'()': filter_class})``
+        :param address:  as for logging.handlers.SysLogHandler
+        :param facility: "   "     "
+        :param socktype: "   "     "
 
-        (or even more elaborate code, if ``filter_class`` takes keyword
-        arguments, available in ``filter_init_kwargs``).
+        On OS X, use ``address='/var/run/syslog'`` to write to the system log
+        (``system.log``); on *nix, use ``address='/dev/log'``.
 
-        :param filter_name: name of the filter (for attaching it to handlers
-            and loggers)
-        :param filter_class: a class implementing a ``filter`` method of
-            signature ``(logging.LogRecord) -> bool``.
-        :param filter_init_kwargs: any other parameters to be passed to
-            ``add_filter``. These will be passed to the ``filter_class``
-            constructor. See the documentation for
-            ``LCD.add_filter``.
+        :param formatter: the name of the formatter that this handler will use
+        :param level: the loglevel of this handler
+        :param locking: Mandatory if multiprocessing -- things won't even work,
+            logfile can't be found: FileNotFoundError: [Errno 2]...
+        :param attach_to_root: If true, add the ``clone`` handler to the root
+            logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
+            if false, don't add clone to root.
+        :param kwargs: additional key/value pairs
         :return: ``self``
         """
-        filter_init_kwargs['()'] = filter_class
-        return self.add_filter(filter_name, **filter_init_kwargs)
+        locking = self._locking__adjust(locking)
+        attach_to_root = self._attach_to_root__adjust(attach_to_root)
 
-    def add_callable_filter(self, filter_name, filter_fn, **filter_init_kwargs):
-        """A convenience method for adding a callable filter, of signature
-        ``(logging.LogRecord, **kwargs) -> bool``. This method spares you from
-        having to write code like the following:
-
-            ``self.add_filter(filter_name, ** {'()': lambda: filter_fn})``
-
-        (or worse, if ``filter_fn`` takes keyword arguments), and, under Python
-        2, having to also write
-
-            ``filter_fn.filter = filter_fn``.
-
-        :param filter_name: name of the filter (for attaching it to handlers
-            and loggers)
-        :param filter_fn: a callable, of signature
-            ``(logging.LogRecord, **kwargs) -> bool``.
-            A record is logged iff this callable returns true.
-        :param filter_init_kwargs: Keyword arguments that will be passed to
-            the filter_fn **each time it is called**. To pass dynamic data,
-            you can't just wrap it in a list or dict; use an object or callable
-            instead. See the documentation for more about this.
-
-            Note that this method is like "partial": it provides a kind
-            of Currying.
-        :return: ``self``
-        """
-        class FilterMaker():
-            def __init__(self, callable_filter=None, ** callable_filter_kwargs):
-                self.callable_filter = callable_filter
-                self.filter_callable_kwargs = callable_filter_kwargs
-
-            def filter(self, record):
-                return self.callable_filter(record,
-                                            ** self.filter_callable_kwargs)
-
-        filter_init_kwargs['callable_filter'] = filter_fn
-        return self.add_class_filter(filter_name, FilterMaker, **filter_init_kwargs)
-
-        # Former implementation, pre-filter-kwargs, pre FilterMaker class:
-        # Paper over a difference between how Python 2 and Python 3
-        # handle callable filters:
-        #
-        # if PY2:      # curious lil hack
-        #     if not hasattr(filter_fn, 'filter'):
-        #         setattr(filter_fn, 'filter', filter_fn)
-        # filter_dict['()'] = lambda: filter_fn
-        # return self.add_filter(filter_name, ** filter_dict)
+        self.add_handler(handler_name,
+                         class_='logging.handlers.SysLogHandler',
+                         address=address,
+                         facility=facility,
+                         socktype=socktype,
+                         level=level,
+                         formatter=formatter,
+                         attach_to_root=attach_to_root,
+                         **kwargs)
+        if locking:
+            del self.handlers[handler_name]['class']
+            self.handlers[handler_name]['()'] = 'ext://lcd.LockingSysLogHandler'
+            self.handlers[handler_name]['create_lock'] = True
+        return self
 
     def add_email_handler(self,
                           handler_name,  # *
@@ -609,5 +595,78 @@ class LCDEx(LCD):
             queue=queue,
             **kwargs)
 
+    # add_*_filter methods
 
-# TODO  Support for  ColorizedStreamHandler?
+    def add_class_filter(self, filter_name, filter_class, **filter_init_kwargs):
+        """
+        A convenience method for adding a class filter, a class that implements
+        a ``filter`` method of signature ``(logging.LogRecord) -> bool``.
+
+        This method spares you from writing:
+
+            ``self.add_filter(filter_name, ** {'()': filter_class})``
+
+        (or even more elaborate code, if ``filter_class`` takes keyword
+        arguments, available in ``filter_init_kwargs``).
+
+        :param filter_name: name of the filter (for attaching it to handlers
+            and loggers)
+        :param filter_class: a class implementing a ``filter`` method of
+            signature ``(logging.LogRecord) -> bool``.
+        :param filter_init_kwargs: any other parameters to be passed to
+            ``add_filter``. These will be passed to the ``filter_class``
+            constructor. See the documentation for
+            ``LCD.add_filter``.
+        :return: ``self``
+        """
+        filter_init_kwargs['()'] = filter_class
+        return self.add_filter(filter_name, **filter_init_kwargs)
+
+    def add_callable_filter(self, filter_name, filter_fn, **filter_init_kwargs):
+        """A convenience method for adding a callable filter, of signature
+        ``(logging.LogRecord, **kwargs) -> bool``. This method spares you from
+        having to write code like the following:
+
+            ``self.add_filter(filter_name, ** {'()': lambda: filter_fn})``
+
+        (or worse, if ``filter_fn`` takes keyword arguments), and, under Python
+        2, having to also write
+
+            ``filter_fn.filter = filter_fn``.
+
+        :param filter_name: name of the filter (for attaching it to handlers
+            and loggers)
+        :param filter_fn: a callable, of signature
+            ``(logging.LogRecord, **kwargs) -> bool``.
+            A record is logged iff this callable returns true.
+        :param filter_init_kwargs: Keyword arguments that will be passed to
+            the filter_fn **each time it is called**. To pass dynamic data,
+            you can't just wrap it in a list or dict; use an object or callable
+            instead. See the documentation for more about this.
+
+            Note that this method is like "partial": it provides a kind
+            of Currying.
+        :return: ``self``
+        """
+        class FilterMaker():
+            def __init__(self, callable_filter=None, ** callable_filter_kwargs):
+                self.callable_filter = callable_filter
+                self.filter_callable_kwargs = callable_filter_kwargs
+
+            def filter(self, record):
+                return self.callable_filter(record,
+                                            ** self.filter_callable_kwargs)
+
+        filter_init_kwargs['callable_filter'] = filter_fn
+        return self.add_class_filter(filter_name, FilterMaker, **filter_init_kwargs)
+
+        # Former implementation, pre-filter-kwargs, pre FilterMaker class:
+        # Paper over a difference between how Python 2 and Python 3
+        # handle callable filters:
+        #
+        # if PY2:      # curious lil hack
+        #     if not hasattr(filter_fn, 'filter'):
+        #         setattr(filter_fn, 'filter', filter_fn)
+        # filter_dict['()'] = lambda: filter_fn
+        # return self.add_filter(filter_name, ** filter_dict)
+

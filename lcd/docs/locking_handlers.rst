@@ -1,6 +1,6 @@
 .. _locking-handlers:
 
-Locking Handlers
+Locking  Handlers
 ===============================
 
 The multiprocessing-safe handler classes ``'LockingStreamHandler'``, ``'LockingFileHandler'``

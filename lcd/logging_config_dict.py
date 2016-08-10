@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from __future__ import print_function
-from .six import PY2
+from .six import iteritems, PY2
 import logging
 import logging.config
 
@@ -347,6 +347,11 @@ class LCD(dict):
         assert 'class' not in handler_dict
         if 'class_' in handler_dict:
             handler_dict['class'] = handler_dict.pop('class_')
+
+        # A little preprocessing, inspired by 'encoding=None':
+        # discard items in handler_dict with value None
+        handler_dict = {k: v for k, v in iteritems(handler_dict)
+                        if v is not None}
 
         if formatter:
             self._check_defined(
@@ -781,8 +786,8 @@ class LCD(dict):
 
         Raises ``KeyError`` if ``self`` is not consistent.
         """
-        # TODO maybe: Presently, this method doesn't check for duplicate
-        #  |          attachments of handlers or filters
+        # TODO maybe: At present, this method doesn't check for
+        #  |          duplicate attachments of handlers or filters
 
         from collections import namedtuple
         Problem = namedtuple("Problem",

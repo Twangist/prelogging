@@ -67,14 +67,14 @@ for Py2 shortcomings), and supports a few Python-3-only logging features.
 +--------------------------------+--------+-------+
 || Module                        || Py 3  || Py 2 |
 +================================+========+=======+
-|| ``logging_config_dict.py``    || \99%  || 100% |
-|| ``logging_config_dict_ex.py`` || \92%  || \98% |
-|| ``locking_handlers.py``       || 100%  || 100% |
+|| ``logging_config_dict.py``    || \97%  || \97% |
+|| ``logging_config_dict_ex.py`` || \85%  || \85% |
+|| ``locking_handlers.py``       || \89%  || \89% |
 || ``lcd_builder_abc.py``        || 100%  || 100% |
 +--------------------------------+--------+-------+
 
 
-Running examples
+Running examples`
 ++++++++++++++++++
 
 Examples are *not* installed; they're in the ``examples/`` subdirectory of the
@@ -108,8 +108,8 @@ A few passages of Python-version-specific code keep `lcd` shy of 100% coverage:
 +--------------------------------+--------+-------+
 || Module                        || Py 3  || Py 2 |
 +================================+========+=======+
-|| ``logging_config_dict.py``    || \99%  || \99% |
-|| ``logging_config_dict_ex.py`` || \97%  || \95% |
+|| ``logging_config_dict.py``    || \97%  || \97% |
+|| ``logging_config_dict_ex.py`` || \98%  || \96% |
 || ``locking_handlers.py``       || 100%  || 100% |
 || ``lcd_builder_abc.py``        || 100%  || 100% |
 +--------------------------------+--------+-------+
