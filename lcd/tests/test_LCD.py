@@ -883,13 +883,12 @@ class TestLCD_NoWarnings(TestCase):
             ['handler1']
         )
 
-# | <<<<<<<<<<<<<<<<<<<<<<<<<<< RESUME >>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-    # TODO: For UNDEFINED, there are 10 scenarios to test:
+    # Testing UNDEFINED -- which means testing ``_check_defined`` logic,
+    # and that the correct args are passed to it by each of the 10 calls to it:
     """
     add_handler
-        formatter
-        filters
+        formatter   (undefined)
+        filters     (one or more filters undefined. Similarly below)
 
     add_logger
         filters
@@ -904,52 +903,136 @@ class TestLCD_NoWarnings(TestCase):
     attach_root_filters
     attach_root_handlers
     """
-    def test_strict_add_handler_formatter(self):
+    def test_warn_undef__add_handler__formatter(self):
         "with formatter undefined"
-        pass    # TODO
+        self.lcd.add_handler('h', formatter='no-such-thing')
 
-    def test_strict_add_handler_filters(self):
+        self._verify_errmsg(": attaching undefined formatter 'no-such-thing'"
+                            " to handler 'h'.\n")
+        self.assertEqual(
+            self.lcd.handlers['h']['formatter'],
+            'no-such-thing'
+        )
+
+    def _add_filters_F1_F2_to_lcd(self):
+        "Whenever you need a couple of filters,"
+        class F1():
+            def filter(self): return True
+        class F2():
+            def filter(self): return False
+
+        self.lcd.add_filter('F1', ** {'()': F1})
+        self.lcd.add_filter('F2', ** {'()': F2})
+
+    def test_warn_undef__add_handler__filters(self):
         "with some filter undefined"
-        pass    # TODO
+        self._add_filters_F1_F2_to_lcd()
 
+        self.lcd.add_handler('h',
+                             filters=['F1', 'no-such-filter', 'F2'])
+        self._verify_errmsg(": attaching undefined filter 'no-such-filter'"
+                            " to handler 'h'.\n")
+        self.assertEqual(
+            self.lcd.handlers['h']['filters'],
+            ['F1', 'no-such-filter', 'F2']
+        )
 
-
-    def test_strict_add_logger_filters(self):
+    def test_warn_undef__add_logger__filters(self):
         "with some filter undefined"
-        pass    # TODO
+        self._add_filters_F1_F2_to_lcd()
 
-    def test_strict_add_logger_handlers(self):
+        self.lcd.add_logger('my_logger',
+                             filters=['no-such-filter', 'F1', 'F2'])
+        self._verify_errmsg(": attaching undefined filter 'no-such-filter'"
+                            " to logger 'my_logger'.\n")
+        self.assertEqual(
+            self.lcd.loggers['my_logger']['filters'],
+            ['no-such-filter', 'F1', 'F2']
+        )
+
+    def test_warn_undef__add_logger__handlers(self):
         "with some handler undefined"
-        pass    # TODO
+        self.lcd.add_handler('real-handler')
+        self.lcd.add_logger('my_logger',
+                            handlers=['real-handler', 'no-such-handler'])
+        self._verify_errmsg(": attaching undefined handler 'no-such-handler'"
+                            " to logger 'my_logger'.\n")
+        self.assertEqual(
+            self.lcd.loggers['my_logger']['handlers'],
+            ['real-handler', 'no-such-handler']
+        )
 
-
-
-    def test_strict_attach_handler_formatter(self):
+    def test_warn_undef__attach_handler_formatter(self):
         "with formatter undefined"
-        pass    # TODO
+        self.lcd.add_handler('h')
+        self.lcd.attach_handler_formatter('h', 'no-such-formatter')
+        self._verify_errmsg(": attaching undefined formatter 'no-such-formatter'"
+                            " to handler 'h'.\n")
+        self.assertEqual(
+            self.lcd.handlers['h']['formatter'],
+            'no-such-formatter'
+        )
 
-    def test_strict_attach_handler_filters(self):
+    def test_warn_undef__attach_handler_filters(self):
         "with one or more filters undefined"
-        pass    # TODO
+        self.lcd.add_handler('h')
+        self.lcd.attach_handler_filters('h', 'no-such-filter')
+        self._verify_errmsg(": attaching undefined filter 'no-such-filter'"
+                            " to handler 'h'.\n")
+        self.assertEqual(
+            self.lcd.handlers['h']['filters'],
+            ['no-such-filter']
+        )
 
-
-
-    def test_strict_attach_logger_filters(self):
+    def test_warn_undef__attach_logger_filters(self):
         "with one or more filters undefined"
-        pass    # TODO
+        self._add_filters_F1_F2_to_lcd()
 
-    def test_strict_attach_logger_handlers(self):
+        self.lcd.add_logger('elle')
+        self.lcd.attach_logger_filters('elle', 'no-such-filter', 'F1', 'F2')
+        self._verify_errmsg(": attaching undefined filter 'no-such-filter'"
+                            " to logger 'elle'.\n")
+        self.assertEqual(
+            self.lcd.loggers['elle']['filters'],
+            ['no-such-filter', 'F1', 'F2']
+        )
+
+    def test_warn_undef__attach_logger_handlers(self):
         "with one or more handlers undefined"
-        pass    # TODO
+        self.lcd.add_logger('elle')
+        self.lcd.add_handler('h1') \
+                .add_handler('h2')
+        self.lcd.attach_logger_handlers('elle', 'h1', 'no-such-handler', 'h2')
+        self._verify_errmsg(": attaching undefined handler 'no-such-handler'"
+                            " to logger 'elle'.\n")
+        self.assertEqual(
+            self.lcd.loggers['elle']['handlers'],
+            ['h1', 'no-such-handler', 'h2']
+        )
 
-
-    def test_strict_attach_root_filters(self):
+    def test_warn_undef__attach_root_filters(self):
         "with one or more filters undefined"
-        pass    # TODO
+        self._add_filters_F1_F2_to_lcd()
 
-    def test_strict_attach_root_handlers(self):
+        self.lcd.attach_root_filters('no-such-filter1', 'F1', 'no-such-filter2')
+        self._verify_errmsg(": attaching undefined filters 'no-such-filter1', 'no-such-filter2'"
+                            " to logger ''.\n")
+        self.assertEqual(
+            self.lcd.root['filters'],
+            ['no-such-filter1', 'F1', 'no-such-filter2']
+        )
+
+    def test_warn_undef__attach_root_handlers(self):
         "with one or more handlers undefined"
-        pass    # TODO
+        self.lcd.add_handler('h1') \
+                .add_handler('h2')
+        self.lcd.attach_root_handlers('h1', 'h2', 'no-such-handler')
+        self._verify_errmsg(": attaching undefined handler 'no-such-handler'"
+                            " to logger ''.\n")
+        self.assertEqual(
+            self.lcd.root['handlers'],
+            ['h1', 'h2', 'no-such-handler']
+        )
 
 
 # class TestLCD_Warnings(_TestLCD_Warn):

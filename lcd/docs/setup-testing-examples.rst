@@ -2,7 +2,7 @@
 ===============
 
 .. todo::
-    Blahh blah blah
+    Blahh blah blah ???
 
 Requirements
 ---------------
@@ -10,9 +10,11 @@ Requirements
 The `lcd` package requires only Python 2.7 or 3.4+. It has no external
 dependencies.
 
-Backwards compatibility with 2.7 is provided with some reluctance, and mostly
-"by hand". The package includes a copy of the module ``six.py`` (version 1.10.0,
-for what it's worth), but uses it very sparingly.
+Backwards compatibility with 2.7 is provided with some reluctance. Very little
+of `lcd`\'s code varies between Python versions; however, we had to sacrifice
+type annotations and keyword-only parameters. The package includes a copy of
+the module ``six.py`` (version 1.10.0, for what it's worth), which it uses very
+sparingly (one decorator, one function, and one constant).
 
 The `lcd` repository contains an ``examples/`` subdirectory. A few examples
 ((``mproc_deco*.py``)) use the `deco <https://github.com/alex-sherman/deco>`_
@@ -68,7 +70,7 @@ to test.
 +--------------------------------+--------+-------+
 || Module                        || Py 3  || Py 2 |
 +================================+========+=======+
-|| ``logging_config_dict.py``    || \97%  || \97% |
+|| ``logging_config_dict.py``    || \99%  || \99% |
 || ``logging_config_dict_ex.py`` || \88%  || \88% |
 || ``locking_handlers.py``       || \89%  || \89% |
 || ``lcd_builder_abc.py``        || 100%  || 100% |
@@ -107,7 +109,7 @@ A few short passages, mostly Python-version-specific code, keep `lcd` shy of
 +--------------------------------+--------+-------+
 || Module                        || Py 3  || Py 2 |
 +================================+========+=======+
-|| ``logging_config_dict.py``    || \97%  || \97% |
+|| ``logging_config_dict.py``    || \99%  || 100% |
 || ``logging_config_dict_ex.py`` || \98%  || \96% |
 || ``locking_handlers.py``       || 100%  || 100% |
 || ``lcd_builder_abc.py``        || 100%  || 100% |

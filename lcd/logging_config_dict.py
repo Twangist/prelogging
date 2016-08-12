@@ -526,7 +526,7 @@ class LCD(dict):
         self._check_defined(
             defined=self.handlers,
             attach_to='',
-            attach_to_kind='handler',
+            attach_to_kind='logger',
             attachees=handler_names,
             attachee_kind='handler')
         root_handlers.extend(handler_names)
@@ -555,7 +555,7 @@ class LCD(dict):
         self._check_defined(
             defined=self.filters,
             attach_to='',
-            attach_to_kind='handler',
+            attach_to_kind='logger',
             attachees=filter_names,
             attachee_kind='filter')
 
@@ -1024,7 +1024,7 @@ class LCD(dict):
             undefined_str = str(undefined)[1:-1]
             errmsg = (
                 "Warning (%s, line %d):"
-                " attaching undefined %s%s (%s) to %s '%s'."
+                " attaching undefined %s%s %s to %s '%s'."
                 % (srcfile, lineno,
                    attachee_kind, ('s' if len(undefined) > 1 else ''),
                    undefined_str,
