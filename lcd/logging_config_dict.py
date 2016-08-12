@@ -101,9 +101,9 @@ class LCD(dict):
     """
     _level_names = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'NOTSET')
 
-    class WARNING():
+    class Warnings():
         """
-        .. _WARNINGS:
+        .. _warning-class:
 
         "Bit" values combined into the _warnings attribute of an LCD.
         Each determines whether warnings are written to stderr for a particular
@@ -139,7 +139,7 @@ class LCD(dict):
     def __init__(self,      # *,
                  root_level='WARNING',              # == logging default
                  disable_existing_loggers=None,     # logging default: True
-                 warnings=WARNING.DEFAULT
+                 warnings=Warnings.DEFAULT
                 ):
         """
         :param root_level: a ``str`` name of a loglevel.
@@ -148,7 +148,7 @@ class LCD(dict):
             same name. Using the default value ``None`` causes the `logging`
             module's default value ``True`` to be used.
         :param warnings: A bit field, a combination of values defined in
-            the inner class :ref:`WARNING<WARNING>`. The default value is
+            the inner class `LCD.Warnings``. The default value is
             ``REATTACH + REDEFINE + UNDEFINED``.
 
             This value is saved; it can be read and written with the @warnings
@@ -197,19 +197,19 @@ class LCD(dict):
 
     @property
     def _warn_reattach(self):
-        return self._warnings & self.WARNING.REATTACH
+        return self._warnings & self.Warnings.REATTACH
 
     @property
     def _warn_redefine(self):
-        return self._warnings & self.WARNING.REDEFINE
+        return self._warnings & self.Warnings.REDEFINE
 
     @property
     def _warn_replace_formatter(self):
-        return self._warnings & self.WARNING.REPLACE_FORMATTER
+        return self._warnings & self.Warnings.REPLACE_FORMATTER
 
     @property
     def _warn_undefined(self):
-        return self._warnings & self.WARNING.UNDEFINED
+        return self._warnings & self.Warnings.UNDEFINED
 
     # notational conveniences
     @property
@@ -252,18 +252,12 @@ class LCD(dict):
 
         :param formatter_name: just that
 
-        Other explicit keyword parameters correspond to the  parameters used by
-        ``Formatter.__init__`` and by ``dictConfig``, offering improvings
-        to those different and inconsistent names. You can still use
-        ``datefmt``, but you can also use ``fmt`` and ``dateformat``.
-
         :param format: the format string. ``Formatter.__init__`` calls this
             ``fmt``. This method recognizes ``fmt`` too, as a synonym;
             "format" takes precedence over "fmt" if both are given.
 
-        :param dateformat; a format string for dates and times, with the same
-            keys accepted by
-            `time.strftime <https://docs.python.org/3/library/time.html#time.strftime>`_.
+        :param dateformat: a format string for dates and times, with the same
+            keys accepted by `time.strftime <https://docs.python.org/3/library/time.html#time.strftime>`_.
             Both ``Formatter.__init__`` and ``dictConfig`` call this ``datefmt``,
             for which ``dateformat`` is a synonym. In this case,
             "datefmt" takes precedence over "dateformat" if both are given.
@@ -391,7 +385,7 @@ class LCD(dict):
     #      |     [and what about examples?]
     def add_file_handler(self, handler_name,    # *,
                          filename,
-                         formatter,
+                         formatter=None,
                          mode='w',
                          level='NOTSET',    # log everything: `logging` default
                          delay=False,
@@ -805,7 +799,7 @@ class LCD(dict):
             hdict = handlers_[hname]    # type: dict
             # ensure any/all formatters on hname exists in formatters_
             hform_name = hdict.get('formatter', None)
-            if hform_name not in formatters_:
+            if hform_name is not None and hform_name not in formatters_:
                 problems.append(
                     Problem('handler', hname, 'formatter', hform_name)
                 )

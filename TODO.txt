@@ -1,8 +1,10 @@
 TODOs
 =====
 
-*   Rename ``LCDEx.add_function_filter``
-        to ``add_callable_filter``
+*   Docs etc: not "predefined" formatters but "presets" :)
+
+*   test/document new classmethod ``create_formatter_preset``
+
 
 * Examples -- Class Filter, Callable Filter
     Class Filter    that's initialized with some date:

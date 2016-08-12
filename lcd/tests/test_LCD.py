@@ -422,6 +422,93 @@ class TestLCD(TestCase):
         self.assertEqual(self.test_filters_on_handler__messages, [0, 2])
 
 
+# ---------------------------------------------------------------------------
+# check()
+# ---------------------------------------------------------------------------
+
+class TestLCD_check(TestCase):
+
+    def test_check_bad1(self):
+
+        d = LCD(
+            root_level='DEBUG',
+            warnings=0)
+
+        #  NOW SCREW IT UP:
+        d.attach_root_filters('not-a-filter-1', 'not-a-filter-2')
+        d.attach_root_handlers('not-a-handler-1', 'not-a-handler-2')
+        d.add_file_handler(
+            'fh', 'myfile.log',
+            filters=['also-not-a-filter-1', 'also-not-a-filter-2'])
+        # TODO This ^^^^^^^ should NOT set formatter=None
+
+        # Swap stderr BEFORE d.check():
+        _stderr = sys.stderr
+        sio_err = io.StringIO()
+        sys.stderr = sio_err
+
+        # check out ".check()"
+        # We expect this call to have written to stderr, and to raise KeyError
+        with self.assertRaises(KeyError):
+            d.check()
+
+        self.assertEqual(
+            sio_err.getvalue(),
+            "Problems -- nonexistent things mentioned\n"
+            "   handler            'fh' mentions     filter 'also-not-a-filter-1'\n"
+            "   handler            'fh' mentions     filter 'also-not-a-filter-2'\n"
+            "    logger              '' mentions     filter 'not-a-filter-1'\n"
+            "    logger              '' mentions     filter 'not-a-filter-2'\n"
+            "    logger              '' mentions    handler 'not-a-handler-1'\n"
+            "    logger              '' mentions    handler 'not-a-handler-2'\n"
+        )
+        # unswap stderr, unnecessarily
+        sys.stderr = _stderr
+
+    def test_check_bad2(self):
+
+        d = LCD(warnings=0)
+        # handler w/bad formatter
+        d.add_handler('con', formatter='no-such-formatter')
+
+        # non-root logger
+        d.add_logger(
+            'mylogger',
+            handlers=['no-such-handler-1', 'no-such-handler-2'],
+            filters='no-such-filter-1',
+        )
+
+        # Swap stderr BEFORE d.check():
+        _stderr = sys.stderr
+        sio_err = io.StringIO()
+        sys.stderr = sio_err
+
+        # check out ".check()"
+        # We expect this call to have written to stderr, and to raise KeyError
+        with self.assertRaises(KeyError):
+            d.check()
+
+        # print(sio_err.getvalue())       # | DEBUG comment out
+
+        self.assertEqual(
+            sio_err.getvalue(),
+            "Problems -- nonexistent things mentioned\n"
+            "   handler           'con' mentions  formatter 'no-such-formatter'\n"
+            "    logger      'mylogger' mentions     filter 'no-such-filter-1'\n"
+            "    logger      'mylogger' mentions    handler 'no-such-handler-1'\n"
+            "    logger      'mylogger' mentions    handler 'no-such-handler-2'\n"
+        )
+        # unswap stderr, unnecessarily
+        sys.stderr = _stderr
+
+    def test_check_ok(self):
+        lcd = LCD(warnings=0)
+        self.assertEqual(lcd, lcd.check())
+
+# ---------------------------------------------------------------------------
+# no Warnings, Warnings
+# ---------------------------------------------------------------------------
+
 # class _TestLCD_Warn(TestCase):
 class TestLCD_NoWarnings(TestCase):
     class F():
@@ -436,7 +523,7 @@ class TestLCD_NoWarnings(TestCase):
         self.sio_err = io.StringIO()    # new "stderr"
         sys.stderr = self.sio_err
         # create an LCD that doesn't issue any warnings
-        self.lcd = LCD(warnings=0)      # 0 == LCD.WARNING.NONE
+        self.lcd = LCD(warnings=0)      # 0 == LCD.WARNINGS.NONE
 
     def tearDown(self):
         "."
@@ -502,6 +589,14 @@ class TestLCD_NoWarnings(TestCase):
     #-------------------
     # handler/formatter
     #-------------------
+    def test_add_handler_no_formatter__then_attach(self):
+        self.lcd.add_formatter('f1', format='< a bad format string >')
+        self.lcd.add_handler('my_handler')
+        self.lcd.attach_handler_formatter('my_handler', 'f1')
+
+        self.assertEqual(self.lcd.handlers['my_handler']['formatter'],
+                         'f1'
+        )
 
     def test_warn_reattach_formatter(self):
         # attach same formatter twice
@@ -864,5 +959,5 @@ class TestLCD_Warnings(TestLCD_NoWarnings):
         # parent class creates self.lcd = LCD()
         super(TestLCD_Warnings, self).setUp()
         # change warnings to ALL
-        self.lcd.warnings = LCD.WARNING.ALL
+        self.lcd.warnings = LCD.Warnings.ALL
 

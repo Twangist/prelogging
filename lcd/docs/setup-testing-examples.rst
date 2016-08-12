@@ -12,15 +12,13 @@ dependencies.
 
 Backwards compatibility with 2.7 is provided with some reluctance, and mostly
 "by hand". The package includes a copy of the module ``six.py`` (version 1.10.0,
-for what it's worth), but uses only two things from it: its ``add_metaclass``
-decorator, so that we can define an abstract base class in the "right way";
-and its flag ``PY2``, whose value is the obvious one-liner.
+for what it's worth), but uses it very sparingly.
 
-The `lcd` repository contains an ``examples/`` subdirectory. Two examples
-use the (excellent) new `deco <https://github.com/alex-sherman/deco>`_ package,
-which provides a "simplified parallel computing model for Python". However, the
-examples are just for illustration (and code coverage), and aren't installed
-with the `lcd` package.
+The `lcd` repository contains an ``examples/`` subdirectory. A few examples
+((``mproc_deco*.py``)) use the `deco <https://github.com/alex-sherman/deco>`_
+package, which provides a "simplified parallel computing model for Python".
+However, the examples are just for illustration (and code coverage), and aren't
+installed with the `lcd` package.
 
 Installation
 ---------------
@@ -61,14 +59,17 @@ You can run all the tests before installing `lcd` by running the script
 Coverage from tests
 ~~~~~~~~~~~~~~~~~~~
 
-`lcd` contains a very small amount of Python-2-only code (workarounds
+`lcd` contains a small amount of Python-2-only code (workarounds
 for Py2 shortcomings), and supports a few Python-3-only logging features.
+In addition, several methods in ``logging_config_dict_ex.py`` add various
+exotic handlers, which were easy to write examples for but are difficult
+to test.
 
 +--------------------------------+--------+-------+
 || Module                        || Py 3  || Py 2 |
 +================================+========+=======+
 || ``logging_config_dict.py``    || \97%  || \97% |
-|| ``logging_config_dict_ex.py`` || \85%  || \85% |
+|| ``logging_config_dict_ex.py`` || \88%  || \88% |
 || ``locking_handlers.py``       || \89%  || \89% |
 || ``lcd_builder_abc.py``        || 100%  || 100% |
 +--------------------------------+--------+-------+
@@ -78,11 +79,8 @@ Running examples`
 ++++++++++++++++++
 
 Examples are *not* installed; they're in the ``examples/`` subdirectory of the
-repository/archive. As mentioned, two examples (``mproc_deco*.py``) require the
-`deco` package.
-
-You can run all the tests and examples before installing `lcd` by running the
-script ``run_all.py`` in the repository directory:
+repository/archive. You can run all the tests and examples before installing
+`lcd` by running the script ``run_all.py`` in the repository directory:
 
     ``$ ./run_all.py``
 
@@ -103,7 +101,8 @@ when these examples are run individually than when they're run via
 Coverage from tests + examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A few passages of Python-version-specific code keep `lcd` shy of 100% coverage:
+A few short passages, mostly Python-version-specific code, keep `lcd` shy of
+100% coverage when both tests and examples are run:
 
 +--------------------------------+--------+-------+
 || Module                        || Py 3  || Py 2 |

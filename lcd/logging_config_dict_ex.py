@@ -4,12 +4,56 @@ import os
 from copy import deepcopy
 
 from .logging_config_dict import LCD
-from .six import PY2
+from .six import PY2, iteritems
+
+from collections import namedtuple
 
 __doc__ = """\
 """
 
 __author__ = "Brian O'Neill"
+
+
+# -----------------------------------------------------------------------
+# FormatterSpec -- namedtuple subclass for static declaration
+#                  of formatter specifications
+# -----------------------------------------------------------------------
+
+_formatter_spec_fields = ('format', 'style', 'dateformat')
+
+class FormatterSpec(
+    namedtuple('_FormatterSpec_',
+               _formatter_spec_fields)
+):
+    """ A namedtuple-derived lightweight class representing formatters.
+    We subclass in order to allow variant spellings for parameters,
+    to allow default values, and to easily convert to a dict.
+    """
+    __slots__ = ()
+
+    def __new__(cls, format,
+                style='%',
+                datefmt=None,
+                dateformat=None):
+        dateformat = datefmt or dateformat
+        return super(FormatterSpec, cls).__new__(cls, format, style, dateformat)
+
+    def to_dict(self):
+        """
+        Return a dict representation, whose keys are ``_formatter_spec_fields``
+        except that 'dateformat' is changed to 'datefmt'),
+        and which omits items with ``None`` values.
+
+        :return: a dict
+        """
+        d = {k: getattr(self, k) for k in _formatter_spec_fields}
+        d['datefmt'] = d.pop('dateformat', None)
+        return {k: v for k, v in d.items() if v}
+
+
+# -----------------------------------------------------------------------
+# LCDEx
+# -----------------------------------------------------------------------
 
 class LCDEx(LCD):
     """ \
@@ -101,31 +145,19 @@ class LCDEx(LCD):
     +---------------------------------------+------------------------------------------------------------------------------------+
 
     """
-
-    format_strs = {
-        'minimal':
-            '%(message)s',
-        'level_msg':
-            '%(levelname)-8s: %(message)s',
-        'process_msg':
-            '%(processName)-10s: %(message)s',
-        'logger_process_msg':
-            '%(name)-20s: %(processName)-10s: %(message)s',
-        'logger_level_msg':
-            '%(name)-20s: %(levelname)-8s: %(message)s',
-        'logger_msg':
-            '%(name)-20s: %(message)s',
-        'process_level_msg':
-            '%(processName)-10s: %(levelname)-8s: %(message)s',
-        'process_time_level_msg':
-            '%(processName)-10s: %(asctime)s: %(levelname)-8s: %(message)s',
-        'process_logger_level_msg':
-            '%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s',
-        'process_time_logger_level_msg':
-            '%(processName)-10s: %(asctime)s:'
-            ' %(name)-20s: %(levelname)-8s: %(message)s',
-        'time_logger_level_msg':
-            '%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s',
+    _formatter_presets = {
+        'minimal': FormatterSpec("%(message)s"),
+        'level_msg': FormatterSpec('%(levelname)-8s: %(message)s'),
+        'process_msg': FormatterSpec('%(processName)-10s: %(message)s'),
+        'logger_process_msg': FormatterSpec('%(name)-20s: %(processName)-10s: %(message)s'),
+        'logger_level_msg': FormatterSpec('%(name)-20s: %(levelname)-8s: %(message)s'),
+        'logger_msg': FormatterSpec('%(name)-20s: %(message)s'),
+        'process_level_msg': FormatterSpec('%(processName)-10s: %(levelname)-8s: %(message)s'),
+        'process_time_level_msg': FormatterSpec('%(processName)-10s: %(asctime)s: %(levelname)-8s: %(message)s'),
+        'process_logger_level_msg': FormatterSpec('%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s'),
+        'process_time_logger_level_msg': FormatterSpec('%(processName)-10s: %(asctime)s:'
+                                                       ' %(name)-20s: %(levelname)-8s: %(message)s'),
+        'time_logger_level_msg': FormatterSpec('%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'),
     }
 
     def __init__(self,                  # *,
@@ -134,7 +166,7 @@ class LCDEx(LCD):
                  locking=False,
                  attach_handlers_to_root=False,
                  disable_existing_loggers=False,  # logging default value is True
-                 warnings=LCD.WARNING.DEFAULT):
+                 warnings=LCD.Warnings.DEFAULT):
         """
         :param root_level: one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``,
             ``'ERROR'``, ``'CRITICAL'``, ``'NOTSET'``
@@ -144,21 +176,23 @@ class LCDEx(LCD):
             ``'filename'`` key. Prepending uses ``os.path.join``. The directory
             specified by ``log_path`` must already exist.
         :param locking: if True, console handlers use locking stream handlers,
-            and file handlers created by ``add_file_handler`` and
-            ``add_rotating_file_handler`` use locking file handlers, **unless**
-            ``locking=False`` is passed to the calls that create those handlers.
-        :param attach_handlers_to_root: If true, by default the other methods
-            of this class will automatically add handlers to the root logger,
-            as well as to the ``handlers`` subdictionary.
+            and file handlers created by ``add_file_handler``,
+            ``add_rotating_file_handler`` and ``add_syslog_handler``
+            use locking file handlers, **unless** ``locking=False`` is passed
+            to the calls that create those handlers.
+        :param attach_handlers_to_root: If true, by default the handler-adding
+            methods of this class will automatically attach handlers to the root
+            logger.
         :param disable_existing_loggers: corresponds to the logging dict-config
             key(/value) of the same name. This default value is ``False`` so
             that separate packages can use this class to create their own
             ("private") loggers before or after their clients do their own
             logging configuration. The `logging` default value is ``True``.
-        :param warnings: as for ``LCD``. See :ref:`WARNING<WARNING>``.
+        :param warnings: as for ``LCD``. See the documentation for the inner
+            class `LCD.WARNINGS``.
 
         See also :ref:`__init__ keyword parameters <LCDEx-init-params>`
-        above, in the class's docstring.
+        above.
         """
         super(LCDEx, self).__init__(
                         root_level=root_level,
@@ -168,11 +202,17 @@ class LCDEx(LCD):
         self._locking = locking
         self._attach_handlers_to_root = attach_handlers_to_root
 
-        # Include some batteries (Formatters) --
-        # The default is class_='logging.Formatter'
-        for formatter_name in self.format_strs:
-            self.add_formatter(formatter_name,
-                               format=self.format_strs[formatter_name])
+        # TODO '0.2.7b19' -- DON'T just add all these to every LCDEx;
+        #  |    instead, add only the ones that are used :)
+        #  |    Already we intercept the places to do this (for warnings)
+        #  |    so just expand/emend the logic
+        # (TODO -- comment out the following passage)
+
+        # # Include some batteries (Formatters) --
+        # # The default is class_='logging.Formatter'
+        # for formatter_name in self._format_strs:
+        #     self.add_formatter(formatter_name,
+        #                        format=self._format_strs[formatter_name])
 
     @property
     def attach_handlers_to_root(self):
@@ -243,7 +283,44 @@ class LCDEx(LCD):
                          ** clone_dict)
         return self
 
+    @classmethod
+    def create_formatter_preset(cls,
+                                name, format,
+                                style='%',
+                                datefmt=None,
+                                dateformat=None):
+        """Add a named "formatter preset" to the collection ``cls._formatter_presets``.
+
+        :param name:
+        :param format:
+        :param style:
+        :param datefmt:
+        :param dateformat:
+        :return:
+        """
+        cls._formatter_presets[name] = FormatterSpec(format,
+                                                     style=style,
+                                                     datefmt=datefmt,
+                                                     dateformat=dateformat)
+
+    def _add_formatter_if_preset(self, formatter_name):
+        if (formatter_name and
+            formatter_name not in self.formatters and
+            formatter_name in self._formatter_presets):
+            self.add_formatter(formatter_name,
+                               ** self._formatter_presets[formatter_name].to_dict())
+
+    def attach_handler_formatter(self, handler_name, formatter_name):
+        """
+        Hook the LCD method so that we can add formatter just in time if need be
+        :return: ``self``
+        """
+        self._add_formatter_if_preset(formatter_name),
+        return super(LCDEx, self).attach_handler_formatter(
+                                        handler_name, formatter_name)
+
     def add_handler(self, handler_name,     # *,
+                    formatter=None,
                     attach_to_root=None,
                     ** handler_dict):
         """
@@ -252,7 +329,18 @@ class LCDEx(LCD):
 
         :return: ``self``
         """
-        super(LCDEx, self).add_handler(handler_name, ** handler_dict)
+        # NOTE: '0.2.7b19' change --
+        #  .    Don't add all the predefined formatters to every LCDEx.
+        #  .    Every LCDEx handler-adding method ultimately funnels
+        #  .    through here, so we check whether ``formatter`` is
+        #  .    a name of a formatter preset; if it is, make sure it's
+        #  .    added, just in time -- add it to self.formatters
+        #  .    if it isn't there already.
+        self._add_formatter_if_preset(formatter)
+
+        super(LCDEx, self).add_handler(handler_name,
+                                       formatter=formatter,
+                                       ** handler_dict)
         if self._attach_to_root__adjust(attach_to_root):
             super(LCDEx, self).attach_root_handlers(handler_name)
         return self
@@ -472,7 +560,7 @@ class LCDEx(LCD):
         :param socktype: "   "     "
 
         On OS X, use ``address='/var/run/syslog'`` to write to the system log
-        (``system.log``); on *nix, use ``address='/dev/log'``.
+        (``system.log``); on \*nix, use ``address='/dev/log'``.
 
         :param formatter: the name of the formatter that this handler will use
         :param level: the loglevel of this handler

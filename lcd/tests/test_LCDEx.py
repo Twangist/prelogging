@@ -18,20 +18,20 @@ class TestLCDEx(TestCase):
 
     def get_expected_starting_dict(self, level='WARNING'):
         """."""
-        # use LCDEx.format_strs
-        formatters_dict = {
-            formatter: {'class': 'logging.Formatter',
-                        'format': LCDEx.format_strs[formatter]
-                       }
-            for formatter in LCDEx.format_strs
-        }
+        # # use LCDEx._format_strs
+        # formatters_dict = {
+        #     formatter: {'class': 'logging.Formatter',
+        #                 'format': LCDEx._format_strs[formatter]
+        #                }
+        #     for formatter in LCDEx._format_strs
+        # }
 
         return {
             'disable_existing_loggers': False,
             'loggers': {},
             'handlers': {},
             'filters': {},
-            'formatters': formatters_dict,
+            'formatters': {},
             'incremental': False,
             'root': {'handlers': [], 'level': level},
             'version': 1
@@ -53,7 +53,17 @@ class TestLCDEx(TestCase):
 
         lcd.add_stderr_handler(
             'console', formatter='minimal'
-        ).add_file_handler(
+        )
+        # lcd.dump()      # | DEBUG comment out
+
+        self.assertEqual(
+            lcd['formatters'],
+            {'minimal': {'class': 'logging.Formatter',
+                         'format': '%(message)s'},
+            }
+        )
+
+        lcd.add_file_handler(
             'default_file',
             filename='blather.log',
             # level='DEBUG',
@@ -188,85 +198,74 @@ class TestLCDEx(TestCase):
                      'stream': 'ext://sys.stdout'}}
         )
 
+# ---------------------------------------------------------------------------
+# attach_handler_formatter (the override)
+# create_formatter_preset
+# ---------------------------------------------------------------------------
+class TestLCDEx_Misc(TestCase):
 
-class TestLCDEx_check(TestCase):
-
-    def test_check_bad1(self):
-
-        lcd_ex = LCDEx(
-            attach_handlers_to_root=True,
-            root_level='DEBUG',
-            warnings=0)
-
-        #  NOW SCREW IT UP:
-        lcd_ex.attach_root_filters('not-a-filter-1', 'not-a-filter-2')
-        lcd_ex.attach_root_handlers('not-a-handler-1', 'not-a-handler-2')
-        lcd_ex.add_file_handler(
-            'fh', 'myfile.log',
-            filters=['also-not-a-filter-1', 'also-not-a-filter-2'])
-
-        # Swap stderr BEFORE lcd_ex.check():
-        _stderr = sys.stderr
-        sio_err = io.StringIO()
-        sys.stderr = sio_err
-
-        # check out ".check()"
-        # We expect this call to have written to stderr, and to raise KeyError
-        with self.assertRaises(KeyError):
-            lcd_ex.check()
-
+    def test_attach_handler_formatter(self):
+        d = LCDEx()
+        d.add_handler('h')
+        d.attach_handler_formatter('h', 'minimal')
         self.assertEqual(
-            sio_err.getvalue(),
-            "Problems -- nonexistent things mentioned\n"
-            "   handler            'fh' mentions     filter 'also-not-a-filter-1'\n"
-            "   handler            'fh' mentions     filter 'also-not-a-filter-2'\n"
-            "    logger              '' mentions     filter 'not-a-filter-1'\n"
-            "    logger              '' mentions     filter 'not-a-filter-2'\n"
-            "    logger              '' mentions    handler 'not-a-handler-1'\n"
-            "    logger              '' mentions    handler 'not-a-handler-2'\n"
+            d.handlers['h']['formatter'],
+            'minimal'
         )
-        # unswap stderr, unnecessarily
-        sys.stderr = _stderr
-
-    def test_check_bad2(self):
-
-        lcd_ex = LCDEx(warnings=0)
-        # handler w/bad formatter
-        lcd_ex.add_stdout_handler('con', formatter='no-such-formatter')
-
-        # non-root logger
-        lcd_ex.add_logger(
-            'mylogger',
-            handlers=['no-such-handler-1', 'no-such-handler-2'],
-            filters='no-such-filter-1',
-        )
-
-        # Swap stderr BEFORE lcd_ex.check():
-        _stderr = sys.stderr
-        sio_err = io.StringIO()
-        sys.stderr = sio_err
-
-        # check out ".check()"
-        # We expect this call to have written to stderr, and to raise KeyError
-        with self.assertRaises(KeyError):
-            lcd_ex.check()
-
-        # print(sio_err.getvalue())       # | DEBUG comment out
-
+        # d.dump()         # TODO Comment out
+        # In fact,
         self.assertEqual(
-            sio_err.getvalue(),
-            "Problems -- nonexistent things mentioned\n"
-            "   handler           'con' mentions  formatter 'no-such-formatter'\n"
-            "    logger      'mylogger' mentions     filter 'no-such-filter-1'\n"
-            "    logger      'mylogger' mentions    handler 'no-such-handler-1'\n"
-            "    logger      'mylogger' mentions    handler 'no-such-handler-2'\n"
+            d,
+            {'disable_existing_loggers': False,
+             'filters': {},
+             'formatters': {'minimal': {'class': 'logging.Formatter',
+                                        'format': '%(message)s'}},
+             'handlers': {'h': {'formatter': 'minimal'}},
+             'incremental': False,
+             'loggers': {},
+             'root': {'handlers': [], 'level': 'WARNING'},
+             'version': 1}
         )
-        # unswap stderr, unnecessarily
-        sys.stderr = _stderr
 
-    def test_check_ok(self):
-        lcd_ex = LCDEx(warnings=0)
-        self.assertEqual(lcd_ex, lcd_ex.check())
+    def test_create_formatter_preset(self):
+        num_presets = len(LCDEx._formatter_presets)
+        LCDEx.create_formatter_preset(
+            '_simple_',
+            format="{levelname: <8s}: %(message)s",
+            style='{'
+        )
+        self.assertEqual(
+            len(LCDEx._formatter_presets),
+            num_presets + 1
+        )
+
+        d = LCDEx()
+        d.add_handler('h', formatter='_simple_')
+        self.assertEqual(
+            d.handlers['h']['formatter'],
+            '_simple_'
+        )
+        # d.dump()          # TODO Comment out
+        # In fact,
+        self.assertEqual(
+            d,
+            {'disable_existing_loggers': False,
+             'filters': {},
+             'formatters': {'_simple_': {'class': 'logging.Formatter',
+                                         'format': '{levelname: <8s}: %(message)s',
+                                         'style': '{'}},
+             'handlers': {'h': {'formatter': '_simple_'}},
+             'incremental': False,
+             'loggers': {},
+             'root': {'handlers': [], 'level': 'WARNING'},
+             'version': 1}
+        )
+
+
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+
 
 
 
