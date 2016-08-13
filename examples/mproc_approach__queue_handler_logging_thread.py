@@ -16,6 +16,9 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
+
+from _time_util import elapsed_time_human_readable
+
 from lcd import LCDEx
 from lcd.six import PY2
 
@@ -26,6 +29,7 @@ from multiprocessing import Process, Queue
 import random
 import threading
 import time
+import os
 
 
 def worker_config_logging(q):
@@ -34,7 +38,7 @@ def worker_config_logging(q):
     lcd.config()
 
 
-def worker_process(q):
+def worker_process(q, chunksize):
     "Configuration: worker_config_logging"
     worker_config_logging(q)
 
@@ -42,7 +46,8 @@ def worker_process(q):
               logging.CRITICAL]
     loggers = ['foo', 'foo.bar', 'foo.bar.baz',
                'spam', 'spam.ham', 'spam.ham.eggs']
-    for i in range(100):
+
+    for i in range(chunksize):
         lvl = random.choice(levels)
         logger = logging.getLogger(random.choice(loggers))
         logger.log(lvl, 'Message no. %d', i+1)
@@ -52,7 +57,7 @@ def worker_process(q):
 def logging_thread(q):
     "Configuration: main_process_config_logging"
     while True:
-        record = q.get()        # TODO: does `q` itself need a lock? accessing it should block?
+        record = q.get()
         if record is None:
             break
         logger = logging.getLogger(record.name)
@@ -70,14 +75,16 @@ def main_process_config_logging():
                     format='%(name)-15s %(levelname)-8s '
                            '%(processName)-10s %(message)s')
 
-    lcd.add_stderr_handler('console', level='INFO',
-                                              formatter='less-detailed'
-    ).add_file_handler('file', filename='mplog.log',
+    # lcd.add_stderr_handler('console', level='INFO',
+    #                                   formatter='less-detailed')
+
+    lcd.add_file_handler('file', filename='mplog.log',
                                formatter='detailed'
     ).add_file_handler('errors', level='ERROR',
                                  filename='mplog-errors.log',
                                  formatter='detailed'
-    ).attach_root_handlers('console', 'file', 'errors')
+    ).attach_root_handlers(# 'console',
+                           'file', 'errors')
 
     lcd.add_file_handler('foofile', filename='mplog-foo.log',
                                     formatter='detailed'
@@ -93,14 +100,18 @@ def main():
               % __file__)
         return
 
+    CHUNKSIZE = 10  # 2500 -- 2m44s
+
+    t_start = time.time()
+
     main_process_config_logging()
 
     q = Queue()
     workers = []
-    for i in range(5):
+    for i in range(os.cpu_count()):
         wp = Process(target=worker_process,
                      name='worker %d' % (i + 1),
-                     args=(q,))
+                     args=(q, CHUNKSIZE))
         workers.append(wp)
         wp.start()
 
@@ -108,9 +119,8 @@ def main():
     the_log_thread.start()
 
     # At this point, the main process could do some useful work of its own...
-
-    # TODO: Do something such that you'd notice it stall and stutter
-    #  |    if the logging handlers were running in the same process and thread
+    # (BTO) ... e.g. UI activity that would stall and stutter
+    #       if the logging handlers were running in the same process and thread.
 
     # Once it has done that, it can wait for the workers to terminate...
 
@@ -120,6 +130,11 @@ def main():
     # Now tell the logging thread to finish up too
     q.put(None)
     the_log_thread.join()
+
+    t_elapsed = time.time() - t_start
+    print("\nElapsed time:",
+          elapsed_time_human_readable(t_elapsed))
+
 
 if __name__ == '__main__':
     main()

@@ -45,13 +45,12 @@ Topics and Recipes
 * Rotating file handlers
     * :ref:`tr-rot-fh`
 
-* Multiprocessing — using locking handlers
+* :ref:`Multiprocessing — two approaches<tr-mp>`
     .. hlist::
         :columns: 3
 
-        * :ref:`tr-mp-console`
-        * :ref:`tr-mp-fh`
-        * :ref:`tr-mp-rot-fh`
+        * :ref:`mp-locking-handlers`
+        * :ref:`mp-queue-and-logging-thread`
 
 * Filters
     .. hlist::
@@ -591,9 +590,74 @@ three approaches:
 
 In this section we'll discuss the second and third approaches.
 
+.. _basic-mproc-situation:
 
-Locking handlers
-+++++++++++++++++++++
+.. topic:: Basic situation and challenge
+
+    We have some amount of work to do, and the code that performs it uses logging.
+    Let's say there are :math:`L` many loggers used:
+
+        .. math::
+
+            logger_1, \cdots, logger_i, \cdots, logger_L,
+
+    Each logger :math:`logger_i` is denoted by some name :math:`name_i`,
+    and has some intended handlers
+
+        .. math::
+
+            handler_{i, j} \quad (j < n_i).
+
+    Later, we notice that the work can be parallelized: we can partition it into
+    chunks which can be worked on simultaneously and then recombined.
+    We put the code that performs the work into a function, and spawn :math:`N`
+    worker processes
+
+    .. math::
+
+        P_1, ..., P_k, ... P_N,
+
+    each of which runs that function on a discrete chunk of the data. The worker
+    processes are basically homogeneous, but for their distinct PIDs, names,
+    and the ranges of data they operate on. Now, each worker process :math:`P_k`
+    uses all the loggers :math:`logger_i, i < L`. All the loggers and handlers
+    have different instances in different processes; however, all the handler
+    destinations remain unique. Somehow, we have to serialize writing to single
+    destinations from multiple concurrent processes.
+
+.. topic:: Two solutions
+
+    In the approach provided natively by `lcd`, serialization occurs at the handler
+    level, using the package's simple "locking handler" classes. Before
+    an instance of a locking handler writes to its destination, it acquires
+    a lock (*shared by all instances* of the handler), which it releases when done;
+    attempts by other instances to write concurrently will block until the lock
+    is released by the handler that "got there first".
+
+    The queue-based approach is an important and sometimes more performant
+    alternative. Using an explicit shared queue and a layer of indirection,
+    this approach serializes messages early in their lifecycle.
+    Each process merely enqueues logged messages to the shared queue,
+    in the form of ``LogRecord``\s. The actual writing of the message to the intended destinations
+    occurs later, in a dedicated *logging thread* of a non-worker process.
+    That thread pulls logging records off the queue and *handles* them, so that
+    messages are finally dispatched to their intended handlers and destinations.
+    The `logging` package's ``QueueHandler`` class makes all this possible.
+
+
+.. note:: A pair of examples using the two approaches to solve the same problem:
+
+    * ``mproc_approach__locking_handlers.py`` uses locking handlers,
+    * ``mproc_approach__queue_handler_logging_thread.py`` uses a queue and logging thread.
+
+    In these examples, the handlers only write to files, and performance of
+    the two approaches is about the same, with the queue-based approach slightly
+    faster (though YMMV).
+
+.. _mp-locking-handlers:
+
+Using locking handlers
++++++++++++++++++++++++++
 
 (MP blather)
 
@@ -614,6 +678,9 @@ vs
     When you add (specs for) a handler using an ``add_*_handler`` method,
     pass ``locking=True`` to the method in order for the handler to be locking.
 
+.. note::
+    All but one of the multiprocessing examples use locking handlers.
+
 
 .. _tr-mp-console:
 
@@ -633,23 +700,124 @@ Using a locking rotating file handler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 <<<<< TODO >>>>> 
 
+Using a locking syslog handler [?????]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<<<<< TODO [?????] >>>>>
+
+.. _mp-queue-and-logging-thread:
 
 Using QueueHandlers (*Python 3 only*)
 ++++++++++++++++++++++++++++++++++++++++++
-Cf. LCDEx method ``add_queue_handler``
 
-Examples:
+The queue based approach serializes logged messages as soon as possible,
+moving the actual writing of messages out of the worker processes.
+Worker processes merely enqueue messages, with context, onto a common queue.
+The real handlers don't run in the worker processes: they run in
+a dedicated thread of the main process, where records are dequeued from that
+common queue and handled in the ways you intend.
 
-    ``queue_handler_listener.py`` doesn't multiprocess but shows basic usage
-        of queue handler as well as how to use ``QueueListener`` in conjunction
-        with `lcd`
+When a worker process :math:`P_k` logs a message using one of the loggers
+:math:`logger_i`, none of the "real", intended handlers of that logger
+executes in :math:`P_k`. Instead, the message, in the form
+of a ``logging.LogRecord``, is put on a ``Queue`` object which all
+the processes share. The enqueued record contains all information required to
+write it later, even in another process. This is all achieved by a simple
+logging configuration that uses `logging`\'s ``QueueHandler`` class.
 
-    ``mproc_queue_handler_logging_thread.py`` is a multiprocessing example
-        blah blah
+In a dedicated thread in another process — the main process, let's assume —
+a tight loop polls the shared queue and pulls records from it. Each record
+contains context information from the originating process :math:`P_k`,
+including the logger's name, the message's loglevel, the process name of
+:math:`P_k` — values for the keys that can occur in format strings. The thread
+uses this information to dispatch the record via the originating logger,
+and finally the intended handlers execute. This setup too is easily achieved
+with an appropriate logging configuration.
 
-        .. todo:: DIAGRAM of
-            * what we first imagine as the setup/config
-            * how we actually configure logging in this example
+.. figure:: mproc_queue_paradigm.png
+
+    Multiprocess logging with a queue
+
+This design gives better performance, especially for blocking, slow handlers
+(SMTP, for example). Generally, the worker processes have better things to do
+than wait for emails to be successfully sent, so we relieve them of such
+extraneous burdens.
+
+Handling all logged messages in a dedicated thread (of a non-worker process)
+confers additional benefits:
+
+* the UI won't stutter or temporarily freeze
+  whenever a slow (and blocking) handler runs;
+* the main thread can do other useful things.
+
+The queue-based approach confers these same benefits even in single-processing
+situations. The example ``queue_handler_listener.py`` illustrates this, using
+the logging package's ``QueueListener`` instead of a logging-thread.
+``QueueListener``\s encapsulate setup and teardown of a logging thread,
+and the proper handling of queued messages. It's unfortunate that they're
+an awkward fit for static configuration.
+
+.. topic:: Aside: ``QueueListeners`` and static configuration
+
+    It's awkward to use a ``QueueListener`` with static configuration.
+    Once it has been created, a ``QueueListener`` has to be stopped and started,
+    using its ``stop`` and ``start`` methods. If we could statically specify a
+    ``QueueListener``, somehow we have to obtain a reference it after configuring
+    logging, in order to call these methods.
+
+    Furthermore, a ``QueueListener`` must be initialized/constructed with one
+    or more ``QueueHandler``\s -- actual handler objects. Of course, these don't
+    exist before configuration, and then the names we gave them in configuration
+    have disappeared. As we've noted elsewhere,
+    handler objects are anonymous, so the only way to obtain references to the
+    ``QueueHandler``\s is a bit disappointing (filter the handlers of some logger
+    with ``isinstance(handler, QueueHandler)``). The example
+    ``queue_handler_listener.py`` demonstrates this in action.
+
+
+Worker process configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The main process creates a common queue, then spawns the worker processes
+:math:`P_k`, passing the queue to each one. The worker processes *use, but
+do not configure* the intended loggers :math:`logger_i`. In the logging
+configuration of the worker processes, these loggers have *no handlers*. Thus,
+because of inheritance, all messages are actually logged by their common
+ancestor, the root logger. The root is equipped with a single handler:
+a ``QueueHandler``, which puts messages on a queue it's initialized with.
+
+At startup, every worker process configures logging in this simple way:
+
+.. code::
+
+    def worker_config_logging(q: Queue):
+        d = LCDEx(root_level='DEBUG')
+        d.add_queue_handler('qhandler', attach_to_root=True, queue=q)
+        d.config()
+
+*logging thread*/main process configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The logging thread does one thing: dispatch logged messages to their ultimate
+destinations as they arrive. Before the main process creates the logging thread,
+it configures logging as you really intend.
+The configuration used here is essentially what you would use in
+the locking handlers approach (but with ``locking=False``).
+The logging configuration specifies all the intended loggers :math:`logger_i`,
+after specifying, for each logger, all of its intended handlers
+:math:`handler_{i, j}, j < n_i` and any formatters they use.
+As a result, the 'real' handlers finally execute.
+
+Here's what the logging thread does:
+
+.. code::
+
+    def logging_thread(q):
+        while True:
+            record = q.get()
+            if record is None:
+                break
+            logger = logging.getLogger(record.name)
+            logger.handle(record)
 
 --------------------------------------------------
 
@@ -1187,18 +1355,4 @@ SMTPHandler logging custom fields using a custom formatter and filter
     Use `lcd` to realize the example described in:
 
             https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information
-
-
-QueueHandler, QueueListener
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-It's not easy to provide support here:
-
-Once it has been created, a QueueListener has to be stopped and started, using
-its ``stop`` and ``start`` methods. However, as we've noted elsewhere, handler
-objects are anonymous, and there's no (straightforward) way to obtain a reference
-to the specified ``QueueListener`` once it's created.
-
-**If** the ``QueueListener`` is the only handler of a particular logger — or,
-more generally, if it's the only QueueListener attached as a handler to a
-particular logger — then yes, a reference can be obtained.
 

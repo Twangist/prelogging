@@ -9,7 +9,7 @@ import logging
 from multiprocessing import Lock
 
 __all__ = [
-    # 'MPLock_Mixin',
+    'MPLock_Mixin',
     'LockingStreamHandler',
     'LockingFileHandler',
     'LockingRotatingFileHandler',
@@ -27,9 +27,15 @@ __all__ = [
 
 class MPLock_Mixin():
     """Mix in to a class with an instance attribute ``_mp_lock_``.
+    That class should
 
-    Each ``Locking*Handler`` class subclasses both this and a Handler class
-    of the `logging` module.
+        * initialize ``_mp_lock_``
+        * call _acquire_ and _release_
+
+    as appropriate.
+
+    Each ``Locking*Handler`` class subclasses both this and a `logging` Handler
+    class.
     """
     def _acquire_(self):
         if self._mp_lock_:

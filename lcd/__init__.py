@@ -7,12 +7,12 @@ from . import locking_handlers, lcd_builder_abc
 from .locking_handlers import *
 from .lcd_builder_abc import *
 
-# from .setup_logger import setup_logger
-
-__all__ = [
-    '__author__',
-    '__version__',
-    'LCD',
-    'LCDEx',
-] + locking_handlers.__all__ + lcd_builder_abc.__all__
-    # 'setup_logger'
+__all__ = (
+    ['__author__',
+     '__version__',
+     'LCD',
+     'LCDEx',
+    ] +
+   locking_handlers.__all__ +
+   lcd_builder_abc.__all__
+)

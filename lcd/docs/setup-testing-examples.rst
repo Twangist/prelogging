@@ -10,10 +10,11 @@ Requirements
 The `lcd` package requires only Python 2.7 or 3.4+. It has no external
 dependencies.
 
-Backwards compatibility with 2.7 is provided with some reluctance. Very little
-of `lcd`\'s code varies between Python versions; however, we had to sacrifice
-type annotations and keyword-only parameters. The package includes a copy of
-the module ``six.py`` (version 1.10.0, for what it's worth), which it uses very
+Very little
+of `lcd`\'s code varies between Python versions; however, to achieve backwards
+compatibility with 2.7 we had to sacrifice, with great reluctance, type
+annotations and keyword-only parameters. The `lcd` package includes a copy of
+the module ``six.py`` (version 1.10.0, for what it's worth), which it uses
 sparingly (one decorator, one function, and one constant).
 
 The `lcd` repository contains an ``examples/`` subdirectory. A few examples

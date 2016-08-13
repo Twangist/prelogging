@@ -16,7 +16,7 @@ For motivation, see
 We've adapted the code in that section to `lcd`.
 
 Another approach can be found in the example
-``mproc_queue_handler_logging_thread.py``.
+``mproc_approach__queue_handler_logging_thread.py``.
 """
 
 import logging
@@ -46,7 +46,7 @@ def main():
 
     lcdx = LCDEx(attach_handlers_to_root=True)
     lcdx.add_formatter(
-        'fmtr', format='%(threadName)s: %(message)s'
+        'fmtr', format='%(threadName)s: %(name)s: %(message)s'
     ).add_stderr_handler(
         'con', formatter='fmtr'
     ).add_queue_handler(
@@ -70,7 +70,7 @@ def main():
     listener.stop()
 
     # which, when run, will produce:
-    # MainThread: Look out!
+    # MainThread: root: Look out!
 
 
 if __name__ == '__main__':
