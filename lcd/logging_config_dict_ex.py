@@ -57,36 +57,49 @@ class FormatterSpec(
 
 class LCDEx(LCD):
     """ \
-    A ``LCD`` subclass with a few batteries included — formatters,
-    various handler-creators, multiprocessing-aware handlers that output to the
-    console, to files and to rotating files.
+    A ``LCD`` subclass with additional conveniences:
+
+        * formatter presets;
+        * various ``add_*_handler`` methods for configuring handlers of several
+          `logging` handler classes;
+        * optional automatic attaching of handlers to the root logger
+          as they're added;
+        * easy to use, multiprocessing-safe subclasses of some of
+          the handler classes;
+        * simplified filter creation.
+
+    Except for properties and the ``__init__`` method, all public instance
+    methods of this class return ``self``.
 
     .. include:: _global.rst
-
-    Except for ``__init__`` and ``add_*_filter`` methods, every method of this
-    class adds a handler of some kind. Except for properties and the
-    ``__init__`` method, all public methods return ``self``.
 
     .. _LCDEx-init-params:
 
     .. index:: __init__ keyword parameters (LCDEx)
 
     ``__init__`` **keyword parameters**  |br|
-    ``- - - - - - - - - - - - - - - - - - - - - - - - -``
+    ``- - - - - - - - - - - - - -``
 
     In addition to the parameters ``root_level``,
     ``disable_existing_loggers`` and ``warnings`` recognized by :ref:`LCD`,
     the constructor of this class accepts a few more::
 
+            log_path                (str)
             attach_handlers_to_root (bool)
             locking                 (bool)
-            log_path                (str)
 
     When ``attach_handlers_to_root`` is true [default: False], by default the
     other methods of this class automatically add handlers to the root logger
     as well as to the ``handlers`` subdictionary. The read-only property
     ``attach_to_root`` saves the value passed to the constructor as
     ``attach_handlers_to_root``.
+
+    ``log_path`` is a directory in which log files will be created by
+    ``add_file_handler`` and ``add_rotating_file_handler``. If the filename
+    passed to those methods contains a relative path, then the logfile will
+    be created in that relative subdirectory of ``log_path``. If ``log_path``
+    is not an absolute path, then it is relative to the current directory
+    at runtime when ``config()`` is finally called.
 
     When ``locking`` is true [default: False], by default the other methods of
     this class add :ref:`locking handlers <locking-handlers>`; if it's false,
@@ -99,22 +112,41 @@ class LCDEx(LCD):
     the values passed to the constructor. Thus, for example, callers can
     add a non-locking handler even if ``self.locking`` is true, or a locking
     handler even if ``self.locking`` is false. The default value of these
-    parameters of handler-adding methods is ``None``, meaning: use the value
-    of the attribute on ``self``.
+    parameters in handler-adding methods is ``None``, meaning: use the value
+    of the corresponding attribute on ``self``. (Those instance attributes
+    are also available as read-write properties ``attach_handlers_to_root``
+    and ``locking``.)
 
-    ``log_path`` is a directory in which log files will be created by
-    ``add_file_handler`` and ``add_rotating_file_handler``. If the filename
-    passed to those methods contains a relative path, then the logfile will
-    be created in that relative subdirectory of ``log_path``. If ``log_path``
-    is not an absolute path, then it is relative to the current directory
-    at runtime when ``config()`` is finally called.
+    .. _LCDEx-handler-classes-encapsulated:
+
+    .. index:: `'logging` handler classes encapsulated
+
+    **Handler classes that LCDEx configures** |br|
+    ``- - - - - - - - - - - - - - - - -``
+
+    LCDEx provides methods for configuring these `logging` handler classes,
+    with optional "locking" support in most cases:
+
+      +--------------------------------+---------------------------+-----------+
+      || method                        || creates                  || optional |
+      ||                               ||                          || locking? |
+      +================================+===========================+===========+
+      || ``add_stderr_handler``        || stderr ``StreamHandler`` ||   yes    |
+      || ``add_stdout_handler``        || stdout ``StreamHandler`` ||   yes    |
+      || ``add_file_handler``          || ``FileHandler``          ||   yes    |
+      || ``add_rotating_file_handler`` || ``RotatingFileHandler``  ||   yes    |
+      || ``add_syslog_handler``        || ``SyslogHandler``        ||   yes    |
+      || ``add_email_handler``         || ``SMTPHandler``          ||          |
+      || ``add_queue_handler``         || ``QueueHandler``         ||          |
+      || ``add_null_handler``          || ``NullHandler``          ||          |
+      +--------------------------------+---------------------------+-----------+
 
     .. _builtin-formatters:
 
     .. index:: Builtin formatters (LCDEx)
 
-    **Formatters provided** |br|
-    ``- - - - - - - - - - - - - - - - - - - - - - - - -``
+    **Formatter presets** |br|
+    ``- - - - - - - -``
 
     Their names make it fairly obvious what their format strings are:
 

@@ -21,3 +21,8 @@ def check_for_NUL(filename, verbose=False):
     if verbose: print()
 
     return has_NULs
+
+if __name__ == '__main__':
+    import sys
+    check_for_NUL(sys.argv[1], verbose=True)
+

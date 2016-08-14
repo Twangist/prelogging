@@ -36,14 +36,11 @@ Topics and Recipes
         * :ref:`tr-config-discrete-non-root`
 
 
+* :ref:`warnings-consistency-checking`
+
 * :ref:`using-lcd-with-django`
 
-* :ref:`error- checking`
-
 |br|
-
-* Rotating file handlers
-    * :ref:`tr-rot-fh`
 
 * :ref:`Multiprocessing — two approaches<tr-mp>`
     .. hlist::
@@ -65,12 +62,18 @@ Topics and Recipes
 * Configuration distributed across multiple modules or packages
     * :ref:`config-abc`
 
+* Rotating file handlers
+    * :ref:`tr-rot-fh`
+
+* :ref:`null-handler`
+
+* :ref:`smtp-handler`
+
 * Using other `logging` handler classes
     .. hlist::
         :columns: 3
 
-        * :ref:`null-handler`
-        * :ref:`smtp-handler`
+        * :ref:`using-unsupported-logging-handler-classes`
 
 
 --------------------------------------------------
@@ -143,8 +146,28 @@ What ``LCDEx`` contributes
 <<<<< TODO >>>>> 
 
 .. todo::
-    intro blather re  ``LCDEx``: why this superclass,
+    intro blather re ``LCDEx``: why this superclass,
     what does it do, offer?
+
+* Optional automatic attaching of handlers to root logger as they're added
+* Optional automatic use of "locking" handlers, where available
+* Methods for configuring more `logging` handler classes:
+
+  +--------------------------------+---------------------------+-----------+
+  || method                        || creates                  || optional |
+  ||                               ||                          || locking? |
+  +================================+===========================+===========+
+  || ``add_stderr_handler``        || stderr ``StreamHandler`` ||   yes    |
+  || ``add_stdout_handler``        || stdout ``StreamHandler`` ||   yes    |
+  || ``add_file_handler``          || ``FileHandler``          ||   yes    |
+  || ``add_rotating_file_handler`` || ``RotatingFileHandler``  ||   yes    |
+  || ``add_syslog_handler``        || ``SyslogHandler``        ||   yes    |
+  || ``add_email_handler``         || ``SMTPHandler``          ||          |
+  || ``add_queue_handler``         || ``QueueHandler``         ||          |
+  || ``add_null_handler``          || ``NullHandler``          ||          |
+  +--------------------------------+---------------------------+-----------+
+
+
 
 --------------------------------------------------
 
@@ -169,8 +192,8 @@ Defining new formatters
 The `logging` module supports a large number of keywords
 that can appear in formatters — for a complete list, see the documentation for
 `LogRecord attributes <https://docs.python.org/3/library/logging.html?highlight=logging#logrecord-attributes>`_.
-Each logged message can even include the name of the function, and/or the line number,
-where its originating logging call was issued.
+Each logged message can even include the name of the function, and/or the
+line number, where its originating logging call was issued.
 
     .. note::
         `logger` parameter names are all over the place. We allow
@@ -497,6 +520,95 @@ handler and the ``'extra'`` logger.
 
 --------------------------------------------------
 
+.. _warnings-consistency-checking:
+
+`lcd` warnings and consistency checking
+-----------------------------------------------------------
+
+Added benefit provided by `lcd` that you don't enjoy by handing a big
+hand-coded dict to `logging.config.dictConfig()``.
+
+`lcd` detects certain dubious practices, automatically corrects some of them
+and optionally prints warnings about them.
+
+In addition, the ``check`` method ........ BLAH BLAH .......
+
+
+Warnings
++++++++++++
+
+(blah blah...)
+
+The inner class ``LCD.Warnings``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``LCD`` has an inner class ``Warnings`` which defines bit-field "constants"
+that indicate the different kinds of anomalies that `lcd` checks for, corrects
+when that's sensible, and optionally reported on with warning messages.
+
++--------------------------+-------------------------------------------------------------+
+|| ``Warnings`` "constant" || Issue a warning when...                                    |
++==========================+=============================================================+
+|| ``REATTACH``            || attaching an entity {formatter/filter/handler}             |
+||                         || to another entity that it's already attached to            |
+|| ``REDEFINE``            || overwriting an existing definition of an entity            |
+|| ``REPLACE_FORMATTER``   || changing a handler's formatter                             |
+|| ``UNDEFINED``           || attaching an entity that hasn't yet been added ("defined") |
++--------------------------+-------------------------------------------------------------+
+
+The class also defines a couple of shorthand "constant"::
+
+    DEFAULT = REATTACH + REDEFINE                     + UNDEFINED
+    ALL     = REATTACH + REDEFINE + REPLACE_FORMATTER + UNDEFINED
+
+The value of the ``warnings`` parameter of the ``LCD`` constructor is any
+combination of the "constants" in the above table. This value is saved
+as an ``LCD`` instance attribute, which is exposed by the read-write
+``warnings`` property.
+
+........ BLAH BLAH ........
+
+
+REATTACH (corrected; default: reported)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`lcd` detects and eliminates duplicates in lists of handlers or filters
+that are to be attached to higher-level entities. If ``REATTACH`` is turned on
+in ``warnings``, `lcd` will report the duplicate (by printing a warning message
+to stderr), indicating the source file and line number of the offending method
+call.
+
+
+REDEFINE (default: reported)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+..... blah blah .....
+
+``REPLACE_FORMATTER`` (default: not reported)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+..... blah blah .....
+
+``UNDEFINED`` (default: reported)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+..... blah blah .....
+
+
+Consistency checking — the ``check`` method
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Called automatically in ``config()`` if the ``warnings`` property is ``0``.
+
+What it does
+
+    check for "undefined" things; if any exist, check reports
+    all of them, and raises KeyError; otherwise, it returns ``self``).
+
+<<<<<<< TODO >>>>>>>
+
+--------------------------------------------------
+
 .. _using-lcd-with-django:
 
 Using `lcd` with `Django`
@@ -506,13 +618,13 @@ Using `lcd` with `Django`
 
     This needs mention
 
-    Django uses logging config dicts, & it's path of least resistance
+    Django uses logging config dicts, & its path of least resistance
     suggests using a big static dict
     via a LOGGING variable in ``settings.py``.
 
-    ..note :: It would be great if LOGGING could be a callable,
-        as the other logging-related setting ______ can be.
-        That way, you could specify a callable (no args, say) that just returns
+    ..note :: It would be great if ``LOGGING`` could be a callable;
+        the other logging-related setting ``LOGGING_CONFIG`` can be.
+        That way, you could specify a callable (no args, say) which just returns
         a logging config dict.
 
     See blah for info:
@@ -550,25 +662,6 @@ Using `lcd` with `Django`
 
 --------------------------------------------------
 
-.. _error- checking:
-
-Error-checking: the ``warn`` property (default: False)
------------------------------------------------------------
-
-<<<<< TODO >>>>>
-
-
---------------------------------------------------
-
-.. _tr-rot-fh:
-
-Using a rotating file handler
-------------------------------------
-
-<<<<< TODO >>>>> 
-
---------------------------------------------------
-
 
 .. _tr-mp:
 
@@ -594,8 +687,8 @@ In this section we'll discuss the second and third approaches.
 
 .. topic:: Basic situation and challenge
 
-    We have some amount of work to do, and the code that performs it uses logging.
-    Let's say there are :math:`L` many loggers used:
+    We have some amount of work to do, and the code that performs it uses
+    logging. Let's say there are :math:`L` many loggers used:
 
         .. math::
 
@@ -627,32 +720,36 @@ In this section we'll discuss the second and third approaches.
 
 .. topic:: Two solutions
 
-    In the approach provided natively by `lcd`, serialization occurs at the handler
-    level, using the package's simple "locking handler" classes. Before
+    In the approach provided natively by `lcd`, serialization occurs at the
+    handler level, using the package's simple "locking handler" classes. Before
     an instance of a locking handler writes to its destination, it acquires
-    a lock (*shared by all instances* of the handler), which it releases when done;
-    attempts by other instances to write concurrently will block until the lock
-    is released by the handler that "got there first".
+    a lock (*shared by all instances* of the handler), which it releases when
+    done; attempts by other instances to write concurrently will block until
+    the lock is released by the handler that "got there first".
 
     The queue-based approach is an important and sometimes more performant
     alternative. Using an explicit shared queue and a layer of indirection,
     this approach serializes messages early in their lifecycle.
     Each process merely enqueues logged messages to the shared queue,
-    in the form of ``LogRecord``\s. The actual writing of the message to the intended destinations
-    occurs later, in a dedicated *logging thread* of a non-worker process.
-    That thread pulls logging records off the queue and *handles* them, so that
-    messages are finally dispatched to their intended handlers and destinations.
-    The `logging` package's ``QueueHandler`` class makes all this possible.
+    in the form of ``LogRecord``\s. The actual writing of the message to the
+    intended destinations occurs later, in a dedicated *logging thread* of a
+    non-worker process. That thread pulls logging records off the queue and
+    *handles* them, so that messages are finally dispatched to their intended
+    handlers and destinations. The `logging` package's ``QueueHandler`` class
+    makes all this possible.
 
 
-.. note:: A pair of examples using the two approaches to solve the same problem:
+.. note::
+    A pair of examples are "the same program" except for taking
+    one approach or the other:
 
     * ``mproc_approach__locking_handlers.py`` uses locking handlers,
-    * ``mproc_approach__queue_handler_logging_thread.py`` uses a queue and logging thread.
+    * ``mproc_approach__queue_handler_logging_thread.py`` uses a queue and
+      logging thread (the only example that does so).
 
-    In these examples, the handlers only write to files, and performance of
-    the two approaches is about the same, with the queue-based approach slightly
-    faster (though YMMV).
+    In these examples, the handlers only write to files, and performance
+    of the two approaches is about the same, with the queue-based approach
+    slightly faster.
 
 .. _mp-locking-handlers:
 
@@ -660,6 +757,9 @@ Using locking handlers
 +++++++++++++++++++++++++
 
 (MP blather)
+Provided natively by `lcd`, only option under Py2.
+
+All but one of the multiprocessing examples use locking handlers.
 
 For a particular ``LCDEx``, there are two possibilities:
 
@@ -675,11 +775,9 @@ vs
 
     ``locking=False`` was passed to constructor
 
-    When you add (specs for) a handler using an ``add_*_handler`` method,
-    pass ``locking=True`` to the method in order for the handler to be locking.
-
-.. note::
-    All but one of the multiprocessing examples use locking handlers.
+    When you configure a handler by calling an ``add_*_handler`` method,
+    pass ``locking=True``, available when that kind of handler has a locking
+    subclass.
 
 
 .. _tr-mp-console:
@@ -761,16 +859,16 @@ an awkward fit for static configuration.
     It's awkward to use a ``QueueListener`` with static configuration.
     Once it has been created, a ``QueueListener`` has to be stopped and started,
     using its ``stop`` and ``start`` methods. If we could statically specify a
-    ``QueueListener``, somehow we have to obtain a reference it after configuring
-    logging, in order to call these methods.
+    ``QueueListener``, somehow we have to obtain a reference it after
+    configuring logging, in order to call these methods.
 
     Furthermore, a ``QueueListener`` must be initialized/constructed with one
     or more ``QueueHandler``\s -- actual handler objects. Of course, these don't
     exist before configuration, and then the names we gave them in configuration
     have disappeared. As we've noted elsewhere,
     handler objects are anonymous, so the only way to obtain references to the
-    ``QueueHandler``\s is a bit disappointing (filter the handlers of some logger
-    with ``isinstance(handler, QueueHandler)``). The example
+    ``QueueHandler``\s is a bit disappointing (filter the handlers of some
+    logger with ``isinstance(handler, QueueHandler)``). The example
     ``queue_handler_listener.py`` demonstrates this in action.
 
 
@@ -1177,51 +1275,175 @@ the class to configure logging across multiple modules.
     <<<<< Walk through code? Simplified further if possible >>>>>
     <<<<< Go look...  >>>>>
 
-.. _using-other-logging-handler-classes:
+--------------------------------------------------
 
-Using other `logging` ``Handler`` classes
---------------------------------------------
+.. _tr-rot-fh:
 
-.. todo::
-    How you say in Inglese? --
+Using a rotating file handler
+------------------------------------
 
-The `logging` package defines about a dozen handler classes — subclasses of
-``logging.Handler`` — in the modules ``logging`` and ``logging.handlers``.
-``logging`` defines the basic handler classes ... TODO ...
+<<<<< TODO >>>>>
 
-which log to more exotic destinations than just files
-and the console.
-
-— use ``add_handler``, using keyword arguments to specify
-class-specific key/value pairs, and specifying the appropriate handler class
-with the ``class_`` keyword.
+--------------------------------------------------
 
 .. _null-handler:
 
-NullHandler
-+++++++++++++++++++++++++++++
-class: ``logging.NullHandler``
+Using `lcd` in libraries: using a null handler
+--------------------------------------------------
+
+The ``add_null_handler`` method configures a handler of class
+``logging.NullHandler``, a do-nothing, placeholder handler that's useful in
+writing libraries (packages).
+
+If you want your library to write logging messages *only* if its user has
+configured logging, the `logging` docs section
+`Configuring Logging for a Library <https://docs.python.org/3/howto/logging.html#configuring-logging-for-a-library>`_,
+recommends adding a ``NullHandler``, only, to the library's top-level logger.
+
+The example ``use_library.py`` and the ``library`` package it uses
+illustrate how to use `lcd` in both a library and a program that uses it,
+in a way that follows that recommendation. It's essential that both
+the library and its user set the logging configuration flag
+``disable_existing_loggers`` to ``False``. This is actually `lcd`\'s default —
+one of the few instances where `lcd` changes the default used by `logging`
+(the `logging` package defaults ``disable_existing_loggers`` to ``True``).
+
+
+In this section we'll further discuss the configurations and interaction of
+the example library and library user.
+
+
+``library`` use of `lcd` and `logging`
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The package contains just two modules: ``__init__.py`` and ``module.py``.
+
+``__init__.py`` configures logging with `lcd`, adding a null handler and
+attaching it to the library's "top-level logger", ``'library'``:
+
+.. code::
+
+    lcdx = LCDEx()                  # default: disable_existing_loggers=False
+    lcdx.add_null_handler('library-nullhandler')    # default: level='NOTSET'
+    lcdx.add_logger('library', handlers='library-nullhandler', level='INFO')
+    lcdx.config()
+
+``module.py`` contains two functions, which use logging::
+
+    def do_something():
+        logger = logging.getLogger(__name__)
+        logger.debug("DEBUG msg")
+        logger.info("INFO msg")
+        print("Did something.")
+
+    def do_something_else():
+        logging.getLogger(__name__ + '.other').warning("WARNING msg")
+        print("Did something else.")
+
+
+If a user of `library` configures logging, the messages logged by these
+functions *will* actually be written; if it doesn't, those messages *won't*
+appear.
+
+``use_library.py`` use of `lcd` and `logging`
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The example ``use_library.py`` makes it easy to explore the various possibilities.
+It contains a simple ``main()`` function, which the program calls when run as
+``__main__``::
+
+    def main():
+        # Exercise:
+        #   Comment out and uncomment the following two lines, independently;
+        #   observe the console output in each case.
+        configure_logging()
+        logging.getLogger().warning("I must caution you about that.")
+
+        library.do_something()
+        library.do_something_else()
+
+and a simple ``configure_logging`` function::
+
+    def configure_logging():
+        d = LCDEx(attach_handlers_to_root=True)
+        # defaults: disable_existing_loggers=False, root_level='WARNING'
+        d.add_stdout_handler('stdout', formatter='logger_level_msg', level='DEBUG')
+        d.config()
+
+
+Results (4 cases)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+1. With both lines uncommented, the program writes the following to stdout::
+
+            root                : WARNING : I must caution you about that.
+            library.module      : INFO    : INFO msg
+            Did something.
+            library.module.other: WARNING : WARNING msg
+            Did something else.
+
+   **Note**: The loglevel of the root logger, configured in the library's user,
+   is ``'WARNING'``, whereas the loglevel of the ``'library.module'`` logger is
+   ``'INFO'``. Messages of `library` propagate to the root, and those of levels
+   ```INFO``` and up (not just ```WARNING``` and up) *are logged*.
+
+2. With just ``configure_logging()`` commented out, the library prints these
+   to stdout::
+
+            Did something.
+            Did something else.
+
+   and the ``use_library.py`` logs this line to stderr (possibly between or
+   after those printed to stdout):
+
+   .. code::
+
+          I must caution you about that.
+
+   Observe that the library's logged messages aren't written, even though
+   the library's user *uses* logging (with the default configuration).
+
+3. With ``configure_logging()`` uncommented but the line following it commented
+   out, the program writes the following to stdout:
+
+   .. code::
+
+            library.module      : INFO    : INFO msg
+            Did something.
+            library.module.other: WARNING : WARNING msg
+            Did something else.
+
+4. With both lines commented out, the program writes the following to stdout::
+
+            Did something.
+            Did something else.
+
+
+------------------------------------------------------
 
 .. _smtp-handler:
 
-SMTPHandler
-+++++++++++++++++++++++++++++
-class: ``logging.handlers.NullHandler``
+``add_email_handler`` — SMTPHandler
+-----------------------------------------
+
+``add_email_handler``
+
+class: ``logging.handlers.SMTPHandler``
+
 
 docs: `<https://docs.python.org/3/library/logging.handlers.html#module-logging.handlers>`_
 
-Use the queue handler approach to send emails from a thread other than the main
-one (and other than the UI thread).  Sending an email can take a comparatively
-long time, so you'll want to do that "in the background", and not have other
-processes, or the UI, block and stutter whenever an email is sent.
-
-
-
+Use the queue handler/queue listener approach (see the example
+``queue_handler_listener.py``) to send emails from a thread other than
+the main one (and other than the UI thread).  Sending an email can
+take a comparatively long time, so you'll want to do that "in the background",
+and not have other processes, or the UI, block and stutter whenever an email
+is sent.
 
 .. _smtp-handler-one:
 
 Using a single SMTPHandler
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+++++++++++++++++++++++++++++++++++++++++++++++
 
 .. todo:: comment on the following code
     Commentary on example ``SMTP_handler_just_one.py``
@@ -1236,9 +1458,9 @@ Using a single SMTPHandler
 
     # root, console handler levels: WARNING.
     lcdx = LCDEx(attach_handlers_to_root=True)
-    lcdx.add_stderr_handler('con-err',
-                                    formatter='minimal'
-    ).add_email_handler('email-handler',
+    lcdx.add_stderr_handler('con-err', formatter='minimal'
+    ).add_email_handler(
+        'email-handler',
         level='ERROR',
         formatter='time_logger_level_msg',
         # SMTPHandler-specific kwargs:
@@ -1262,7 +1484,7 @@ Using a single SMTPHandler
 .. _smtp-handlers-two-error-and-critical:
 
 Using two SMTPHandlers, one filtered
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+++++++++++++++++++++++++++++++++++++++++++++++
 
 Comment on the example ``SMTP_handler_two.py``
 
@@ -1346,13 +1568,44 @@ Comment on the example ``SMTP_handler_two.py``
     root.error("Something bad just happened")   # logged to console, emailed
     root.critical("Time to restart")            # ditto
 
-.. _smtp-handler-custom-keywords-in-formatter-filter-adds-info:
 
-SMTPHandler logging custom fields using a custom formatter and filter
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------------
 
-.. todo::
-    Use `lcd` to realize the example described in:
+Using other `logging` ``Handler`` classes
+--------------------------------------------
 
-            https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information
+.. todo:: Bla blah.............
+
+
+The `logging` package defines more than a dozen handler classes — subclasses of
+``logging.Handler`` — in the modules ``logging`` and ``logging.handlers``.
+``logging`` defines the basic handler classes ... TODO ...
+
+`lcd` supports a majority of the `logging` handlers, but not all.
+
+BLAH BLAH.............
+
+.. _using-unsupported-logging-handler-classes:
+
+Using `logging` handler classes with no corresponding ``add_*_handler`` method
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The following `logging` handler classes presently have no corresponding
+``add_*_handler`` methods:
+
+    * logging.handlers.WatchedFileHandler ?
+    * logging.handlers.TimedRotatingFileHandler ?
+    * logging.handlers.SocketHandler
+    * logging.handlers.DatagramHandler
+    * logging.handlers.NTEventLogHandler
+    * logging.handlers.MemoryHandler
+    * logging.handlers.HTTPHandler
+
+Nevertheless, all can be configured using `lcd`.
+— use ``add_handler``, using keyword arguments to specify
+class-specific key/value pairs, and specifying the appropriate handler class
+with the ``class_`` keyword.
+
+.. todo:: How? An example would be useful.
+
 

@@ -17,7 +17,7 @@ except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
 
-from _time_util import elapsed_time_human_readable
+from ._time_util import elapsed_time_human_readable
 
 from lcd import LCDEx
 from lcd.six import PY2

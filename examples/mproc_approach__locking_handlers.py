@@ -19,7 +19,7 @@ except ImportError:
 from lcd import LCDEx
 from lcd.six import PY2
 
-from _time_util import elapsed_time_human_readable
+from ._time_util import elapsed_time_human_readable
 
 import logging
 import logging.handlers

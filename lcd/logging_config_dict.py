@@ -109,18 +109,18 @@ class LCD(dict):
         Each determines whether warnings are written to stderr for a particular
         questionable practice:
 
-        +---------------------+--------+------------------------------------------+
-        || Warning "constant" || Value || Issue warning when...                   |
-        +=====================+========+==========================================+
-        || REATTACH           ||   1   || attaching a {formatter/filter/handler}  |
-        ||                    ||       || to a {handler/logger} that it's already |
-        ||                    ||       || attached to                             |
-        || REDEFINE           ||   2   || overwriting an existing definition of   |
-        ||                    ||       || an entity (formatter, filter, etc.)     |
-        || REPLACE_FORMATTER  ||   4   || changing a handler's formatter          |
-        || UNDEFINED          ||   8   || attaching a {formatter/filter/handler}  |
-        ||                    ||       || that hasn't yet been added (defined)    |
-        +---------------------+--------+------------------------------------------+
+        +----------------------+--------+------------------------------------------+
+        || Warnings "constant" || Value || Issue a warning when...                 |
+        +======================+========+==========================================+
+        || REATTACH            ||   1   || attaching a {formatter/filter/handler}  |
+        ||                     ||       || to a {handler/logger} that it's already |
+        ||                     ||       || attached to                             |
+        || REDEFINE            ||   2   || overwriting an existing definition of   |
+        ||                     ||       || an entity (formatter, filter, etc.)     |
+        || REPLACE_FORMATTER   ||   4   || changing a handler's formatter          |
+        || UNDEFINED           ||   8   || attaching a {formatter/filter/handler}  |
+        ||                     ||       || that hasn't yet been added (defined)    |
+        +----------------------+--------+------------------------------------------+
 
         The default value is
 

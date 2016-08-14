@@ -1,10 +1,10 @@
 TODOs
 =====
 
+*   "minimal" formatter preset should be "msg"
+    Todo! BIG GLOBAL CHANGE, touches many many files
+
 *   Docs etc: not "predefined" formatters but "presets" :)
-
-*   test/document new classmethod ``create_formatter_preset``
-
 
 * Examples -- Class Filter, Callable Filter
     Class Filter    that's initialized with some date:
@@ -12,124 +12,22 @@ TODOs
 
     Callable filter  "    "     "       "         "     "
 
-*   EXPOSE the FilterMaker class (INSIDE ``LCDEx.add_callable_filter``)
+*   ¿? EXPOSE the FilterMaker class (INSIDE ``LCDEx.add_callable_filter``)
     It's pretty nice
         (Django has a similar thing but it doesn't do Currying)
 
 *   Using `lcd` with `Django`
     in Examples/Topics
-
+    complete
 
 Package name:
 
 *   keep name `lcd`?  rename back to `logging_config_dict` ???
     or something better?
-
-
-Class names, LCD:
-
-*   ¿Not ``LoggingConfigDict`` etc but ``LCD``, ``LCDEx"?
-
-OR
-
-*   Call the base class something different,
-    e.g. ``LoggingConfigDict_`` (or ``LCD_``),
-    and call ``LCDEx`` actually ``LCD``
-        (or ``LCD``)
-
-    LoggingConfigDict   |---------->  LoggingConfigDict_      or
-                                      LoggingConfigDictBase   or
-                                      LoggingConfigDict_Base  or
-                                      LCD_
-                                      LCD_Base
-                                      LCDBase
-
-    LoggingConfigDictEx |---------->  LoggingConfigDict       or
-                                      LCD
-
+    `logging_config`?       (again)
+    `loggingconfig`?
 
 Examples:
-
-*   DOCUMENT (e.g. in examples-topics?)
-
-    The Python `logging` package provides several handler classes beyond those
-    represented (sic?) in `lcd`. See the docs for ``logging.handlers``, which
-     also documents the standard handlers in ``logging``:
-
-            https://docs.python.org/3/library/logging.handlers.html#module-logging.handlers
-
-    Give an example or two of creating handlers of other classes provided by
-    `logging` using ``add_handler`` with the appropriate value of ``class_``
-    (see list below -- omits StreamHandler, FileHandler, RotatingFileHandler.
-
-     TODO complete the list (/table), and include it in docs somewhere
-      |   (in the``add_handler`` docstring, presumably)
-    )
-
-    E.g. class_='logging.NullHandler'
-       ¿ class_='logging.handlers.SMTPHandler'(loglevel CRITICAL or ERROR)
-
-    This would be *VERY* informative.
-
-    For NullHandler, refer to/cite/see
-
-        Configuring Logging for a Library¶
-        https://docs.python.org/3/howto/logging.html#configuring-logging-for-a-library
-
-        If you want YOUR library to write logging messages ONLY if its user
-        has configured logging, you should add a NullHandler, only, to the
-        top-level logger for the library.
-
-        -------
-
-        Example might be:
-
-        Suppose a library/package `foo` does THIS, at some point (maybe
-        __init__.py ?) For simplicity assume that's the name of the library's
-        top-level logger too.
-
-            import logging
-            logging.getLogger('foo').addHandler(logging.NullHandler())
-
-        How does this interact with use of `lcd`?
-
-            If the library adds a null handler AFTER `lcd` has configured
-            logging, obviously there's no problem.
-
-            What if this happens BEFORE lcd config() is called?
-            Using ``disable_existing_loggers=False`` would work???
-                that preserves existing handlers too?
-
-        According to a sidebar in
-            https://docs.python.org/3/howto/logging.html,
-
-        >> [setting disable_existing_loggers=True] will cause any loggers
-           existing before the fileConfig() [or dictConfig()] call to be
-           disabled unless they (or an ancestor) are explicitly named in the
-           configuration.
-
-        SOOOOO,
-        Now a library user can add a "real" handler to logger 'foo'
-        and can use `lcd` to do it, in logging config dict
-        From the above, it sounds like it's NOT NECESSARY to set
-        ``disable_existing_loggers=False``
-        as 'foo' "will be explicitly named in the configuration".
-
-
-    fwiw,
-    FROM DOCS:
-        class logging.handlers.SMTPHandler(mailhost, fromaddr, toaddrs, subject,
-                                           credentials=None, secure=None, timeout=1.0)
-
-        Returns a new instance of the SMTPHandler class. The instance is
-        initialized with the from and to addresses and subject line of the email.
-        The toaddrs should be a list of strings. To specify a non-standard SMTP
-        port, use the (host, port) tuple format for the mailhost argument. If
-        you use a string, the standard SMTP port is used. If your SMTP server
-        requires authentication, you can specify a (username, password) tuple
-        for the credentials argument.
-
-    TRY AN SMTP HANDLER ! :):):)):):):)
 
 *   Write up a guide to the examples?
     main module, + a brief description of what each does
@@ -142,20 +40,17 @@ Examples:
    |        and that any prefix of 'locking', 'nolocking' will do
 
 
-*   Put `examples/` folder inside `lcd/` ???
+*   ¿¿¿ Put `examples/` folder inside `lcd/` ???
     (Note, Tending toward NOT doing this.)
 
 
 IDEAS
 ======
 
-Default is to NOT add handlers to root. This is in general good for packages,
-which should use/add their own "private", "personal" logger, created as in
-examples child_logger_* and mproc_*.
-
 Initialization order concerns -- Can a package and an app (lets say) that
 uses the package *both* use ConfigSettingsDict*?  By default, `logging`'s
 dict-based configuration has limitations...
+
 It seems the answer is, Yes, if they both use the disable_existing_loggers param
 to .config(); default is None, in which case the setting used is what was passed
 to __init__, default False [contra `logging` package, where default is True];
@@ -167,23 +62,15 @@ generally, those that use logging's dict-config).
 Feature "requests"
 ===================
 
-Support for
-    logging.NullHandler ?
-        probably no need to "support" it (and no way to, really,
-        either), but maybe give an example
-        which would be *very* informative (use of ``class_`` kwarg)
+`lcd` does not provide methods for these handler classes:
 
     logging.handlers.WatchedFileHandler ?
     logging.handlers.TimedRotatingFileHandler ?
     logging.handlers.SocketHandler
     logging.handlers.DatagramHandler
-    logging.handlers.SysLogHandler
     logging.handlers.NTEventLogHandler
-    logging.handlers.SMTPHandler
     logging.handlers.MemoryHandler
     logging.handlers.HTTPHandler
-    logging.handlers.QueueHandler
-    (logging.handlers.QueueListener)
 
 LCDEx methods to add them?
     In any case, cite
