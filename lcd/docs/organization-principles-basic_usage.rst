@@ -299,6 +299,7 @@ What ``LCDEx`` contributes
   || ``add_null_handler``          || ``NullHandler``          ||          |
   +--------------------------------+---------------------------+-----------+
 
+.. automodule:: lcd.logging_config_dict_ex
 
 --------------------------------------------------
 

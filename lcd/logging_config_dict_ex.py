@@ -88,12 +88,6 @@ class LCDEx(LCD):
             attach_handlers_to_root (bool)
             locking                 (bool)
 
-    When ``attach_handlers_to_root`` is true [default: False], by default the
-    other methods of this class automatically add handlers to the root logger
-    as well as to the ``handlers`` subdictionary. The read-only property
-    ``attach_to_root`` saves the value passed to the constructor as
-    ``attach_handlers_to_root``.
-
     ``log_path`` is a directory in which log files will be created by
     ``add_file_handler`` and ``add_rotating_file_handler``. If the filename
     passed to those methods contains a relative path, then the logfile will
@@ -101,21 +95,26 @@ class LCDEx(LCD):
     is not an absolute path, then it is relative to the current directory
     at runtime when ``config()`` is finally called.
 
+    When ``attach_handlers_to_root`` is true [default: False], by default the
+    other methods of this class automatically add handlers to the root logger
+    as well as to the ``handlers`` subdictionary. Each instance saves the
+    value passed to its constructor, and exposes it as the read-only property
+    ``attach_handlers_to_root``.
+
     When ``locking`` is true [default: False], by default the other methods of
     this class add :ref:`locking handlers <locking-handlers>`; if it's false,
     handlers instantiate the "usual" classes defined by `logging`. (See the
-    :ref:`class inheritance diagram <lcd-all-classes>`.) The read-only property
-    ``locking`` saves the value passed to the constructor as ``locking``.
+    :ref:`class inheritance diagram <lcd-all-classes>`.) Each instance saves the
+    value passed to its constructor, and exposes it as the read-only property
+    ``locking``.
 
     All of the methods that add a handler take parameters ``attach_to_root``
     and ``locking``, each a ``bool`` or ``None``; these allow overriding of
     the values passed to the constructor. Thus, for example, callers can
     add a non-locking handler even if ``self.locking`` is true, or a locking
     handler even if ``self.locking`` is false. The default value of these
-    parameters in handler-adding methods is ``None``, meaning: use the value
-    of the corresponding attribute on ``self``. (Those instance attributes
-    are also available as read-write properties ``attach_handlers_to_root``
-    and ``locking``.)
+    parameters in handler-adding methods is ``None``, meaning: use the
+    corresponding value passed to the constructor.
 
     .. _LCDEx-handler-classes-encapsulated:
 
@@ -141,42 +140,42 @@ class LCDEx(LCD):
       || ``add_null_handler``          || ``NullHandler``          ||          |
       +--------------------------------+---------------------------+-----------+
 
-    .. _builtin-formatters:
+    .. _preset-formatters:
 
-    .. index:: Builtin formatters (LCDEx)
+    .. index:: preset formatters (LCDEx), formatter presets (LCDEx)
 
     **Formatter presets** |br|
     ``- - - - - - - -``
 
     Their names make it fairly obvious what their format strings are:
 
-    +---------------------------------------+------------------------------------------------------------------------------------+
-    || Formatter name                       || Format string                                                                     |
-    +=======================================+====================================================================================+
-    || ``'minimal'``                        || ``'%(message)s'``                                                                 |
-    +---------------------------------------+------------------------------------------------------------------------------------+
-    || ``'level_msg'``                      || ``'%(levelname)-8s: %(message)s'``                                                |
-    +---------------------------------------+------------------------------------------------------------------------------------+
-    || ``'process_msg'``                    || ``'%(processName)-10s: %(message)s'``                                             |
-    +---------------------------------------+------------------------------------------------------------------------------------+
-    || ``'logger_process_msg'``             || ``'%(name)-20s: %(processName)-10s: %(message)s'``                                |
-    +---------------------------------------+------------------------------------------------------------------------------------+
-    || ``'logger_level_msg'``               || ``'%(name)-20s: %(levelname)-8s: %(message)s'``                                   |
-    +---------------------------------------+------------------------------------------------------------------------------------+
-    || ``'logger_msg'``                     || ``'%(name)-20s: %(message)s'``                                                    |
-    +---------------------------------------+------------------------------------------------------------------------------------+
-    || ``'process_level_msg'``              || ``'%(processName)-10s: %(levelname)-8s: %(message)s'``                            |
-    +---------------------------------------+------------------------------------------------------------------------------------+
-    || ``'process_time_level_msg'``         || ``'%(processName)-10s: %(asctime)s: %(levelname)-8s: %(message)s'``               |
-    +---------------------------------------+------------------------------------------------------------------------------------+
-    || ``'process_logger_level_msg'``       || ``'%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s'``               |
-    +---------------------------------------+------------------------------------------------------------------------------------+
-    || ``'process_time_logger_level_msg'``  || ``'%(processName)-10s: %(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'``  |
-    +---------------------------------------+------------------------------------------------------------------------------------+
-    || ``'time_logger_level_msg'``          || ``'%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'``                      |
-    +---------------------------------------+------------------------------------------------------------------------------------+
-
+    +--------------------------------------+-----------------------------------------------------------------------------------+
+    || Formatter name                      || Format string                                                                    |
+    +======================================+===================================================================================+
+    || ``'minimal'``                       || ``'%(message)s'``                                                                |
+    +--------------------------------------+-----------------------------------------------------------------------------------+
+    || ``'level_msg'``                     || ``'%(levelname)-8s: %(message)s'``                                               |
+    +--------------------------------------+-----------------------------------------------------------------------------------+
+    || ``'process_msg'``                   || ``'%(processName)-10s: %(message)s'``                                            |
+    +--------------------------------------+-----------------------------------------------------------------------------------+
+    || ``'logger_process_msg'``            || ``'%(name)-20s: %(processName)-10s: %(message)s'``                               |
+    +--------------------------------------+-----------------------------------------------------------------------------------+
+    || ``'logger_level_msg'``              || ``'%(name)-20s: %(levelname)-8s: %(message)s'``                                  |
+    +--------------------------------------+-----------------------------------------------------------------------------------+
+    || ``'logger_msg'``                    || ``'%(name)-20s: %(message)s'``                                                   |
+    +--------------------------------------+-----------------------------------------------------------------------------------+
+    || ``'process_level_msg'``             || ``'%(processName)-10s: %(levelname)-8s: %(message)s'``                           |
+    +--------------------------------------+-----------------------------------------------------------------------------------+
+    || ``'process_time_level_msg'``        || ``'%(processName)-10s: %(asctime)s: %(levelname)-8s: %(message)s'``              |
+    +--------------------------------------+-----------------------------------------------------------------------------------+
+    || ``'process_logger_level_msg'``      || ``'%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s'``              |
+    +--------------------------------------+-----------------------------------------------------------------------------------+
+    || ``'process_time_logger_level_msg'`` || ``'%(processName)-10s: %(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'`` |
+    +--------------------------------------+-----------------------------------------------------------------------------------+
+    || ``'time_logger_level_msg'``         || ``'%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'``                     |
+    +--------------------------------------+-----------------------------------------------------------------------------------+
     """
+
     _formatter_presets = {
         'minimal': FormatterSpec("%(message)s"),
         'level_msg': FormatterSpec('%(levelname)-8s: %(message)s'),
