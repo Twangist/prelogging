@@ -24,7 +24,7 @@ which can be specified in a layered way.
 incrementally. It flattens the process of specifying the dict, letting you
 define each entity one by one, instead of entering a thicket of nested dicts.
 
-A ``LCD`` instance *is* a logging config dict. It inherits from
+An ``LCD`` instance *is* a logging config dict. It inherits from
 ``dict``, and its methods —``add_formatter``, ``add_handler``, ``add_logger``,
 and so on — operate on the underlying dictionary, breaking down the process
 of creating a logging config dict into basic steps:
@@ -37,14 +37,17 @@ of creating a logging config dict into basic steps:
     3. Add any filter specifications with ``add_filter()``.
 
     4. Add handler specifications with ``add_handler()`` and/or
-       ``add_file_handler()``, specifying its loglevel, and referring by name to
-       a formatter (and possibly filters) already specified in previous steps.
-       Other methods let you attach filters to a previously added handler
-       and set its loglevel.
+       ``add_file_handler()``, specifying its name, its formatter, its loglevel,
+       and optionally attaching filters. The formatter and filters are specified
+       by name, so they should already have been added in previous steps
+       (if they weren't, by default `lcd` will issue a warning). Although you
+       can provide all these attributes of the handler in the ``add_*_handler``
+       call, you can do so later, after the basic call: other methods let you
+       attach a formatter, attach filters, and set the handler's loglevel.
 
-    *In steps 2. – 4. you give each thing specified a name, by which you refer
-    to it in subsequent steps when attaching the thing to other, higher-level
-    things.*
+    *In steps 2. – 4. you give each entity specified a name, by which you refer
+    to it subsequently when modifying it or attaching it to other, higher-level
+    entities.*
 
     5. If desired, configure the root logger using ``attach_root_handlers()``,
        ``attach_root_filters()`` and/or ``set_root_level()``, referring by name
@@ -62,8 +65,8 @@ the very same keys that occur in the sub-subdictionaries of the corresponding
 kind of logging entities (with just one exception: ``class_`` instead of
 ``class``). All receive correct and/or sensible default values.
 
-Once you've built a ``LCD`` meeting your requirements, you
-configure logging by calling the object's ``config`` method, which simply
+Once you've built an ``LCD`` meeting your requirements, you
+configure logging by calling the object's ``config`` method, which
 passes itself (a dict) to
 `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
 """
@@ -78,13 +81,13 @@ class LCD(dict):
         value ``logging.DEBUG``. A level name, in short — one of ``'DEBUG'``,
         ``'INFO'``, ``'WARNING'``, ``'ERROR'``, ``'CRITICAL'``, or ``'NOTSET'``.
 
-    *   Except for properties and the ``__init__`` and ``config`` methods, all
-        public methods of this class (and similarly of
+    *   Except for properties and the ``__init__``, ``config`` and ``dump``
+        methods, all public methods of this class (and similarly of
         :ref:`LCDEx`) return ``self``, to allow chaining.
 
     *   The (leaf) values in logging config dicts are almost all strings. The
-        exceptions are ``bool`` values and actual streams allowed as the value
-        of ``'stream'`` in a handler subdictionary (e.g. ``stream=sys.stdout``).
+        exceptions are ``bool`` values, filters, and actual streams allowed as
+        values of ``'stream'`` in a handler subdictionary (e.g. ``stream=sys.stdout``).
         This package uses ``bool`` values, but not actual streams, preferring
         the text equivalents accepted by the `logging` module's ``configDict()``
         method:
@@ -94,8 +97,12 @@ class LCD(dict):
 
         The reason: the ``clone_handler()`` method of the subclass
         ``LCDEx`` uses ``deepcopy()``, and streams can't be
-        deep-copied. We recommend that you not use actual streams, but rather
-        the text equivalents, as shown in the example just given.
+        deep-copied. We recommend that you not use actual streams,
+        nor in general binary objects that can't be pickled,
+        preferring instead their text equivalents, as shown in the example
+        just given. More about the use of ``'ext://'`` (and ``'cfg://'`` can be
+        found in the documentation for `logging.config`, especially
+        `here <https://docs.python.org/3/library/logging.config.html#access-to-external-objects>`_.
 
     |hr|
     """
@@ -276,7 +283,6 @@ class LCD(dict):
         assert 'class_' not in format_dict
         format_dict['class'] = class_
 
-        # . v0.7.7b7
         # "fmt" is recognized too;
         # "format" takes precedence over "fmt" if both are given
         format_dict['format'] = format or format_dict.get('fmt', None)
@@ -373,7 +379,7 @@ class LCD(dict):
                 attachee_kind='filter')
             handler_dict['filters'] = filters
 
-        self.handlers[handler_name] = handler_dict  #.copy()    <---- TODO?
+        self.handlers[handler_name] = handler_dict
         return self
 
     # << TODO >> What is logging default? It's 'a', isn't it.
@@ -416,8 +422,7 @@ class LCD(dict):
                          **kwargs)
         return self
 
-    def add_null_handler(self,
-                         handler_name,  # *
+    def add_null_handler(self, handler_name,  # *
                          level='NOTSET',
                          **kwargs):
         """Add a ``logging.NullHandler``.
@@ -434,7 +439,7 @@ class LCD(dict):
             level=level,
             **kwargs)
 
-    def attach_handler_formatter(self, handler_name, formatter_name):
+    def set_handler_formatter(self, handler_name, formatter_name):
         """Attach formatter to handler.
         Raise ``KeyError`` if no such handler.
 
@@ -563,22 +568,21 @@ class LCD(dict):
         root_filters.extend(filter_names)
         return self
 
-    def set_root_level(self, root_level):
+    def set_root_level(self, level):
         """
         Set the loglevel of the root handler.
-        Given that ``__init__`` has a ``root_level`` parameter, this isn't
+        Given that ``__init__`` has a ``level`` parameter, this isn't
         really needed.
 
-        :param root_level: an explicit value. The default set in ``__init__``
-            is ``'WARNING'``.
+        :param level: an explicit value. The default set in ``__init__``
+            is ``'WARNING'`` (same as the `logging` default).
         :return: ``self``
         """
-        assert root_level in self._level_names
-        self.root['level'] = root_level
+        assert level in self._level_names
+        self.root['level'] = level
         return self
 
-    def add_logger(self,
-                   logger_name,     # *,
+    def add_logger(self, logger_name,     # *,
                    handlers=None,
                    level='NOTSET',
                    propagate=None,
@@ -707,8 +711,7 @@ class LCD(dict):
 
         return self
 
-    def set_logger_level(self, logger_name,     # *,
-                         level):
+    def set_logger_level(self, logger_name, level):
         """If ``logger_name`` is empty, set the loglevel of the root handler to
         ``level``, else set the loglevel of handler ``logger_name`` to
         ``level``.
@@ -748,18 +751,15 @@ class LCD(dict):
             self.check()                # 0.2.7b13
         logging.config.dictConfig(dict(self))
 
-    def dump(self):                                     # pragma: no cover
+    def dump(self, **kwargs):                               # pragma: no cover
         """Pretty-print the underlying ``dict``.
         For debugging, sanity checks, etc.
+        This method does NOT return ''self''.
 
-        :return: ``self`` (even this)
+        :param kwargs: any kwargs that can be passed to ``print``, e.g. ``file``.
         """
         from pprint import pformat
-        print(  '---->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n'
-              + pformat(dict(self)) + '\n'
-              + '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<.'     #, flush=True
-        )
-        return self
+        print(pformat(dict(self)), **kwargs)
 
     # -------------------------------------------------------
     # Consistency checking

@@ -134,7 +134,7 @@ class TestLCD(TestCase):
             class_='logging.StreamHandler',
             level='INFO',
             # formatter='minimal'
-        ).attach_handler_formatter(     # coverage
+        ).set_handler_formatter(     # coverage
             'console', 'minimal'
         )
         lcd.warnings = 0
@@ -592,7 +592,7 @@ class TestLCD_NoWarnings(TestCase):
     def test_add_handler_no_formatter__then_attach(self):
         self.lcd.add_formatter('f1', format='< a bad format string >')
         self.lcd.add_handler('my_handler')
-        self.lcd.attach_handler_formatter('my_handler', 'f1')
+        self.lcd.set_handler_formatter('my_handler', 'f1')
 
         self.assertEqual(self.lcd.handlers['my_handler']['formatter'],
                          'f1'
@@ -605,7 +605,7 @@ class TestLCD_NoWarnings(TestCase):
         ).add_handler('my_handler',
                       formatter='f1')
         # Now reattach -- check for warning to stderr
-        self.lcd.attach_handler_formatter('my_handler', 'f1')
+        self.lcd.set_handler_formatter('my_handler', 'f1')
 
         self._verify_errmsg(": formatter 'f1' already attached to handler 'my_handler'.\n")
         self.assertEqual(
@@ -620,7 +620,7 @@ class TestLCD_NoWarnings(TestCase):
         ).add_handler('my_handler',
                       formatter='f1')
         # Now attach f2 -- check for warning to stderr
-        self.lcd.attach_handler_formatter('my_handler', 'f2')
+        self.lcd.set_handler_formatter('my_handler', 'f2')
 
         self._verify_errmsg(": formatter 'f2' replaces 'f1' in handler 'my_handler'.\n")
         self.assertEqual(
@@ -894,7 +894,7 @@ class TestLCD_NoWarnings(TestCase):
         filters
         handlers
 
-    attach_handler_formatter
+    set_handler_formatter
     attach_handler_filters
 
     attach_logger_filters
@@ -962,10 +962,10 @@ class TestLCD_NoWarnings(TestCase):
             ['real-handler', 'no-such-handler']
         )
 
-    def test_warn_undef__attach_handler_formatter(self):
+    def test_warn_undef__set_handler_formatter(self):
         "with formatter undefined"
         self.lcd.add_handler('h')
-        self.lcd.attach_handler_formatter('h', 'no-such-formatter')
+        self.lcd.set_handler_formatter('h', 'no-such-formatter')
         self._verify_errmsg(": attaching undefined formatter 'no-such-formatter'"
                             " to handler 'h'.\n")
         self.assertEqual(

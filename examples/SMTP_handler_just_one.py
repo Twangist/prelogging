@@ -20,12 +20,12 @@ def main():
     # root, console handler levels: WARNING.
     lcdx = LCDEx(attach_handlers_to_root=True)
     lcdx.add_stderr_handler('con-err',
-                                    formatter='minimal'
+                            formatter='minimal'
     ).add_email_handler('email-handler',
         level='ERROR',
         formatter='time_logger_level_msg',
         # SMTPHandler-specific kwargs:
-        mailhost='smtp.gmail.com',
+        mailhost=SMTP_SERVER,
         fromaddr=FROM_ADDRESS,
         toaddrs=[TEST_TO_ADDRESS, 'admin@kludge.ly'], # string or list of strings
         subject='Alert from SMTPHandler',

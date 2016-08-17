@@ -8,5 +8,6 @@ SMTP_USERNAME = 'twangist'
 SMTP_PASSWORD = '17Frothing71'
 
 FROM_ADDRESS =  SMTP_USERNAME + '@gmail.com'
-SMTP_SERVER = 'smtp.gmail.com'
-
+SMTP_SERVER = ('smtp.gmail.com', 587)
+# 587 = TLS port
+# See http://email.about.com/od/accessinggmail/f/Gmail_SMTP_Settings.htm

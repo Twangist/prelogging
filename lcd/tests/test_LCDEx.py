@@ -199,7 +199,7 @@ class TestLCDEx(TestCase):
         )
 
 # ---------------------------------------------------------------------------
-# attach_handler_formatter (the override)
+# set_handler_formatter (the override)
 # create_formatter_preset
 # ---------------------------------------------------------------------------
 class TestLCDEx_Misc(TestCase):
@@ -207,7 +207,7 @@ class TestLCDEx_Misc(TestCase):
     def test_attach_handler_formatter(self):
         d = LCDEx()
         d.add_handler('h')
-        d.attach_handler_formatter('h', 'minimal')
+        d.set_handler_formatter('h', 'minimal')
         self.assertEqual(
             d.handlers['h']['formatter'],
             'minimal'

@@ -21,6 +21,7 @@ Using `lcd`
     intro
     setup-testing-examples
     overview
+    organization-principles-basic_usage
     topics-recipes
     class-reference
     the-index

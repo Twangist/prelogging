@@ -64,8 +64,8 @@ class LCDEx(LCD):
           `logging` handler classes;
         * optional automatic attaching of handlers to the root logger
           as they're added;
-        * easy to use, multiprocessing-safe subclasses of some of
-          the handler classes;
+        * easy use of the "locking" (multiprocessing-safe handler classes
+          that `lcd` provides;
         * simplified filter creation.
 
     Except for properties and the ``__init__`` method, all public instance
@@ -342,13 +342,13 @@ class LCDEx(LCD):
             self.add_formatter(formatter_name,
                                ** self._formatter_presets[formatter_name].to_dict())
 
-    def attach_handler_formatter(self, handler_name, formatter_name):
+    def set_handler_formatter(self, handler_name, formatter_name):
         """
         Hook the LCD method so that we can add formatter just in time if need be
         :return: ``self``
         """
         self._add_formatter_if_preset(formatter_name),
-        return super(LCDEx, self).attach_handler_formatter(
+        return super(LCDEx, self).set_handler_formatter(
                                         handler_name, formatter_name)
 
     def add_handler(self, handler_name,     # *,

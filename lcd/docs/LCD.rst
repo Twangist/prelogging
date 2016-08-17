@@ -5,8 +5,6 @@ LCD
 
 This class resides in ``logging_config_dict.py``.
 
-.. automodule:: lcd.logging_config_dict
-
 
 .. autoclass:: lcd.logging_config_dict.LCD
     :members: __init__, formatters, filters, handlers, loggers, root,
