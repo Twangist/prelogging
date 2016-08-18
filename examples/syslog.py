@@ -32,7 +32,7 @@ def config_logging():
                    # locking=True,
                    root_level='DEBUG')
 
-    lcd_ex.add_stdout_handler('console', formatter='minimal')
+    lcd_ex.add_stdout_handler('console', formatter='msg')
 
     # add a syslog handler
     lcd_ex.add_syslog_handler(

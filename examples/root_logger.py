@@ -24,7 +24,7 @@ def config_logging(log_path, logfilename=''):
     lcd_ex = LCDEx(log_path=log_path,
                                  attach_handlers_to_root=True,
                                  root_level='INFO')
-    lcd_ex.add_stdout_handler('console', formatter='minimal')
+    lcd_ex.add_stdout_handler('console', formatter='msg')
     # add a file handler, which will write to log_path + '/' + logfilename
     lcd_ex.add_formatter(
         'my_file_formatter',

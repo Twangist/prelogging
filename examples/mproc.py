@@ -121,7 +121,7 @@ def config_logging(use_locking):
     # add logger that uses them.
     lcd_ex.add_stdout_handler(
         'console',
-        formatter='minimal',
+        formatter='msg',
         level='INFO'
     ).add_formatter(
         'my_file_formatter',

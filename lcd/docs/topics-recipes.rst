@@ -627,7 +627,7 @@ you've passed. For example,
 
     >>> data_wrapper = [17]
     >>> lcdx = LCDEx(attach_handlers_to_root=True, root_level='DEBUG')
-    >>> lcdx.add_stdout_handler('con', formatter='minimal', level='DEBUG')
+    >>> lcdx.add_stdout_handler('con', formatter='msg', level='DEBUG')
     >>> lcdx.add_callable_filter('callable-filter',
     ...                          my_filter_fn,
     ...                          list1=data_wrapper)
@@ -681,7 +681,7 @@ as a container:
     >>> dw = DataWrapper(17)
 
     >>> lcdx = LCDEx(attach_handlers_to_root=True, root_level='DEBUG')
-    >>> lcdx.add_stdout_handler('con', formatter='minimal', level='DEBUG')
+    >>> lcdx.add_stdout_handler('con', formatter='msg', level='DEBUG')
     >>> lcdx.add_callable_filter('callable-filter',
     ...                          my_filter_fn,
     ...                          data_wrapper=dw)
@@ -923,7 +923,7 @@ Using a single SMTPHandler
 
     # root, console handler levels: WARNING.
     lcdx = LCDEx(attach_handlers_to_root=True)
-    lcdx.add_stderr_handler('con-err', formatter='minimal'
+    lcdx.add_stderr_handler('con-err', formatter='msg'
     ).add_email_handler(
         'email-handler',
         level='ERROR',

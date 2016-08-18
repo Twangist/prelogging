@@ -17,7 +17,7 @@ Organization, Principles and Basic Usage
     .. hlist::
         :columns: 3
 
-        * :ref:`LCDEx-defining-new-formatters`
+        * :ref:`defining-new-formatters`
         * :ref:`LCDEx-using-formatter-presets`
 
 * Adding handlers
@@ -55,23 +55,87 @@ Organization, Principles and Basic Usage
 
 .. _basic-usage-LCD:
 
-Basic usage of ``LCD``
+``LCD``
 -------------------------------------------------------
 
-.. automodule:: lcd.logging_config_dict
+<<< NOTE NOTE NOTE  lcd.logging_config_dict docstring  NOTE NOTE NOTE >>>
+
+``LCD`` provides an API for building dictionaries that specify
+Python logging configuration -- *logging config dicts*.
+
+Entering a logging config dict as static data requires many nested curly
+braces, colons, single-quoted keywords, and boilerplate default key/value pairs.
+Such dicts are significantly nested, and keys often appear among
+the data, as back-references to things "already defined".
+
+But logging configuration involves a small hierarchy of only four kinds of
+entities — formatters, handlers, loggers and, optionally, filters —
+which can be specified in a layered way.
+
+``LCD`` lets you build a logging config dict modularly and
+incrementally. It flattens the process of specifying the dict, letting you
+define each entity one by one, instead of entering a thicket of nested dicts.
+
+An ``LCD`` instance *is* a logging config dict. It inherits from
+``dict``, and its methods —``add_formatter``, ``add_handler``, ``add_logger``,
+and so on — operate on the underlying dictionary, breaking down the process
+of creating a logging config dict into basic steps:
+
+    1. Create an ``LCD``, optionally specifying the level of
+       the root handler.
+
+    2. Add formatter specifications with ``add_formatter()``.
+
+    3. Add any filter specifications with ``add_filter()``.
+
+    4. Add handler specifications with ``add_handler()`` and/or
+       ``add_file_handler()``: for each filter, specify its name, formatter,
+       and loglevel, and and optionally attach filters. Formatters and filters
+       are specified by name, so they should already have been added in previous
+       steps (if they weren't, by default `lcd` will issue a warning). Although
+       you can provide all these attributes of a handler in the
+       ``add_*_handler`` call, you can do so later, after the basic call: other
+       methods let you attach a formatter, attach filters, and set the handler's
+       loglevel.
+
+    *In steps 2. – 4. you give each specified entity a name, by which you refer
+    to it subsequently when modifying it or attaching it to other, higher-level
+    entities.*
+
+    5. If desired, configure the root logger using ``attach_root_handlers()``,
+       ``attach_root_filters()`` and/or ``set_root_level()``, referring by name
+       to handlers and filters already specified in previous steps.
+
+    6. Add specifications for any non-root loggers with ``add_logger()``.
+       Specify the handlers and filters of a logger by name, using the
+       ``handlers`` and ``filters`` keyword parameters. You can also attach
+       handlers and filters to an already-added logger, and set its loglevel.
+
+    *Steps 2. and 3. can be interchanged, likewise 5. and 6.*
+
+Keyword parameters of the ``add_*`` methods are, with a few, documented exceptions,
+the very same keys that occur in the configuring dictionaries of the corresponding
+kind of logging entities (with just one exception: ``class_`` instead of
+``class``). For example, the keyword parameters of ``add_file_handler`` are
+keys that can appear in a dictionary of configuration settings for a file handler;
+the keyword parameters of ``add_logger`` are keys that can appear in a dict that
+configures a logger. In any case, all receive sensible default values consistent
+with `logging`.
+
+Once you've built an ``LCD`` meeting your requirements, you
+configure logging by calling the object's ``config`` method, which
+passes itself (a dict) to
+`logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
 
 
 Methods, terminology
 +++++++++++++++++++++
 
-.. todo:: At least *mention* ``dump`` !!!!!
-    Maybe rename that after all.
-
 Here's what a minimal, "blank" logging config dict looks like::
 
     >>> from lcd import LCD
     >>> d = LCD()
-    >>> d.dump()
+    >>> d.dump()        # prettyprint the underlying dict
     {'filters': {},
      'formatters': {},
      'handlers': {},
@@ -80,14 +144,15 @@ Here's what a minimal, "blank" logging config dict looks like::
      'root': {'handlers': [], 'level': 'WARNING'},
      'version': 1}
 
-As you can see, every logging config dict has five subdictionaries. The ``LCD``
-class exposes them as properties: ``formatters``, ``filters``, ``handlers``,
-``loggers``, ``root``. ``root`` is a dict containing settings for that special
-logger. Every other subdict contains keys that are names of entities of the appropriate
-kind; the value of each such key is a dict containing configuration settings
-for the entity. In an alternate universe, ``'root'`` and its value (the
-``root`` subdict) could be just a special item in the ``loggers`` subdict; but
-logging config dicts aren't specified that way.
+Every logging config dict has the five subdictionaries shown (and, as it
+happens, never any others). The ``LCD`` class exposes them as properties:
+``formatters``, ``filters``, ``handlers``, ``loggers``, ``root``.
+``root`` is a dict containing settings for that special logger. Every other
+subdict contains keys that are names of entities of the appropriate kind;
+the value of each such key is a dict containing configuration settings for
+the entity. In an alternate universe, ``'root'`` and its value (the ``root``
+subdict) could be just a special item in the ``loggers`` subdict; but
+logging config dicts aren't defined that way.
 
 
 The ``add_*`` methods
@@ -100,7 +165,8 @@ The four basic ``add_*`` methods are::
     add_handler(self, name, level='NOTSET', formatter=None, filters=None, ... )
     add_logger(self, name, level='NOTSET', handlers=None, filters=None, ...  )
 
-``LCD`` also defines two special cases of ``add_handler``: ``add_file_handler`` and ``add_null_handler``.
+``LCD`` also defines two special cases of ``add_handler``: ``add_file_handler``
+and ``add_null_handler``.
 
 Each ``add_*`` method adds an item to (or replaces an item in) the corresponding
 subdict. When you add a formatter::
@@ -195,24 +261,59 @@ and examine the underlying dict::
 The ``set_*_*`` methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-These methods modify a single value -- loglevel, or (outlier) formatter::
+These methods modify a single value -- a loglevel, or a formatter (the outlier
+case)::
 
     set_handler_level(self, handler_name, level)
     set_root_level(self, root_level)
     set_logger_level(self, logger_name, level)
     set_handler_formatter(self, handler_name, formatter_name)
 
-We might have named the last "attach_handler_formatter", as the
+We might have named the last method "attach_handler_formatter", as the
 handler-formatter relation is another example of an association between two
 different kinds of logging entities. However, further reflection reveals that
 a formatter is not "attached" in the sense of all the other "attach_*"
 methods. A handler has at most one formatter, and "setting" a handler's
 formatter replaces any formatter previously set; whereas the attach methods
-only append to and extend collections, they never delete or replace items.
-Hence "set".
+only append to and extend collections of filters and handlers, they never delete
+or replace items. Hence "set_handler_formatter".
+
+``__init__``
+~~~~~~~~~~~~~~~~~~
+
+discuss its parameters here?
+or discuss two ::
+
+    root_level='WARNING',              # == logging default
+    disable_existing_loggers=None,     # logging default: True
+
+``root_level`` -- the `lcd` default is the `logging` default.
+This can also be set with ``set_root_level`` method.
+
+TWO WAYS TO DO THIS. <<<<<<------------- is that good?
+
+
+``disable_existing_loggers``:
+the ``LCD`` default of ``None`` uses the `logging` default (``True``)
+for ``disable_existing_loggers``.
+This can also be set as a parameter to ``config``.
+
+
+TODO TODO TODO Maybe make this a property??????? a r/w property....
+Reads -- from dict;
+writes -- to dict :)
+
+and dispense with it as a parameter to config (that's silly, no?)
+
+
+TWO WAYS TO DO THIS. <<<<<<------------- is that good?
+
+``warnings``: point to discussion of "warnings"
+
 
 Other methods
 ~~~~~~~~~~~~~~~~~~
+::
 
     dump()
     check(self, verbose=True)
@@ -270,20 +371,19 @@ which we've commented as ``# NEW``):
 
 .. _basic-LCDEx:
 
-What ``LCDEx`` contributes
----------------------------------------------------------
+``LCDEx``
+----------
 
-<<<<< TODO >>>>> 
+``LCDEx`` is a subclass of ``LCD`` which contributes additional conveniences:
 
-.. todo::
-    intro blather re ``LCDEx``: why this superclass,
-    what does it do, offer?
-
-* Formatter presets
-* Optional automatic attaching of handlers to the root logger as they're added (/"defined"/specified/configured...)
-* Optional automatic use of "locking" handlers, where available
-* Simplified filter creation
-* Methods for configuring several handler classes:
+* formatter presets;
+* optional automatic attaching of handlers to the root logger
+  as they're added (/"defined"/specified/configured...);
+* easy use of the "locking" (multiprocessing-safe) handler classes
+  that `lcd` provides;
+* simplified filter creation;
+* various ``add_*_handler`` methods for configuring handlers of several
+  `logging` handler classes, with optional locking support in most cases:
 
   +--------------------------------+---------------------------+-----------+
   || method                        || creates                  || optional |
@@ -299,18 +399,103 @@ What ``LCDEx`` contributes
   || ``add_null_handler``          || ``NullHandler``          ||          |
   +--------------------------------+---------------------------+-----------+
 
-.. automodule:: lcd.logging_config_dict_ex
+Except for properties and the ``__init__`` method, all public instance
+methods of this class return ``self``.
+
+
+.. _LCDEx-init-params:
+
+.. index:: __init__ keyword parameters (LCDEx)
+
+``__init__`` keyword parameters
+++++++++++++++++++++++++++++++++++++++++++
+
+In addition to the parameters ``root_level``,
+``disable_existing_loggers`` and ``warnings`` recognized by :ref:`LCD`,
+the constructor of this class accepts a few more::
+
+        log_path                (str)
+        attach_handlers_to_root (bool)
+        locking                 (bool)
+
+``log_path`` is a directory in which log files will be created by
+``add_file_handler`` and ``add_rotating_file_handler``. If the filename
+passed to those methods contains a relative path, then the logfile will
+be created in that relative subdirectory of ``log_path``. If ``log_path``
+is not an absolute path, then it is relative to the current directory
+at runtime when ``config()`` is finally called.
+
+When ``attach_handlers_to_root`` is true [default: False], by default the
+other methods of this class automatically add handlers to the root logger
+as well as to the ``handlers`` subdictionary. Each instance saves the
+value passed to its constructor, and exposes it as the read-only property
+``attach_handlers_to_root``.
+
+When ``locking`` is true [default: False], by default the other methods of
+this class add :ref:`locking handlers <locking-handlers>`; if it's false,
+handlers instantiate the "usual" classes defined by `logging`. (See the
+:ref:`class inheritance diagram <lcd-all-classes>`.) Each instance saves the
+value passed to its constructor, and exposes it as the read-only property
+``locking``.
+
+All of the methods that add a handler take parameters ``attach_to_root``
+and ``locking``, each a ``bool`` or ``None``; these allow overriding of
+the values passed to the constructor. Thus, for example, callers can
+add a non-locking handler even if ``self.locking`` is true, or a locking
+handler even if ``self.locking`` is false. The default value of these
+parameters in handler-adding methods is ``None``, meaning: use the
+corresponding value passed to the constructor.
+
+.. _LCDEx-handler-classes-encapsulated:
+
+.. index:: `'logging` handler classes encapsulated
+
+.. _preset-formatters:
+
+.. index:: preset formatters (LCDEx), formatter presets (LCDEx)
+
+Formatter presets
++++++++++++++++++++++++++++++
+
+Their names make it fairly obvious what their format strings are:
+
++--------------------------------------+-----------------------------------------------------------------------------------+
+|| Formatter name                      || Format string                                                                    |
++======================================+===================================================================================+
+|| ``'msg'``                           || ``'%(message)s'``                                                                |
++--------------------------------------+-----------------------------------------------------------------------------------+
+|| ``'level_msg'``                     || ``'%(levelname)-8s: %(message)s'``                                               |
++--------------------------------------+-----------------------------------------------------------------------------------+
+|| ``'process_msg'``                   || ``'%(processName)-10s: %(message)s'``                                            |
++--------------------------------------+-----------------------------------------------------------------------------------+
+|| ``'logger_process_msg'``            || ``'%(name)-20s: %(processName)-10s: %(message)s'``                               |
++--------------------------------------+-----------------------------------------------------------------------------------+
+|| ``'logger_level_msg'``              || ``'%(name)-20s: %(levelname)-8s: %(message)s'``                                  |
++--------------------------------------+-----------------------------------------------------------------------------------+
+|| ``'logger_msg'``                    || ``'%(name)-20s: %(message)s'``                                                   |
++--------------------------------------+-----------------------------------------------------------------------------------+
+|| ``'process_level_msg'``             || ``'%(processName)-10s: %(levelname)-8s: %(message)s'``                           |
++--------------------------------------+-----------------------------------------------------------------------------------+
+|| ``'process_time_level_msg'``        || ``'%(processName)-10s: %(asctime)s: %(levelname)-8s: %(message)s'``              |
++--------------------------------------+-----------------------------------------------------------------------------------+
+|| ``'process_logger_level_msg'``      || ``'%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s'``              |
++--------------------------------------+-----------------------------------------------------------------------------------+
+|| ``'process_time_logger_level_msg'`` || ``'%(processName)-10s: %(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'`` |
++--------------------------------------+-----------------------------------------------------------------------------------+
+|| ``'time_logger_level_msg'``         || ``'%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'``                     |
++--------------------------------------+-----------------------------------------------------------------------------------+
+
 
 --------------------------------------------------
 
-.. _LCDEx-using-formatters:
+.. _using-formatters:
 
 Using formatters
 -------------------------------------------------------
 
 <<<<< TODO >>>>> 
 
-.. _LCDEx-defining-new-formatters:
+.. _defining-new-formatters:
 
 Defining new formatters
 ++++++++++++++++++++++++++
@@ -538,7 +723,7 @@ subdirectory of the current directory::
 Set up the root logger with a ``stderr`` console handler and a file handler,
 at their respective default loglevels ``'WARNING'`` and ``'NOTSET'``::
 
-    lcd_ex.add_stderr_handler('console', formatter='minimal')
+    lcd_ex.add_stderr_handler('console', formatter='msg')
     lcd_ex.add_file_handler('root_fh',
                             filename='root.log',
                             formatter='logger_level_msg')

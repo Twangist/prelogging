@@ -64,7 +64,7 @@ class LCDEx(LCD):
           `logging` handler classes;
         * optional automatic attaching of handlers to the root logger
           as they're added;
-        * easy use of the "locking" (multiprocessing-safe handler classes
+        * easy use of the "locking" (multiprocessing-safe) handler classes
           that `lcd` provides;
         * simplified filter creation.
 
@@ -152,7 +152,7 @@ class LCDEx(LCD):
     +--------------------------------------+-----------------------------------------------------------------------------------+
     || Formatter name                      || Format string                                                                    |
     +======================================+===================================================================================+
-    || ``'minimal'``                       || ``'%(message)s'``                                                                |
+    || ``'msg'``                           || ``'%(message)s'``                                                                |
     +--------------------------------------+-----------------------------------------------------------------------------------+
     || ``'level_msg'``                     || ``'%(levelname)-8s: %(message)s'``                                               |
     +--------------------------------------+-----------------------------------------------------------------------------------+
@@ -177,7 +177,7 @@ class LCDEx(LCD):
     """
 
     _formatter_presets = {
-        'minimal': FormatterSpec("%(message)s"),
+        'msg': FormatterSpec("%(message)s"),
         'level_msg': FormatterSpec('%(levelname)-8s: %(message)s'),
         'process_msg': FormatterSpec('%(processName)-10s: %(message)s'),
         'logger_process_msg': FormatterSpec('%(name)-20s: %(processName)-10s: %(message)s'),

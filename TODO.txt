@@ -1,16 +1,18 @@
 TODOs
 =====
 
-*   "minimal" formatter preset should be "msg"
-    Todo! BIG GLOBAL CHANGE, touches many many files
+*   ``disable_existing_loggers``:
+    the ``LCD`` default of ``None`` uses the `logging` default (``True``)
+    for ``disable_existing_loggers``.
+    This can also be set as a parameter to ``config``.
 
-*   Docs etc: not "predefined" formatters but "presets" :)
 
-* Examples -- Class Filter, Callable Filter
-    Class Filter    that's initialized with some date:
-                    using the keyword parameters for initialization
+    TODO TODO TODO Maybe make this a property??????? a r/w property....
+    Reads -- from dict;
+    writes -- to dict :)
 
-    Callable filter  "    "     "       "         "     "
+    and dispense with it as a parameter to config (that's silly, no?)
+
 
 *   ¿? EXPOSE the FilterMaker class (INSIDE ``LCDEx.add_callable_filter``)
     It's pretty nice

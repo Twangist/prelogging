@@ -18,7 +18,7 @@ def configure_logging(log_path, logfilename=''):
     lcd_ex = LCDEx(log_path=log_path,
                    attach_handlers_to_root=True,
                    root_level='CRITICAL')
-    lcd_ex.add_stdout_handler('con', formatter="minimal")
+    lcd_ex.add_stdout_handler('con', formatter="msg")
 
     lcd_ex.set_logger_level(None, 'INFO')    # . coverage ho'
 

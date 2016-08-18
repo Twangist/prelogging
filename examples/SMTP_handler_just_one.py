@@ -20,7 +20,7 @@ def main():
     # root, console handler levels: WARNING.
     lcdx = LCDEx(attach_handlers_to_root=True)
     lcdx.add_stderr_handler('con-err',
-                            formatter='minimal'
+                            formatter='msg'
     ).add_email_handler('email-handler',
         level='ERROR',
         formatter='time_logger_level_msg',

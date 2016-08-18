@@ -125,7 +125,7 @@ def config_logging(use_locking):
                                  root_level='DEBUG')
     # add main file handler, which will write to LOG_PATH + '/' + logfilename
     lcd_ex.add_stderr_handler(
-        'console', formatter='minimal', level='DEBUG'
+        'console', formatter='msg', level='DEBUG'
     ).add_formatter(
         'my_file_formatter',
         format='%(processName)-12s: %(name)-14s: %(levelname)-8s: %(asctime)24s: %(message)s'

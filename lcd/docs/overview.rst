@@ -424,7 +424,7 @@ else receives reasonable, expected defaults. Using the "batteries included"
                    attach_handlers_to_root=True)
     lcd_ex.add_stderr_handler(
                     'console',
-                    formatter='minimal',
+                    formatter='msg',
                     level='INFO'
     ).add_file_handler('file_handler',
                        formatter='logger_level_msg',
@@ -467,10 +467,10 @@ using code like this:
          'formatters': {'logger_level_msg': {'class': 'logging.Formatter',
                                              'format': '%(name)-20s: %(levelname)-8s: '
                                                        '%(message)s'},
-                        'minimal': {'class': 'logging.Formatter',
+                        'msg': {'class': 'logging.Formatter',
                                     'format': '%(message)s'}},
          'handlers': {'console': {'class': 'logging.StreamHandler',
-                                  'formatter': 'minimal',
+                                  'formatter': 'msg',
                                   'level': 'INFO'},
                       'file_handler': {'class': 'logging.FileHandler',
                                        'delay': False,

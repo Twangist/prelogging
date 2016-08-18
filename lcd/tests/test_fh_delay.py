@@ -16,7 +16,7 @@ def configure_logging(log_path, logfilename=''):
     lcd_ex = LCDEx(log_path=log_path,
                    root_level='DEBUG',
                    attach_handlers_to_root=True)
-    lcd_ex.add_stdout_handler('con', formatter='minimal', level='DEBUG')
+    lcd_ex.add_stdout_handler('con', formatter='msg', level='DEBUG')
 
     if logfilename:
         # add a file handler, which will write to log_path + '/' + logfilename

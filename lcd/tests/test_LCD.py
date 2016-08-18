@@ -30,7 +30,7 @@ class TestLCD(TestCase):
         lcd = LCD(root_level='DEBUG',
                                 disable_existing_loggers=False)
         lcd.add_formatter(
-            'minimal',
+            'msg',
             format='%(message)s'
         ).add_formatter(
             'process_msg',
@@ -47,7 +47,7 @@ class TestLCD(TestCase):
             'root': {'level': 'DEBUG', 'handlers': []},
             'loggers': {},
             'disable_existing_loggers': False,
-            'formatters': {'minimal': {'class': 'logging.Formatter', 'format': '%(message)s'},
+            'formatters': {'msg': {'class': 'logging.Formatter', 'format': '%(message)s'},
                            'process_msg': {'class': 'logging.Formatter',
                                            'format': '%(processName)-10s: %(message)s'},
                            'logger_process_msg': {'class': 'logging.Formatter',
@@ -62,12 +62,12 @@ class TestLCD(TestCase):
             'console',
             class_='logging.StreamHandler',
             level='INFO',
-            formatter='minimal'
+            formatter='msg'
         ).add_file_handler(
             'default_file',
             filename='blather.log',
             level='DEBUG',
-            formatter='minimal'
+            formatter='msg'
         )
 
         # lcd.dump()      # | DEBUG comment out
@@ -78,16 +78,16 @@ class TestLCD(TestCase):
             'loggers': {},
             'disable_existing_loggers': False,
             'incremental': False,
-            'formatters': {'minimal': {'class': 'logging.Formatter', 'format': '%(message)s'},
+            'formatters': {'msg': {'class': 'logging.Formatter', 'format': '%(message)s'},
                            'process_msg': {'class': 'logging.Formatter',
                                            'format': '%(processName)-10s: %(message)s'},
                            'logger_process_msg': {'class': 'logging.Formatter',
                                                   'format': '%(name)-15s: %(processName)-10s: %(message)s'}
                           },
             'filters': {},
-            'handlers': {'console': {'formatter': 'minimal', 'level': 'INFO',
+            'handlers': {'console': {'formatter': 'msg', 'level': 'INFO',
                                      'class': 'logging.StreamHandler'},
-                         'default_file': {'formatter': 'minimal', 'level': 'DEBUG',
+                         'default_file': {'formatter': 'msg', 'level': 'DEBUG',
                                           'class': 'logging.FileHandler',
                                           'filename': 'blather.log',
                                           'delay': False, 'mode': 'w'}}
@@ -108,16 +108,16 @@ class TestLCD(TestCase):
             'loggers': {'default': {'level': 'DEBUG', 'handlers': ['console', 'default_file']}},
             'disable_existing_loggers': False,
             'incremental': False,
-            'formatters': {'minimal': {'class': 'logging.Formatter', 'format': '%(message)s'},
+            'formatters': {'msg': {'class': 'logging.Formatter', 'format': '%(message)s'},
                            'process_msg': {'class': 'logging.Formatter',
                                            'format': '%(processName)-10s: %(message)s'},
                            'logger_process_msg': {'class': 'logging.Formatter',
                                                   'format': '%(name)-15s: %(processName)-10s: %(message)s'}
                           },
             'filters': {},
-            'handlers': {'console': {'formatter': 'minimal', 'level': 'INFO',
+            'handlers': {'console': {'formatter': 'msg', 'level': 'INFO',
                                      'class': 'logging.StreamHandler'},
-                         'default_file': {'formatter': 'minimal', 'level': 'DEBUG',
+                         'default_file': {'formatter': 'msg', 'level': 'DEBUG',
                                           'class': 'logging.FileHandler',
                                           'filename': 'blather.log',
                                           'delay': False, 'mode': 'w'}}
@@ -127,15 +127,15 @@ class TestLCD(TestCase):
 
         lcd = LCD(root_level='DEBUG')
         lcd.add_formatter(
-            'minimal',
+            'msg',
             format='%(message)s'
         ).add_handler(
             'console',
             class_='logging.StreamHandler',
             level='INFO',
-            # formatter='minimal'
+            # formatter='msg'
         ).set_handler_formatter(     # coverage
-            'console', 'minimal'
+            'console', 'msg'
         )
         lcd.warnings = 0
         lcd.add_logger(
@@ -154,7 +154,7 @@ class TestLCD(TestCase):
         self.assertEqual(
             lcd['handlers'],
             {'console': {'class': 'logging.StreamHandler',
-                         'formatter': 'minimal',
+                         'formatter': 'msg',
                          'level': 'INFO'}}
         )
         self.assertEqual(
@@ -198,7 +198,7 @@ class TestLCD(TestCase):
         lcd.set_root_level('DEBUG')
 
         lcd.add_formatter(
-            'minimal',
+            'msg',
             format='%(message)s'
         ).add_null_handler(
             'console',
@@ -252,7 +252,7 @@ class TestLCD(TestCase):
         lcd = LCD(root_level='DEBUG')
 
         lcd.add_formatter(
-            'minimal',
+            'msg',
             format='%(message)s'
         )
 
@@ -263,7 +263,7 @@ class TestLCD(TestCase):
             class_='logging.StreamHandler',
             stream=my_stream,
             # level='INFO',
-            formatter='minimal'
+            formatter='msg'
         ).set_handler_level(
             'console', 'DEBUG')
 
@@ -307,7 +307,7 @@ class TestLCD(TestCase):
         lcd = LCD(root_level='DEBUG')
 
         lcd.add_formatter(
-            'minimal',
+            'msg',
             format='%(message)s'
         )
         my_stream = io.StringIO()
@@ -318,7 +318,7 @@ class TestLCD(TestCase):
             stream=my_stream,
             # class_='logging.NullHandler',   # . <-- suppress output
             level='INFO',
-            formatter='minimal'
+            formatter='msg'
         ).attach_root_handlers('console')
 
         lcd.add_filter(
@@ -377,14 +377,14 @@ class TestLCD(TestCase):
             'filter_odd',
             ** {'()': FilterOutOddRecords}
         ).add_formatter(
-            'minimal',
+            'msg',
             format='%(message)s'
         ).add_handler(
             'console',
             class_='logging.StreamHandler',     # writes messages
             # class_='logging.NullHandler',     # can't do this to suppress output: filter won't be called
             level='INFO',
-            formatter='minimal',
+            formatter='msg',
         )
         lcd.attach_handler_filters('console')               # coverage
         lcd.attach_handler_filters('console', 'filter_odd')

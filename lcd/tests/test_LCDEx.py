@@ -52,13 +52,13 @@ class TestLCDEx(TestCase):
         self.assertEqual(lcd, expected)
 
         lcd.add_stderr_handler(
-            'console', formatter='minimal'
+            'console', formatter='msg'
         )
         # lcd.dump()      # | DEBUG comment out
 
         self.assertEqual(
             lcd['formatters'],
-            {'minimal': {'class': 'logging.Formatter',
+            {'msg': {'class': 'logging.Formatter',
                          'format': '%(message)s'},
             }
         )
@@ -67,7 +67,7 @@ class TestLCDEx(TestCase):
             'default_file',
             filename='blather.log',
             # level='DEBUG',
-            formatter='minimal'
+            formatter='msg'
         )
 
         # lcd.dump()      # | DEBUG comment out
@@ -75,13 +75,13 @@ class TestLCDEx(TestCase):
         self.assertEqual(
             lcd['handlers'],
             {'console': {'class': 'logging.StreamHandler',
-                         'formatter': 'minimal',
+                         'formatter': 'msg',
                          'level': 'WARNING',
                          'stream': 'ext://sys.stderr'},
              'default_file': {'class': 'logging.FileHandler',
                               'delay': False,
                               'filename': 'blather.log',
-                              'formatter': 'minimal',
+                              'formatter': 'msg',
                               'level': 'NOTSET',
                               'mode': 'w'}}
         )
@@ -181,7 +181,7 @@ class TestLCDEx(TestCase):
         expected = self.get_expected_starting_dict()
         self.assertEqual(lcd, expected)
 
-        lcd.add_stdout_handler('con', formatter='minimal')
+        lcd.add_stdout_handler('con', formatter='msg')
         lcd.clone_handler(clone='con2', handler='con')
 
         # lcd.dump()      # | DEBUG comment out
@@ -189,11 +189,11 @@ class TestLCDEx(TestCase):
         self.assertEqual(
             lcd['handlers'],
             {'con2': {'class': 'logging.StreamHandler',
-                      'formatter': 'minimal',
+                      'formatter': 'msg',
                       'level': 'WARNING',
                       'stream': 'ext://sys.stdout'},
              'con': {'class': 'logging.StreamHandler',
-                     'formatter': 'minimal',
+                     'formatter': 'msg',
                      'level': 'WARNING',
                      'stream': 'ext://sys.stdout'}}
         )
@@ -207,10 +207,10 @@ class TestLCDEx_Misc(TestCase):
     def test_attach_handler_formatter(self):
         d = LCDEx()
         d.add_handler('h')
-        d.set_handler_formatter('h', 'minimal')
+        d.set_handler_formatter('h', 'msg')
         self.assertEqual(
             d.handlers['h']['formatter'],
-            'minimal'
+            'msg'
         )
         # d.dump()         # TODO Comment out
         # In fact,
@@ -218,9 +218,9 @@ class TestLCDEx_Misc(TestCase):
             d,
             {'disable_existing_loggers': False,
              'filters': {},
-             'formatters': {'minimal': {'class': 'logging.Formatter',
+             'formatters': {'msg': {'class': 'logging.Formatter',
                                         'format': '%(message)s'}},
-             'handlers': {'h': {'formatter': 'minimal'}},
+             'handlers': {'h': {'formatter': 'msg'}},
              'incremental': False,
              'loggers': {},
              'root': {'handlers': [], 'level': 'WARNING'},

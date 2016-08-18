@@ -29,7 +29,7 @@ An ``LCD`` instance *is* a logging config dict. It inherits from
 and so on — operate on the underlying dictionary, breaking down the process
 of creating a logging config dict into basic steps:
 
-    1. Create a ``LCD``, optionally specifying the level of
+    1. Create an ``LCD``, optionally specifying the level of
        the root handler.
 
     2. Add formatter specifications with ``add_formatter()``.
