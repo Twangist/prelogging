@@ -165,7 +165,6 @@ class LCD(dict):
         assert root_level in self._level_names
         super(LCD, self).__init__()
         self['version'] = 1
-        # self['disable_existing_loggers'] = True
         self['formatters'] = {}
         self['filters'] = {}
         self['handlers'] = {}
@@ -287,7 +286,7 @@ class LCD(dict):
         # "format" takes precedence over "fmt" if both are given
         format_dict['format'] = format or format_dict.get('fmt', None)
 
-        # However, "datefmt" takes precedence over "dateformat" if both are given
+        # but "datefmt" takes precedence over "dateformat" if both are given
         dfmt = format_dict.get('datefmt', None) or dateformat
         if dfmt:
             format_dict['datefmt'] = dfmt
@@ -310,7 +309,7 @@ class LCD(dict):
         :return: ``self``
         """
         self._check_readd(self.filters, filter_name, 'filter')
-        self.filters[filter_name] = filter_dict     #.copy()      <---- TODO?
+        self.filters[filter_name] = filter_dict
         return self
 
     @staticmethod
@@ -1030,7 +1029,6 @@ class LCD(dict):
                    undefined_str,
                    attach_to_kind, attach_to)
             )
-            # raise KeyError(errmsg)
             print_err(errmsg)
 
 def print_err(msg, **kwargs):

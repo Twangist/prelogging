@@ -1,5 +1,5 @@
 Organization, Principles and Basic Usage
-========================================
+=========================================
 
 .. include:: _global.rst
 
@@ -144,8 +144,8 @@ Here's what a minimal, "blank" logging config dict looks like::
      'root': {'handlers': [], 'level': 'WARNING'},
      'version': 1}
 
-Every logging config dict has the five subdictionaries shown (and, as it
-happens, never any others). The ``LCD`` class exposes them as properties:
+Every logging config dict built by `lcd` has the five subdictionaries shown.
+The ``LCD`` class exposes them as properties:
 ``formatters``, ``filters``, ``handlers``, ``loggers``, ``root``.
 ``root`` is a dict containing settings for that special logger. Every other
 subdict contains keys that are names of entities of the appropriate kind;
@@ -612,10 +612,10 @@ Basic usage: attaching handlers
 
 .. _config-root-use-children:
 
-Using non-root (named, child) loggers without configuring them
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Using non-root loggers without configuring them
+++++++++++++++++++++++++++++++++++++++++++++++++
 
-A typical, useful approach is to attach handlers only to the root logger,
+A common, useful approach is to attach handlers only to the root logger,
 and then have each module log messages using ``logging.getLogger(__name__)``.
 These "child" loggers require no configuration; they use the handlers
 of the root because, by default, loggers are created with ``propagate=True``.
@@ -635,7 +635,7 @@ The following example illustrates the general technique:
     >>> logging.getLogger().warning("Look out!")
     root                : WARNING : Look out!
     >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
-    my_submodule        : WARNING : Something's was not right.
+    my_submodule        : WARNING : Something's wasn't right.
     >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
     your_submodule      : ERROR   : Uh oh, there was an error.
 

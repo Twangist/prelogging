@@ -308,7 +308,7 @@ class LCDEx(LCD):
         assert 'class_' not in clone_dict
         if 'class' in clone_dict:
             clone_dict['class_'] = clone_dict.pop('class')
-        # Now defer:
+        # Now delegate:
         self.add_handler(clone,
                          attach_to_root=attach_to_root,
                          ** clone_dict)
@@ -337,13 +337,15 @@ class LCDEx(LCD):
     def _add_formatter_if_preset(self, formatter_name):
         if (formatter_name and
             formatter_name not in self.formatters and
-            formatter_name in self._formatter_presets):
+            formatter_name in self._formatter_presets
+           ):
             self.add_formatter(formatter_name,
                                ** self._formatter_presets[formatter_name].to_dict())
 
     def set_handler_formatter(self, handler_name, formatter_name):
         """
-        Hook the LCD method so that we can add formatter just in time if need be
+        Hook the LCD method so that we can add preset formatters just in time
+
         :return: ``self``
         """
         self._add_formatter_if_preset(formatter_name),
@@ -500,8 +502,8 @@ class LCDEx(LCD):
 
     def add_rotating_file_handler(self, handler_name,   # *,
                          filename,
-                         max_bytes=0,       # logging.handlers default
-                         backup_count=0,    # logging.handlers default
+                         max_bytes=0,       # logging default
+                         backup_count=0,    # logging default
                          formatter=None,
                          mode='a',
                          encoding=None,
@@ -788,4 +790,3 @@ class LCDEx(LCD):
         #         setattr(filter_fn, 'filter', filter_fn)
         # filter_dict['()'] = lambda: filter_fn
         # return self.add_filter(filter_name, ** filter_dict)
-

@@ -3,66 +3,140 @@
 Overview
 ===============
 
-.. todo:: this section! (in progress)
+
 
 Logging is an important part of a program's internal operations, an essential
 tool for development, debugging, troubleshooting, performance-tuning and
-general maintenance. A program will *log messages* in order to record
-its successive states, and to report any any anomalies, unexpected situations or
-errors, together with the context in which occurred. Messages can be logged
-to multiple destinations at once — e.g. ``stderr`` in a terminal, a local file,
-a Unix log server over TCP.
+general maintenance. A program *logs messages* in order to record
+its successive states, and to report any anomalies, unexpected situations or
+errors, together with enough context to aid diagnosis. Messages can be logged
+to multiple destinations at once — ``stderr`` in a terminal, a local file,
+the system log, email, or a Unix log server over TCP, to cite popular choices.
 
-In `logging`, a ``Handler`` object represents a single destination,
-together with a specified output format. A handler implements abstract
-methods which format message data into structured text, and write
-or transmit that text to the output.
-.
-When a program logs messages, it doesn't interact with handlers, but rather
-with more general objects called `loggers`. A ``Logger`` contains zero or more
-handlers. When a program calls a logger's ``log`` method, the logger dispatches
-the message data (including the string) to its handlers.
+It's not our purpose to rehash or repeat the extensive (and generally quite
+good) documentation of Python's `logging` package; in fact, we presuppose that
+you're familiar with basic concepts and standard use cases. At the end of this
+chapter we provide :ref:`links_to_sections_of_logging_docs`. Nevertheless, it
+will be helpful to review a few topics.
 
-All messages have a `level` or `loglevel`, indicating their severity or importance
-— `debug`, `info`, `warning`, `error`, `critical` are the basic categories.
-Both loggers and handlers have an associated *loglevel*, indicating a severity
-threshold: a logger or a handler will filter out (squelch) any message whose
-loglevel is less than its own. In order for a message to actually be written
-to a particular destination, its loglevel must equal or exceed the loglevels
-of both the logger and the handler representing the destination.
+<<<< SOME HEADING >>>>
+-------------------------------------
+
+.. todo:: Smooth out the next paragraph
+
+A program logs messages using the ``log`` method of objects called *loggers*,
+which are implemented in `logging` by the ``Logger`` class.
+The ``log`` method is a kind of **generalized/more-powerful/enhanced/souped-up**
+``print`` statement.
+In `logging`, a ``Handler`` object — a `handler — represents a single
+destination, together with a specified output format.
+A handler implements abstract methods which format message data into structured
+text and write or transmit that text to the output.
+A logger contains zero or more handlers.
+When a program calls a logger's ``log`` method to log a message, the logger
+dispatches the message data to its handlers.
+
+All messages have a `logging level`, or `loglevel`, indicating their severity
+or importance — `debug`, `info`, `warning`, `error`, `critical` are the basic
+categories. Both loggers and handlers have an associated *loglevel*, indicating
+a severity threshold: a logger or a handler will filter out (squelch) any
+message whose loglevel is less than its own. In order for a message to actually
+be written to a particular destination, its loglevel must equal or exceed the
+loglevels of both the logger and the handler representing the destination.
 
 This allows developers to dial in different amounts of logging verbosity:
 you might set a logger's level to ``DEBUG`` in development but to
 ``WARNING`` or ``ERROR`` in production. There's no need to delete or comment out
-the lines of code that log messages, or to precede each block with a guard.
+the lines of code that log messages, or to precede each such block with a guard.
 The logging facility is a very sophisticated version of using the `print`
 statement for debugging.
 
 
-Python's `logging` package is a very capable library, if imperfect.
-The purpose of the package is to provide *loggers* — objects that a program
-uses to conditionally write structured text *messages* to zero or more
-destinations.
+`logging`-configuration classes
+----------------------------------
 
-In general, a program will *configure* logging once, at startup, by specifying
-message formats, destinations, loggers, and containment relations between
-those things. Once a program has set up logging as desired, use of loggers
-is very straightforward. Configuration, then, is the only barrier to entry.
+The `logging` defines a few types of entities, which support the ``Logger``
+class. In general, a program will set up, or *configure*, logging once, at
+startup, specifying message formats, destinations, loggers, and containment
+relations between those things. Once a program has configured logging as
+desired, use of loggers is very straightforward. Configuration, then, is the
+only barrier to entry.
 
-`logging` provides two ways to configure logging: statically, with text or a dictionary;
-or dynamically, with code that uses the `logging` API.
+The following diagram displays the types involved in logging configuration,
+and their dependencies:
+
+.. figure:: logging_classes.png
+
+    The objects of `logging` configuration
+
+    +-----------------------+-----------------------+
+    | Symbol                | Meaning               |
+    +=======================+=======================+
+    | .. image:: arrow.png  | has one or more       |
+    +-----------------------+-----------------------+
+    | .. image:: arrowO.png | has zero or more      |
+    +-----------------------+-----------------------+
+    | m: 1                  | many-to-one           |
+    +-----------------------+-----------------------+
+    | m: n                  | many-to-many          |
+    +-----------------------+-----------------------+
+
+
+In words:
+
+    * a ``Logger`` can have one or more ``Handler``\s, and a ``Handler``
+      can be used by multiple ``Logger``\s;
+    * a ``Handler`` has just one ``Formatter``, but a ``Formatter``
+      can be shared by multiple ``Handler``\s;
+    * ``Handler``\s and ``Logger``\s can each have zero or more ``Filter``\s;
+      a ``Filter`` can be used by multiple ``Handler``\s and/or ``Logger``\s.
+
+
+What these objects do [todo: need this headline?]
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+A ``Formatter`` is basically just a format string that uses keywords
+defined by the `logging` module — for example, ``'%(message)s'`` and
+``'%(name)-20s: %(levelname)-8s: %(message)s'``.
+
+A ``Handler`` formats and writes formatted logged messages to a particular
+destination — a stream (e.g. ``sys.stderr``, ``sys.stdout``, or an in-memory
+stream such as an ``io.StringIO()``), a file, a rotating set of files, a socket,
+etc.
+
+A ``Logger`` sends logged messages to its associated handlers. Various
+criteria filter out which messages are actually written, notably loglevel
+thresholding as described above.
+
+``Filter``\s provide still more fine-grained control over which messages are
+written.
+
+
+
+Logging configuration
+----------------------
+
+Different ways to configure logging
++++++++++++++++++++++++++++++++++++++++
+
+`logging` provides two ways to configure logging: statically, with text or
+a dictionary; or dynamically, with code that uses the `logging` API.
 
 Configuring logging with code is arguably less flexible than doing so statically.
+
 (statically, every logging entity is identified by name)
+
 Benefits of dynamic configuration:
 
     * You can take advantage of the reasonable defaults provided by the methods
       of the `logging` API. When configuring logging statically, various fussy
       defaults must be specified explicitly.
+
     * You can configure the entities of logging (formatters, optional filters,
       handlers, loggers) one by one, in order, starting with those that don't
       depend on other entities, and proceeding to those that use entities
       already defined. All entities are identified by *name*.
+
     * It's easier to debug: each step taken is rather small, and you can fail
       faster than when configuring from an entire dictionary.
 
@@ -75,13 +149,6 @@ Deficiencies of dynamic configuration
       the methods are low-level, and many boilerplate passages recur
       in dynamic configuration code.
 
-`lcd` occupies a middle ground: it provides a clean, consistent and concise
-API for incrementally constructing dicts  configure logging
-statically. The ``add_*`` methods let you specify new logging entities
-entities (formatters, possibly filters, handlers, loggers), which all have names.
-and ``attach_*``
-update the dict with specifications of logging
-
 `logging` shortcomings
     * API is at once complex and limited
     * with static config, no warnings or error checking until dictConfig (or fileConfig) called
@@ -89,18 +156,22 @@ update the dict with specifications of logging
     * entire library written in thoroughgoing camelCase (inconsistent, at that)
 
 
+`lcd` what it does why it's so cool -- redundant with stuff from next chapter
+------------------------------------------------------------------------------
+
+`lcd` occupies a middle ground: it provides a clean, consistent and concise
+API for incrementally constructing dicts  configure logging
+statically. The ``add_*`` methods let you specify new logging entities
+entities (formatters, possibly filters, handlers, loggers), which all have names.
+and ``attach_*``
+update the dict with specifications of logging
+
 `lcd` (for
 **l**\ogging **c**\onfig **d**\ict) provides a streamlined API for setting up
 logging, making it easy to use "advanced" features such as rotating log files.
 `lcd` also supplies missing functionality: the package provides
 multiprocessing-safe logging to the console, to files and rotating files, and
 to `syslog`.
-
-It's not our purpose to rehash or repeat the extensive (and generally quite
-good) logging documentation; in fact, we presuppose that you're familiar with
-basic concepts and standard use cases. At the end of this section we
-provide :ref:`links_to_sections_of_logging_docs`.
-Nevertheless, it will be helpful to review a few topics.
 
 
 (( Worth mentioning that Django uses static configuration -- indicates importance of static logging. ))
@@ -135,17 +206,16 @@ subdictionary of ``d``. If ``d`` were declared statically as a dict,
 it would look like this::
 
     d = {
-        # ...
+        ...
+        'filters':     {},
 
-        'formatters' : { # ...
-                         'simple': { format: '{message}',
+        'formatters' : { 'simple': { 'class': 'logging.Formatter',
+                                     'format': '{message}',
                                      'style': '{' },
-                         # ...
                        },
-        'handlers':    { # ...
-                       },
-
-        # ...
+        'handlers':    {},
+        'loggers':     {},
+        ...
     }
 
 An LCD makes its top-level subdictionaries available as properties with the
@@ -216,79 +286,6 @@ two and attach them to the root.
         is its relevance to the foregoing clear?
 
 
-`logging`-configuration classes
-----------------------------------
-
-There are just a few types of entities involved in the configuration of logging.
-These classes are all defined in the `logging` module. The following diagram
-displays them and their dependencies:
-
-.. figure:: logging_classes.png
-
-    The objects of `logging` configuration
-
-    +-----------------------+-----------------------+
-    | Symbol                | Meaning               |
-    +=======================+=======================+
-    | .. image:: arrow.png  | has one or more       |
-    +-----------------------+-----------------------+
-    | .. image:: arrowO.png | has zero or more      |
-    +-----------------------+-----------------------+
-    | m: 1                  | many-to-one           |
-    +-----------------------+-----------------------+
-    | m: n                  | many-to-many          |
-    +-----------------------+-----------------------+
-
-
-In words:
-    * a ``Logger`` can have one or more ``Handler``\s, and a ``Handler``
-      can be used by multiple ``Logger``\s;
-    * a ``Handler`` has just one ``Formatter``, but a ``Formatter``
-      can be shared by multiple ``Handler``\s;
-    * ``Handler``\s and ``Logger``\s can each have zero or more ``Filter``\s.
-
-
-Review of what these objects do
-+++++++++++++++++++++++++++++++++
-
-A ``Formatter`` is basically just a format string that uses keywords
-defined by the `logging` module — for example, ``'%(message)s'`` and
-``'%(name)-20s: %(levelname)-8s: %(message)s'``.
-
-A ``Handler`` writes formatted logged messages to a particular destination —
-a stream (e.g. ``sys.stderr``, ``sys.stdout``, or an in-memory stream such as an
-``io.StringIO()``), a file, a rotating set of files, a socket, etc.
-
-A ``Logger`` sends logged messages to its associated handlers. Various
-criteria filter out which messages are actually written.
-
-Every message that a logger logs has a *level* — a *loglevel*, as we'll call it:
-an integer indicating the severity of the message. The standard levels defined
-by the `logging` module are, in order of increasing severity and numeric value:
-``DEBUG``, ``INFO``, ``WARNING``, ``ERROR``, and ``CRITICAL``.
-Every logger has
-corresponding methods (``debug()``, ``info()`` and so on) for emitting messages
-at the named loglevel. Each of these methods is just a shorthand for calls to
-the ``log`` method at a fixed loglevel. For example, you might log a ``WARNING``
-message ``"Be careful!"`` to the logger named ``'mylogger'`` with the statements
-
-.. code:
-
-    logger = logging.getLogger('mylogger')
-    logger.warning("Be careful!")
-
-The last statement is shorthand for ``logger.log(logging.WARNING, "Be careful!")``.
-
-Every ``Handler`` and every ``Logger`` has a threshold loglevel.
-
-The loglevel of a message must equal or exceed the loglevel of a logger in
-order for the logger to send the message to its handlers. In turn, a handler
-will write a message only if the message's loglevel also equals or exceeds
-that of the handler.
-
-``Filter``\s provide still more fine-grained control over which messages are
-written.
-
 
 Order of definition
 +++++++++++++++++++++++++++++++++
@@ -329,9 +326,9 @@ Configuring `logging` statically
 The `logging.config` submodule offers two equivalent ways to specify
 configuration statically:
 
-* with a dictionary meeting various requirements, which is
-  passed to ``logging.config.dictConfig()``;
-* with a text file written in YAML, conforming to analogous requirements,
+* with a dictionary meeting various requirements (mandatory and optional keys,
+  and their possible values), which is passed to ``logging.config.dictConfig()``;
+* with a text file written in YAML, meeting analogous requirements,
   and passed to ``logging.config.fileConfig()``.
 
 The `schema for configuration dictionaries <https://docs.python.org/3/library/logging.config.html#configuration-dictionary-schema>`_
