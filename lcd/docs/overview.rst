@@ -3,8 +3,6 @@
 Overview
 ===============
 
-
-
 Logging is an important part of a program's internal operations, an essential
 tool for development, debugging, troubleshooting, performance-tuning and
 general maintenance. A program *logs messages* in order to record
@@ -110,6 +108,61 @@ thresholding as described above.
 
 ``Filter``\s provide still more fine-grained control over which messages are
 written.
+
+<<<<<<<<< RESUME >>>>>>>>>>>>>>>
+
+I. Logger names. They're unique, etc.
+
+II. Example use case. Requirements for it -- we want to be able to say
+        blah blah (logging statements)
+    & get the results shown.
+    This will use logger names, & give us the chance to explain that logger.debug(),
+    logger.info(), etc. are shorthands for logger.log(const, ...)
+
+    Also sets up a comparison of logging config styles
+
+    So: logging is very easy to use, ONCE it's set up.
+    The barrier to entry, then, is setting it up, i.e. **configuration**.
+
+III. Give a clear definition of *configuration*
+
+pre-IV/V. Two main approaches to config: static (and then, 2 styles), dynamic (code)
+
+IV. Dynamic:
+    example: Show how to config the requirements given in II. using code (TODO)
+
+    PROs
+        * hierarchy respected
+        * better error checking/catching/detection (more fine-grained)
+
+    CONs
+        * more verbose (perhaps surprisingly), the main ideas get lost
+        * ...
+
+V. Static config.
+    We'll stick to **dict** config. Django does, by default, why muck with
+    a technology that's not native Python (YAML).
+
+    example -- config requirements using a logging config dict
+
+    PROs
+
+    CONs
+        * not very good error detection (none till ``dictConfig`` call)
+        * some boilerplate key/value pairs,
+        * sprawl,
+        * lots of noise -- nested curly braces, quotes, colons, etc.
+
+VI. `lcd` is a hybrid, attempts to offer best of both worlds/approaches
+
+    example using LCD
+
+    example using LCDEx, even more concisely (maybe DON'T use
+    ``attach_root_to_handlers=True`` on constructor,
+    use ``attach_to_root`` on the add_?_handler call that needs it
+
+
+------------------------------------------------------------------------------
 
 
 
@@ -485,14 +538,20 @@ using code like this:
 
 .. _links_to_sections_of_logging_docs:
 
-Links to sections of the `logging` documentation
+`logging` documentation
 ----------------------------------------------------
+
+The documentation for `logging in Django <https://docs.djangoproject.com/en/1.9/topics/logging/>`_
+provides another, excellent overview of logging and configuration, with examples.
+The first few sections aren't at all Django-specific.
 
 See the `logging docs <https://docs.python.org/3/library/logging.html?highlight=logging>`_
 for the official explanation of how logging works.
 
 For the definitive account of static configuration, see the documentation of
-`logging.config <https://docs.python.org/3/library/logging.config.html?highlight=logging>`_.
+`logging.config <https://docs.python.org/3/library/logging.config.html?highlight=logging>`_,
+in particular the documentation for
+`the format of a logging configuration dictionary <https://docs.python.org/3/library/logging.config.html#logging-config-dictschema>`_.
 
 The logging `HOWTO <https://docs.python.org/3/howto/logging.html>`_
 contains tutorials that show typical setups and uses of logging, configured in
@@ -504,9 +563,10 @@ the use of
 `LoggerAdapters <https://docs.python.org/3/library/logging.html#loggeradapter-objects>`_,
 or
 `QueueListeners <https://docs.python.org/3/library/logging.handlers.html?#queuelistener>`_
-).
+). A few of the examples contained in the `lcd` distribution are examples from
+the Cookbook and HOWTO, reworked to use `lcd`.
 
-The `logging` package supports multithreaded operation, but does **not** support
+The `logging` package supports multithreaded operation, but does **not** directly support
 `logging to a single file from multiple processes <https://docs.python.org/3/howto/logging-cookbook.html#logging-to-a-single-file-from-multiple-processes>`_.
 Happily, `lcd` does, in a couple of ways.
 

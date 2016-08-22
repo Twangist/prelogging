@@ -3,12 +3,12 @@
 # PyPI supports rST, hence:
 __doc__ = """\
 `lcd` (for "logging config dict") streamlines the configuration of Python
-logging, and adds multiprocess-safe handlers for writing to streams, files
-and rotating files.
+logging, provides better error checking, and adds multiprocess-safe handlers
+for writing to streams, files, rotating files and the system log.
 """
 from lcd import __version__, __author__
-
 from setuptools import setup
+
 setup(
     name='lcd',
     version=__version__,
@@ -19,9 +19,9 @@ setup(
     long_description=__doc__,
     license='MIT',
     keywords='logging config dictConfig dict configuration multiprocessing '
-             'rotating file',
+             'rotating file syslog SMTP queue handler',
     url='http://github.com/Twangist/lcd',
-    packages=['lcd', 'lcd/tests'],               # , 'examples'
+    packages=['lcd'],
     test_suite='run_tests.py',
     scripts=[],
     include_package_data=True,

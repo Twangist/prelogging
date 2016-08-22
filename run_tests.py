@@ -27,7 +27,7 @@ if len(sys.argv) > 1:
         verbosity = 2
 
 home, _ = os.path.split(__file__)
-tests_dir = os.path.join(home, 'lcd', 'tests')
+tests_dir = os.path.join(home, 'tests')
 
 # 0.2.4 Change to tests_dir, which tests expect
 tests_dir = os.path.abspath(tests_dir)
