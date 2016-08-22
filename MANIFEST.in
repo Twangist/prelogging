@@ -1,0 +1,16 @@
+include run_tests.py
+include run_examples.py
+include run_all.py
+include LICENSE.txt
+include setup.cfg
+include README.rst
+
+exclude build/*
+exclude _HIDE/*
+recursive-include /docs *
+exclude /docs/_build/*
+recursive-include lcd/tests *
+recursive-include lcd/examples *
+
+global-exclude .DS_Store
+global-exclude */__pycache__/*

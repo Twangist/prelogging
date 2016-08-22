@@ -1,0 +1,5 @@
+subB                : DEBUG   : 20.
+subB                : INFO    : 21.
+subB                : WARNING : 22.
+subB                : ERROR   : 23.
+subB                : CRITICAL: 24.
