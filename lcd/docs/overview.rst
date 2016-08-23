@@ -117,7 +117,108 @@ written.
 
 I. Logger names. They're unique, etc.
 
-II. Example use case. Requirements for it -- we want to be able to say
+`logging` supplies reasonable out-of-the-box defaults so that you can easily
+start to use its capabilities. You can just say:
+
+    ``logging.error("Something went wrong")``
+
+and something plausible will happen (the string will be written to
+``stderr``). This statement is a shorthand that implicitly uses the "root
+logger", which the `logging` module always creates. By default, the root
+logger writes messages to ``stderr``. All loggers are identified uniquely
+by name; the root logger's name is  ``''``.
+
+A ``Logger`` is uniquely identified by name: the expression
+``logging.getLogger('mylogger')``, for example, always denotes the same object,
+no matter where in a program it occurs or when it's evaluated. When evaluated
+for the first time, the ``Logger`` named ``'mylogger'`` is created
+"just in time" if it hasn't been explicitly configured. You don't _have_ to
+attach handlers to ``'mylogger'``; the expression accessing it will "just work",
+and then, at least by default, that logger will use the handlers of it's
+*parent handler*. The parent of ``'mylogger'`` is the
+root logger, ``logging.getLogger()`` alias ``logging.getLogger('')``.
+
+
+In many cases, to configure logging it's sufficient just to add a handler or
+two and attach them to the root.
+
+WHY -- because `propagation` -- explain
+
+    The `logging.basicConfig() <https://docs.python.org/3/library/logging.html#logging.basicConfig>`_
+    function lets you configure the root logger, anyway to a point, using
+    a monolithic function that's somewhat complex yet of limited capabilities.
+
+
+II. Example use case.
+
+
+Example
+++++++++
+
+Suppose we want the following logging configuration:
+
+    Messages should be logged to both ``stderr`` and a file. Only messages with
+    loglevel ``INFO`` or higher should appear on-screen, but all messages should
+    be logged to the file. Messages to ``stderr`` should consist of just the
+    message, but messages written to the file should contain the logger name and
+    the message's loglevel.
+
+This suggests two handlers, each with an appropriate formatter — a ``stderr``
+console handler with level ``INFO``, and a file handler with level ``DEBUG``.
+Both handlers should be attached to the root logger, which must have level
+``DEBUG`` (or ``NOTSET``) to allow all messages through.
+
+The logfile contents should persist: the file handler should **append** to the
+logfile, rather than overwriting it each time the program using these loggers
+is run.
+
+.. todo::
+    TODO TODO TODO
+
+    CHANGE MODE default of add_file_handler (in both classes)
+    from 'w' to 'a'
+
+    THIS WILL BREAK THINGS -- tests? examples?
+    So, fix those.
+
+    This could be subtle -- CHECK IN FIRST, make a branch.
+
+    BUT 'a' is the correct default, surely.
+
+
+
+
+Once this configuration is established, these logging calls:
+
+.. code::
+
+    import logging
+    root_logger = logging.getLogger()
+    root_logger.debug("1. 0 = 0")
+    root_logger.info("2. days are getting shorter")
+    root_logger.debug("3. 0 != 1")
+    # ...
+    logging.getLogger('submodule_A').info("4. submodule_A initialized")
+
+should produce the following ``stderr`` output:
+
+.. code::
+
+    2. days are getting shorter
+    4. submodule_A initialized
+
+and the logfile should contain (something much like) these lines:
+
+.. code::
+
+    root                : DEBUG   : 1. 0 = 0
+    root                : INFO    : 2. days are getting shorter
+    root                : DEBUG   : 3. 0 != 1
+    submodule_A         : INFO    : 4. submodule_A initialized
+
+
+
+Requirements for it -- we want to be able to say
         blah blah (logging statements)
     & get the results shown.
     This will use logger names, & give us the chance to explain that logger.debug(),
@@ -128,24 +229,57 @@ II. Example use case. Requirements for it -- we want to be able to say
     So: logging is very easy to use, ONCE it's set up.
     The barrier to entry, then, is setting it up, i.e. **configuration**.
 
+
+
 III. Give a clear definition of *configuration*
 
-pre-IV/V. Two main approaches to config: static (and then, 2 styles), dynamic (code)
+
+pre-IV/V. Two main approaches to config: static (and then, 2 sub-approaches),
+          and dynamic (code)
 
 IV. Dynamic:
     example: Show how to config the requirements given in II. using code (TODO)
+
+.. code::
+
+    import logging
+    import sys
+
+    root = logging.getLogger()
+    root.setLevel(logging.DEBUG)
+
+    # Create stderr handler,
+    #   level = INFO, formatter = '%(message)s';
+    # attach it to root
+    msg_fmtr = logging.Formatter('%(message)s')
+    h_stderr = logging.StreamHandler(stream=sys.stderr, level=logging.INFO)
+    h_stderr.setFormatter(msg_fmtr)
+    root.addHandler(h_stderr)
+
+    # Create file handler, level = NOTSET (default),
+    #   filename='blather_dyn_cfg.log', formatter = logger_level_msg
+    # attach it to root
+    logger_level_msg_fmtr = logging.Formatter('%(name)-20s: %(levelname)-8s: %(message)s'')
+    h_file = logging.FileHandler(filename='blather_dyn_cfg.log')
+    h_file.setFormatter(logger_level_msg_fmtr)
+    root.addHandler(h_file)
+
+
 
     PROs
         * hierarchy respected
         * better error checking/catching/detection (more fine-grained)
 
     CONs
-        * more verbose (perhaps surprisingly), the main ideas get lost
-        * ...
+        * more verbose (perhaps surprisingly) -- the API is a bit low-level
+        * since only loggers have names, we have to use Python variables
+          to reference the various logging entities which we create and connect
 
 V. Static config.
     We'll stick to **dict** config. Django does, by default, why muck with
     a technology that's not native Python (YAML).
+    YAML may be more readable than dictionary declarations, but `lcd` offers
+    another, pure-Python solution to the unreadability of dict decls.
 
     example -- config requirements using a logging config dict
 

@@ -6,20 +6,16 @@ include LICENSE.txt
 include setup.cfg
 include README.rst
 
-recursive-include tests *.*
 recursive-include tests *
-recursive-include examples *.*
 recursive-include examples *
 
-# exclude lcd/docs/_build/*.*
 # exclude lcd/docs/_build/*
-# recursive-include lcd/docs *
+exclude lcd/docs *
+# recursive-include lcd/docs/source *
 
-# exclude build/*.*
-# exclude build/*
-# exclude _HIDE/*.*
-# exclude _HIDE/*
+exclude build/*
+exclude _HIDE/*
 
-# global-exclude .DS_Store
-# global-exclude */__pycache__/*
+global-exclude .DS_Store
+global-exclude */__pycache__/*
 

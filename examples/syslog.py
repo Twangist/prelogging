@@ -46,7 +46,7 @@ def config_logging():
             "https://docs.python.org/3/library/logging.handlers.html#sysloghandler")
     else:
         raise NotImplementedError(
-            "Don't know how to set address for SysLogHandler on OS = '%s' "
+            "Don't know the correct address for SysLogHandler on OS = '%s' "
             "-- '/dev/log'?" % platform)
 
     # add a syslog handler

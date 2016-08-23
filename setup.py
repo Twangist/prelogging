@@ -7,7 +7,7 @@ logging, provides better error checking, and adds multiprocess-safe handlers
 for writing to streams, files, rotating files and the system log.
 """
 from lcd import __version__, __author__
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='lcd',
@@ -21,10 +21,11 @@ setup(
     keywords='logging config dictConfig dict configuration multiprocessing '
              'rotating file syslog SMTP queue handler',
     url='http://github.com/Twangist/lcd',
-    packages=['lcd'],
+    # packages=['lcd'],
+    packages=find_packages(exclude=['tests', 'examples', 'docs']),
     test_suite='run_tests.py',
     scripts=[],
-    include_package_data=True,
+    include_package_data=False,     # ???
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',
