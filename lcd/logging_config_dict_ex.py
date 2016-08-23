@@ -395,7 +395,7 @@ class LCDEx(LCD):
             ``logging.StreamHandler``.
         :param attach_to_root: If true, add the ``clone`` handler to the root
             logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
-            if false, don't add clone to root.
+            if false, don't add to root.
         :param kwargs:
         :return: ``self``
         """
@@ -538,7 +538,7 @@ class LCDEx(LCD):
             logfile can't be found: FileNotFoundError: [Errno 2]...
         :param attach_to_root: If true, add the ``clone`` handler to the root
             logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
-            if false, don't add clone to root.
+            if false, don't add to root.
         :param kwargs: additional key/value pairs
         :return: ``self``
         """
@@ -597,11 +597,11 @@ class LCDEx(LCD):
 
         :param formatter: the name of the formatter that this handler will use
         :param level: the loglevel of this handler
-        :param locking: Mandatory if multiprocessing -- things won't even work,
-            logfile can't be found: FileNotFoundError: [Errno 2]...
+        :param locking: if false, use logging.handlers.SysLogHandler; if true,
+            use the multiprocessing-safe version ofthat handler.
         :param attach_to_root: If true, add the ``clone`` handler to the root
             logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
-            if false, don't add clone to root.
+            if false, don't add to root.
         :param kwargs: additional key/value pairs
         :return: ``self``
         """

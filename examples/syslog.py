@@ -20,6 +20,7 @@ from lcd import LCDEx
 # LOGFILENAME = 'test_rot_fh.log'
 
 #############################################################################
+import sys
 
 def config_logging():
     """Create a root logger with a stdout console handler with level=WARNING,
@@ -34,11 +35,25 @@ def config_logging():
 
     lcd_ex.add_stdout_handler('console', formatter='msg')
 
+    platform = sys.platform
+    if platform.startswith('darwin'):
+        address = '/var/run/syslog'
+    elif platform.startswith('linux'):
+        address = '/dev/log'
+    elif platform.startswith('win32'):
+        raise NotImplementedError(
+            "Figure out how to use the UDP option of SysLogHandler -- "
+            "https://docs.python.org/3/library/logging.handlers.html#sysloghandler")
+    else:
+        raise NotImplementedError(
+            "Don't know how to set address for SysLogHandler on OS = '%s' "
+            "-- '/dev/log'?" % platform)
+
     # add a syslog handler
     lcd_ex.add_syslog_handler(
         'h_syslog',
         formatter='logger_level_msg',
-        address='/var/run/syslog',      # Works for OS X
+        address=address
         # facility='local1'
     )
     # lcd_ex.dump()             # | DEBUG
