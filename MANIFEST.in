@@ -9,8 +9,8 @@ include README.rst
 recursive-include tests *
 recursive-include examples *
 
-# exclude lcd/docs/_build/*
 exclude lcd/docs *
+# exclude lcd/docs/_build/*
 # recursive-include lcd/docs/source *
 
 exclude build/*
