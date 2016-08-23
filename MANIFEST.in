@@ -1,6 +1,7 @@
 include run_tests.py
 include run_examples.py
 include run_all.py
+include _execfile.py
 include LICENSE.txt
 include setup.cfg
 include README.rst
