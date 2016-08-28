@@ -16,11 +16,14 @@ type annotations and keyword-only parameters. The `lcd` package includes a copy
 of the module ``six.py`` (version 1.10.0, for what it's worth), which it uses
 sparingly (one decorator, one function, and one constant).
 
-The `lcd` repository contains an ``examples/`` subdirectory. A few examples
+The `lcd` distribution contains an ``examples/`` subdirectory. A few examples
 ((``mproc_deco*.py``)) use the `deco <https://github.com/alex-sherman/deco>`_
 package, which provides a "simplified parallel computing model for Python".
 However, the examples are just for illustration (and code coverage), and aren't
 installed with the `lcd` package.
+
+The distribution also contains subdirectories ``tests/`` and ``docs/``, which
+similarly are not installed.
 
 Installation
 ---------------
@@ -49,12 +52,13 @@ Running tests and examples
 ------------------------------
 
 The top level directory of the `lcd` distribution (where ``setup.py`` resides)
-contains subdirectories ``tests/`` and ``examples/``, which contain just you'd
-expect. Neither of these sets of source files are installed.
+contains subdirectories ``tests/`` and ``examples/``, which contain just what
+their names suggest. Neither of these sets of source files are installed.
 
 In the top level directory are three executable scripts — ``run_tests.py``,
 ``run_examples.py``, and ``run_all.py`` — which respectively run all tests, all
 examples, or both.
+
 
 Running tests
 ++++++++++++++
@@ -86,12 +90,17 @@ exotic handlers, which are easy to write examples for but difficult to test.
 +--------------------------------+--------+-------+
 
 
-Running examples`
+Running examples
 ++++++++++++++++++
 
-Examples are *not* installed; they're in the ``examples/`` subdirectory of the
-repository/archive. You can run all the tests and examples before installing
-`lcd` by running the script ``run_all.py`` in the repository directory:
+Examples are not installed; they're in the ``examples/`` subdirectory of the
+distribution. You can run all the examples by running the script
+``run_examples.py`` in the top-level directory:
+
+    ``$ ./run_examples.py``
+
+From the same directory, you can run all tests and examples with the script
+``run_all.py``:
 
     ``$ ./run_all.py``
 
@@ -100,11 +109,12 @@ run these without errors, you must first edit the file*
 ``examples/_smtp_credentials.py`` *to contain a valid username, password and
 SMTP server.*
 
-When run without locking, the multiprocessing examples will eventually
+When run without locking, the multiprocessing examples *will* eventually
 misbehave -- NUL bytes will appear in the logged output, and messages logged by
-different processes will barge in on each other. The subdirectories
-``_log--2.7-runs``, ``_log--3.5-runs (I)`` and ``_log--3.5-runs (II)`` of
-``examples/`` capture several instances of this misbehavior. Though your mileage
+different processes will barge in on each other. The directory
+``examples/_log saved`` contains subdirectories
+``_log--2.7-runs``, ``_log--3.5-runs (I)`` and ``_log--3.5-runs (II)`` which
+capture several instances of this misbehavior. Though your mileage
 may vary, experience has shown that this expected misbehavior is more likely
 when these examples are run individually than when they're run via
 ``run_examples.py`` or ``run_all.py``.
