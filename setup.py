@@ -22,7 +22,6 @@ setup(
              'rotating file syslog SMTP queue handler',
     url='http://github.com/Twangist/lcd',
     packages=['lcd'],
-    # packages=find_packages(exclude=['tests', 'examples', 'docs']),
     test_suite='run_tests.py',
     scripts=[],
     include_package_data=False,     # ???

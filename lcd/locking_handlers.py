@@ -148,7 +148,15 @@ class LockingRotatingFileHandler(logging.handlers.RotatingFileHandler, MPLock_Mi
 from logging.handlers import SysLogHandler
 
 class LockingSysLogHandler(SysLogHandler, MPLock_Mixin):
+    """
+    .. _LockingSysLogHandler:
 
+    A multiprocessing-safe handler class that writes
+    formatted logging records to the system log.
+
+    For more information, see the documentation for the base class
+    `logging.handlers.SysLogHandler <https://docs.python.org/3/library/logging.handlers.html#sysloghandler>`_.
+    """
     def __init__(self,
                  # address=('localhost', SYSLOG_UDP_PORT),
                  # facility=SysLogHandler.LOG_USER,

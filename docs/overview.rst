@@ -219,15 +219,15 @@ and the logfile should contain (something much like) these lines:
 
 
 Requirements for it -- we want to be able to say
-        blah blah (logging statements)
-    & get the results shown.
-    This will use logger names, & give us the chance to explain that logger.debug(),
-    logger.info(), etc. are shorthands for logger.log(const, ...)
+blah blah (logging statements)
+& get the results shown.
+This will use logger names, & give us the chance to explain that logger.debug(),
+logger.info(), etc. are shorthands for logger.log(const, ...)
 
-    Also sets up a comparison of logging config styles
+Also sets up a comparison of logging config styles
 
-    So: logging is very easy to use, ONCE it's set up.
-    The barrier to entry, then, is setting it up, i.e. **configuration**.
+So: logging is very easy to use, ONCE it's set up.
+The barrier to entry, then, is setting it up, i.e. **configuration**.
 
 
 
@@ -297,7 +297,7 @@ VI. `lcd` is a hybrid, attempts to offer best of both worlds/approaches
 
     example using LCDEx, even more concisely (maybe DON'T use
     ``attach_root_to_handlers=True`` on constructor,
-    use ``attach_to_root`` on the add_?_handler call that needs it
+    use ``attach_to_root`` on the add_BLAHBLAH_handler call that needs it
 
 
 ------------------------------------------------------------------------------
