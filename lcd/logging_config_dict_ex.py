@@ -462,7 +462,8 @@ class LCDEx(LCD):
     def add_file_handler(self, handler_name,    # *,
                          filename,
                          formatter=None,
-                         mode='w',
+                         # mode='w',
+                         mode='a',
                          encoding=None,
                          delay=False,       # `logging` default
                          level='NOTSET',    # log everything: `logging` default

@@ -61,6 +61,7 @@ def config_logging(use_locking):
     lcd_ex.add_file_handler(
         'app_file',
         filename=logfilename,
+        mode='w',
         formatter='process_time_logger_level_msg',
     )
     lcd_ex.config()

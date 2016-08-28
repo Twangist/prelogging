@@ -50,6 +50,7 @@ def init_logging_config(loggername, logfilename):
     ).add_file_handler(
         'app_file',
         filename=logfilename,
+        mode='w',
         level='DEBUG',
         formatter='my_file_formatter'
     ).add_logger(

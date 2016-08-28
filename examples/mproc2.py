@@ -132,6 +132,7 @@ def config_logging(use_locking):
     ).add_file_handler(
         'app_file',
         filename=logfilename,
+        mode='w',
         # level='DEBUG',
         formatter='my_file_formatter',
     )

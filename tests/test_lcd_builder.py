@@ -20,9 +20,9 @@ import test_lcd_builder_SubB
 # test(s)
 ##############################################################################
 
-def test_configurator():
+def test_builder():
     """
-    >>> LOG_PATH = '_testlogs/configurator'
+    >>> LOG_PATH = '_testlogs/configurator'     # TODO rename dir & here '.../builder'
 
     >>> lcdx = LCDBuilder.build_lcd(
     ...     root_level='WARNING',

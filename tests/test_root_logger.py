@@ -35,6 +35,7 @@ def configure_logging(log_path, logfilename=''):
         lcd_ex.add_file_handler(
             'app_file',
             filename=logfilename,
+            mode='w',
             locking=True,                   # for kicks 'n' coverage
             formatter='my_file_formatter',
         )

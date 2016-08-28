@@ -10,11 +10,10 @@ Requirements
 The `lcd` package requires only Python 2.7 or 3.4+. It has no external
 dependencies.
 
-Very little
-of `lcd`\'s code varies between Python versions; however, to achieve backwards
-compatibility with 2.7 we had to sacrifice, with great reluctance, type
-annotations and keyword-only parameters. The `lcd` package includes a copy of
-the module ``six.py`` (version 1.10.0, for what it's worth), which it uses
+Very little of `lcd`\'s code varies between Python versions; however, to achieve
+backwards compatibility with 2.7 we had to sacrifice, with great reluctance,
+type annotations and keyword-only parameters. The `lcd` package includes a copy
+of the module ``six.py`` (version 1.10.0, for what it's worth), which it uses
 sparingly (one decorator, one function, and one constant).
 
 The `lcd` repository contains an ``examples/`` subdirectory. A few examples
@@ -32,24 +31,30 @@ You can install `lcd` from PyPI (the Python Package Index) using ``pip``::
 
 (Here and elsewhere, ``$`` at the beginning of a line indicates your command
 prompt, whatever that may be.) Alternately, you can download a ``.zip`` or
-``.tar.gz`` archive of the repository from github, uncompress it to a fresh
-directory, ``cd`` to that directory, and run::
+``.tar.gz`` archive of the repository from github or PyPI, uncompress it to a
+fresh directory, ``cd`` to that directory, and run::
 
     $ ./setup.py install
 
-The latter approach lets you review and run the examples, which are not
-installed by ``pip`` or ``setup.py``. Whichever way you choose, ideally you'll
-do it in a virtual environment.
+or, on Windows, ::
+
+    $ python setup.py install
+
+The latter approach lets you review and run the tests and examples, which are
+not installed by ``pip`` or ``setup.py``. Whichever way you choose, ideally
+you'll do it in a virtual environment.
 
 
 Running tests and examples
 ------------------------------
 
-Tests are installed automatically, but examples are not.
+The top level directory of the `lcd` distribution (where ``setup.py`` resides)
+contains subdirectories ``tests/`` and ``examples/``, which contain just you'd
+expect. Neither of these sets of source files are installed.
 
-The top level directory of the `lcd` repository (where ``setup.py`` also
-resides) contains three executable scripts which run all tests, all examples,
-or both: ``run_tests.py``, ``run_examples.py``, and ``run_all.py``.
+In the top level directory are three executable scripts — ``run_tests.py``,
+``run_examples.py``, and ``run_all.py`` — which respectively run all tests, all
+examples, or both.
 
 Running tests
 ++++++++++++++
@@ -59,14 +64,17 @@ You can run all the tests before installing `lcd` by running the script
 
     $ ./run_tests.py
 
+Alternately, you can run ::
+
+    $ ./setup.py test
+
 Coverage from tests
 ~~~~~~~~~~~~~~~~~~~
 
 `lcd` contains a small amount of Python-2-only code (workarounds
 for Py2 shortcomings), and supports a few Python-3-only logging features.
 In addition, several methods in ``logging_config_dict_ex.py`` add various
-exotic handlers, which were easy to write examples for but are difficult
-to test.
+exotic handlers, which are easy to write examples for but difficult to test.
 
 +--------------------------------+--------+-------+
 || Module                        || Py 3  || Py 2 |

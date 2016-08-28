@@ -83,7 +83,7 @@ class TestLCDEx(TestCase):
                               'filename': 'blather.log',
                               'formatter': 'msg',
                               'level': 'NOTSET',
-                              'mode': 'w'}}
+                              'mode': 'a'}}
         )
 
         lcd.add_logger(
@@ -116,14 +116,12 @@ class TestLCDEx(TestCase):
         expected = self.get_expected_starting_dict()
         self.assertEqual(lcd, expected)
 
+        # No formatters, use default
         lcd.add_stderr_handler(
             'console',
-            # No formatter, use default
         ).add_file_handler(
             'default_file',
             filename='blather.log',
-            # level='DEBUG'
-            # No formatter, use default
         )
 
         # lcd.dump()      # | DEBUG comment out
@@ -141,7 +139,7 @@ class TestLCDEx(TestCase):
                               'filename': 'blather.log',
                               'formatter': 'process_time_logger_level_msg',
                               'level': 'NOTSET',
-                              'mode': 'w'}}
+                              'mode': 'a'}}
         )
 
         lcd.clone_handler(clone='con2', handler='console')
@@ -166,7 +164,7 @@ class TestLCDEx(TestCase):
                               'filename': 'blather.log',
                               'formatter': 'process_time_logger_level_msg',
                               'level': 'NOTSET',
-                              'mode': 'w'}}
+                              'mode': 'a'}}
         )
 
         # For more coverage (locking_handlers.py from 46% to 60%)

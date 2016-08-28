@@ -19,6 +19,7 @@ class LCDBuilderSubB(LCDBuilderSub):
         # so we'll set level to ``DEBUG``.
         lcdx.add_file_handler('subB-fh',
                               filename='subB.log',
+                              mode='w',
                               formatter='logger_level_msg',
                               attach_to_root=False)
         lcdx.add_logger('subB',

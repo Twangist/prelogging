@@ -20,6 +20,7 @@ class LCDBuilderSubA(LCDBuilderSub):
         #   Root logger will NOT log to 'subA.log' (attach_to_root=False)
         lcdx.add_file_handler('subA-fh',
                               filename='subA.log',
+                              mode='w',
                               formatter='logger_level_msg',
                               attach_to_root=False)
         lcdx.add_logger('subA',

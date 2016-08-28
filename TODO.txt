@@ -48,11 +48,12 @@ Feature "requests"
 
     logging.handlers.WatchedFileHandler ?
     logging.handlers.TimedRotatingFileHandler ?
-    logging.handlers.SocketHandler
-    logging.handlers.DatagramHandler
+    logging.handlers.SocketHandler                  // is this a base class ???
+    logging.handlers.DatagramHandler     // is(n't) there a UDP handler too ???
     logging.handlers.NTEventLogHandler
     logging.handlers.MemoryHandler
     logging.handlers.HTTPHandler
+
 
 LCDEx methods to add them?
     In any case, cite

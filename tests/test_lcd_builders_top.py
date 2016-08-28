@@ -21,8 +21,8 @@ class LCDBuilder(LCDBuilderABC):
         :param lcdx: a ``LCDEx``
         """
         lcdx.add_stdout_handler('con-out',
-                                        formatter='logger_level_msg',
-                                        attach_to_root=True)
+                                formatter='logger_level_msg',
+                                attach_to_root=True)
 
 class LCDBuilderSub(LCDBuilder):
     """An LCDBuilder class to organize a group of subclasses,

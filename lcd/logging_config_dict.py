@@ -381,17 +381,11 @@ class LCD(dict):
         self.handlers[handler_name] = handler_dict
         return self
 
-    # << TODO >> What is logging default? It's 'a', isn't it.
-    # << TODO >> mode='w' ---- DOCUMENT: differs from logging default ('a')
-    # << TODO >> Change this to mode='a' ???  That may well be what people
-    #      |     want for production. It makes testing a nuisance --
-    #      |     anyway, we'd have to add explicit mode='w' to (almost?) all
-    #      |     file handlers used in tests.
-    #      |     [and what about examples?]
     def add_file_handler(self, handler_name,    # *,
                          filename,
                          formatter=None,
-                         mode='w',
+                         # mode='w',
+                         mode='a',
                          level='NOTSET',    # log everything: `logging` default
                          delay=False,
                          **kwargs):

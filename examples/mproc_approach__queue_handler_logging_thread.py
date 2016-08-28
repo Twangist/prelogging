@@ -79,14 +79,17 @@ def main_process_config_logging():
     #                                   formatter='less-detailed')
 
     lcd.add_file_handler('file', filename='mplog.log',
-                               formatter='detailed'
+                                 mode='w',
+                                 formatter='detailed'
     ).add_file_handler('errors', level='ERROR',
                                  filename='mplog-errors.log',
+                                 mode='w',
                                  formatter='detailed'
     ).attach_root_handlers(# 'console',
                            'file', 'errors')
 
     lcd.add_file_handler('foofile', filename='mplog-foo.log',
+                                    mode='w',
                                     formatter='detailed'
     ).add_logger('foo', handlers='foofile')
 

@@ -90,7 +90,7 @@ class TestLCD(TestCase):
                          'default_file': {'formatter': 'msg', 'level': 'DEBUG',
                                           'class': 'logging.FileHandler',
                                           'filename': 'blather.log',
-                                          'delay': False, 'mode': 'w'}}
+                                          'delay': False, 'mode': 'a'}}
         })
 
         lcd.add_logger(
@@ -120,7 +120,7 @@ class TestLCD(TestCase):
                          'default_file': {'formatter': 'msg', 'level': 'DEBUG',
                                           'class': 'logging.FileHandler',
                                           'filename': 'blather.log',
-                                          'delay': False, 'mode': 'w'}}
+                                          'delay': False, 'mode': 'a'}}
         })
 
     def test_add_logger_one_handler(self):
@@ -440,7 +440,6 @@ class TestLCD_check(TestCase):
         d.add_file_handler(
             'fh', 'myfile.log',
             filters=['also-not-a-filter-1', 'also-not-a-filter-2'])
-        # TODO This ^^^^^^^ should NOT set formatter=None
 
         # Swap stderr BEFORE d.check():
         _stderr = sys.stderr
