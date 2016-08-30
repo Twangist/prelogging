@@ -142,7 +142,7 @@ involves just these steps:
 * define ``Handler``\s that use the ``Formatter``\s
 * define ``Logger``\s that use the ``Handler``\s.
 
-In common cases, such as the :ref:`example-overview-config`,
+In common cases, such as the :ref:`Configuration requirements <example-overview-config>`,
 `lcd` eliminates the first step and makes the last step trivial.
 
 

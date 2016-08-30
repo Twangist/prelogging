@@ -20,7 +20,8 @@ Using `lcd`
 
     intro
     setup-testing-examples
-    overview
+    overview-of-logging-and-configuration
+    configuration-using-lcd
     organization-principles-basic_usage
     topics-recipes
     class-reference
