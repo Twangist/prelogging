@@ -3,7 +3,7 @@
 import os
 from copy import deepcopy
 
-from .logging_config_dict import LCD
+from .lcdict_ import LCD
 from .six import PY2, iteritems
 
 from collections import namedtuple

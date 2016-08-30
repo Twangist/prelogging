@@ -1,7 +1,7 @@
 __author__ = "Brian O'Neill"
 
 from ._version import __version__
-from .logging_config_dict import LCD
+from .lcdict_ import LCD
 from .logging_config_dict_ex import LCDEx
 from . import locking_handlers, lcdict_builder_abc
 from .locking_handlers import *

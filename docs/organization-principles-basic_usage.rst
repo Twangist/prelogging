@@ -58,7 +58,7 @@ Organization, Principles and Basic Usage
 ``LCD``
 -------------------------------------------------------
 
-<<< NOTE NOTE NOTE  lcd.logging_config_dict docstring  NOTE NOTE NOTE >>>
+<<< NOTE NOTE NOTE  lcd.lcdict_ docstring  NOTE NOTE NOTE >>>
 
 ``LCD`` provides an API for building dictionaries that specify
 Python logging configuration -- *logging config dicts*.

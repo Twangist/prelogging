@@ -10,4 +10,4 @@ Class Reference
     LCD
     LCDEx
     locking_handlers
-    LCDBuilderABC
+    LCDictBuilderABC

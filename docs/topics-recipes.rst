@@ -708,18 +708,18 @@ Of course, you could pass a data-returning callable rather than a container.
 
 .. _config-abc:
 
-Using ``LCDBuilderABC``
+Using ``LCDictBuilderABC``
 -------------------------------
 
 A single ``LCDEx`` can be passed around to different "areas"
 of a program, each area contributing specifications of its desired formatters,
-filters, handlers and loggers. The ``LCDBuilderABC`` class provides a
+filters, handlers and loggers. The ``LCDictBuilderABC`` class provides a
 framework that automates this approach: each area of a program need only
-define a ``LCDBuilderABC`` subclass and override its method
+define a ``LCDictBuilderABC`` subclass and override its method
 ``add_to_lcd(lcd)``, where it contributes its specifications by calling
 methods on ``lcd``.
 
-The :ref:`LCDBuilderABC` documentation describes how that class and its two
+The :ref:`LCDictBuilderABC` documentation describes how that class and its two
 methods operate. The test ``tests/test_configurator.py`` exemplifies using
 the class to configure logging across multiple modules.
 

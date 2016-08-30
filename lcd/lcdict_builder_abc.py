@@ -8,21 +8,21 @@ from .six import add_metaclass
 from abc import ABCMeta, abstractmethod
 
 __all__ = [
-    'LCDBuilderABC',
+    'LCDictBuilderABC',
 ]
 
 @add_metaclass(ABCMeta)
-class LCDBuilderABC():
+class LCDictBuilderABC():
     """
     .. include:: _global.rst
 
     A class for automating multi-package / multi-module logging configuration.
-    ``LCDBuilderABC`` is an abstract base class: its metaclass is ``ABCMeta``,
+    ``LCDictBuilderABC`` is an abstract base class: its metaclass is ``ABCMeta``,
     defined in ``_collections_abc.py`` of the standard library. You can't
     directly instantiate this class: it has an `abstractmethod`
     ``add_to_lcd(lcdx: LCDEx)``. Every package or module that
     wants a say in the configuration of logging should define its own
-    (sub*)subclass of ``LCDBuilderABC`` which implements ``add_to_lcd``.
+    (sub*)subclass of ``LCDictBuilderABC`` that implements ``add_to_lcd``.
 
     Once (and once only), the application should call ``build_lcd()``,
     a classmethod which
@@ -41,7 +41,7 @@ class LCDBuilderABC():
 
     .. code::
 
-        LCDBuilderABC < MainBuilder < BuilderModuleA
+        LCDictBuilderABC < MainBuilder < BuilderModuleA
                                     < BuilderModuleB
                                     < BuilderPackage < BuilderSubPackage
 
@@ -61,7 +61,7 @@ class LCDBuilderABC():
 
         :param lcdx: a ``LCDEx``
 
-        ``build_lcd`` calls this method on every ``LCDBuilderABC``
+        ``build_lcd`` calls this method on every ``LCDictBuilderABC``
         subclass that implements it. All implementations are passed the same
         object ``lcdx``. Implementations should call ``LCDEx``
         methods on ``lcdx`` to augment and customize it.
@@ -87,11 +87,11 @@ class LCDBuilderABC():
 
         This method creates a ``LCDEx`` ``lcdx``,
         and calls ``subcls.add_to_lcd(lcdx)`` on all subclasses ``subcls``
-        of ``LCDBuilderABC`` *which implement the method*, in breadth-first
+        of ``LCDictBuilderABC`` *which implement the method*, in breadth-first
         order, passing the same ``LCDEx`` instance to each.
 
         **Note**: ``build_lcd()`` will call ``add_to_lcd`` only on
-        ``LCDBuilderABC`` subclasses that have actually been imported
+        ``LCDictBuilderABC`` subclasses that have actually been imported
         at the time ``build_lcd()`` is called.
         Thus, make sure that your program has imported all such subclasses
         before it calls this method. If the contributions of the ``add_to_lcd``
@@ -108,7 +108,7 @@ class LCDBuilderABC():
                     attach_handlers_to_root=attach_handlers_to_root,
                     disable_existing_loggers=disable_existing_loggers
         )
-        derived_classes = LCDBuilderABC.__subclasses__()
+        derived_classes = LCDictBuilderABC.__subclasses__()
 
         while derived_classes:
             subcls = derived_classes.pop()
@@ -116,5 +116,4 @@ class LCDBuilderABC():
                 subcls.add_to_lcd(lcdx)
             derived_classes.extend(subcls.__subclasses__())
 
-        # lcdx.config()
         return lcdx

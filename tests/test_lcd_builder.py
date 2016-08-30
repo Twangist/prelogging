@@ -8,11 +8,11 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
-from lcd import LCDEx, LCDBuilderABC
+from lcd import LCDEx, LCDictBuilderABC
 
 ##############################################################################
 
-from test_lcd_builders_top import LCDBuilder
+from test_lcd_builders_top import LCDictBuilder
 import test_lcd_builder_SubA
 import test_lcd_builder_SubB
 
@@ -23,7 +23,7 @@ import test_lcd_builder_SubB
 def test_builder():
     """
     >>> LOG_PATH = '_testlogs/builder'
-    >>> lcdx = LCDBuilder.build_lcd(
+    >>> lcdx = LCDictBuilder.build_lcd(
     ...     root_level='WARNING',
     ...     log_path=LOG_PATH,
     ...     locking=False,

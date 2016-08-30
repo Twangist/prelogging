@@ -3,10 +3,10 @@
 LCD
 ===============================
 
-This class resides in ``logging_config_dict.py``.
+This class resides in ``lcdict_.py``.
 
 
-.. autoclass:: lcd.logging_config_dict.LCD
+.. autoclass:: lcd.lcdict_.LCD
     :members: __init__, formatters, filters, handlers, loggers, root,
               set_root_level,
               attach_root_filters, attach_root_handlers,

@@ -6,14 +6,14 @@ except ImportError:
     import sys
     sys.path[0:0] = ['../..']
 
-from lcd import LCDBuilderABC
+from lcd import LCDictBuilderABC
 
 
 ##############################################################################
-# LCDBuilderABC subclasses
+# LCDictBuilderABC subclasses
 ##############################################################################
 
-class LCDBuilder(LCDBuilderABC):
+class LCDictBuilder(LCDictBuilderABC):
     @classmethod
     def add_to_lcd(cls, lcdx):
         """(Virtual) Call ``LCDEx`` methods to augment ``lcdx``.
@@ -24,7 +24,7 @@ class LCDBuilder(LCDBuilderABC):
                                 formatter='logger_level_msg',
                                 attach_to_root=True)
 
-class LCDBuilderSub(LCDBuilder):
+class LCDBuilderSub(LCDictBuilder):
     """An LCDBuilder class to organize a group of subclasses,
     perhaps to share data (class attributes).
     This class does **not** implement ``add_to_lcd``,
