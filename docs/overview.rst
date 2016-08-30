@@ -1,7 +1,7 @@
 .. _overview:
 
-Overview
-===============
+Overview of logging and configuration
+=============================================
 
 Logging is an important part of a program's internal operations, an essential
 tool for development, debugging, troubleshooting, performance-tuning and
@@ -14,19 +14,19 @@ the system log, email, or a Unix log server over TCP, to cite popular choices.
 It's not our purpose to rehash or repeat the extensive (and generally quite
 good) documentation of Python's `logging` package; in fact, we presuppose that
 you're familiar with basic concepts and standard use cases. At the end of this
-chapter we provide :ref:`links_to_sections_of_logging_docs`. Nevertheless, it
-will be helpful to review a few topics.
+chapter we provide several :ref:`logging_docs_links`, which you can explore
+before or in tandem with the `lcd` documentation. Nevertheless, it will be
+helpful to review several topics.
 
-<<<< SOME HEADING >>>>
+
+The uses of logging
 -------------------------------------
 
-.. todo:: Smooth out the next paragraph
-
 A program logs messages using the ``log`` method of objects called *loggers*,
-which are implemented in `logging` by the ``Logger`` class.
-The ``log`` method is a kind of **generalized/more-powerful/enhanced/souped-up**
-``print`` statement.
-In `logging`, a ``Handler`` object — a `handler — represents a single
+which are implemented in `logging` by the ``Logger`` class. You can think of
+the ``log`` method as a pumped-up ``print`` statement. It writes a message,
+tagged with a level of severity, to one or more destinations.
+In `logging`, a ``Handler`` object — a *handler* — represents a single
 destination, together with a specified output format.
 A handler implements abstract methods which format message data into structured
 text and write or transmit that text to the output.
@@ -35,30 +35,31 @@ When a program calls a logger's ``log`` method to log a message, the logger
 dispatches the message data to its handlers.
 
 All messages have a `logging level`, or `loglevel`, indicating their severity
-or importance — `debug`, `info`, `warning`, `error`, `critical` are the basic
-categories. Both loggers and handlers have an associated *loglevel*, indicating
-a severity threshold: a logger or a handler will filter out (squelch) any
-message whose loglevel is less than its own. In order for a message to actually
-be written to a particular destination, its loglevel must equal or exceed the
-loglevels of both the logger and the handler representing the destination.
+or importance — ``DEBUG``, ``INFO``, ``WARNING``, ``ERROR``, ``CRITICAL`` are
+the basic categories, listed in order of increasing severity. Both loggers
+and handlers have an associated *loglevel*, indicating a severity threshold:
+a logger or a handler will filter out any message whose loglevel is less than
+its own. In order for a message to actually be written to a particular
+destination, its loglevel must equal or exceed the loglevels of both the
+logger and the handler representing the destination.
 
 This allows developers to dial in different amounts of logging verbosity:
 you might set a logger's level to ``DEBUG`` in development but to
-``WARNING`` or ``ERROR`` in production. There's no need to delete or comment out
-the lines of code that log messages, or to precede each such block with a guard.
-The logging facility is a very sophisticated version of using the `print`
-statement for debugging.
+``ERROR`` in production. There's no need to delete or comment out
+the lines of code that log messages, or to precede each such block with a
+conditional guard. The logging facility is a very sophisticated version of using
+the `print` statement for debugging.
 
 
 `logging`-configuration classes
 ----------------------------------
 
-The `logging` defines a few types of entities, which support the ``Logger``
-class. In general, a program will set up, or *configure*, logging once, at
-startup, specifying message formats, destinations, loggers, and containment
-relations between those things. Once a program has configured logging as
-desired, use of loggers is very straightforward. Configuration, then, is the
-only barrier to entry.
+`logging` defines a few types of entities, which support the ``Logger``
+class. In general, a program or library will set up, or *configure*, logging
+only once, at startup. This entails specifying message formats, destinations,
+loggers, and containment relations between those things. Once a program has
+configured logging as desired, use of loggers is very straightforward.
+Configuration, then, is the only barrier to entry.
 
 The following diagram displays the types involved in logging configuration,
 and their dependencies:
@@ -90,7 +91,7 @@ In words:
       a ``Filter`` can be used by multiple ``Handler``\s and/or ``Logger``\s.
 
 
-What these objects do [todo: need this headline?]
+What these objects do
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 A ``Formatter`` is basically just a format string that uses keywords
@@ -109,53 +110,72 @@ thresholding as described above.
 ``Filter``\s provide still more fine-grained control over which messages are
 written.
 
+Loggers are identified by name
+-------------------------------------------
 
+A logger is uniquely identified by name: the expression
+``logging.getLogger('mylogger')``, for example, always denotes the same object,
+no matter where in a program it occurs or when it's evaluated.
+The `logging` package always creates a special logger, the *root logger*, whose
+name is ``''``; it's accessed by the expression ``logging.getLogger('')``,
+or equivalently by ``logging.getLogger()``.
 
-<<<<<<<<< RESUME >>>>>>>>>>>>>>>
+Logger names are *dotted names*, and behave in a way that's intentionally
+analogous to package names. A parent-child relation obtains among loggers:
+the parent of a logger ``a.b.c`` is the logger ``a.b``, whose parent is ``a``;
+the parent of logger ``a`` is the root logger.
 
+`logging` defaults
+---------------------
+`logging` supplies reasonable out-of-the-box defaults and shorthands so that you
+can easily start to use its capabilities.
 
+When accessed for the first time, the ``Logger`` named ``'mylogger'`` is created
+"just in time" if it hasn't been explicitly configured. You don't *have* to
+attach handlers to ``'mylogger'``; logging a message with that logger will "just
+work". If ``'mylogger'`` has no handlers and you say:
 
-I. Logger names. They're unique, etc.
+    ``logging.getLogger('mylogger').warning("Hi there")``
 
-`logging` supplies reasonable out-of-the-box defaults so that you can easily
-start to use its capabilities. You can just say:
+then ``Hi there`` will be written to ``stderr``. Here's why: by default, a
+logger "propagates" messages to its parent, so if ``'mylogger'`` lacks
+handlers, the message will be logged by its parent, using the parent's handlers.
+The parent of ``'mylogger'`` is the root, which by default (in the absence of
+configured handlers) writes messages to ``stderr``.
+
+The ``debug(...)`` logger method shown above is a shorthand for
+``log(logging.DEBUG, ...)``. Similarly, there are convenience methods ``debug``,
+``info``, ``error`` and ``critical``.
+
+For another example, you can just say:
 
     ``logging.error("Something went wrong")``
 
-and something plausible will happen (the string will be written to
-``stderr``). This statement is a shorthand that implicitly uses the "root
-logger", which the `logging` module always creates. By default, the root
-logger writes messages to ``stderr``. All loggers are identified uniquely
-by name; the root logger's name is  ``''``.
-
-A ``Logger`` is uniquely identified by name: the expression
-``logging.getLogger('mylogger')``, for example, always denotes the same object,
-no matter where in a program it occurs or when it's evaluated. When evaluated
-for the first time, the ``Logger`` named ``'mylogger'`` is created
-"just in time" if it hasn't been explicitly configured. You don't _have_ to
-attach handlers to ``'mylogger'``; the expression accessing it will "just work",
-and then, at least by default, that logger will use the handlers of it's
-*parent handler*. The parent of ``'mylogger'`` is the
-root logger, ``logging.getLogger()`` alias ``logging.getLogger('')``.
-
+and something plausible will happen (again, the string will be written to
+``stderr``). This works because ``logging.error(...)`` is a shorthand for
+``logging.log(logging.ERROR, ...)``, which in turn is a shorthand for
+``logging.getLogger().log(logging.ERROR, ...)``.
 
 In many cases, to configure logging it's sufficient just to add a handler or
 two and attach them to the root.
-
-WHY -- because `propagation` -- explain
 
     The `logging.basicConfig() <https://docs.python.org/3/library/logging.html#logging.basicConfig>`_
     function lets you configure the root logger, anyway to a point, using
     a monolithic function that's somewhat complex yet of limited capabilities.
 
 
-II. Example use case.
+Logging configuration requirements — use case
+------------------------------------------------------------
 
+We'll use a simple example to discuss and compare various approaches to logging
+configuration — using the facilities provided by the `logging` package, and then
+using `lcd`.
 
-Example
-++++++++
+Suppose we want the following configuration:
 
-Suppose we want the following logging configuration:
+.. _example-overview-config:
+
+    **Configuration requirements**
 
     Messages should be logged to both ``stderr`` and a file. Only messages with
     loglevel ``INFO`` or higher should appear on-screen, but all messages should
@@ -163,30 +183,21 @@ Suppose we want the following logging configuration:
     message, but messages written to the file should contain the logger name and
     the message's loglevel.
 
+    The logfile contents should persist: the file handler should **append**
+    to the logfile, rather than overwriting it each time the program using these
+    loggers is run.
+
 This suggests two handlers, each with an appropriate formatter — a ``stderr``
-console handler with level ``INFO``, and a file handler with level ``DEBUG``.
-Both handlers should be attached to the root logger, which must have level
-``DEBUG`` (or ``NOTSET``) to allow all messages through.
+console handler with level ``INFO``, and a file handler with level ``DEBUG``
+or, better, ``NOTSET``. (``NOTSET`` is the default loglevel for handlers.
+Numerically less than ``DEBUG``, all loglevels are greater than or equal to it.)
+Both handlers should be attached to the root logger, which should have level
+``DEBUG`` to allow all messages through. The file handler should be created with
+``mode='a'`` (append, not ``'w'`` for overwrite) so that the the logfile
+contents can persist.
 
-The logfile contents should persist: the file handler should **append** to the
-logfile, rather than overwriting it each time the program using these loggers
-is run.
-
-.. todo::
-    TODO TODO TODO
-
-    CHANGE MODE default of add_file_handler (in both classes)
-    from 'w' to 'a'
-
-    THIS WILL BREAK THINGS -- tests? examples?
-    So, fix those.
-
-    This could be subtle -- CHECK IN FIRST, make a branch.
-
-    BUT 'a' is the correct default, surely.
-
-
-
+The example configuration in use
++++++++++++++++++++++++++++++++++++
 
 Once this configuration is established, these logging calls:
 
@@ -217,30 +228,23 @@ and the logfile should contain (something much like) these lines:
     submodule_A         : INFO    : 4. submodule_A initialized
 
 
+Configuring logging using what `logging` provides
+---------------------------------------------------
 
-Requirements for it -- we want to be able to say
-blah blah (logging statements)
-& get the results shown.
-This will use logger names, & give us the chance to explain that logger.debug(),
-logger.info(), etc. are shorthands for logger.log(const, ...)
+The `logging` package offers two approaches to configuration:
 
-Also sets up a comparison of logging config styles
+* dynamic, in code;
+* static (and then, there are two ways to go about this).
 
-So: logging is very easy to use, ONCE it's set up.
-The barrier to entry, then, is setting it up, i.e. **configuration**.
+These approaches might also be called *imperative* and *declarative*, respectively.
+The following subsections show how these approaches configure logging to meet
+the requirements stated above.
 
+Dynamic configuration (in code)
++++++++++++++++++++++++++++++++++++
 
-
-III. Give a clear definition of *configuration*
-
-
-pre-IV/V. Two main approaches to config: static (and then, 2 sub-approaches),
-          and dynamic (code)
-
-IV. Dynamic:
-    example: Show how to config the requirements given in II. using code (TODO)
-
-.. code::
+Here's how to dynamically configure logging according to satisfy the given
+requirements::
 
     import logging
     import sys
@@ -249,270 +253,97 @@ IV. Dynamic:
     root.setLevel(logging.DEBUG)
 
     # Create stderr handler,
-    #   level = INFO, formatter = '%(message)s';
+    #   level = INFO, formatter = default i.e. '%(message)s';
     # attach it to root
-    msg_fmtr = logging.Formatter('%(message)s')
-    h_stderr = logging.StreamHandler(stream=sys.stderr, level=logging.INFO)
-    h_stderr.setFormatter(msg_fmtr)
+    h_stderr = logging.StreamHandler(stream=sys.stderr)
+    h_stderr.setLevel(logging.INFO)
     root.addHandler(h_stderr)
 
     # Create file handler, level = NOTSET (default),
-    #   filename='blather_dyn_cfg.log', formatter = logger_level_msg
+    #   filename='blather_dyn_cfg.log', formatter = logger/level/msg
     # attach it to root
-    logger_level_msg_fmtr = logging.Formatter('%(name)-20s: %(levelname)-8s: %(message)s'')
+    logger_level_msg_fmtr = logging.Formatter('%(name)-20s: %(levelname)-8s: %(message)s')
     h_file = logging.FileHandler(filename='blather_dyn_cfg.log')
     h_file.setFormatter(logger_level_msg_fmtr)
     root.addHandler(h_file)
 
+We've used a number of defaults. It was unnecessary to add::
+
+    msg_fmtr = logging.Formatter('%(message)s')
+    h_stderr.setFormatter(msg_fmtr)
+
+because the same effect is achieved without them. The default ``mode`` of a
+``FileHandler`` is ``a``, which opens the logfile for appending, as per our
+requirements; thus it wasn't necessary to provide ``mode='a'`` to the
+``FileHandler`` constructor. (We omitted other arguments to this constructor,
+e.g. ``delay``, whose default values are suitable.) Similarly, it wasn't
+necessary to set the level of the file handler, as the default level ``NOTSET``
+is just what we want.
+
+Advantages of dynamic configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Hierarchy of logging entities respected
+
+  Formatters must be created before the handlers that use them;
+  handlers must be created before the loggers to which they're attached.
+
+  You can configure the entities of logging (formatters, optional filters,
+  handlers, loggers) one by one, in order, starting with those that don't
+  depend on other entities, and proceeding to those that use entities
+  already defined.
+
+* You can take advantage of the reasonable defaults provided by the methods
+  of the `logging` API. When configuring logging statically, various fussy
+  defaults must be specified explicitly.
+
+* Error prevention
+
+  For instance, there's no way to attach things that simply don't exist.
+
+* Fine-grained error detection
+
+  If you use a nonexistent keyword argument, for example, the line in which it
+  occurs gives an error; you don't have to wait until all configuration is
+  complete to learn that something was amiss.
+
+  Thus it's easier to debug: each step taken is rather small, and you can fail
+  faster than when configuring from an entire dictionary.
 
 
-    PROs
-        * hierarchy respected
-        * better error checking/catching/detection (more fine-grained)
+Disadvantages of dynamic configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    CONs
-        * more verbose (perhaps surprisingly) -- the API is a bit low-level
-        * since only loggers have names, we have to use Python variables
-          to reference the various logging entities which we create and connect
+    * Low-level methods, inconsistent API
 
-V. Static config.
-    We'll stick to **dict** config. Django does, by default, why muck with
-    a technology that's not native Python (YAML).
-    YAML may be more readable than dictionary declarations, but `lcd` offers
-    another, pure-Python solution to the unreadability of dict decls.
+      The ``Handler`` base class takes a keyword argument ``level``,
+      its subclass ``StreamHandler`` takes a keyword argument ``stream``,
+      but doesn't recognize ``level``. Thus we couldn't concisely say::
 
-    example -- config requirements using a logging config dict
+          h_stderr = logging.StreamHandler(level=logging.INFO, stream=sys.stderr)
 
-    PROs
+      but had to call ``h_stderr.setLevel`` after constructing the handler.
 
-    CONs
-        * not very good error detection (none till ``dictConfig`` call)
-        * some boilerplate key/value pairs,
-        * sprawl,
-        * lots of noise -- nested curly braces, quotes, colons, etc.
+    * In `logging`, only loggers have names; formatters, handlers and filters
+      don't. Thus we have to use Python variables to reference the various
+      logging entities which we create and connect. If another part of the
+      program later wanted to access, say, the file handler attached to the
+      root logger, the only way it could do so would be by iterating through
+      the ``handlers`` collection of the root and examining the type of each::
 
-VI. `lcd` is a hybrid, attempts to offer best of both worlds/approaches
+          root = logging.getLogger()
+          fh = [h for h in root.handlers if isinstance(h, logging.FileHandler)][0]
 
-    example using LCD
-
-    example using LCDEx, even more concisely (maybe DON'T use
-    ``attach_root_to_handlers=True`` on constructor,
-    use ``attach_to_root`` on the add_BLAHBLAH_handler call that needs it
-
-
-------------------------------------------------------------------------------
-
-
-
-Logging configuration
-----------------------
-
-Different ways to configure logging
-+++++++++++++++++++++++++++++++++++++++
-
-`logging` provides two ways to configure logging: statically, with text or
-a dictionary; or dynamically, with code that uses the `logging` API.
-
-Configuring logging with code is arguably less flexible than doing so statically.
-
-(statically, every logging entity is identified by name)
-
-Benefits of dynamic configuration:
-
-    * You can take advantage of the reasonable defaults provided by the methods
-      of the `logging` API. When configuring logging statically, various fussy
-      defaults must be specified explicitly.
-
-    * You can configure the entities of logging (formatters, optional filters,
-      handlers, loggers) one by one, in order, starting with those that don't
-      depend on other entities, and proceeding to those that use entities
-      already defined. All entities are identified by *name*.
-
-    * It's easier to debug: each step taken is rather small, and you can fail
-      faster than when configuring from an entire dictionary.
-
-Deficiencies of dynamic configuration
-    * Except for loggers, none of the entities you create have *names*,
-      so you must use program variables (addresses of live objects) to
-      refer to them — say, when attaching handlers to a logger.
 
     * Somehow it winds up more even verbose than static dictionaries —
       the methods are low-level, and many boilerplate passages recur
       in dynamic configuration code.
 
-`logging` shortcomings
-    * API is at once complex and limited
-    * with static config, no warnings or error checking until dictConfig (or fileConfig) called
-    * awkward to extend
-    * entire library written in thoroughgoing camelCase (inconsistent, at that)
 
+Static configuration
++++++++++++++++++++++++++++++++++++
 
-`lcd` what it does why it's so cool -- redundant with stuff from next chapter
-------------------------------------------------------------------------------
-
-`lcd` occupies a middle ground: it provides a clean, consistent and concise
-API for incrementally constructing dicts  configure logging
-statically. The ``add_*`` methods let you specify new logging entities
-entities (formatters, possibly filters, handlers, loggers), which all have names.
-and ``attach_*``
-update the dict with specifications of logging
-
-`lcd` (for
-**l**\ogging **c**\onfig **d**\ict) provides a streamlined API for setting up
-logging, making it easy to use "advanced" features such as rotating log files.
-`lcd` also supplies missing functionality: the package provides
-multiprocessing-safe logging to the console, to files and rotating files, and
-to `syslog`.
-
-
-(( Worth mentioning that Django uses static configuration -- indicates importance of static logging. ))
-
-`lcd` (for
-**l**\ogging **c**\onfig **d**\ict) provides a streamlined API for setting up
-logging statically. `lcd` makes it easy to use "advanced" features such as
-rotating log files.
-
-error-checking and warnings ! :)
-
-inconsistent camelCase <-- fixups
-
-
------ Using LCD, you build a logging config dict using a flat succession of
-method calls that all take keyword arguments. instead of a static declaration
-of a triply nested dict and its excess of glyphs (curly braces, quotes,
-colons). Each call to one of the ``add_*`` methods adds an item
-to one of the subdictionaries ``'formatters'``, ``'filters'``, ``'handlers'``
-or ``'loggers'``. You can specify all of the item's dependencies in this call,
-using names of previously added items, and/or you can add dependencies
-subsequently with the ``attach_*`` methods. For example, in the following code:
-
-.. code::
-
-    >>> from lcd import LCD
-    >>> d = LCD()
-    >>> d.add_formatter('simple', '{message}', style='{')
-
-the ``add_formatter`` call adds an item to the ``'formatters'``
-subdictionary of ``d``. If ``d`` were declared statically as a dict,
-it would look like this::
-
-    d = {
-        ...
-        'filters':     {},
-
-        'formatters' : { 'simple': { 'class': 'logging.Formatter',
-                                     'format': '{message}',
-                                     'style': '{' },
-                       },
-        'handlers':    {},
-        'loggers':     {},
-        ...
-    }
-
-An LCD makes its top-level subdictionaries available as properties with the
-same names as the keys: d.formatters == d['formatters'], d.handlers == d['handlers'],
-and similarly for d.filters, d.loggers, d.root. After the above ``add_formatter``
-call, ::
-
-    >>> d.formatters                # ignoring whitespace,
-    {'simple': {format: '{message}',
-                'style': '{'}
-    }
-
-
-
-Logging a message
--------------------
-
-The `logging` module lets us log messages to various destinations, affording us
-a lot of control over what actually gets written where, and when. We use
-``Logger`` objects to log messages; ultimately, all the other types defined by
-`logging` exist only to support this class.
-
-A ``Logger`` is uniquely identified by name: the expression
-``logging.getLogger('mylogger')``, for example, always denotes the same object,
-no matter where in a program it occurs or when it's evaluated. When evaluated
-for the first time, the ``Logger`` named ``'mylogger'`` is created
-"just in time" if it hasn't been explicitly configured. You don't _have_ to
-configure ``'mylogger'``; the expression accessing it will "just work", and
-then, at least by default, that logger will use the handlers of it's
-*parent handler*. The parent of ``'mylogger'`` is the
-root logger, ``logging.getLogger()``
-
-.. todo:: Discuss, here or previously, the parent-child relationship
-    among/between loggers, induced by dotted logger names a la package names.
-    (which makes package names well-suited for use as logger names).
-
-    Might be worth mentioning in discussing complexities of `logging` — non-OOP
-    inheritance (delegation to parent if no handlers), propagation
-
-In many cases, to configure logging it's sufficient just to add a handler or
-two and attach them to the root.
-
-.. topic:: `logging` shorthands and defaults
-
-    `logging` supplies reasonable out-of-the-box defaults so that you can easily
-    start to use its capabilities. You can just say:
-
-        ``logging.error("Something went wrong")``
-
-    and something plausible will happen (the string will be written to
-    ``stderr``). This statement is a shorthand that implicitly uses the "root
-    logger", which the `logging` module always creates. By default, the root
-    logger writes messages to ``stderr``. All loggers are identified uniquely
-    by name; the root logger's name is  ``''``.
-
-    .. todo:: The parent-child relationship among/between loggers, induced by their names;
-        There's a kind of "inheritance", though in the style of event handlers not OOP.
-        Complexity: by default, a logger delegates to its parent, but it also has a separate
-        'propagate' setting governing blah-blah
-
-    The `logging.basicConfig() <https://docs.python.org/3/library/logging.html#logging.basicConfig>`_
-    function lets you configure the root logger, anyway to a point, using
-    a monolithic function that's somewhat complex yet of limited capabilities.
-
-    .. todo::
-        The above subsection is a ".. topic::".
-        Does it work? does this material belong here,
-        is its relevance to the foregoing clear?
-
-
-
-Order of definition
-+++++++++++++++++++++++++++++++++
-
-While configuring logging, you give a name to each of the objects that you
-define. When defining a higher-level object, you identify its constituent
-lower-level objects by name.
-
-``Formatter``\s and ``Filter``\s (if any) don't depend on any other logging
-objects, so they should be defined first. Next, define ``Handler``\s, and
-finally, ``Logger``\s that use already-defined ``Handler``\s (and, perhaps,
-``Filter``\s). `lcd` supplies dedicated methods for configuring the root logger
-(setting its level, attaching handlers and filters to it), but often a
-general-purpose `lcd` method can also be used, by referring to the root logger
-by name: ``''``.
-
-.. note::
-    Once logging is configured, only the names of ``Logger``\s persist.
-    `logging` retains *no associations* between the names you used to specify
-    ``Formatter``, ``Handler`` and ``Filter`` objects, and the objects
-    constructed to your specifications; you can't access those objects by any
-    name.
-
-Typically, we won't require any ``Filter``\s, and then, setting up logging
-involves just these steps:
-
-* define ``Formatter``\s
-* define ``Handler``\s that use the ``Formatter``\s
-* define ``Logger``\s that use the ``Handler``\s.
-
-In common cases, such as the :ref:`example-overview-config` of the next section,
-`lcd` eliminates the first step and makes the last step trivial.
-
-
-Configuring `logging` statically
------------------------------------
+.. todo:: <<<<<< RESUME >>>>>>
 
 The `logging.config` submodule offers two equivalent ways to specify
 configuration statically:
@@ -522,169 +353,110 @@ configuration statically:
 * with a text file written in YAML, meeting analogous requirements,
   and passed to ``logging.config.fileConfig()``.
 
-The `schema for configuration dictionaries <https://docs.python.org/3/library/logging.config.html#configuration-dictionary-schema>`_
-documents the format of such dictionaries — and uses YAML to do so!, to cut down
-on the clutter of quotation marks and curly braces. Arguably, this documentation
-makes it seem quite daunting to configure logging with a ``dict``. Following its
-precepts, you must create a medium-sized ``dict`` containing several nested
-``dict``\s, in which many values refer back to keys in other sub\``dict``\s —
-a thicket of curly braces, quotes and colons, which you finally pass to
-``dictConfig()``.
+We'll call a dictionary that can be passed to ``dictConfig`` a *logging config
+dict*. The `schema for configuration dictionaries <https://docs.python.org/3/library/logging.config.html#configuration-dictionary-schema>`_
+documents the format of such dictionaries. (Amusingly, it uses YAML to do so!,
+to cut down on the clutter of quotation marks and curly braces.)
 
-`lcd` defines two classes, a ``dict`` subclass ``LCD``, and `its` subclass
-``LCDEx``, which represent logging configuration dictionaries — *logging config
-dicts*, for short. ``LCD`` provides the basic model of building a logging config
-dict; ``LCDEx`` supplies additional conveniences including predefined formatters
-and easy access to [*???????*] "advanced" features such as multiprocessing-safe
-rotating file handlers.
-
-You use the methods of these classes to add specifications of named
-``Formatter``\s, ``Handler``\s, ``Logger``\s, and optional ``Filter``\s, and
-containment relations between them. Once you've done so, calling the
-``config()`` method of a ``LCD`` configures logging by passing itself, as a
-``dict``, to ``logging.config.dictConfig()``. This call creates all the objects
-and linkages specified by the underlying dictionary.
+We will deal only with logging config dicts, ignoring the YAML-based approach.
+The Web frameworks Django and Flask configure logging with dictionaries.
+(Django can accomodate YAML-based configuration, but its path of least resistance
+is certainly the dict-based approach.) Dictionaries are native Python; YAML is not.
+YAML may be more readable than dictionary specifications, but `lcd` offers
+another, pure-Python solution to that problem.
 
 
-.. _example-overview-config:
+Configuring logging for our requirements with a logging config dict
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Example
-++++++++
+Here's how to do so::
 
-Suppose we want the following logging configuration:
-
-    Messages should be logged to both ``stderr`` and a file. Only messages with
-    loglevel ``INFO`` or higher should appear on-screen, but all messages should
-    be logged to the file. Messages to ``stderr`` should consist of just the
-    message, but messages written to the file should contain the logger name and
-    the message's loglevel.
-
-This suggests two handlers, each with an appropriate formatter — a ``stderr``
-console handler with level ``INFO``, and a file handler with level ``DEBUG``.
-Both handlers should be attached to the root logger, which must have level
-``DEBUG`` (or ``NOTSET``) to allow all messages through.
-
-Once this configuration is established, these logging calls:
-
-.. code::
-
-    import logging
-    root_logger = logging.getLogger()
-    root_logger.debug("1. 0 = 0")
-    root_logger.info("2. days are getting shorter")
-    root_logger.debug("3. 0 != 1")
-    # ...
-    logging.getLogger('submodule_A').info("4. submodule_A initialized")
-
-should produce the following ``stderr`` output:
-
-.. code::
-
-    2. days are getting shorter
-    4. submodule_A initialized
-
-and the logfile should contain (something much like) these lines:
-
-.. code::
-
-    root                : DEBUG   : 1. 0 = 0
-    root                : INFO    : 2. days are getting shorter
-    root                : DEBUG   : 3. 0 != 1
-    submodule_A         : INFO    : 4. submodule_A initialized
-
-
-Let's see what it's like to set this up — with `lcd`, and without it.
-
-Configuration with `lcd`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-`lcd` simplifies the creation of "logging config dicts" by breaking the process
-down into easy, natural steps. As much as is possible, with `lcd` you only have
-to specify the objects you care about and what's special about them; everything
-else receives reasonable, expected defaults. Using the "batteries included"
-``lcd.LCDEx`` class lets us concisely specify the desired setup:
-
-.. code::
-
-    from lcd import LCDEx
-
-    lcd_ex = LCDEx(root_level='DEBUG',
-                   attach_handlers_to_root=True)
-    lcd_ex.add_stderr_handler(
-                    'console',
-                    formatter='msg',
-                    level='INFO'
-    ).add_file_handler('file_handler',
-                       formatter='logger_level_msg',
-                       filename='blather.log',
-    )
-    lcd_ex.config()
-
-Here, we use a couple of the builtin ``Formatter``\s supplied by
-``LCDEx``. Because we pass the flag
-``attach_handlers_to_root=True`` when creating the instance ``lcd_ex``,
-every handler we add to ``lcd_ex`` is automatically attached to the root logger.
-Later, we'll
-:ref:`revisit this example <overview-example-using-only-LCD>`,
-to see how to achieve the same result using only ``LCD``.
-
-Remarks
-^^^^^^^^^^
-
-To allow chaining, as in the above example, the methods of ``LCD``
-and ``LCDEx`` generally return ``self``.
-
-You can use the ``dump()`` method of a ``LCD`` to prettyprint its
-underlying ``dict``. In fact, that's how we determined the value of
-``config_dict`` for the following subsection.
-
-
-Configuration without `lcd`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Without `lcd`, you could configure logging to satisfy the stated requirements
-using code like this:
-
-.. code::
-
-    import logging
+    import logging
+    from logging import config
 
     config_dict = \
-        {'disable_existing_loggers': False,
-         'filters': {},
+        {
          'formatters': {'logger_level_msg': {'class': 'logging.Formatter',
                                              'format': '%(name)-20s: %(levelname)-8s: '
-                                                       '%(message)s'},
-                        'msg': {'class': 'logging.Formatter',
-                                    'format': '%(message)s'}},
-         'handlers': {'console': {'class': 'logging.StreamHandler',
-                                  'formatter': 'msg',
-                                  'level': 'INFO'},
-                      'file_handler': {'class': 'logging.FileHandler',
-                                       'delay': False,
-                                       'filename': 'blather.log',
-                                       'formatter': 'logger_level_msg',
-                                       'level': 'DEBUG',
-                                       'mode': 'w'}},
-         'incremental': False,
-         'loggers': {},
-         'root': {'handlers': ['console', 'file_handler'], 'level': 'DEBUG'},
+                                                       '%(message)s'}},
+         'handlers': {'h_stderr': {'class': 'logging.StreamHandler',
+                                   'level': 'INFO',
+                                   'stream': 'ext://sys.stderr'},
+                      'h_file': {'class': 'logging.FileHandler',
+                                 'filename': 'blather_stat_cfg.log',
+                                 'formatter': 'logger_level_msg'}},
+         'root': {'handlers': ['h_stderr', 'h_file'], 'level': 'DEBUG'},
          'version': 1}
 
     logging.config.dictConfig(config_dict)
 
+As with dynamic configuration, most keys have default values, and we've
+in the interest of brevity we've omitted those that already suit our needs. We
+didn't specify a formatter for the stderr handler, nor the file
+handler's mode or loglevel, and so on.
 
-.. _links_to_sections_of_logging_docs:
+Advantages of static configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`logging` documentation
+* logging entities are referenced by name
+
+  You give a name to every logging entity you specify, and then refer
+  to it by that name when attaching it to higher-level entities.
+  (It's true that after the call to ``dictConfig``, only the names of loggers
+  endure; but that's a separate issue — a deficiency of `logging`, not of static
+  configuration.)
+
+* it's arguably more natural to specify configuration in a declarative way,
+  especially for the typical application which will "set it and forget it"
+
+Disadvantages of static configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* not very good error detection (none until the ``dictConfig`` call)
+
+* some boilerplate key/value pairs
+
+* lots of noise — a sprawling thicket of nested curly braces, quotes, colons, etc.
+
+  Medium-sized nested dicts are hard to read
+
+* logging config dicts seem complex
+
+  At least on first exposure to static configuration, it's not easy to
+  comprehend a medium- to large-sized dict of dicts of dicts, in which many
+  values are lists of keys occurring elsewhere in the structure.
+
+Assessment [ "Summary" ? "Conclusions" ??]
+-------------------------------------------
+
+As we've seen, both approaches to configuration offered by the `logging`
+package have virtues, but both have shortcomings:
+
+* Its API, mostly dedicated to dynamic configuration, is at once complex and
+  limited.
+* With static configuration, no warnings are issued and no error checking occurs
+  until ``dictConfig`` (or ``fileConfig``) is called.
+* Of the various kinds of entities that `logging` constructs, only loggers have
+  names, which can lead to various conundrums and contortions.
+
+To these, we might add the general observation that the entire library is
+written in thoroughgoing camelCase (except for inconsistencies — for example,
+``levelname`` in format strings).
+
+In the next chapter, we'll
+
+<lead-in to next chapter -- `lcd` provides a middle ground / hybrid / best of both worlds;
+ blah blah>
+
+--------------------------------------------------------
+
+.. _logging_docs_links:
+
+`logging` documentation links
 ----------------------------------------------------
 
-The documentation for `logging in Django <https://docs.djangoproject.com/en/1.9/topics/logging/>`_
-provides another, excellent overview of logging and configuration, with examples.
-The first few sections aren't at all Django-specific.
-
 See the `logging docs <https://docs.python.org/3/library/logging.html?highlight=logging>`_
-for the official explanation of how logging works.
+for the official explanation of how Python logging works.
 
 For the definitive account of static configuration, see the documentation of
 `logging.config <https://docs.python.org/3/library/logging.config.html?highlight=logging>`_,
@@ -708,4 +480,7 @@ The `logging` package supports multithreaded operation, but does **not** directl
 `logging to a single file from multiple processes <https://docs.python.org/3/howto/logging-cookbook.html#logging-to-a-single-file-from-multiple-processes>`_.
 Happily, `lcd` does, in a couple of ways.
 
-
+One additional resource merits mention: the documentation for
+`logging in Django <https://docs.djangoproject.com/en/1.9/topics/logging/>`_
+provides another, excellent overview of logging and configuration, with
+examples. Its first few sections aren't at all Django-specific.

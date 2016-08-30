@@ -60,39 +60,36 @@ blahblah
 Setting the ``LOGGING`` variable in ``settings.py``
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+Django uses logging config dicts: the easiest way to configure logging
+in Django is to provide a logging config dict as the value of the
+``LOGGING`` variable in ``settings.py``.
+
+..note::
+    (1) It would be great if ``LOGGING`` could be a callable;
+    the other logging-related setting ``LOGGING_CONFIG`` can be.
+    That way, you could specify a callable (no args, say) which just returns
+    a logging config dict.
+
 .. todo::
+    (2) Illustrate how to use `lcd` with Django. In ``settings.py``:
 
-    This needs mention
-
-    Django uses logging config dicts, & its path of least resistance
-    suggests using a big static dict
-    via a LOGGING variable in ``settings.py``.
-
-    ..note :: It would be great if ``LOGGING`` could be a callable;
-        the other logging-related setting ``LOGGING_CONFIG`` can be.
-        That way, you could specify a callable (no args, say) which just returns
-        a logging config dict.
-
-    See blah for info:
-        https://docs.djangoproject.com/en/1.9/topics/logging/
-
-        also
-
-        https://docs.djangoproject.com/en/1.9/releases/1.9/#default-logging-changes-19
-
-    Illustrate how to use `lcd` with Django. In ``settings.py``:
-
-    .. code::
-
-        from mystuff import build_lcd
-        LOGGING = build_lcd()
+        ``from mystuff import build_lcd``
+        ``LOGGING = build_lcd()``
 
     Here, `build_lcd` is a function you supply which builds a logging
     config dict but doesn't call its ``config`` method. Django will add its
     logging specifications to the ``LOGGING`` dict and then pass that to
     ``logging.config.dictConfig``.
 
-    From https://docs.djangoproject.com/en/1.9/topics/logging/:
+    (1) See the following for more info:
+
+    https://docs.djangoproject.com/en/1.9/topics/logging/
+
+    also
+
+    https://docs.djangoproject.com/en/1.9/releases/1.9/#default-logging-changes-19
+
+    (3) From https://docs.djangoproject.com/en/1.9/topics/logging/:
 
         If the disable_existing_loggers key in the LOGGING dictConfig is set to
         ``True`` (which is the default) then all loggers from the default
