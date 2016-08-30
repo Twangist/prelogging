@@ -13,7 +13,8 @@ This class resides in ``logging_config_dict.py``.
               attach_logger_filters, attach_logger_handlers,
               attach_handler_filters,
               add_formatter, add_filter,
-              add_handler, add_file_handler, add_null_handler,
+              add_handler, add_stream_handler, add_file_handler,
+              add_null_handler,
               add_logger, set_handler_level, set_logger_level,
               config, dump, check,
               warnings, Warnings

@@ -86,7 +86,7 @@ exotic handlers, which are easy to write examples for but difficult to test.
 || ``logging_config_dict.py``    || \99%  || \99% |
 || ``logging_config_dict_ex.py`` || \88%  || \88% |
 || ``locking_handlers.py``       || \89%  || \89% |
-|| ``lcdict_builder_abc.py``        || 100%  || 100% |
+|| ``lcdict_builder_abc.py``     || 100%  || 100% |
 +--------------------------------+--------+-------+
 
 

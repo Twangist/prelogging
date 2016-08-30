@@ -104,9 +104,9 @@ class LCDEx(LCD):
     When ``locking`` is true [default: False], by default the other methods of
     this class add :ref:`locking handlers <locking-handlers>`; if it's false,
     handlers instantiate the "usual" classes defined by `logging`. (See the
-    :ref:`class inheritance diagram <lcd-all-classes>`.) Each instance saves the
-    value passed to its constructor, and exposes it as the read-only property
-    ``locking``.
+    :ref:`class inheritance diagram <lcd-all-classes-except-ABC>`.)
+    Each instance saves the value passed to its constructor, and exposes it as
+    the read-only property ``locking``.
 
     All of the methods that add a handler take parameters ``attach_to_root``
     and ``locking``, each a ``bool`` or ``None``; these allow overriding of
@@ -391,8 +391,8 @@ class LCDEx(LCD):
         :param formatter:
         :param level:
         :param locking: If true, this handler will be a
-            :ref:`LockingStreamHandler`; if false, the handler will be a
-            ``logging.StreamHandler``.
+            :ref:`LockingStreamHandler <LockingStreamHandler>`;
+            if false, the handler will be a ``logging.StreamHandler``.
         :param attach_to_root: If true, add the ``clone`` handler to the root
             logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
             if false, don't add to root.

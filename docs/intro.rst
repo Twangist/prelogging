@@ -6,12 +6,12 @@ Introduction: `lcd` does... *what*?
     Introduction to `lcd`: what  `lcd` is and does,
     blah blah
 
-.. _lcd-all-classes:
+.. _lcd-all-classes-except-ABC:
 
-.. figure:: lcd_ALL_classes.png
+.. figure:: LCDict_classes-v2.png
     :figwidth: 100%
 
-    **lcd** classes and their superclasses
+    **lcd** classes and their superclasses (LCDictBuilderABC omitted)
 
     +-----------------------+-----------------------+
     | Symbol                | Meaning               |
@@ -21,6 +21,4 @@ Introduction: `lcd` does... *what*?
     | .. image:: arruse.png | uses                  |
     +-----------------------+-----------------------+
 
-.. todo::
-    Redo/update this diagram
 

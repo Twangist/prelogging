@@ -9,12 +9,7 @@ handlers. `lcd` also supplies missing functionality: the package provides
 multiprocessing-safe logging to the console, to files and rotating files, and
 to `syslog`.
 
-The centerpiece of `lcd` is the ``LCDEx`` class.
-
-.. figure:: LCDict_classes.png
-
-    The central `lcd` classes
-
+The centerpiece of `lcd` is the ``LCDEx`` class (see the :ref:`diagram of classes <lcd-all-classes-except-ABC>`).
 
 
 `lcd` defines two classes, a ``dict`` subclass ``LCD``, and `its` subclass
