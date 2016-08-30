@@ -343,7 +343,7 @@ class LCD(dict):
         """
         self._check_readd(self.handlers, handler_name, 'handler')
 
-        assert 'class' not in handler_dict
+        # assert 'class' not in handler_dict
         if 'class_' in handler_dict:
             handler_dict['class'] = handler_dict.pop('class_')
 
@@ -379,6 +379,31 @@ class LCD(dict):
             handler_dict['filters'] = filters
 
         self.handlers[handler_name] = handler_dict
+        return self
+
+    def add_stream_handler(self, handler_name,    # *,
+                           stream,
+                           class_='logging.StreamHandler',
+                           level='NOTSET',      # logging default
+                           formatter=None,
+                           **kwargs):
+        """
+        :param handler_name:
+        :param stream: e.g. 'ext://sys.stderr' or sys.stderr
+        :param formatter:
+        :param level:
+        :param kwargs:
+        :return: ``self``
+        """
+        kwargs['class'] = class_
+
+        if formatter is not None:
+            kwargs['formatter'] = formatter
+
+        self.add_handler(handler_name,
+                         stream=stream,
+                         level=level,
+                         ** kwargs)
         return self
 
     def add_file_handler(self, handler_name,    # *,

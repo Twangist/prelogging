@@ -421,6 +421,36 @@ class TestLCD(TestCase):
         self.assertEqual(self.info_count, 4)
         self.assertEqual(self.test_filters_on_handler__messages, [0, 2])
 
+    def test_add_stream_handler(self):
+
+        lcd = LCD()
+        lcd.set_root_level('DEBUG'
+        ).add_stream_handler('h_stream', 'ext://sys.stderr'
+        ).attach_root_handlers('h_stream')
+
+        # Swap stderr BEFORE lcd.config:
+        _stderr = sys.stderr
+        sio_err = io.StringIO()
+        sys.stderr = sio_err
+
+        lcd.config()
+
+        # log stuff
+        logger = logging.getLogger()
+        if PY2:
+            logger.debug(u"Hi 0")
+            logger.debug(u"Hi 1")
+        else:
+            logger.debug("Hi 0")
+            logger.debug("Hi 1")
+
+        # unswap stderr, needlessly
+        sys.stderr = _stderr
+
+        # print("sio_err.getvalue(): '%s'" % sio_err.getvalue())  # TODO DEBUG COMMENT OUT
+
+        self.assertEqual(sio_err.getvalue(), "Hi 0\nHi 1\n")
+
 
 # ---------------------------------------------------------------------------
 # check()

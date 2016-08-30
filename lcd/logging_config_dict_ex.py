@@ -378,13 +378,13 @@ class LCDEx(LCD):
             super(LCDEx, self).attach_root_handlers(handler_name)
         return self
 
-    def _add_console_handler(self, handler_name,    # *,
-                             stream,
-                             formatter=None,
-                             level='WARNING',   # `logging` default: 'NOTSET'
-                             locking=None,
-                             attach_to_root=None,
-                             **kwargs):
+    def add_stream_handler(self, handler_name,    # *,
+                           stream,
+                           formatter=None,
+                           level='NOTSET',      # logging default
+                           locking=None,
+                           attach_to_root=None,
+                           **kwargs):
         """
         :param handler_name:
         :param stream:
@@ -404,59 +404,57 @@ class LCDEx(LCD):
         locking = self._locking__adjust(locking)
         attach_to_root = self._attach_to_root__adjust(attach_to_root)
 
-        if formatter is None:
-            formatter = ('process_logger_level_msg'
-                         if locking else
-                         'logger_level_msg')
-        con_dict = dict(level=level, formatter=formatter, ** kwargs)
+        kwargs['level'] = level
+        if formatter is not None:
+            kwargs['formatter'] = formatter
         if locking:
-            con_dict['()'] = 'ext://lcd.LockingStreamHandler'
-            con_dict['create_lock'] = True
+            kwargs['()'] = 'ext://lcd.LockingStreamHandler'
+            kwargs['create_lock'] = True
         else:
-            con_dict['class_'] = 'logging.StreamHandler'
+            kwargs['class_'] = 'logging.StreamHandler'
 
         self.add_handler(handler_name,
                          stream=stream,
                          attach_to_root=attach_to_root,
-                         ** con_dict)
+                         ** kwargs)
         return self
 
     def add_stdout_handler(self, handler_name,  # *,
-                             formatter=None,
-                             level='WARNING',
-                             locking=None,
-                             attach_to_root=None,
-                             **kwargs):
+                           formatter=None,
+                           level='WARNING',
+                           locking=None,
+                           attach_to_root=None,
+                           **kwargs):
         """Add a console (stream) handler that writes to ``sys.stdout``.
 
         :return: ``self``
         """
-        self._add_console_handler(handler_name,
-                                  stream='ext://sys.stdout',
-                                  formatter=formatter,
-                                  level=level,
-                                  locking=locking,
-                                  attach_to_root=attach_to_root,
-                                  **kwargs)
+        self.add_stream_handler(handler_name,
+                                stream='ext://sys.stdout',
+                                formatter=formatter,
+                                level=level,
+                                locking=locking,
+                                attach_to_root=attach_to_root,
+                                **kwargs)
         return self
 
     def add_stderr_handler(self, handler_name,  # *,
-                             formatter=None,
-                             level='WARNING',
-                             locking=None,
-                             attach_to_root=None,
-                             **kwargs):
+                           formatter=None,
+                           level='WARNING',
+                           locking=None,
+                           attach_to_root=None,
+                           **kwargs):
         """Add a console (stream) handler that writes to ``sys.stderr``.
 
         :return: ``self``
         """
-        self._add_console_handler(handler_name,
-                                  stream='ext://sys.stderr',
-                                  formatter=formatter,
-                                  level=level,
-                                  locking=locking,
-                                  attach_to_root=attach_to_root,
-                                  **kwargs)
+        self.add_stream_handler(handler_name,
+                                stream='ext://sys.stderr',
+                                formatter=formatter,
+                                level=level,
+                                locking=locking,
+                                attach_to_root=attach_to_root,
+                                **kwargs)
         return self
 
     def add_file_handler(self, handler_name,    # *,

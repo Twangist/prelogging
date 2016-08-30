@@ -3,7 +3,7 @@
 LCDBuilderABC
 ===============================
 
-This class resides in ``lcd_builder_abc.py``.
+This class resides in ``lcdict_builder_abc.py``.
 
-.. autoclass:: lcd.lcd_builder_abc.LCDBuilderABC
+.. autoclass:: lcd.lcdict_builder_abc.LCDBuilderABC
     :members:

@@ -18,14 +18,6 @@ class TestLCDEx(TestCase):
 
     def get_expected_starting_dict(self, level='WARNING'):
         """."""
-        # # use LCDEx._format_strs
-        # formatters_dict = {
-        #     formatter: {'class': 'logging.Formatter',
-        #                 'format': LCDEx._format_strs[formatter]
-        #                }
-        #     for formatter in LCDEx._format_strs
-        # }
-
         return {
             'disable_existing_loggers': False,
             'loggers': {},
@@ -59,14 +51,13 @@ class TestLCDEx(TestCase):
         self.assertEqual(
             lcd['formatters'],
             {'msg': {'class': 'logging.Formatter',
-                         'format': '%(message)s'},
+                     'format': '%(message)s'},
             }
         )
 
         lcd.add_file_handler(
             'default_file',
             filename='blather.log',
-            # level='DEBUG',
             formatter='msg'
         )
 
@@ -106,7 +97,7 @@ class TestLCDEx(TestCase):
         DO add handlers to root, locking=True
         """
         lcd = LCDEx(attach_handlers_to_root=True,
-                                  locking=True)
+                    locking=True)
 
         self.assertEqual(lcd.locking, True)
         self.assertEqual(lcd.attach_handlers_to_root, True)
@@ -130,7 +121,6 @@ class TestLCDEx(TestCase):
             lcd['handlers'],
             {'console': {'()': 'ext://lcd.LockingStreamHandler',
                          'create_lock': True,
-                         'formatter': 'process_logger_level_msg',
                          'level': 'WARNING',
                          'stream': 'ext://sys.stderr'},
              'default_file': {'()': 'ext://lcd.LockingFileHandler',
@@ -150,12 +140,10 @@ class TestLCDEx(TestCase):
             lcd['handlers'],
             {'con2': {'()': 'ext://lcd.LockingStreamHandler',
                       'create_lock': True,
-                      'formatter': 'process_logger_level_msg',
                       'level': 'WARNING',
                       'stream': 'ext://sys.stderr'},
              'console': {'()': 'ext://lcd.LockingStreamHandler',
                          'create_lock': True,
-                         'formatter': 'process_logger_level_msg',
                          'level': 'WARNING',
                          'stream': 'ext://sys.stderr'},
              'default_file': {'()': 'ext://lcd.LockingFileHandler',
@@ -258,13 +246,6 @@ class TestLCDEx_Misc(TestCase):
              'root': {'handlers': [], 'level': 'WARNING'},
              'version': 1}
         )
-
-
-
-# ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-
-
 
 
 #############################################################################
