@@ -80,14 +80,14 @@ for Py2 shortcomings), and supports a few Python-3-only logging features.
 In addition, several methods in ``logging_config_dict_ex.py`` add various
 exotic handlers, which are easy to write examples for but difficult to test.
 
-+--------------------------------+--------+-------+
-|| Module                        || Py 3  || Py 2 |
-+================================+========+=======+
-|| ``loggingconfigdict_.py``     || \99%  || \99% |
-|| ``loggingconfigdict.py``      || \88%  || \88% |
-|| ``locking_handlers.py``       || \89%  || \89% |
-|| ``lcdict_builder_abc.py``     || 100%  || 100% |
-+--------------------------------+--------+-------+
++----------------------------+--------+-------+
+|| Module                    || Py 3  || Py 2 |
++============================+========+=======+
+|| ``lcdictbasic.py``        || \99%  || \99% |
+|| ``lcdict.py``             || \88%  || \88% |
+|| ``locking_handlers.py``   || \89%  || \89% |
+|| ``lcdict_builder_abc.py`` || 100%  || 100% |
++----------------------------+--------+-------+
 
 
 Running examples
@@ -125,11 +125,11 @@ Coverage from tests + examples
 A few short passages, mostly Python-version-specific code, keep `lcd` shy of
 100% coverage when both tests and examples are run:
 
-+--------------------------------+--------+-------+
-|| Module                        || Py 3  || Py 2 |
-+================================+========+=======+
-|| ``loggingconfigdict_.py``     || \99%  || 100% |
-|| ``loggingconfigdict.py``      || \98%  || \96% |
-|| ``locking_handlers.py``       || 100%  || 100% |
-|| ``lcdict_builder_abc.py``     || 100%  || 100% |
-+--------------------------------+--------+-------+
++----------------------------+--------+-------+
+|| Module                    || Py 3  || Py 2 |
++============================+========+=======+
+|| ``lcdictbasic.py``        || \99%  || 100% |
+|| ``lcdict.py``             || \98%  || \96% |
+|| ``locking_handlers.py``   || 100%  || 100% |
+|| ``lcdict_builder_abc.py`` || 100%  || 100% |
++----------------------------+--------+-------+

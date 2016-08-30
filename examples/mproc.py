@@ -14,7 +14,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..']
-from lcd import LCDEx
+from lcd import LCDict
 
 # Py2 stupidity:
 import sys
@@ -113,7 +113,7 @@ def config_logging(use_locking):
     """
     logfilename = ('mproc_LOCKING.log' if use_locking else 'mproc_NOLOCKING.log')
     # add handlers to root == False, default
-    lcd_ex = LCDEx(log_path=LOG_PATH,
+    lcd_ex = LCDict(log_path=LOG_PATH,
                                  locking=use_locking)
 
     ## Add 'console' handler with level higher than 'DEBUG';

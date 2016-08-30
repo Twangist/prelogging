@@ -9,7 +9,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
-from lcd import LCDEx
+from lcd import LCDict
 
 from ._smtp_credentials import *
 
@@ -18,7 +18,7 @@ TEST_TO_ADDRESS = FROM_ADDRESS
 
 def main():
     # root, console handler levels: WARNING.
-    lcdx = LCDEx(attach_handlers_to_root=True)
+    lcdx = LCDict(attach_handlers_to_root=True)
     lcdx.add_stderr_handler('con-err',
                             formatter='msg'
     ).add_email_handler('email-handler',

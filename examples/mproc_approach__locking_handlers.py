@@ -16,7 +16,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
-from lcd import LCDEx
+from lcd import LCDict
 from lcd.six import PY2
 
 from ._time_util import elapsed_time_human_readable
@@ -32,7 +32,7 @@ import os
 
 def worker_config_logging():
     # DON'T attach handlers to root
-    lcd = LCDEx(log_path='_log/mproc_LH', root_level='DEBUG')
+    lcd = LCDict(log_path='_log/mproc_LH', root_level='DEBUG')
 
     lcd.add_formatter('detailed',
                       format='%(asctime)s %(name)-15s %(levelname)-8s '

@@ -16,9 +16,9 @@ from lcd import LCDictBuilderABC
 class LCDictBuilder(LCDictBuilderABC):
     @classmethod
     def add_to_lcd(cls, lcdx):
-        """(Virtual) Call ``LCDEx`` methods to augment ``lcdx``.
+        """(Virtual) Call ``LCDict`` methods to augment ``lcdx``.
 
-        :param lcdx: a ``LCDEx``
+        :param lcdx: a ``LCDict``
         """
         lcdx.add_stdout_handler('con-out',
                                 formatter='logger_level_msg',

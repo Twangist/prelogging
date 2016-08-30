@@ -3,22 +3,22 @@ Organization, Principles and Basic Usage
 
 .. include:: _global.rst
 
-* ``LCD``
+* ``LCDictBasic``
     .. hlist::
         :columns: 3
 
-        * :ref:`Basic usage and principles<basic-usage-LCD>`
-        * :ref:`overview-example-using-only-LCD`
+        * :ref:`Basic usage and principles<basic-usage-LCDictBasic>`
+        * :ref:`overview-example-using-only-LCDictBasic`
 
-* ``LCDEx``
-    * :ref:`basic-LCDEx`
+* ``LCDict``
+    * :ref:`basic-LCDict`
 
 * Formatters
     .. hlist::
         :columns: 3
 
         * :ref:`defining-new-formatters`
-        * :ref:`LCDEx-using-formatter-presets`
+        * :ref:`LCDict-using-formatter-presets`
 
 * Adding handlers
     .. hlist::
@@ -53,14 +53,14 @@ Organization, Principles and Basic Usage
 
 --------------------------------------------------
 
-.. _basic-usage-LCD:
+.. _basic-usage-LCDictBasic:
 
-``LCD``
+``LCDictBasic``
 -------------------------------------------------------
 
-############### NOTE NOTE NOTE  lcd.loggingconfigdict\_ docstring  NOTE NOTE NOTE
+############### NOTE NOTE NOTE  lcd.lcdict\_ docstring  NOTE NOTE NOTE
 
-``LCD`` provides an API for building dictionaries that specify
+``LCDictBasic`` provides an API for building dictionaries that specify
 Python logging configuration -- *logging config dicts*.
 
 Entering a logging config dict as static data requires many nested curly
@@ -72,16 +72,16 @@ But logging configuration involves a small hierarchy of only four kinds of
 entities — formatters, handlers, loggers and, optionally, filters —
 which can be specified in a layered way.
 
-``LCD`` lets you build a logging config dict modularly and
+``LCDictBasic`` lets you build a logging config dict modularly and
 incrementally. It flattens the process of specifying the dict, letting you
 define each entity one by one, instead of entering a thicket of nested dicts.
 
-An ``LCD`` instance *is* a logging config dict. It inherits from
+An ``LCDictBasic`` instance *is* a logging config dict. It inherits from
 ``dict``, and its methods —``add_formatter``, ``add_handler``, ``add_logger``,
 and so on — operate on the underlying dictionary, breaking down the process
 of creating a logging config dict into basic steps:
 
-    1. Create an ``LCD``, optionally specifying the level of
+    1. Create an ``LCDictBasic``, optionally specifying the level of
        the root handler.
 
     2. Add formatter specifications with ``add_formatter()``.
@@ -122,7 +122,7 @@ the keyword parameters of ``add_logger`` are keys that can appear in a dict that
 configures a logger. In any case, all receive sensible default values consistent
 with `logging`.
 
-Once you've built an ``LCD`` meeting your requirements, you
+Once you've built an ``LCDictBasic`` meeting your requirements, you
 configure logging by calling the object's ``config`` method, which
 passes itself (a dict) to
 `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
@@ -133,8 +133,8 @@ Methods, terminology
 
 Here's what a minimal, "blank" logging config dict looks like::
 
-    >>> from lcd import LCD
-    >>> d = LCD()
+    >>> from lcd import LCDictBasic
+    >>> d = LCDictBasic()
     >>> d.dump()        # prettyprint the underlying dict
     {'filters': {},
      'formatters': {},
@@ -145,7 +145,7 @@ Here's what a minimal, "blank" logging config dict looks like::
      'version': 1}
 
 Every logging config dict built by `lcd` has the five subdictionaries shown.
-The ``LCD`` class exposes them as properties:
+The ``LCDictBasic`` class exposes them as properties:
 ``formatters``, ``filters``, ``handlers``, ``loggers``, ``root``.
 ``root`` is a dict containing settings for that special logger. Every other
 subdict contains keys that are names of entities of the appropriate kind;
@@ -165,7 +165,7 @@ The four basic ``add_*`` methods are::
     add_handler(self, name, level='NOTSET', formatter=None, filters=None, ... )
     add_logger(self, name, level='NOTSET', handlers=None, filters=None, ...  )
 
-``LCD`` also defines two special cases of ``add_handler``: ``add_file_handler``
+``LCDictBasic`` also defines two special cases of ``add_handler``: ``add_file_handler``
 and ``add_null_handler``.
 
 Each ``add_*`` method adds an item to (or replaces an item in) the corresponding
@@ -294,7 +294,7 @@ TWO WAYS TO DO THIS. <<<<<<------------- is that good?
 
 
 ``disable_existing_loggers``:
-the ``LCD`` default of ``None`` uses the `logging` default (``True``)
+the ``LCDictBasic`` default of ``None`` uses the `logging` default (``True``)
 for ``disable_existing_loggers``.
 This can also be set as a parameter to ``config``.
 
@@ -320,29 +320,29 @@ Other methods
     config(...)
 
 
-.. _overview-example-using-only-LCD:
+.. _overview-example-using-only-LCDictBasic:
 
-The Overview example, using only ``LCD``
+The Overview example, using only ``LCDictBasic``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The :ref:`overview` contains :ref:`an example <example-overview-config>` showing
-how easy it is using ``LCDEx`` to
+how easy it is using ``LCDict`` to
 configure the root logger with both a console handler and a file handler.
 The solution shown there takes advantage of a few conveniences provided by
-``LCDEx``. It's instructive to see how the same result can be
-achieved using only ``LCD`` and forgoing the conveniences of ``LCDEx``.
+``LCDict``. It's instructive to see how the same result can be
+achieved using only ``LCDictBasic`` and forgoing the conveniences of ``LCDict``.
 
 
-If we were to use just the base class ``LCD``, the Overview
+If we were to use just the base class ``LCDictBasic``, the Overview
 example becomes just a little less concise. Now, we have to add two formatters,
 and we must explicitly attach the two handlers to the root logger (two passages
 which we've commented as ``# NEW``):
 
 .. code::
 
-    from lcd import LCD
+    from lcd import LCDictBasic
 
-    lcd = LCD(root_level='DEBUG')
+    lcd = LCDictBasic(root_level='DEBUG')
 
     # NEW
     lcd.add_formatter('minimal',
@@ -369,12 +369,12 @@ which we've commented as ``# NEW``):
 
 --------------------------------------------------
 
-.. _basic-LCDEx:
+.. _basic-LCDict:
 
-``LCDEx``
+``LCDict``
 ----------
 
-``LCDEx`` is a subclass of ``LCD`` which contributes additional conveniences:
+``LCDict`` is a subclass of ``LCDictBasic`` which contributes additional conveniences:
 
 * formatter presets;
 * optional automatic attaching of handlers to the root logger
@@ -405,13 +405,13 @@ methods of this class return ``self``.
 
 .. _LCDEx-init-params:
 
-.. index:: __init__ keyword parameters (LCDEx)
+.. index:: __init__ keyword parameters (LCDict)
 
 ``__init__`` keyword parameters
 ++++++++++++++++++++++++++++++++++++++++++
 
 In addition to the parameters ``root_level``,
-``disable_existing_loggers`` and ``warnings`` recognized by :ref:`LCD`,
+``disable_existing_loggers`` and ``warnings`` recognized by :ref:`LCDictBasic`,
 the constructor of this class accepts a few more::
 
         log_path                (str)
@@ -452,7 +452,7 @@ corresponding value passed to the constructor.
 
 .. _preset-formatters:
 
-.. index:: preset formatters (LCDEx), formatter presets (LCDEx)
+.. index:: preset formatters (LCDict), formatter presets (LCDict)
 
 Formatter presets
 +++++++++++++++++++++++++++++
@@ -536,7 +536,7 @@ A little example:
 
     >>> import lcd
     >>> import logging
-    >>> lcdx = lcd.LCDEx(attach_handlers_to_root=True)
+    >>> lcdx = lcd.LCDict(attach_handlers_to_root=True)
     # >>> lcdx.add_formatter('testform', format='{levelname} {name} {message}', style='{')
     >>> lcdx.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
     >>> lcdx.add_stderr_handler('con', formatter='testform')
@@ -555,7 +555,7 @@ and times, with the same keys accepted by
 If both ``datefmt`` and ``dateformat`` are given, ``datefmt`` takes precedence.
 
 
-.. _LCDEx-using-formatter-presets:
+.. _LCDict-using-formatter-presets:
 
 Using formatter presets
 ++++++++++++++++++++++++++
@@ -589,7 +589,7 @@ Adding a file handler
 
 Adding other kinds of handlers
 +++++++++++++++++++++++++++++++++
-<<<<< TODO -- refer to list above of what LCDEx adds, and to topics-recipes chapter >>>>>
+<<<<< TODO -- refer to list above of what LCDict adds, and to topics-recipes chapter >>>>>
 
 
 
@@ -621,14 +621,45 @@ These "child" loggers require no configuration; they use the handlers
 of the root because, by default, loggers are created with ``propagate=True``.
 
 If the formatters of the handlers include the logger name — as does
-``logger_level_msg`` of ``LCDEx`` objects, for example — each
+``logger_level_msg`` of ``LCDict`` objects, for example — each
 logged message will relate which module wrote it.
 
 The following example illustrates the general technique:
 
-    >>> from lcd import LCDEx
+    >>> from lcd import LCDict
     >>> import logging
-    >>> lcd_ex = LCDEx(attach_handlers_to_root=True)
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")657
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
     >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
     >>> lcd_ex.config()
 
@@ -708,15 +739,15 @@ which will write to a different file using a handler at default loglevel
 How-to
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Start with a ``LCDEx`` that uses standard (non-locking) stream
+Start with a ``LCDict`` that uses standard (non-locking) stream
 and file handlers; use root loglevel ``'DEBUG'``; put logfiles in the ``_log/``
 subdirectory of the current directory::
 
     import logging
-    from lcd import LCDEx
+    from lcd import LCDict
 
 
-    lcd_ex = LCDEx(log_path='_log/',
+    lcd_ex = LCDict(log_path='_log/',
                    root_level='DEBUG',
                    attach_handlers_to_root=True)
 
@@ -874,10 +905,10 @@ In addition, the ``check`` method ........ BLAH BLAH .......
 
 (blah blah...)
 
-The inner class ``LCD.Warnings``
+The inner class ``LCDictBasic.Warnings``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``LCD`` has an inner class ``Warnings`` which defines bit-field "constants"
+``LCDictBasic`` has an inner class ``Warnings`` which defines bit-field "constants"
 that indicate the different kinds of anomalies that `lcd` checks for, corrects
 when that's sensible, and optionally reported on with warning messages.
 
@@ -896,9 +927,9 @@ The class also defines a couple of shorthand "constant"::
     DEFAULT = REATTACH + REDEFINE                     + UNDEFINED
     ALL     = REATTACH + REDEFINE + REPLACE_FORMATTER + UNDEFINED
 
-The value of the ``warnings`` parameter of the ``LCD`` constructor is any
+The value of the ``warnings`` parameter of the ``LCDictBasic`` constructor is any
 combination of the "constants" in the above table. This value is saved
-as an ``LCD`` instance attribute, which is exposed by the read-write
+as an ``LCDictBasic`` instance attribute, which is exposed by the read-write
 ``warnings`` property.
 
 ........ BLAH BLAH ........

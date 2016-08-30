@@ -3,7 +3,7 @@ __author__ = 'brianoneill'
 import sys
 sys.path[0:0] = ['../..']          # prepend
 
-from lcd import LCDEx
+from lcd import LCDict
 
 #############################################################################
 
@@ -13,7 +13,7 @@ def configure_logging(log_path, logfilename=''):
     with delay=True, so that the logfile is created only when written to.
     Root logger level will be DEBUG.
     """
-    lcd_ex = LCDEx(log_path=log_path,
+    lcd_ex = LCDict(log_path=log_path,
                    root_level='DEBUG',
                    attach_handlers_to_root=True)
     lcd_ex.add_stdout_handler('con', formatter='msg', level='DEBUG')

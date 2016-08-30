@@ -1,6 +1,6 @@
 __author__ = 'brianoneill'
 
-from lcd import LCD
+from lcd import LCDictBasic
 from lcd.six import PY2
 
 from unittest import TestCase
@@ -27,7 +27,7 @@ class TestLCD(TestCase):
         self.test_filters_on_handler__messages = []
 
     def test_1(self):
-        lcd = LCD(root_level='DEBUG',
+        lcd = LCDictBasic(root_level='DEBUG',
                                 disable_existing_loggers=False)
         lcd.add_formatter(
             'msg',
@@ -125,7 +125,7 @@ class TestLCD(TestCase):
 
     def test_add_logger_one_handler(self):
 
-        lcd = LCD(root_level='DEBUG')
+        lcd = LCDictBasic(root_level='DEBUG')
         lcd.add_formatter(
             'msg',
             format='%(message)s'
@@ -194,7 +194,7 @@ class TestLCD(TestCase):
         if PY2:
             _count_debug.filter = _count_debug
 
-        lcd = LCD()
+        lcd = LCDictBasic()
         lcd.set_root_level('DEBUG')
 
         lcd.add_formatter(
@@ -249,7 +249,7 @@ class TestLCD(TestCase):
                     self.info_count += 1
                 return True
 
-        lcd = LCD(root_level='DEBUG')
+        lcd = LCDictBasic(root_level='DEBUG')
 
         lcd.add_formatter(
             'msg',
@@ -304,7 +304,7 @@ class TestLCD(TestCase):
                     self.ge_warning_count += 1
                 return True
 
-        lcd = LCD(root_level='DEBUG')
+        lcd = LCDictBasic(root_level='DEBUG')
 
         lcd.add_formatter(
             'msg',
@@ -370,7 +370,7 @@ class TestLCD(TestCase):
                     self.test_filters_on_handler__messages.append(self.info_count - 1)
                 return self.info_count % 2
 
-        lcd = LCD()
+        lcd = LCDictBasic()
         lcd.set_root_level('DEBUG')
 
         lcd.add_filter(
@@ -423,7 +423,7 @@ class TestLCD(TestCase):
 
     def test_add_stream_handler(self):
 
-        lcd = LCD()
+        lcd = LCDictBasic()
         lcd.set_root_level('DEBUG'
         ).add_stream_handler('h_stream', 'ext://sys.stderr'
         ).attach_root_handlers('h_stream')
@@ -460,7 +460,7 @@ class TestLCD_check(TestCase):
 
     def test_check_bad1(self):
 
-        d = LCD(
+        d = LCDictBasic(
             root_level='DEBUG',
             warnings=0)
 
@@ -496,7 +496,7 @@ class TestLCD_check(TestCase):
 
     def test_check_bad2(self):
 
-        d = LCD(warnings=0)
+        d = LCDictBasic(warnings=0)
         # handler w/bad formatter
         d.add_handler('con', formatter='no-such-formatter')
 
@@ -531,7 +531,7 @@ class TestLCD_check(TestCase):
         sys.stderr = _stderr
 
     def test_check_ok(self):
-        lcd = LCD(warnings=0)
+        lcd = LCDictBasic(warnings=0)
         self.assertEqual(lcd, lcd.check())
 
 # ---------------------------------------------------------------------------
@@ -551,8 +551,8 @@ class TestLCD_NoWarnings(TestCase):
         self._stderr = sys.stderr
         self.sio_err = io.StringIO()    # new "stderr"
         sys.stderr = self.sio_err
-        # create an LCD that doesn't issue any warnings
-        self.lcd = LCD(warnings=0)      # 0 == LCD.WARNINGS.NONE
+        # create an LCDictBasic that doesn't issue any warnings
+        self.lcd = LCDictBasic(warnings=0)      # 0 == LCDictBasic.WARNINGS.NONE
 
     def tearDown(self):
         "."
@@ -607,7 +607,7 @@ class TestLCD_NoWarnings(TestCase):
         self.assertEqual(list(self.lcd.handlers.keys()), ['my_handler'])
 
     def test_warn_logger_readd(self):
-        self.lcd = LCD()
+        self.lcd = LCDictBasic()
         self.lcd.add_logger('my_logger')
         # Now readd -- check for warning to stderr
         self.lcd.add_logger('my_logger')
@@ -1068,8 +1068,8 @@ class TestLCD_NoWarnings(TestCase):
 class TestLCD_Warnings(TestLCD_NoWarnings):
 
     def setUp(self):
-        # parent class creates self.lcd = LCD()
+        # parent class creates self.lcd = LCDictBasic()
         super(TestLCD_Warnings, self).setUp()
         # change warnings to ALL
-        self.lcd.warnings = LCD.Warnings.ALL
+        self.lcd.warnings = LCDictBasic.Warnings.ALL
 

@@ -13,7 +13,7 @@ except ImportError:
     import sys
     sys.path[0:0] = ['..']
 
-from lcd import LCDEx
+from lcd import LCDict
 
 import examples.child_logger_sub_noprop as sub_noprop
 import examples.child_logger_sub_prop as sub_prop
@@ -32,7 +32,7 @@ def config_logging(logfilename):
 
 def init_logging_config(loggername, logfilename):
     # add handlers to root == False, default
-    lcd_ex = LCDEx(log_path=LOG_PATH)
+    lcd_ex = LCDict(log_path=LOG_PATH)
 
     # Create stderr console handler; output shows logger name and loglevel;
     ## loglevel higher than DEBUG.

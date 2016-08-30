@@ -26,7 +26,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
-from lcd import LCDEx
+from lcd import LCDict
 
 from lcd.six import PY2
 
@@ -44,7 +44,7 @@ def main():
 
     q = Queue(-1)  # no limit on size
 
-    lcdx = LCDEx(attach_handlers_to_root=True)
+    lcdx = LCDict(attach_handlers_to_root=True)
     lcdx.add_formatter(
         'fmtr', format='%(threadName)s: %(name)s: %(message)s'
     ).add_stderr_handler(

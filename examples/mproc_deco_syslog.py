@@ -14,7 +14,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..', '../..']
-from lcd import LCDEx
+from lcd import LCDict
 
 from examples._get_locking_pref import get_locking_pref
 
@@ -50,7 +50,7 @@ def config_logging(use_locking):
 
     print("%s locking" % ("Using" if use_locking else "NOT using"))
 
-    lcd_ex = LCDEx(root_level='DEBUG',
+    lcd_ex = LCDict(root_level='DEBUG',
                    attach_handlers_to_root=True,
                    locking=use_locking)
     # Set up console handler to show process name, time, handler name

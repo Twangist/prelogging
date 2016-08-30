@@ -9,11 +9,11 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
-from lcd import LCDEx
+from lcd import LCDict
 
 
 def configure_logging():
-    d = LCDEx(attach_handlers_to_root=True)  # default: disable_existing_loggers=False
+    d = LCDict(attach_handlers_to_root=True)  # default: disable_existing_loggers=False
     d.add_stdout_handler('stdout', formatter='logger_level_msg', level='DEBUG')
     # NOTE: root level is 'WARNING',
     #  .    'library.module' logger level is 'INFO'.

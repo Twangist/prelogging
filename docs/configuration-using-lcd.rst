@@ -9,20 +9,20 @@ handlers. `lcd` also supplies missing functionality: the package provides
 multiprocessing-safe logging to the console, to files and rotating files, and
 to `syslog`.
 
-The centerpiece of `lcd` is the ``LCDEx`` class (see the :ref:`diagram of classes <lcd-all-classes-except-ABC>`).
+The centerpiece of `lcd` is the ``LCDict`` class (see the :ref:`diagram of classes <lcd-all-classes-except-ABC>`).
 
 
-`lcd` defines two classes, a ``dict`` subclass ``LCD``, and `its` subclass
-``LCDEx``, which represent logging configuration dictionaries — *logging config
-dicts*, for short. ``LCD`` provides the basic model of building a logging config
-dict; ``LCDEx`` supplies additional conveniences including predefined formatters
+`lcd` defines two classes, a ``dict`` subclass ``LCDictBasic``, and `its` subclass
+``LCDict``, which represent logging configuration dictionaries — *logging config
+dicts*, for short. ``LCDictBasic`` provides the basic model of building a logging config
+dict; ``LCDict`` supplies additional conveniences including predefined formatters
 and easy access to advanced features such filter creation and as
 multiprocessing-safe rotating file handlers.
 
 You use the methods of these classes to add specifications of named
 ``Formatter``\s, ``Handler``\s, ``Logger``\s, and optional ``Filter``\s, and
 containment relations between them. Once you've done so, calling the
-``config()`` method of an ``LCD`` configures logging by passing itself, as a
+``config()`` method of an ``LCDictBasic`` configures logging by passing itself, as a
 ``dict``, to ``logging.config.dictConfig()``. This call creates all the objects
 and linkages specified by the underlying dictionary.
 
@@ -34,9 +34,9 @@ Show how `lcd` can achieve the same configuration more concisely, readably and
 robustly.
 
 
-    example using LCD
+    example using LCDict\_
 
-    example using LCDEx, even more concisely
+    example using LCDict, even more concisely
 
 `lcd` what it does why it's so cool -- redundant with stuff from next chapter
 ------------------------------------------------------------------------------
@@ -76,8 +76,12 @@ subsequently with the ``attach_*`` methods. For example, in the following code:
 
 .. code::
 
-    >>> from lcd import LCD
-    >>> d = LCD()
+    >>> from lcd import LCDictBasic
+        >>> d = LCDictBasic()
+        >>> d.add_formatter('simple', '{message}', style='{')
+
+    the
+    >>> d = LCDictBasic()
     >>> d.add_formatter('simple', '{message}', style='{')
 
 the ``add_formatter`` call adds an item to the ``'formatters'``
@@ -97,7 +101,7 @@ it would look like this::
         ...
     }
 
-An LCD makes its top-level subdictionaries available as properties with the
+An LCDict\_ makes its top-level subdictionaries available as properties with the
 same names as the keys: d.formatters == d['formatters'], d.handlers == d['handlers'],
 and similarly for d.filters, d.loggers, d.root. After the above ``add_formatter``
 call, ::
@@ -153,13 +157,13 @@ Configuration with `lcd`
 down into easy, natural steps. As much as is possible, with `lcd` you only have
 to specify the objects you care about and what's special about them; everything
 else receives reasonable, expected defaults. Using the "batteries included"
-``lcd.LCDEx`` class lets us concisely specify the desired setup:
+``lcd.LCDict`` class lets us concisely specify the desired setup:
 
 .. code::
 
-    from lcd import LCDEx
+    from lcd import LCDict
 
-    lcd_ex = LCDEx(root_level='DEBUG',
+    lcd_ex = LCDict(root_level='DEBUG',
                    attach_handlers_to_root=True)
     lcd_ex.add_stderr_handler(
                     'console',
@@ -172,20 +176,20 @@ else receives reasonable, expected defaults. Using the "batteries included"
     lcd_ex.config()
 
 Here, we use a couple of the builtin ``Formatter``\s supplied by
-``LCDEx``. Because we pass the flag
+``LCDict``. Because we pass the flag
 ``attach_handlers_to_root=True`` when creating the instance ``lcd_ex``,
 every handler we add to ``lcd_ex`` is automatically attached to the root logger.
 Later, we'll
-:ref:`revisit this example <overview-example-using-only-LCD>`,
-to see how to achieve the same result using only ``LCD``.
+:ref:`revisit this example <overview-example-using-only-LCDictBasic>`,
+to see how to achieve the same result using only ``LCDictBasic``.
 
 Remarks
 ^^^^^^^^^^
 
-To allow chaining, as in the above example, the methods of ``LCD``
-and ``LCDEx`` generally return ``self``.
+To allow chaining, as in the above example, the methods of ``LCDictBasic``
+and ``LCDict`` generally return ``self``.
 
-You can use the ``dump()`` method of a ``LCD`` to prettyprint its
+You can use the ``dump()`` method of a ``LCDictBasic`` to prettyprint its
 underlying ``dict``. In fact, that's how we determined the value of
 ``config_dict`` for the following subsection.
 

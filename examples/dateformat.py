@@ -6,14 +6,14 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..']
-from lcd import LCDEx
+from lcd import LCDict
 
 
 def main():
     """
     Not a test because... your mileage *will* vary (hard to test).
     """
-    lcdx = LCDEx(attach_handlers_to_root=True)
+    lcdx = LCDict(attach_handlers_to_root=True)
 
     # style='%' is the default, & could be omitted
     lcdx.add_formatter('fmtr1',

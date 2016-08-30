@@ -13,7 +13,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
-from lcd import LCDEx
+from lcd import LCDict
 
 
 # LOG_PATH = '_testlogs/rot_fh/'      # NOTE: directory must exist
@@ -29,7 +29,7 @@ def config_logging():
     """
     # Defaults:
     #   attach_handlers_to_root=False,
-    lcd_ex = LCDEx(attach_handlers_to_root=True,
+    lcd_ex = LCDict(attach_handlers_to_root=True,
                    locking=True,
                    root_level='DEBUG')
 

@@ -1,6 +1,6 @@
 __author__ = 'brianoneill'
 
-from lcd import LCDEx
+from lcd import LCDict
 from unittest import TestCase
 import logging
 import sys
@@ -33,7 +33,7 @@ class TestLCDEx(TestCase):
         """
         DON'T add handlers to root, locking=False
         """
-        lcd = LCDEx(root_level='DEBUG')
+        lcd = LCDict(root_level='DEBUG')
 
         self.assertEqual(lcd.locking, False)
         self.assertEqual(lcd.attach_handlers_to_root, False)
@@ -96,7 +96,7 @@ class TestLCDEx(TestCase):
         """
         DO add handlers to root, locking=True
         """
-        lcd = LCDEx(attach_handlers_to_root=True,
+        lcd = LCDict(attach_handlers_to_root=True,
                     locking=True)
 
         self.assertEqual(lcd.locking, True)
@@ -162,7 +162,7 @@ class TestLCDEx(TestCase):
         """
         clone handler with locking=False (so 'class' is in its dict)
         """
-        lcd = LCDEx()
+        lcd = LCDict()
 
         expected = self.get_expected_starting_dict()
         self.assertEqual(lcd, expected)
@@ -191,7 +191,7 @@ class TestLCDEx(TestCase):
 class TestLCDEx_Misc(TestCase):
 
     def test_attach_handler_formatter(self):
-        d = LCDEx()
+        d = LCDict()
         d.add_handler('h')
         d.set_handler_formatter('h', 'msg')
         self.assertEqual(
@@ -214,18 +214,18 @@ class TestLCDEx_Misc(TestCase):
         )
 
     def test_create_formatter_preset(self):
-        num_presets = len(LCDEx._formatter_presets)
-        LCDEx.create_formatter_preset(
+        num_presets = len(LCDict._formatter_presets)
+        LCDict.create_formatter_preset(
             '_simple_',
             format="{levelname: <8s}: %(message)s",
             style='{'
         )
         self.assertEqual(
-            len(LCDEx._formatter_presets),
+            len(LCDict._formatter_presets),
             num_presets + 1
         )
 
-        d = LCDEx()
+        d = LCDict()
         d.add_handler('h', formatter='_simple_')
         self.assertEqual(
             d.handlers['h']['formatter'],

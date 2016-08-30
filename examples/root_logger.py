@@ -9,7 +9,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
-from lcd import LCDEx
+from lcd import LCDict
 
 
 #############################################################################
@@ -21,7 +21,7 @@ def config_logging(log_path, logfilename=''):
     """
     # Defaults:
     #   attach_handlers_to_root=False,
-    lcd_ex = LCDEx(log_path=log_path,
+    lcd_ex = LCDict(log_path=log_path,
                                  attach_handlers_to_root=True,
                                  root_level='INFO')
     lcd_ex.add_stdout_handler('console', formatter='msg')

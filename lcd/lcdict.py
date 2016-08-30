@@ -3,7 +3,7 @@
 import os
 from copy import deepcopy
 
-from .loggingconfigdict_ import LCD
+from .lcdictbasic import LCDictBasic
 from .six import PY2, iteritems
 
 from collections import namedtuple
@@ -52,12 +52,12 @@ class FormatterSpec(
 
 
 # -----------------------------------------------------------------------
-# LCDEx
+# LCDict
 # -----------------------------------------------------------------------
 
-class LCDEx(LCD):
+class LCDict(LCDictBasic):
     """ \
-    A ``LCD`` subclass with additional conveniences:
+    An ``LCDictBasic`` subclass with additional conveniences:
 
         * formatter presets;
         * various ``add_*_handler`` methods for configuring handlers of several
@@ -73,15 +73,15 @@ class LCDEx(LCD):
 
     .. include:: _global.rst
 
-    .. _LCDEx-init-params:
+    .. _LCDict-init-params:
 
-    .. index:: __init__ keyword parameters (LCDEx)
+    .. index:: __init__ keyword parameters (LCDict)
 
     ``__init__`` **keyword parameters**  |br|
     ``- - - - - - - - - - - - - -``
 
     In addition to the parameters ``root_level``,
-    ``disable_existing_loggers`` and ``warnings`` recognized by :ref:`LCD`,
+    ``disable_existing_loggers`` and ``warnings`` recognized by :ref:`LCDictBasic`,
     the constructor of this class accepts a few more::
 
             log_path                (str)
@@ -120,10 +120,10 @@ class LCDEx(LCD):
 
     .. index:: `'logging` handler classes encapsulated
 
-    **Handler classes that LCDEx configures** |br|
+    **Handler classes that LCDict configures** |br|
     ``- - - - - - - - - - - - - - - - -``
 
-    LCDEx provides methods for configuring these `logging` handler classes,
+    LCDict provides methods for configuring these `logging` handler classes,
     with optional "locking" support in most cases:
 
       +--------------------------------+---------------------------+-----------+
@@ -142,7 +142,7 @@ class LCDEx(LCD):
 
     .. _preset-formatters:
 
-    .. index:: preset formatters (LCDEx), formatter presets (LCDEx)
+    .. index:: preset formatters (LCDict), formatter presets (LCDict)
 
     **Formatter presets** |br|
     ``- - - - - - - -``
@@ -197,7 +197,7 @@ class LCDEx(LCD):
                  locking=False,
                  attach_handlers_to_root=False,
                  disable_existing_loggers=False,  # logging default value is True
-                 warnings=LCD.Warnings.DEFAULT):
+                 warnings=LCDictBasic.Warnings.DEFAULT):
         """
         :param root_level: one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``,
             ``'ERROR'``, ``'CRITICAL'``, ``'NOTSET'``
@@ -219,13 +219,13 @@ class LCDEx(LCD):
             that separate packages can use this class to create their own
             ("private") loggers before or after their clients do their own
             logging configuration. The `logging` default value is ``True``.
-        :param warnings: as for ``LCD``. See the documentation for the inner
-            class `LCD.WARNINGS``.
+        :param warnings: as for ``LCDictBasic``. See the documentation for the inner
+            class ``LCDictBasic.WARNINGS``.
 
-        See also :ref:`__init__ keyword parameters <LCDEx-init-params>`
+        See also :ref:`__init__ keyword parameters <LCDict-init-params>`
         above.
         """
-        super(LCDEx, self).__init__(
+        super(LCDict, self).__init__(
                         root_level=root_level,
                         disable_existing_loggers=disable_existing_loggers,
                         warnings=warnings)
@@ -233,7 +233,7 @@ class LCDEx(LCD):
         self._locking = locking
         self._attach_handlers_to_root = attach_handlers_to_root
 
-        # TODO '0.2.7b19' -- DON'T just add all these to every LCDEx;
+        # TODO '0.2.7b19' -- DON'T just add all these to every LCDict;
         #  |    instead, add only the ones that are used :)
         #  |    Already we intercept the places to do this (for warnings)
         #  |    so just expand/emend the logic
@@ -344,12 +344,12 @@ class LCDEx(LCD):
 
     def set_handler_formatter(self, handler_name, formatter_name):
         """
-        Hook the LCD method so that we can add preset formatters just in time
+        Hook the LCDictBasic method so that we can add preset formatters just in time
 
         :return: ``self``
         """
         self._add_formatter_if_preset(formatter_name),
-        return super(LCDEx, self).set_handler_formatter(
+        return super(LCDict, self).set_handler_formatter(
                                         handler_name, formatter_name)
 
     def add_handler(self, handler_name,     # *,
@@ -358,24 +358,24 @@ class LCDEx(LCD):
                     ** handler_dict):
         """
         (Virtual) Adds the ``attach_to_root`` parameter to
-        ``LCD.add_handler()``.
+        ``LCDictBasic.add_handler()``.
 
         :return: ``self``
         """
         # NOTE: '0.2.7b19' change --
-        #  .    Don't add all the predefined formatters to every LCDEx.
-        #  .    Every LCDEx handler-adding method ultimately funnels
+        #  .    Don't add all the predefined formatters to every LCDict.
+        #  .    Every LCDict handler-adding method ultimately funnels
         #  .    through here, so we check whether ``formatter`` is
         #  .    a name of a formatter preset; if it is, make sure it's
         #  .    added, just in time -- add it to self.formatters
         #  .    if it isn't there already.
         self._add_formatter_if_preset(formatter)
 
-        super(LCDEx, self).add_handler(handler_name,
+        super(LCDict, self).add_handler(handler_name,
                                        formatter=formatter,
                                        ** handler_dict)
         if self._attach_to_root__adjust(attach_to_root):
-            super(LCDEx, self).attach_root_handlers(handler_name)
+            super(LCDict, self).attach_root_handlers(handler_name)
         return self
 
     def add_stream_handler(self, handler_name,    # *,
@@ -470,7 +470,7 @@ class LCDEx(LCD):
                          **kwargs):
         """
         (Virtual) Adds keyword parameters ``locking`` and ``attach_to_root``
-        to the parameters of ``LCD.add_file_handler()``.
+        to the parameters of ``LCDictBasic.add_file_handler()``.
 
         :return: ``self``
         """
@@ -597,7 +597,7 @@ class LCDEx(LCD):
         :param formatter: the name of the formatter that this handler will use
         :param level: the loglevel of this handler
         :param locking: if false, use logging.handlers.SysLogHandler; if true,
-            use the multiprocessing-safe version ofthat handler.
+            use the multiprocessing-safe version of that handler.
         :param attach_to_root: If true, add the ``clone`` handler to the root
             logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
             if false, don't add to root.
@@ -642,23 +642,24 @@ class LCDEx(LCD):
         `SMTPHandler <https://docs.python.org/3/library/logging.handlers.html#smtphandler>`_
         to the logging config dict.
 
-        :param handler_name: mame of this handler
+        :param handler_name: name of this handler
         :param level: loglevel of this handler
         :param formatter: ``str``, name of formatter
 
-        SMTPHandler-specific parameters:
+        SMTPHandler-specific parameters, quoting extensively from the
+        `logging` docs:
 
         :param mailhost: name of SMTP server e.g. 'smtp.gmail.com'
         :param fromaddr: email address of sender (``str``)
-        :param toaddrs:  email recipients (``str`` or ``list`` of ``str``s)
+        :param toaddrs:  email recipients (``str`` or ``list`` of ``str``\ s)
         :param subject:  subject of the email (``str``)
-
-        :param secure: To specify the use of a secure protocol (TLS), pass in
-            a tuple to the secure argument. This will only be used when
-            authentication credentials are supplied. The tuple should be either
-            an empty tuple, or a single-value tuple with the name of a keyfile,
-            or a 2-value tuple with the names of the keyfile and certificate
-            file. (This tuple is passed to the smtplib.SMTP.starttls() method.)
+        :param secure:  To specify the use of a secure
+            protocol (TLS), pass a tuple for this argument. This will only be
+            used when authentication credentials are supplied. The tuple should
+            be either an empty tuple, or a single-value tuple with the name of
+            a keyfile, or a 2-value tuple with the names of the keyfile and
+            certificate file. (This tuple is passed to the
+            smtplib.SMTP.starttls() method.)
 
         :param username: SMTP username of sender
         :param password: SMTP password of sender with username provided.
@@ -720,7 +721,8 @@ class LCDEx(LCD):
     def add_class_filter(self, filter_name, filter_class, **filter_init_kwargs):
         """
         A convenience method for adding a class filter, a class that implements
-        a ``filter`` method of signature ``(logging.LogRecord) -> bool``.
+        a ``filter`` method of signature ``(logging.LogRecord) -> bool``
+        (omitting ``self``).
 
         This method spares you from writing:
 
@@ -736,14 +738,14 @@ class LCDEx(LCD):
         :param filter_init_kwargs: any other parameters to be passed to
             ``add_filter``. These will be passed to the ``filter_class``
             constructor. See the documentation for
-            ``LCD.add_filter``.
+            ``LCDictBasic.add_filter``.
         :return: ``self``
         """
         filter_init_kwargs['()'] = filter_class
         return self.add_filter(filter_name, **filter_init_kwargs)
 
     def add_callable_filter(self, filter_name, filter_fn, **filter_init_kwargs):
-        """A convenience method for adding a callable filter, of signature
+        """A convenience method for adding a callable filter of signature
         ``(logging.LogRecord, **kwargs) -> bool``. This method spares you from
         having to write code like the following:
 
@@ -762,7 +764,7 @@ class LCDEx(LCD):
         :param filter_init_kwargs: Keyword arguments that will be passed to
             the filter_fn **each time it is called**. To pass dynamic data,
             you can't just wrap it in a list or dict; use an object or callable
-            instead. See the documentation for more about this.
+            instead. See the documentation for an example of how to do that.
 
             Note that this method is like "partial": it provides a kind
             of Currying.

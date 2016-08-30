@@ -8,7 +8,7 @@ import logging.config
 __author__ = "Brian O'Neill"
 
 __doc__ = """ \
-``LCD`` provides an API for building dictionaries that specify
+``LCDictBasic`` provides an API for building dictionaries that specify
 Python logging configuration -- *logging config dicts*.
 
 Entering a logging config dict as static data requires many nested curly
@@ -20,16 +20,16 @@ But logging configuration involves a small hierarchy of only four kinds of
 entities — formatters, handlers, loggers and, optionally, filters —
 which can be specified in a layered way.
 
-``LCD`` lets you build a logging config dict modularly and
+``LCDictBasic`` lets you build a logging config dict modularly and
 incrementally. It flattens the process of specifying the dict, letting you
 define each entity one by one, instead of entering a thicket of nested dicts.
 
-An ``LCD`` instance *is* a logging config dict. It inherits from
+An ``LCDictBasic`` instance *is* a logging config dict. It inherits from
 ``dict``, and its methods —``add_formatter``, ``add_handler``, ``add_logger``,
 and so on — operate on the underlying dictionary, breaking down the process
 of creating a logging config dict into basic steps:
 
-    1. Create an ``LCD``, optionally specifying the level of
+    1. Create an ``LCDictBasic``, optionally specifying the level of
        the root handler.
 
     2. Add formatter specifications with ``add_formatter()``.
@@ -65,25 +65,25 @@ the very same keys that occur in the sub-subdictionaries of the corresponding
 kind of logging entities (with just one exception: ``class_`` instead of
 ``class``). All receive correct and/or sensible default values.
 
-Once you've built an ``LCD`` meeting your requirements, you
+Once you've built an ``LCDictBasic`` meeting your requirements, you
 configure logging by calling the object's ``config`` method, which
 passes itself (a dict) to
 `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
 """
 
 
-class LCD(dict):
+class LCDictBasic(dict):
     """
     .. include:: _global.rst
 
-    *   In this class as well as in :ref:`LCDEx`, "level" always
+    *   In this class as well as in :ref:`LCDict`, "level" always
         means the ``str`` name of the level, e.g. ``'DEBUG'``, not the numeric
         value ``logging.DEBUG``. A level name, in short — one of ``'DEBUG'``,
         ``'INFO'``, ``'WARNING'``, ``'ERROR'``, ``'CRITICAL'``, or ``'NOTSET'``.
 
     *   Except for properties and the ``__init__``, ``config`` and ``dump``
         methods, all public methods of this class (and similarly of
-        :ref:`LCDEx`) return ``self``, to allow chaining.
+        :ref:`LCDict`) return ``self``, to allow chaining.
 
     *   The (leaf) values in logging config dicts are almost all strings. The
         exceptions are ``bool`` values, filters, and actual streams allowed as
@@ -96,7 +96,7 @@ class LCD(dict):
             we use ``stream='ext://sys.stdout'``.
 
         The reason: the ``clone_handler()`` method of the subclass
-        ``LCDEx`` uses ``deepcopy()``, and streams can't be
+        ``LCDict`` uses ``deepcopy()``, and streams can't be
         deep-copied. We recommend that you not use actual streams,
         nor in general binary objects that can't be pickled,
         preferring instead their text equivalents, as shown in the example
@@ -112,7 +112,7 @@ class LCD(dict):
         """
         .. _warning-class:
 
-        "Bit" values combined into the _warnings attribute of an LCD.
+        "Bit" values combined into the _warnings attribute of an LCDictBasic.
         Each determines whether warnings are written to stderr for a particular
         questionable practice:
 
@@ -155,7 +155,7 @@ class LCD(dict):
             same name. Using the default value ``None`` causes the `logging`
             module's default value ``True`` to be used.
         :param warnings: A bit field, a combination of values defined in
-            the inner class `LCD.Warnings``. The default value is
+            the inner class `LCDictBasic.Warnings``. The default value is
             ``REATTACH + REDEFINE + UNDEFINED``.
 
             This value is saved; it can be read and written with the @warnings
@@ -163,7 +163,7 @@ class LCD(dict):
         """
 
         assert root_level in self._level_names
-        super(LCD, self).__init__()
+        super(LCDictBasic, self).__init__()
         self['version'] = 1
         self['formatters'] = {}
         self['filters'] = {}

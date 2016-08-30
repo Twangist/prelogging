@@ -7,7 +7,7 @@ Class Reference
 .. toctree::
     :maxdepth: 1
 
-    loggingconfigdict_
-    loggingconfigdict
+    lcdictbasic
+    lcdict
     locking_handlers
     LCDictBuilderABC

@@ -203,7 +203,7 @@ Provided natively by `lcd`, only option under Py2.
 
 All but one of the multiprocessing examples use locking handlers.
 
-For a particular ``LCDEx``, there are two possibilities:
+For a particular ``LCDict``, there are two possibilities:
 
 .. topic:: locking handlers used by default
     on every ``add_*_handler`` method call
@@ -330,7 +330,7 @@ At startup, every worker process configures logging in this simple way:
 .. code::
 
     def worker_config_logging(q: Queue):
-        d = LCDEx(root_level='DEBUG')
+        d = LCDict(root_level='DEBUG')
         d.add_queue_handler('qhandler', attach_to_root=True, queue=q)
         d.config()
 
@@ -374,9 +374,9 @@ method::
 
     (self, record: logging.LogRecord) -> bool
 
-and callables of signature ``logging.LogRecord -> bool``. ``LCDEx`` provides
+and callables of signature ``logging.LogRecord -> bool``. ``LCDict`` provides
 a pair of convenience methods ``add_class_filter`` and ``add_callable_filter``
-which are easier to use than the lower-level ``LCD`` method ``add_filter``.
+which are easier to use than the lower-level ``LCDictBasic`` method ``add_filter``.
 
 In Python 2, the `logging` module imposes a fussy requirement on callables
 that can be used as filters, which the Python 3 implementation of `logging`
@@ -441,7 +441,7 @@ Filters on the root logger
 
 Let's configure the root logger to use both filters shown above::
 
-    lcd_ex = LCDEx(
+    lcd_ex = LCDict(
         attach_handlers_to_root=True,
         root_level='DEBUG')
 
@@ -522,7 +522,7 @@ There are two ways to attach filters to a handler:
 
 1. Attach the filters in the same method call that adds the handler.
    Use the ``filters`` keyword parameter to **any** ``add_*_handler`` method.
-   All such methods funnel through ``LCD.add_handler``. As with the
+   All such methods funnel through ``LCDictBasic.add_handler``. As with the
    ``add_logger`` method, the value of the ``filters`` parameter can be either
    the name of a single filter (a ``str``) or a sequence (list, tuple, etc.) of
    names of filters.
@@ -623,7 +623,7 @@ you've passed. For example,
     ...     return list1[0] > 100
 
     >>> data_wrapper = [17]
-    >>> lcdx = LCDEx(attach_handlers_to_root=True, root_level='DEBUG')
+    >>> lcdx = LCDict(attach_handlers_to_root=True, root_level='DEBUG')
     >>> lcdx.add_stdout_handler('con', formatter='msg', level='DEBUG')
     >>> lcdx.add_callable_filter('callable-filter',
     ...                          my_filter_fn,
@@ -677,7 +677,7 @@ as a container:
 
     >>> dw = DataWrapper(17)
 
-    >>> lcdx = LCDEx(attach_handlers_to_root=True, root_level='DEBUG')
+    >>> lcdx = LCDict(attach_handlers_to_root=True, root_level='DEBUG')
     >>> lcdx.add_stdout_handler('con', formatter='msg', level='DEBUG')
     >>> lcdx.add_callable_filter('callable-filter',
     ...                          my_filter_fn,
@@ -711,7 +711,7 @@ Of course, you could pass a data-returning callable rather than a container.
 Using ``LCDictBuilderABC``
 -------------------------------
 
-A single ``LCDEx`` can be passed around to different "areas"
+A single ``LCDict`` can be passed around to different "areas"
 of a program, each area contributing specifications of its desired formatters,
 filters, handlers and loggers. The ``LCDictBuilderABC`` class provides a
 framework that automates this approach: each area of a program need only
@@ -785,7 +785,7 @@ attaching it to the library's "top-level logger", ``'library'``:
 
 .. code::
 
-    lcdx = LCDEx()                  # default: disable_existing_loggers=False
+    lcdx = LCDict()                  # default: disable_existing_loggers=False
     lcdx.add_null_handler('library-nullhandler')    # default: level='NOTSET'
     lcdx.add_logger('library', handlers='library-nullhandler', level='INFO')
     lcdx.config()
@@ -827,7 +827,7 @@ It contains a simple ``main()`` function, which the program calls when run as
 and a simple ``configure_logging`` function::
 
     def configure_logging():
-        d = LCDEx(attach_handlers_to_root=True)
+        d = LCDict(attach_handlers_to_root=True)
         # defaults: disable_existing_loggers=False, root_level='WARNING'
         d.add_stdout_handler('stdout', formatter='logger_level_msg', level='DEBUG')
         d.config()
@@ -912,14 +912,14 @@ Using a single SMTPHandler
 
 .. code::
 
-    from lcd import LCDEx
+    from lcd import LCDict
     from _smtp_credentials import *
 
     # for testing/trying the example
     TEST_TO_ADDRESS = FROM_ADDRESS
 
     # root, console handler levels: WARNING.
-    lcdx = LCDEx(attach_handlers_to_root=True)
+    lcdx = LCDict(attach_handlers_to_root=True)
     lcdx.add_stderr_handler('con-err', formatter='msg'
     ).add_email_handler(
         'email-handler',
@@ -954,7 +954,7 @@ Comment on the example ``SMTP_handler_two.py``
 
 .. code::
 
-    from lcd import LCDEx
+    from lcd import LCDict
 
     from _smtp_credentials import *
 
@@ -992,7 +992,7 @@ Comment on the example ``SMTP_handler_two.py``
 
 
     def build_lcd():
-        lcdx = LCDEx(attach_handlers_to_root=True)
+        lcdx = LCDict(attach_handlers_to_root=True)
         lcdx.add_stderr_handler('con-err', formatter='level_msg')
         # root, console handler levels: WARNING.
 

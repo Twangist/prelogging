@@ -12,7 +12,7 @@ try:
 except ImportError:
     import sys
     sys.path[0:0] = ['..']
-from lcd import LCDEx
+from lcd import LCDict
 
 import examples.child_logger2_sub_noprop as sub_noprop
 import examples.child_logger2_sub_prop as sub_prop
@@ -31,7 +31,7 @@ def config_logging(logfilename):
 
 def init_logging_config(logfilename):
 
-    lcd_ex = LCDEx(log_path=LOG_PATH,
+    lcd_ex = LCDict(log_path=LOG_PATH,
                                  attach_handlers_to_root=True)
     lcd_ex.set_root_level('DEBUG')
 
