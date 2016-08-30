@@ -2,7 +2,7 @@
 
 __author__ = 'brianoneill'
 
-from .logging_config_dict_ex import LCDEx
+from .loggingconfigdict import LCDEx
 from .six import add_metaclass
 
 from abc import ABCMeta, abstractmethod

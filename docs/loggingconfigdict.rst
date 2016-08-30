@@ -3,11 +3,11 @@
 LCDEx
 ===============================
 
-This class resides in ``logging_config_dict_ex.py``.
+This class resides in ``loggingconfigdict.py``.
 
-.. automodule:: lcd.logging_config_dict_ex
+.. automodule:: lcd.loggingconfigdict
 
-.. autoclass:: lcd.logging_config_dict_ex.LCDEx
+.. autoclass:: lcd.loggingconfigdict.LCDEx
     :members: __init__, clone_handler, add_handler, add_stream_handler,
               add_stdout_handler, add_stderr_handler,
               add_file_handler, add_rotating_file_handler,
