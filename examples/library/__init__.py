@@ -2,11 +2,11 @@ __author__ = 'brianoneill'
 
 import logging
 try:
-    import lcd
+    import logging_config
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
-from lcd import LCDict
+from logging_config import LCDict
 
 from .module import do_something, do_something_else
 __all__ = ['do_something', 'do_something_else']

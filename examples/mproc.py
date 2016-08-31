@@ -10,11 +10,11 @@ import logging
 from multiprocessing import Process, JoinableQueue
 
 try:
-    import lcd
+    import logging_config
 except ImportError:
     import sys
     sys.path[0:0] = ['..']
-from lcd import LCDict
+from logging_config import LCDict
 
 # Py2 stupidity:
 import sys

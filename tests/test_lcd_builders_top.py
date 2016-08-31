@@ -1,12 +1,12 @@
 __author__ = 'brianoneill'
 
 try:
-    import lcd
+    import logging_config
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
 
-from lcd import LCDictBuilderABC
+from logging_config import LCDictBuilderABC
 
 
 ##############################################################################

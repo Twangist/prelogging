@@ -1,7 +1,7 @@
 __author__ = 'brianoneill'
 
-from lcd import LCDictBasic
-from lcd.six import PY2
+from logging_config import LCDictBasic
+from logging_config.six import PY2
 
 from unittest import TestCase
 import logging

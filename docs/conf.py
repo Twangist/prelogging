@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# lcd documentation build configuration file, created by
+# logging_config documentation build configuration file, created by
 # sphinx-quickstart on Sat Jul  9 18:19:34 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -50,7 +50,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'lcd'
+project = 'logging_config'
 copyright = '2016, Brian O\'Neill'
 author = 'Brian O\'Neill'
 
@@ -230,7 +230,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'lcd.tex', 'lcd Documentation',
+    (master_doc, 'logging_config.tex', 'logging_config Documentation',
      'Brian O\'Neill', 'manual'),
 ]
 
@@ -260,7 +260,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'lcd', 'lcd Documentation',
+    (master_doc, 'logging_config', 'logging_config Documentation',
      [author], 1)
 ]
 
@@ -274,8 +274,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'lcd', 'lcd Documentation',
-     author, 'lcd', 'One line description of project.',
+    (master_doc, 'logging_config', 'logging_config Documentation',
+     author, 'logging_config', 'One line description of project.',
      'Miscellaneous'),
 ]
 

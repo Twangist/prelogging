@@ -8,7 +8,7 @@ Introduction: `lcd` does... *what*?
 
 .. _lcd-all-classes-except-ABC:
 
-.. figure:: LCDict_classes-v2.png
+.. figure:: LCDict_classes-v2--flat.png
     :figwidth: 100%
 
     **lcd** classes and their superclasses (LCDictBuilderABC omitted)
@@ -18,7 +18,7 @@ Introduction: `lcd` does... *what*?
     +=======================+=======================+
     | .. image:: arrsup.png | is a superclass of    |
     +-----------------------+-----------------------+
-    | .. image:: arruse.png | uses                  |
+    | .. image:: arruse.png | uses (instantiates)   |
     +-----------------------+-----------------------+
 
 

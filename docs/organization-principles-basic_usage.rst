@@ -536,6 +536,66 @@ A little example:
 
     >>> import lcd
     >>> import logging
+    >>> lcdx = logging_config.LCDict(attach_handlers_to_root=True)
+    # >>> lcdx.add_formatter('testform', format='{levelname} {name} {message}', style='{')
+    >>> lcdx.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
+    >>> lcdx.add_stderr_handler('con', formatter='testform')
+    >>> lcdx.config()
+    >>> root = logging.getLogger()
+    >>> root.warning('Hi there')
+    WARNING Hi there
+
+
+
+A little example:
+
+    >>> import lcd
+    >>> import logging
+    >>> lcdx = logging_config.LCDict(attach_handlers_to_root=True)
+    # >>> lcdx.add_formatter('testform', format='{levelname} {name} {message}', style='{')
+    >>> lcdx.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
+    >>> lcdx.add_stderr_handler('con', formatter='testform')
+    >>> lcdx.config()
+    >>> root = logging.getLogger()
+    >>> root.warning('Hi there')
+    WARNING Hi there
+
+
+
+A little example:
+
+    >>> import logging_config
+    >>> import logging
+    >>> lcdx = logging_config.LCDict(attach_handlers_to_root=True)
+    # >>> lcdx.add_formatter('testform', format='{levelname} {name} {message}', style='{')
+    >>> lcdx.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
+    >>> lcdx.add_stderr_handler('con', formatter='testform')
+    >>> lcdx.config()
+    >>> root = logging.getLogger()
+    >>> root.warning('Hi there')
+    WARNING Hi there
+
+
+
+A little example:
+
+    >>> import logging_config
+    >>> import logging
+    >>> lcdx = logging_config.LCDict(attach_handlers_to_root=True)
+    # >>> lcdx.add_formatter('testform', format='{levelname} {name} {message}', style='{')
+    >>> lcdx.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
+    >>> lcdx.add_stderr_handler('con', formatter='testform')
+    >>> lcdx.config()
+    >>> root = logging.getLogger()
+    >>> root.warning('Hi there')
+    WARNING Hi there
+
+
+
+A little example:
+
+    >>> import lcd
+    >>> import logging
     >>> lcdx = lcd.LCDict(attach_handlers_to_root=True)
     # >>> lcdx.add_formatter('testform', format='{levelname} {name} {message}', style='{')
     >>> lcdx.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
@@ -622,6 +682,288 @@ of the root because, by default, loggers are created with ``propagate=True``.
 
 If the formatters of the handlers include the logger name — as does
 ``logger_level_msg`` of ``LCDict`` objects, for example — each
+logged message will relate which module wrote it.
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")657
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+The following example illustrates the general technique:
+
+    >>> from logging_config import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+logged message will relate which module wrote it.
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")657
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+The following example illustrates the general technique:
+
+    >>> from logging_config import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+logged message will relate which module wrote it.
+
+The following example illustrates the general technique:
+
+    >>> from logging_config import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")657
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+logged message will relate which module wrote it.
+
+The following example illustrates the general technique:
+
+    >>> from logging_config import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")657
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+logged message will relate which module wrote it.
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")657
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+
+The following example illustrates the general technique:
+
+    >>> from logging_config import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+logged message will relate which module wrote it.
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")657
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+
+The following example illustrates the general technique:
+
+    >>> from logging_config import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
+
+The following example illustrates the general technique:
+
+    >>> from lcd import LCDict
+    >>> import logging
+    >>> lcd_ex = LCDict(attach_handlers_to_root=True)
+    >>> lcd_ex.add_stdout_handler('con', formatter='logger_level_msg')
+    >>> lcd_ex.config()
+
+    >>> logging.getLogger().warning("Look out!")
+    root                : WARNING : Look out!
+    >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
+    my_submodule        : WARNING : Something's wasn't right.
+    >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
+    your_submodule      : ERROR   : Uh oh, there was an error.
 logged message will relate which module wrote it.
 
 The following example illustrates the general technique:

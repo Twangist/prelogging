@@ -8,12 +8,12 @@ import math
 import logging
 
 try:
-    import lcd
+    import logging_config
 except ImportError:
     import sys
     sys.path[0:0] = ['..']
 
-from lcd import LCDict
+from logging_config import LCDict
 
 import examples.child_logger_sub_noprop as sub_noprop
 import examples.child_logger_sub_prop as sub_prop

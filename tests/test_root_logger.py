@@ -3,7 +3,7 @@ __author__ = 'brianoneill'
 import sys
 sys.path[0:0] = ['../..']
 
-from lcd import LCDict
+from logging_config import LCDict
 
 #############################################################################
 
