@@ -15,41 +15,33 @@ Package name:
     `logging_config`?       (again)
     `loggingconfig`?
 
-    And, again, perhaps name changes for classes?
-        LCDict
-        LCDictEx
-        LCDictBuilderABC
-
 
 Examples:
 
 *   Write up a guide to the examples?
+
     main module, + a brief description of what each does
     Separate file / chapter?  A table (shudder)?
 
+    * Todo: document that all are executable (``$ ./blah.py ...``)
+       |    and that the mproc examples take a command line arg, -l / --locking,
+       |    -n / --nolocking, --help  (case-insensitive,
+       |        and that any prefix of 'locking', 'nolocking' will do
 
-* Todo: document that all are executable (``$ ./blah.py ...``)
-   |    and that the mproc examples take a command line arg, -l / --locking,
-   |    -n / --nolocking, --help  (case-insensitive,
-   |        and that any prefix of 'locking', 'nolocking' will do
-
-
-*   ¿¿¿ Put `examples/` folder inside `lcd/` ???
-    (Note, Tending toward NOT doing this.)
 
 
 IDEAS
 ======
 
 Feature "requests"
-===================
+---------------------
 
 `lcd` does not provide methods for these handler classes:
 
     logging.handlers.WatchedFileHandler ?
     logging.handlers.TimedRotatingFileHandler ?
     logging.handlers.SocketHandler                  // is this a base class ???
-    logging.handlers.DatagramHandler     // is(n't) there a UDP handler too ???
+    logging.handlers.DatagramHandler
     logging.handlers.NTEventLogHandler
     logging.handlers.MemoryHandler
     logging.handlers.HTTPHandler

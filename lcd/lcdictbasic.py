@@ -1,11 +1,11 @@
 # coding=utf-8
 
+__author__ = "Brian O'Neill"
+
 from __future__ import print_function
 from .six import iteritems, PY2
 import logging
 import logging.config
-
-__author__ = "Brian O'Neill"
 
 __doc__ = """ \
 ``LCDictBasic`` provides an API for building dictionaries that specify

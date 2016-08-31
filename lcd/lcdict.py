@@ -1,5 +1,7 @@
 # coding=utf-8
 
+__author__ = "Brian O'Neill"
+
 import os
 from copy import deepcopy
 
@@ -10,8 +12,6 @@ from collections import namedtuple
 
 __doc__ = """\
 """
-
-__author__ = "Brian O'Neill"
 
 
 # -----------------------------------------------------------------------

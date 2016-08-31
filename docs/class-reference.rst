@@ -7,7 +7,7 @@ Class Reference
 .. toctree::
     :maxdepth: 1
 
-    lcdictbasic
-    lcdict
+    LCDictBasic
+    LCDict
     locking_handlers
     LCDictBuilderABC
