@@ -96,10 +96,10 @@ class LCDict(LCDictBasic):
     at runtime when ``config()`` is finally called.
 
     When ``attach_handlers_to_root`` is true [default: False], by default the
-    other methods of this class automatically add handlers to the root logger
-    as well as to the ``handlers`` subdictionary. Each instance saves the
-    value passed to its constructor, and exposes it as the read-only property
-    ``attach_handlers_to_root``.
+    ``add_*`` methods of this class automatically attach handlers to the root
+    logger after adding them to the ``handlers`` subdictionary. Each instance
+    saves the value passed to its constructor, and exposes it as the read-only
+    property ``attach_handlers_to_root``.
 
     When ``locking`` is true [default: False], by default the other methods of
     this class add :ref:`locking handlers <locking-handlers>`; if it's false,
@@ -206,7 +206,7 @@ class LCDict(LCDictBasic):
             ``filename`` parameter and uses that as the value of the
             ``'filename'`` key. Prepending uses ``os.path.join``. The directory
             specified by ``log_path`` must already exist.
-        :param locking: if True, console handlers use locking stream handlers,
+        :param locking: if true, console handlers use locking stream handlers,
             and file handlers created by ``add_file_handler``,
             ``add_rotating_file_handler`` and ``add_syslog_handler``
             use locking file handlers, **unless** ``locking=False`` is passed
@@ -322,12 +322,14 @@ class LCDict(LCDictBasic):
                                 dateformat=None):
         """Add a named "formatter preset" to the collection ``cls._formatter_presets``.
 
-        :param name:
-        :param format:
-        :param style:
-        :param datefmt:
-        :param dateformat:
-        :return:
+        :param name: name of the formatter
+        :param format: format string of the formatter
+        :param style: style of the formatter, one of ``'%'`` ``'{'`` ``'$'``
+            (Python 2: only ``'%'``)
+        :param datefmt: format string for date/times
+        :param dateformat: format string for date/times. Use this parameter
+            or ``datefmt`` (which has precedence)
+        :return: ``self``
         """
         cls._formatter_presets[name] = FormatterSpec(format,
                                                      style=style,
@@ -362,13 +364,12 @@ class LCDict(LCDictBasic):
 
         :return: ``self``
         """
-        # NOTE: '0.2.7b19' change --
-        #  .    Don't add all the predefined formatters to every LCDict.
-        #  .    Every LCDict handler-adding method ultimately funnels
-        #  .    through here, so we check whether ``formatter`` is
-        #  .    a name of a formatter preset; if it is, make sure it's
-        #  .    added, just in time -- add it to self.formatters
-        #  .    if it isn't there already.
+        # Don't add all the predefined formatters to every LCDict.
+        # Every LCDict handler-adding method ultimately funnels
+        # through here, so we check whether ``formatter`` is
+        # a name of a formatter preset; if it is, make sure it's
+        # added, just in time -- add it to self.formatters
+        # if it isn't there already.
         self._add_formatter_if_preset(formatter)
 
         super(LCDict, self).add_handler(handler_name,
@@ -386,14 +387,16 @@ class LCDict(LCDictBasic):
                            attach_to_root=None,
                            **kwargs):
         """
-        :param handler_name:
-        :param stream:
-        :param formatter:
-        :param level:
+        :param handler_name: just that
+        :param stream: stream or name of stream, e.g. ``sys.stderr``
+            or ``'ext://sys.stderr'``
+        :param formatter: name of the formatter this handler should use, or ``None``
+        :param level: loglevel of this handler
         :param locking: If true, this handler will be a
             :ref:`LockingStreamHandler <LockingStreamHandler>`;
+            if ``None``, do what ``self.locking`` says;
             if false, the handler will be a ``logging.StreamHandler``.
-        :param attach_to_root: If true, add the ``clone`` handler to the root
+        :param attach_to_root: If true, add the handler to the root
             logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
             if false, don't add to root.
         :param kwargs:
@@ -514,35 +517,34 @@ class LCDict(LCDictBasic):
         """
         :param handler_name: just that
         :param filename: just that
-        :param max_bytes: logfile size threshold. Given logfile name `lf.log`,
-            if a write would cause `lf.log` to exceed this size,
-            the following occurs, where K = backup_count:
-            if `lf.log.K` exists it is deleted;
-            all files `lf.log.1`, `lf.log.2`, ... `lf.log.K-1`
-            are renamed to `lf.log.2`, `lf.log.3`, ... `lf.log.K`;
-            `lf.log` is closed, and renamed to `lf.log.1`;
-            a new `lf.log` is created and written to.
-            The `logging` oackage calls this parameter `maxBytes`;
-            it also defaults to 0.
-        :param backup_count: (max) n)umber of backup files to create and
-            maintain. The `logging` package calls this parameter `backupCount`;
-            it also defaults to 0.
+        :param max_bytes: logfile size threshold. Given logfile name ``lf.log``,
+            if a write would cause ``lf.log`` to exceed this size,
+            the following occurs, where `K` = backup_count:
+            if ``lf.log.``\ `K` exists it is deleted;
+            all files ``lf.log.1``, ``lf.log.2``, ... ``lf.log.``\ `K-1`
+            are renamed to ``lf.log.2``, ``lf.log.3``, ... ``lf.log.``\ `K`;
+            ``lf.log`` is closed, and renamed to ``lf.log.1``;
+            a new ``lf.log`` is created and written to.
+            The `logging` oackage calls this parameter ``maxBytes``, where it
+            also defaults to 0.
+        :param backup_count: max number of backup files to create and
+            maintain. The `logging` package calls this parameter ``backupCount``,
+            where it also defaults to 0.
         :param formatter: the name of the formatter that this handler will use
-        :param mode: NOTE -- mode is `append`, the `logging` default
-        :param encoding:
+        :param mode: the mode in which the logfile is opened
+        :param encoding: if encoding is not None, the file is opened with that
+            encoding
         :param delay: if True, the log file won't be created until it's
             actually written to
         :param level: the loglevel of this handler
         :param locking: Mandatory if multiprocessing -- things won't even work,
             logfile can't be found: FileNotFoundError: [Errno 2]...
-        :param attach_to_root: If true, add the ``clone`` handler to the root
+        :param attach_to_root: If true, add the handler to the root
             logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
             if false, don't add to root.
         :param kwargs: additional key/value pairs
         :return: ``self``
         """
-        # So: self can be created with (self.)locking=False,
-        # but a handler can be locking.
         locking = self._locking__adjust(locking)
         attach_to_root = self._attach_to_root__adjust(attach_to_root)
 
@@ -588,17 +590,18 @@ class LCDict(LCDictBasic):
         for details about the next three parameters:
 
         :param address:  as for logging.handlers.SysLogHandler
-        :param facility: "   "     "
-        :param socktype: "   "     "
+        :param facility: `ditto`
+        :param socktype: `ditto`
 
         On OS X, use ``address='/var/run/syslog'`` to write to the system log
         (``system.log``); on \*nix, use ``address='/dev/log'``.
 
         :param formatter: the name of the formatter that this handler will use
         :param level: the loglevel of this handler
-        :param locking: if false, use logging.handlers.SysLogHandler; if true,
-            use the multiprocessing-safe version of that handler.
-        :param attach_to_root: If true, add the ``clone`` handler to the root
+        :param locking: if false, use ``logging.handlers.SysLogHandler``;
+            if ``None``, do what ``self.locking`` says;
+            if true, use the multiprocessing-safe version of that handler.
+        :param attach_to_root: If true, add the handler to the root
             logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
             if false, don't add to root.
         :param kwargs: additional key/value pairs
@@ -646,7 +649,7 @@ class LCDict(LCDictBasic):
         :param level: loglevel of this handler
         :param formatter: ``str``, name of formatter
 
-        SMTPHandler-specific parameters, quoting extensively from the
+        ``SMTPHandler``-specific parameters, quoting extensively from the
         `logging` docs:
 
         :param mailhost: name of SMTP server e.g. 'smtp.gmail.com'
@@ -703,7 +706,7 @@ class LCDict(LCDictBasic):
         :param queue: an actual queue object (``multiproccessing.Queue``).
             Thus, **don't** use ``clone_handler`` on a queue handler!
 
-        :param kwargs: any other key/value pairs for add_handler
+        :param kwargs: any other key/value pairs for ``add_handler``
         :return: ``self``
         """
         if PY2:

@@ -58,7 +58,7 @@ Organization, Principles and Basic Usage
 ``LCDictBasic``
 -------------------------------------------------------
 
-############### NOTE NOTE NOTE  lcd.lcdict\_ docstring  NOTE NOTE NOTE
+############### NOTE NOTE NOTE  lcd.LCDictBasic docstring  NOTE NOTE NOTE
 
 ``LCDictBasic`` provides an API for building dictionaries that specify
 Python logging configuration -- *logging config dicts*.
@@ -124,7 +124,7 @@ with `logging`.
 
 Once you've built an ``LCDictBasic`` meeting your requirements, you
 configure logging by calling the object's ``config`` method, which
-passes itself (a dict) to
+passes itself (as a dict) to
 `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
 
 
