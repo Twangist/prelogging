@@ -1,14 +1,14 @@
 # coding=utf-8
 
-__author__ = "Brian O'Neill"
-
 import os
 from copy import deepcopy
 
 from .lcdictbasic import LCDictBasic
-from .six import PY2, iteritems
+from .six import PY2
 
 from collections import namedtuple
+
+__author__ = "Brian O'Neill"
 
 __doc__ = """\
 """
