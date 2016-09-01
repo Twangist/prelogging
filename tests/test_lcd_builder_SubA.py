@@ -5,10 +5,10 @@ from test_lcd_builders_top import LCDBuilderSub
 
 class LCDBuilderSubA(LCDBuilderSub):
     @classmethod
-    def add_to_lcd(cls, lcdx):
-        """(Virtual) Call ``LCDict`` methods to augment ``lcdx``.
+    def add_to_lcdict(cls, lcd):
+        """(Virtual) Call ``LCDict`` methods to augment ``lcd``.
 
-        :param lcdx: a ``LCDict``
+        :param lcd: a ``LCDict``
         """
         # Set up a logger 'subA' and a file handler it exclusively uses.
         # Assume the code that uses this module is well-debugged and stable,
@@ -18,12 +18,12 @@ class LCDBuilderSubA(LCDBuilderSub):
         #       to logfile 'subA.log', and
         #       to root logger (propagate=True).
         #   Root logger will NOT log to 'subA.log' (attach_to_root=False)
-        lcdx.add_file_handler('subA-fh',
-                              filename='subA.log',
-                              mode='w',
-                              formatter='logger_level_msg',
-                              attach_to_root=False)
-        lcdx.add_logger('subA',
-                        handlers='subA-fh',
-                        level='ERROR',
-                        propagate=True)
+        lcd.add_file_handler('subA-fh',
+                             filename='subA.log',
+                             mode='w',
+                             formatter='logger_level_msg',
+                             attach_to_root=False)
+        lcd.add_logger('subA',
+                       handlers='subA-fh',
+                       level='ERROR',
+                       propagate=True)

@@ -12,7 +12,7 @@ from .module import do_something, do_something_else
 __all__ = ['do_something', 'do_something_else']
 
 # configure logging
-lcdx = LCDict()                  # default: disable_existing_loggers=False
-lcdx.add_null_handler('library-nullhandler')    # default: level='NOTSET'
-lcdx.add_logger('library', handlers='library-nullhandler', level='INFO')
-lcdx.config()
+lcd = LCDict()                  # default: disable_existing_loggers=False
+lcd.add_null_handler('library-nullhandler')    # default: level='NOTSET'
+lcd.add_logger('library', handlers='library-nullhandler', level='INFO')
+lcd.config()

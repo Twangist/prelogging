@@ -113,13 +113,13 @@ def config_logging(use_locking):
     """
     logfilename = ('mproc_LOCKING.log' if use_locking else 'mproc_NOLOCKING.log')
     # add handlers to root == False, default
-    lcd_ex = LCDict(log_path=LOG_PATH,
-                                 locking=use_locking)
+    lcd = LCDict(log_path=LOG_PATH,
+                 locking=use_locking)
 
     ## Add 'console' handler with level higher than 'DEBUG';
     # add main file handler, which will write to '_log/' + logfilename;
     # add logger that uses them.
-    lcd_ex.add_stdout_handler(
+    lcd.add_stdout_handler(
         'console',
         formatter='msg',
         level='INFO'
@@ -138,7 +138,7 @@ def config_logging(use_locking):
         level='DEBUG',
         propagate=False    # so it DOESN'T propagate to root logger
     )
-    lcd_ex.config()
+    lcd.config()
 
 
 NUM_DOCS_TOTAL = 80     # 64

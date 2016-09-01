@@ -119,12 +119,12 @@ def config_logging(use_locking):
     """
     logfilename = ('mproc2_LOCKING.log' if use_locking else 'mproc2_NOLOCKING.log')
 
-    lcd_ex = LCDict(log_path=LOG_PATH,
-                                 locking=use_locking,
-                                 attach_handlers_to_root=True,
-                                 root_level='DEBUG')
+    lcd = LCDict(log_path=LOG_PATH,
+                 locking=use_locking,
+                 attach_handlers_to_root=True,
+                 root_level='DEBUG')
     # add main file handler, which will write to LOG_PATH + '/' + logfilename
-    lcd_ex.add_stderr_handler(
+    lcd.add_stderr_handler(
         'console', formatter='msg', level='DEBUG'
     ).add_formatter(
         'my_file_formatter',
@@ -136,7 +136,7 @@ def config_logging(use_locking):
         # level='DEBUG',
         formatter='my_file_formatter',
     )
-    lcd_ex.config()
+    lcd.config()
 
 
 def main(use_locking=None):

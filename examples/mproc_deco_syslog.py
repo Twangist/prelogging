@@ -50,21 +50,21 @@ def config_logging(use_locking):
 
     print("%s locking" % ("Using" if use_locking else "NOT using"))
 
-    lcd_ex = LCDict(root_level='DEBUG',
-                   attach_handlers_to_root=True,
-                   locking=use_locking)
+    lcd = LCDict(root_level='DEBUG',
+                 attach_handlers_to_root=True,
+                 locking=use_locking)
     # Set up console handler to show process name, time, handler name
-    lcd_ex.add_stderr_handler(
+    lcd.add_stderr_handler(
         'console', formatter='process_level_msg'
     )
     # Add syslog handler with same formatter
-    lcd_ex.add_syslog_handler(
+    lcd.add_syslog_handler(
         'h_syslog',
         formatter='process_level_msg',
         address='/var/run/syslog',      # works for OS X; '/dev/log' for *nix
     )
-    lcd_ex.check()
-    lcd_ex.config()
+    lcd.check()
+    lcd.config()
 
 
 def main(use_locking=None):

@@ -14,34 +14,34 @@ def configure_logging(log_path, logfilename=''):
     """
     # . Just for coverage:
     # .     root_level='CRITICAL')
-    # . Temporary, cuz of lcd_ex.set_logger_level(...) below.
-    lcd_ex = LCDict(log_path=log_path,
-                   attach_handlers_to_root=True,
-                   root_level='CRITICAL')
-    lcd_ex.add_stdout_handler('con', formatter="msg")
+    # . Temporary, cuz of lcd.set_logger_level(...) below.
+    lcd = LCDict(log_path=log_path,
+                 attach_handlers_to_root=True,
+                 root_level='CRITICAL')
+    lcd.add_stdout_handler('con', formatter="msg")
 
-    lcd_ex.set_logger_level(None, 'INFO')    # . coverage ho'
+    lcd.set_logger_level(None, 'INFO')    # . coverage ho'
 
     if logfilename:
         # add a file handler, which will write to log_path + '/' + logfilename
         # Of course, we don't have to add a formatter, we could just
         # use formatter='level_msg' in add_file_handler(...)
-        lcd_ex.add_formatter(
+        lcd.add_formatter(
             'my_file_formatter',
             format='%(levelname)-8s: %(message)s'
         )
         # Defaults:
         #   level='DEBUG',
-        lcd_ex.add_file_handler(
+        lcd.add_file_handler(
             'app_file',
             filename=logfilename,
             mode='w',
             locking=True,                   # for kicks 'n' coverage
             formatter='my_file_formatter',
         )
-    # lcd_ex.dump()           # | DEBUG
+    # lcd.dump()           # | DEBUG
 
-    lcd_ex.config()
+    lcd.config()
 
 #############################################################################
 

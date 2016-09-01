@@ -44,8 +44,8 @@ def main():
 
     q = Queue(-1)  # no limit on size
 
-    lcdx = LCDict(attach_handlers_to_root=True)
-    lcdx.add_formatter(
+    lcd = LCDict(attach_handlers_to_root=True)
+    lcd.add_formatter(
         'fmtr', format='%(threadName)s: %(name)s: %(message)s'
     ).add_stderr_handler(
         'con', formatter='fmtr'

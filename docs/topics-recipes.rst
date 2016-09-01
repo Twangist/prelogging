@@ -4,7 +4,7 @@ Further Topics and Recipes
 .. include:: _global.rst
 
 
-* :ref:`using-lcd-with-django`
+* :ref:`using-logging_config-with-django`
     .. hlist::
         :columns: 3
 
@@ -48,9 +48,9 @@ Further Topics and Recipes
         * :ref:`using-unsupported-logging-handler-classes`
 
 
-.. _using-lcd-with-django:
+.. _using-logging_config-with-django:
 
-Using `lcd` with `Django`
+Using `logging_config` with `Django`
 ------------------------------------
 
 blahblah
@@ -71,12 +71,12 @@ in Django is to provide a logging config dict as the value of the
     a logging config dict.
 
 .. todo::
-    (2) Illustrate how to use `lcd` with Django. In ``settings.py``:
+    (2) Illustrate how to use `logging_config` with Django. In ``settings.py``:
 
-        ``from mystuff import build_lcd``
-        ``LOGGING = build_lcd()``
+        ``from mystuff import build_lcdict``
+        ``LOGGING = build_lcdict()``
 
-    Here, `build_lcd` is a function you supply which builds a logging
+    Here, `build_lcdict` is a function you supply which builds a logging
     config dict but doesn't call its ``config`` method. Django will add its
     logging specifications to the ``LOGGING`` dict and then pass that to
     ``logging.config.dictConfig``.
@@ -162,7 +162,7 @@ In this section we'll discuss the second and third approaches.
 
 .. topic:: Two solutions
 
-    In the approach provided natively by `lcd`, serialization occurs at the
+    In the approach provided natively by `logging_config`, serialization occurs at the
     handler level, using the package's simple "locking handler" classes. Before
     an instance of a locking handler writes to its destination, it acquires
     a lock (*shared by all instances* of the handler), which it releases when
@@ -199,7 +199,7 @@ Using locking handlers
 +++++++++++++++++++++++++
 
 (MP blather)
-Provided natively by `lcd`, only option under Py2.
+Provided natively by `logging_config`, only option under Py2.
 
 All but one of the multiprocessing examples use locking handlers.
 
@@ -441,21 +441,21 @@ Filters on the root logger
 
 Let's configure the root logger to use both filters shown above::
 
-    lcd_ex = LCDict(
+    lcd = LCDict(
         attach_handlers_to_root=True,
         root_level='DEBUG')
 
-    lcd_ex.add_stdout_handler(
+    lcd.add_stdout_handler(
         'console',
         level='DEBUG',
         formatter='level_msg')
 
-    lcd_ex.add_callable_filter('count_d', count_debug_allow_2)
-    lcd_ex.add_class_filter('count_i', CountInfoSquelchOdd)
+    lcd.add_callable_filter('count_d', count_debug_allow_2)
+    lcd.add_class_filter('count_i', CountInfoSquelchOdd)
 
-    lcd_ex.attach_root_filters('count_d', 'count_i')
+    lcd.attach_root_filters('count_d', 'count_i')
 
-    lcd_ex.config()
+    lcd.config()
 
 Now use the root logger::
 
@@ -496,7 +496,7 @@ arbitrary logger. This can be accomplished either of in two ways:
 1. Attach the filters when calling ``add_logger`` for ``'mylogger'``, using the
    ``filters`` keyword parameter::
 
-    lcd_ex.add_logger('mylogger',
+    lcd.add_logger('mylogger',
                       filters=['count_d', 'count_i'],
                       ...
                      )
@@ -506,12 +506,12 @@ arbitrary logger. This can be accomplished either of in two ways:
 
 2. Add the logger with ``add_logger``, without using the ``filters`` parameter::
 
-    lcd_ex.add_logger('mylogger', ... )
+    lcd.add_logger('mylogger', ... )
 
    and then attach filters to it with ``attach_logger_filters``::
 
-    lcd_ex.attach_logger_filters('mylogger',
-                                 'count_d', 'count_i')
+    lcd.attach_logger_filters('mylogger',
+                              'count_d', 'count_i')
 
 .. _tr-filters-handler:
 
@@ -530,28 +530,28 @@ There are two ways to attach filters to a handler:
    For example, using our two example filters, each of the following method
    calls adds a handler with just the ``'count_d'`` filter attached::
 
-    lcd_ex.add_stderr_handler('con-err',
-                                      filters='count_d')
-    lcd_ex.add_file_handler('fh',
-                            filename='some-logfile.log',
-                            filters=['count_d'])
+    lcd.add_stderr_handler('con-err',
+                           filters='count_d')
+    lcd.add_file_handler('fh',
+                         filename='some-logfile.log',
+                         filters=['count_d'])
 
    The following statement adds a rotating file handler with both filters
    attached::
 
-    lcd_ex.add_rotating_file_handler('rfh',
-                                     filename='some-rotating-logfile.log',
-                                     max_bytes=1024,
-                                     backup_count=5,
-                                     filters=['count_i', 'count_d'])
+    lcd.add_rotating_file_handler('rfh',
+                                  filename='some-rotating-logfile.log',
+                                  max_bytes=1024,
+                                  backup_count=5,
+                                  filters=['count_i', 'count_d'])
 
 2. Add the handler using any ``add_*_handler`` method, then use
    ``add_handler_filters`` to attach filters to the handler. For example::
 
-    lcd_ex.add_file_handler('myhandler',
-                            filename='mylogfile.log')
-    lcd_ex.attach_handler_filters('myhandler',
-                                  'count_d', 'count_i')
+    lcd.add_file_handler('myhandler',
+                         filename='mylogfile.log')
+    lcd.attach_handler_filters('myhandler',
+                               'count_d', 'count_i')
 
 
 .. index:: Filters -- passing initialization data
@@ -623,23 +623,23 @@ you've passed. For example,
     ...     return list1[0] > 100
 
     >>> data_wrapper = [17]
-    >>> lcdx = LCDict(attach_handlers_to_root=True, root_level='DEBUG')
-    >>> lcdx.add_stdout_handler('con', formatter='msg', level='DEBUG')
-    >>> lcdx.add_callable_filter('callable-filter',
-    ...                          my_filter_fn,
-    ...                          list1=data_wrapper)
-    >>> lcdx.attach_root_filters('callable-filter')
-    >>> lcdx.filters['callable-filter']['list1']
+    >>> lcd = LCDict(attach_handlers_to_root=True, root_level='DEBUG')
+    >>> lcd.add_stdout_handler('con', formatter='msg', level='DEBUG')
+    >>> lcd.add_callable_filter('callable-filter',
+    ...                         my_filter_fn,
+    ...                         list1=data_wrapper)
+    >>> lcd.attach_root_filters('callable-filter')
+    >>> lcd.filters['callable-filter']['list1']
     [17]
     >>> data_wrapper[0] = 21
-    >>> lcdx.filters['callable-filter']['list1']
+    >>> lcd.filters['callable-filter']['list1']
     [21]
 
 However, once you configure logging, any such live references are broken,
 because the values in the dict are copied. Let's confirm this.
 First, configure logging with the dict we've built:
 
-    >>> lcdx.config()
+    >>> lcd.config()
 
 Now log something. The filter prints the value of ``list1[0]``, which is ``21``;
 thus it returns ``False``, so no message is logged:
@@ -677,19 +677,19 @@ as a container:
 
     >>> dw = DataWrapper(17)
 
-    >>> lcdx = LCDict(attach_handlers_to_root=True, root_level='DEBUG')
-    >>> lcdx.add_stdout_handler('con', formatter='msg', level='DEBUG')
-    >>> lcdx.add_callable_filter('callable-filter',
-    ...                          my_filter_fn,
-    ...                          data_wrapper=dw)
-    >>> lcdx.attach_root_filters('callable-filter')
-    >>> lcdx.filters['callable-filter']['data_wrapper'])
+    >>> lcd = LCDict(attach_handlers_to_root=True, root_level='DEBUG')
+    >>> lcd.add_stdout_handler('con', formatter='msg', level='DEBUG')
+    >>> lcd.add_callable_filter('callable-filter',
+    ...                         my_filter_fn,
+    ...                         data_wrapper=dw)
+    >>> lcd.attach_root_filters('callable-filter')
+    >>> lcd.filters['callable-filter']['data_wrapper'])
     17
     >>> dw.data = 21
-    >>> lcdx.filters['callable-filter']['data_wrapper'])
+    >>> lcd.filters['callable-filter']['data_wrapper'])
     21
 
-    >>> lcdx.config()
+    >>> lcd.config()
 
     >>> # filter prints 21 and returns False:
     >>> # in the filter, data_wrapper.data == 21
@@ -716,7 +716,7 @@ of a program, each area contributing specifications of its desired formatters,
 filters, handlers and loggers. The ``LCDictBuilderABC`` class provides a
 framework that automates this approach: each area of a program need only
 define a ``LCDictBuilderABC`` subclass and override its method
-``add_to_lcd(lcd)``, where it contributes its specifications by calling
+``add_to_lcdict(lcd)``, where it contributes its specifications by calling
 methods on ``lcd``.
 
 The :ref:`LCDictBuilderABC` documentation describes how that class and its two
@@ -750,8 +750,8 @@ Using a rotating file handler
 
 .. _null-handler:
 
-Using `lcd` in libraries: using a null handler
---------------------------------------------------
+Using `logging_config` in libraries: using a null handler
+-----------------------------------------------------------------
 
 The ``add_null_handler`` method configures a handler of class
 ``logging.NullHandler``, a do-nothing, placeholder handler that's useful in
@@ -763,11 +763,11 @@ configured logging, the `logging` docs section
 recommends adding a ``NullHandler``, only, to the library's top-level logger.
 
 The example ``use_library.py`` and the ``library`` package it uses
-illustrate how to use `lcd` in both a library and a program that uses it,
+illustrate how to use `logging_config` in both a library and a program that uses it,
 in a way that follows that recommendation. It's essential that both
 the library and its user set the logging configuration flag
-``disable_existing_loggers`` to ``False``. This is actually `lcd`\'s default —
-one of the few instances where `lcd` changes the default used by `logging`
+``disable_existing_loggers`` to ``False``. This is actually `logging_config`\'s default —
+one of the few instances where `logging_config` changes the default used by `logging`
 (the `logging` package defaults ``disable_existing_loggers`` to ``True``).
 
 
@@ -775,20 +775,20 @@ In this section we'll further discuss the configurations and interaction of
 the example library and library user.
 
 
-``library`` use of `lcd` and `logging`
+``library`` use of `logging_config` and `logging`
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The package contains just two modules: ``__init__.py`` and ``module.py``.
 
-``__init__.py`` configures logging with `lcd`, adding a null handler and
+``__init__.py`` configures logging with `logging_config`, adding a null handler and
 attaching it to the library's "top-level logger", ``'library'``:
 
 .. code::
 
-    lcdx = LCDict()                  # default: disable_existing_loggers=False
-    lcdx.add_null_handler('library-nullhandler')    # default: level='NOTSET'
-    lcdx.add_logger('library', handlers='library-nullhandler', level='INFO')
-    lcdx.config()
+    lcd = LCDict()                  # default: disable_existing_loggers=False
+    lcd.add_null_handler('library-nullhandler')    # default: level='NOTSET'
+    lcd.add_logger('library', handlers='library-nullhandler', level='INFO')
+    lcd.config()
 
 ``module.py`` contains two functions, which use logging::
 
@@ -807,7 +807,7 @@ If a user of `library` configures logging, the messages logged by these
 functions *will* actually be written; if it doesn't, those messages *won't*
 appear.
 
-``use_library.py`` use of `lcd` and `logging`
+``use_library.py`` use of `logging_config` and `logging`
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The example ``use_library.py`` makes it easy to explore the various possibilities.
@@ -912,15 +912,15 @@ Using a single SMTPHandler
 
 .. code::
 
-    from lcd import LCDict
+    from logging_config import LCDict
     from _smtp_credentials import *
 
     # for testing/trying the example
     TEST_TO_ADDRESS = FROM_ADDRESS
 
     # root, console handler levels: WARNING.
-    lcdx = LCDict(attach_handlers_to_root=True)
-    lcdx.add_stderr_handler('con-err', formatter='msg'
+    lcd = LCDict(attach_handlers_to_root=True)
+    lcd.add_stderr_handler('con-err', formatter='msg'
     ).add_email_handler(
         'email-handler',
         level='ERROR',
@@ -934,7 +934,7 @@ Using a single SMTPHandler
         password=SMTP_PASSWORD
     )
 
-    lcdx.config()
+    lcd.config()
 
     root = logging.getLogger()
     root.debug("1.")        # not logged (loglevel too low)
@@ -954,16 +954,15 @@ Comment on the example ``SMTP_handler_two.py``
 
 .. code::
 
-    from lcd import LCDict
+    from logging_config import LCDict
 
     from _smtp_credentials import *
 
     # for testing/trying it the example
     TEST_TO_ADDRESS = FROM_ADDRESS
 
-
-    def add_email_handler_to_lcd(
-                         lcdx,          # *
+    def add_email_handler_to_lcdict(
+                         lcd,          # *
                          handler_name,
                          level,
                          toaddrs,        # string or list of strings
@@ -971,7 +970,7 @@ Comment on the example ``SMTP_handler_two.py``
                          filters=()):
         """Factor out calls to ``add_email_handler``.
         """
-        lcdx.add_email_handler(
+        lcd.add_email_handler(
             handler_name,
             level=level,
             filters=filters,
@@ -991,39 +990,39 @@ Comment on the example ``SMTP_handler_two.py``
         return record.levelname  == 'ERROR'
 
 
-    def build_lcd():
-        lcdx = LCDict(attach_handlers_to_root=True)
-        lcdx.add_stderr_handler('con-err', formatter='level_msg')
+    def build_lcdict():
+        lcd = LCDict(attach_handlers_to_root=True)
+        lcd.add_stderr_handler('con-err', formatter='level_msg')
         # root, console handler levels: WARNING.
 
         # Add TWO SMTPHandlers, one for each level ERROR and CRITICAL,
         #    which will email technical staff with logged messages of levels >= ERROR.
         # We use a filter to make the first handler squelch CRITICAL messages:
-        lcdx.add_callable_filter("filter-error-only", filter_error_only)
+        lcd.add_callable_filter("filter-error-only", filter_error_only)
 
         # TEST_TO_ADDRESS included just for testing/trying out the example
         basic_toaddrs = [TEST_TO_ADDRESS, 'problems@kludge.ly']
 
         # add error-only SMTP handler
-        add_email_handler_to_lcd(
-                         lcdx,
+        add_email_handler_to_lcdict(
+                         lcd,
                          'email-error',
                          level='ERROR',
                          toaddrs=basic_toaddrs,
                          subject='ERROR (Alert from SMTPHandler)',
                          filters=['filter-error-only'])
         # add critical-only SMTP handler
-        add_email_handler_to_lcd(
-                         lcdx,
+        add_email_handler_to_lcdict(
+                         lcd,
                          'email-critical',
                          level='CRITICAL',
                          toaddrs=basic_toaddrs + ['cto@kludge.ly'],
                          subject='CRITICAL (Alert from SMTPHandler)')
-        lcdx.config()
+        lcd.config()
 
     # -----------------------------------------
 
-    build_lcd()
+    build_lcdict()
 
     root = logging.getLogger()
     root.warning("Be careful")                  # logged to console
@@ -1043,7 +1042,7 @@ The `logging` package defines more than a dozen handler classes — subclasses o
 ``logging.Handler`` — in the modules ``logging`` and ``logging.handlers``.
 ``logging`` defines the basic handler classes ... TODO ...
 
-`lcd` supports a majority of the `logging` handlers, but not all.
+`logging_config` supports a majority of the `logging` handlers, but not all.
 
 BLAH BLAH.............
 
@@ -1063,7 +1062,7 @@ The following `logging` handler classes presently have no corresponding
     * logging.handlers.MemoryHandler
     * logging.handlers.HTTPHandler
 
-Nevertheless, all can be configured using `lcd`.
+Nevertheless, all can be configured using `logging_config`.
 — use ``add_handler``, using keyword arguments to specify
 class-specific key/value pairs, and specifying the appropriate handler class
 with the ``class_`` keyword.

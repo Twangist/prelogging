@@ -1,18 +1,18 @@
 
-Configuring logging using `lcd`
-----------------------------------
+Configuring logging using `logging_config`
+----------------------------------------------
 
-`lcd` provides a hybrid approach to configuration, offering the best of both the
+`logging_config` provides a hybrid approach to configuration, offering the best of both the
 static and dynamic worlds. It provides a streamlined API for setting up logging,
 making it easy to use advanced features such as rotating log files and email
-handlers. `lcd` also supplies missing functionality: the package provides
+handlers. `logging_config` also supplies missing functionality: the package provides
 multiprocessing-safe logging to the console, to files and rotating files, and
 to `syslog`.
 
-The centerpiece of `lcd` is the ``LCDict`` class (see the :ref:`diagram of classes <lcd-all-classes-except-ABC>`).
+The centerpiece of `logging_config` is the ``LCDict`` class (see the :ref:`diagram of classes <logging_config-all-classes-except-ABC>`).
 
 
-`lcd` defines two classes, a ``dict`` subclass ``LCDictBasic``, and `its` subclass
+`logging_config` defines two classes, a ``dict`` subclass ``LCDictBasic``, and `its` subclass
 ``LCDict``, which represent logging configuration dictionaries — *logging config
 dicts*, for short. ``LCDictBasic`` provides the basic model of building a logging config
 dict; ``LCDict`` supplies additional conveniences including predefined formatters
@@ -30,7 +30,7 @@ and linkages specified by the underlying dictionary.
 
 
 
-Show how `lcd` can achieve the same configuration more concisely, readably and
+Show how `logging_config` can achieve the same configuration more concisely, readably and
 robustly.
 
 
@@ -38,10 +38,10 @@ robustly.
 
     example using LCDict, even more concisely
 
-`lcd` what it does why it's so cool -- redundant with stuff from next chapter
-------------------------------------------------------------------------------
+`logging_config` what it does why it's so cool -- redundant with stuff from next chapter
+-----------------------------------------------------------------------------------------
 
-`lcd` occupies a middle ground: it provides a clean, consistent and concise
+`logging_config` occupies a middle ground: it provides a clean, consistent and concise
 API for incrementally constructing logging config dicts.
 
 
@@ -63,7 +63,7 @@ error-checking and warnings ! :)
 inconsistent camelCase <-- fixups
 
 
-Using `lcd`, you build a logging config dict using a succession of
+Using `logging_config`, you build a logging config dict using a succession of
 method calls that all take keyword parameters. The keyword parameters are
 consistently snake_case versions of their corresponding keys in logging config
 dicts; their default values are, with rare, documented exceptions, the same as
@@ -130,9 +130,9 @@ lower-level objects by name.
 ``Formatter``\s and ``Filter``\s (if any) don't depend on any other logging
 objects, so they should be defined first. Next, define ``Handler``\s, and
 finally, ``Logger``\s that use already-defined ``Handler``\s (and, perhaps,
-``Filter``\s). `lcd` supplies dedicated methods for configuring the root logger
+``Filter``\s). `logging_config` supplies dedicated methods for configuring the root logger
 (setting its level, attaching handlers and filters to it), but often a
-general-purpose `lcd` method can also be used, by referring to the root logger
+general-purpose `logging_config` method can also be used, by referring to the root logger
 by name: ``''``.
 
 .. note::
@@ -150,7 +150,7 @@ involves just these steps:
 * define ``Logger``\s that use the ``Handler``\s.
 
 In common cases, such as the :ref:`Configuration requirements <example-overview-config>`,
-`lcd` eliminates the first step and makes the last step trivial.
+`logging_config` eliminates the first step and makes the last step trivial.
 
 
 
@@ -158,22 +158,22 @@ In common cases, such as the :ref:`Configuration requirements <example-overview-
 ----------------------
 
 
-Configuration with `lcd`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Configuration with `logging_config`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`lcd` simplifies the creation of "logging config dicts" by breaking the process
-down into easy, natural steps. As much as is possible, with `lcd` you only have
+`logging_config` simplifies the creation of "logging config dicts" by breaking the process
+down into easy, natural steps. As much as is possible, with `logging_config` you only have
 to specify the objects you care about and what's special about them; everything
 else receives reasonable, expected defaults. Using the "batteries included"
-``lcd.LCDict`` class lets us concisely specify the desired setup:
+``logging_config.LCDict`` class lets us concisely specify the desired setup:
 
 .. code::
 
-    from lcd import LCDict
+    from logging_config import LCDict
 
-    lcd_ex = LCDict(root_level='DEBUG',
-                   attach_handlers_to_root=True)
-    lcd_ex.add_stderr_handler(
+    lcd = LCDict(root_level='DEBUG',
+                 attach_handlers_to_root=True)
+    lcd.add_stderr_handler(
                     'console',
                     formatter='msg',
                     level='INFO'
@@ -181,12 +181,12 @@ else receives reasonable, expected defaults. Using the "batteries included"
                        formatter='logger_level_msg',
                        filename='blather.log',
     )
-    lcd_ex.config()
+    lcd.config()
 
 Here, we use a couple of the builtin ``Formatter``\s supplied by
 ``LCDict``. Because we pass the flag
-``attach_handlers_to_root=True`` when creating the instance ``lcd_ex``,
-every handler we add to ``lcd_ex`` is automatically attached to the root logger.
+``attach_handlers_to_root=True`` when creating the instance ``lcd``,
+every handler we add to ``lcd`` is automatically attached to the root logger.
 Later, we'll
 :ref:`revisit this example <overview-example-using-only-LCDictBasic>`,
 to see how to achieve the same result using only ``LCDictBasic``.

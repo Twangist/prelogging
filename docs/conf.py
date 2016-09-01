@@ -208,7 +208,7 @@ html_show_sphinx = True
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'lcddoc'
+htmlhelp_basename = 'logging_config_doc'
 
 # -- Options for LaTeX output ---------------------------------------------
 

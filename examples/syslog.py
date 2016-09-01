@@ -29,23 +29,23 @@ def config_logging():
     """
     # Defaults:
     #   attach_handlers_to_root=False,
-    lcd_ex = LCDict(attach_handlers_to_root=True,
-                   locking=True,
-                   root_level='DEBUG')
+    lcd = LCDict(attach_handlers_to_root=True,
+                 locking=True,
+                 root_level='DEBUG')
 
-    lcd_ex.add_stdout_handler('console', formatter='msg')
+    lcd.add_stdout_handler('console', formatter='msg')
 
     if not sys.platform.startswith('darwin'):
         raise NotImplementedError(
             "This example is currently implemented only for OS X / macOS")
 
     # add a syslog handler
-    lcd_ex.add_syslog_handler(
+    lcd.add_syslog_handler(
         'h_syslog',
         formatter='logger_level_msg',
         address='/var/run/syslog',
     )
-    lcd_ex.config()
+    lcd.config()
 
 #############################################################################
 

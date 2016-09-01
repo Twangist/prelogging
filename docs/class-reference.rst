@@ -1,7 +1,8 @@
 Class Reference
 =========================
 
-`lcd` is a small package: six small classes in four small modules.
+`logging_config` is not a large package: a few, mostly small classes in four
+modules.
 
 
 .. toctree::

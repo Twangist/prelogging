@@ -55,24 +55,24 @@ def test_xxx_filter():
     >>> info_count = 0
     >>> debug_count = 0
 
-    >>> lcd_ex = LCDict(
+    >>> lcd = LCDict(
     ...     attach_handlers_to_root=True,
     ...     root_level='DEBUG')
 
-    >>> _ = lcd_ex.add_stdout_handler(
+    >>> _ = lcd.add_stdout_handler(
     ...     'console',
     ...     level='DEBUG',
     ...     formatter='level_msg')
 
     # Configure the root logger to use both filters shown above:
-    >>> _ = lcd_ex.add_class_filter('count_i', CountInfoSquelchOdd)
-    >>> _ = lcd_ex.add_callable_filter('count_d', count_debug_allow_2)
-    >>> _ = lcd_ex.attach_root_filters('count_i', 'count_d')
+    >>> _ = lcd.add_class_filter('count_i', CountInfoSquelchOdd)
+    >>> _ = lcd.add_callable_filter('count_d', count_debug_allow_2)
+    >>> _ = lcd.attach_root_filters('count_i', 'count_d')
 
-    # lcd_ex.dump()      # | DEBUG comment out
+    # lcd.dump()      # | DEBUG comment out
 
     # TODO:  TROUBLE STARTS HERE ?
-    >>> lcd_ex.config()
+    >>> lcd.config()
 
     # Now use the root logger::
     >>> root = logging.getLogger()

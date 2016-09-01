@@ -15,14 +15,14 @@ from logging_config import LCDictBuilderABC
 
 class LCDictBuilder(LCDictBuilderABC):
     @classmethod
-    def add_to_lcd(cls, lcdx):
-        """(Virtual) Call ``LCDict`` methods to augment ``lcdx``.
+    def add_to_lcdict(cls, lcd):
+        """(Virtual) Call ``LCDict`` methods to augment ``lcd``.
 
-        :param lcdx: a ``LCDict``
+        :param lcd: a ``LCDict``
         """
-        lcdx.add_stdout_handler('con-out',
-                                formatter='logger_level_msg',
-                                attach_to_root=True)
+        lcd.add_stdout_handler('con-out',
+                               formatter='logger_level_msg',
+                               attach_to_root=True)
 
 class LCDBuilderSub(LCDictBuilder):
     """An LCDBuilder class to organize a group of subclasses,
@@ -32,4 +32,3 @@ class LCDBuilderSub(LCDictBuilder):
     (as that would call ``LCDBuilder.add_to_lcd`` a second time).
     """
     pass
-

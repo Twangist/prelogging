@@ -23,12 +23,12 @@ import test_lcd_builder_SubB
 def test_builder():
     """
     >>> LOG_PATH = '_testlogs/builder'
-    >>> lcdx = LCDictBuilder.build_lcd(
+    >>> lcd = LCDictBuilder.build_lcdict(
     ...     root_level='WARNING',
     ...     log_path=LOG_PATH,
     ...     locking=False,
     ...     attach_handlers_to_root=False)
-    >>> lcdx.config()
+    >>> lcd.config()
 
 Now log some messages
 

@@ -22,30 +22,30 @@ LOG_PATH = '_log/child_loggers2/'
 
 
 def config_logging(logfilename):
-    lcd_ex = init_logging_config(logfilename)
-    sub_noprop.logging_config_sub(lcd_ex)
-    sub_prop.logging_config_sub(lcd_ex)
+    lcd = init_logging_config(logfilename)
+    sub_noprop.logging_config_sub(lcd)
+    sub_prop.logging_config_sub(lcd)
 
-    lcd_ex.config()
+    lcd.config()
 
 
 def init_logging_config(logfilename):
 
-    lcd_ex = LCDict(log_path=LOG_PATH,
+    lcd = LCDict(log_path=LOG_PATH,
                                  attach_handlers_to_root=True)
-    lcd_ex.set_root_level('DEBUG')
+    lcd.set_root_level('DEBUG')
 
     # Change format of console handler to show logger `name` and loglevel `levelname`.
     ## Make sure 'console' handler level is higher than DEBUG
-    lcd_ex.add_formatter('busier_console_fmt',
+    lcd.add_formatter('busier_console_fmt',
                          format='%(name)-34s: %(levelname)-8s: %(message)s')
-    lcd_ex.add_stderr_handler('console',
+    lcd.add_stderr_handler('console',
                                       formatter='busier_console_fmt',
                                       level='INFO')
 
     # Add main file handler, which will write to '_log/child_loggers/' + logfilename,
     # and add logger that uses it
-    lcd_ex.add_formatter(
+    lcd.add_formatter(
         'my_file_formatter',
         format='%(name)-34s: %(levelname)-8s: %(asctime)24s: %(message)s'
     ).add_file_handler(
@@ -55,7 +55,7 @@ def init_logging_config(logfilename):
         level='DEBUG',
         formatter='my_file_formatter'
     )
-    return lcd_ex
+    return lcd
 
 def report_name_package():
     logging.getLogger().info("__name__ = %r    __package__ = %r"

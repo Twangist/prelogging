@@ -49,22 +49,22 @@ def process_data_set(data):
 
 def config_logging(use_locking):
     logfilename = 'logfile (%s).log' % ('LOCKING' if use_locking else 'NOLOCKING')
-    lcd_ex = LCDict(log_path='_log/mproc_deco/',
-                                 root_level='DEBUG',
-                                 attach_handlers_to_root=True,
-                                 locking=use_locking)
+    lcd = LCDict(log_path='_log/mproc_deco/',
+                 root_level='DEBUG',
+                 attach_handlers_to_root=True,
+                 locking=use_locking)
     # Set up console handler to show process name, time, handler name
-    lcd_ex.add_stderr_handler(
+    lcd.add_stderr_handler(
         'console', formatter='process_time_logger_level_msg', level='INFO'
     )
     # Add main file handler, which will write to log_path + '/' + logfilename
-    lcd_ex.add_file_handler(
+    lcd.add_file_handler(
         'app_file',
         filename=logfilename,
         mode='w',
         formatter='process_time_logger_level_msg',
     )
-    lcd_ex.config()
+    lcd.config()
 
 
 def main(use_locking=None):

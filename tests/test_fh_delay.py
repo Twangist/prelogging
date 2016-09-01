@@ -13,21 +13,21 @@ def configure_logging(log_path, logfilename=''):
     with delay=True, so that the logfile is created only when written to.
     Root logger level will be DEBUG.
     """
-    lcd_ex = LCDict(log_path=log_path,
-                   root_level='DEBUG',
-                   attach_handlers_to_root=True)
-    lcd_ex.add_stdout_handler('con', formatter='msg', level='DEBUG')
+    lcd = LCDict(log_path=log_path,
+                 root_level='DEBUG',
+                 attach_handlers_to_root=True)
+    lcd.add_stdout_handler('con', formatter='msg', level='DEBUG')
 
     if logfilename:
         # add a file handler, which will write to log_path + '/' + logfilename
-        lcd_ex.add_formatter(
+        lcd.add_formatter(
             'my_file_formatter',
             format='%(levelname)-8s: %(message)s'
         )
         # Defaults:
         #   level='DEBUG',
         #   attach_to_root=True
-        lcd_ex.add_file_handler(
+        lcd.add_file_handler(
             'app_file',
             filename=logfilename,
             formatter='my_file_formatter',
@@ -35,9 +35,9 @@ def configure_logging(log_path, logfilename=''):
             mode='w',       # default, just as a reminder
             delay=True      # default: False
         )
-    # lcd_ex.dump()           # | DEBUG
+    # lcd.dump()           # | DEBUG
 
-    lcd_ex.config()
+    lcd.config()
 
 #############################################################################
 

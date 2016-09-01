@@ -13,21 +13,21 @@ def main():
     """
     Not a test because... your mileage *will* vary (hard to test).
     """
-    lcdx = LCDict(attach_handlers_to_root=True)
+    lcd = LCDict(attach_handlers_to_root=True)
 
     # style='%' is the default, & could be omitted
-    lcdx.add_formatter('fmtr1',
+    lcd.add_formatter('fmtr1',
                        format='%(asctime)s %(levelname)s: %(message)s',
                        dateformat='%H:%M:%S')
 
-    lcdx.add_formatter('fmtr2',
+    lcd.add_formatter('fmtr2',
                        format='%(asctime)s -- %(message)s',
                        datefmt='%y.%m.%d')
 
-    lcdx.add_stdout_handler('con1', formatter='fmtr1')
-    lcdx.add_stdout_handler('con2', formatter='fmtr2')
+    lcd.add_stdout_handler('con1', formatter='fmtr1')
+    lcd.add_stdout_handler('con2', formatter='fmtr2')
 
-    lcdx.config()
+    lcd.config()
 
     logging.getLogger().warning('Danger, Will Robinson!')
     # Prints, for example:

@@ -23,28 +23,28 @@ LOG_PATH = '_log/child_loggers/'
 SHARED_FILE_HANDLER_NAME = 'app_file'
 
 def config_logging(logfilename):
-    lcd_ex = init_logging_config(__name__, logfilename)
-    sub_noprop.logging_config_sub(lcd_ex, __name__,
+    lcd = init_logging_config(__name__, logfilename)
+    sub_noprop.logging_config_sub(lcd, __name__,
                                   file_handler=SHARED_FILE_HANDLER_NAME)
-    sub_prop.logging_config_sub(lcd_ex, __name__)
-    lcd_ex.config()
+    sub_prop.logging_config_sub(lcd, __name__)
+    lcd.config()
 
 
 def init_logging_config(loggername, logfilename):
     # add handlers to root == False, default
-    lcd_ex = LCDict(log_path=LOG_PATH)
+    lcd = LCDict(log_path=LOG_PATH)
 
     # Create stderr console handler; output shows logger name and loglevel;
     ## loglevel higher than DEBUG.
-    lcd_ex.add_formatter('busier_console_fmt',
+    lcd.add_formatter('busier_console_fmt',
                          format='%(name)-25s: %(levelname)-8s: %(message)s')
-    lcd_ex.add_stderr_handler('console',
+    lcd.add_stderr_handler('console',
                                       formatter='busier_console_fmt',
                                       level='INFO')
 
     # Add main file handler, which will write to LOG_PATH + '/' + logfilename,
     # and add logger (loggername == __name__) that uses it
-    lcd_ex.add_formatter(
+    lcd.add_formatter(
         'my_file_formatter',
         format='%(name)-25s: %(levelname)-8s: %(asctime)24s: %(message)s'
     ).add_file_handler(
@@ -59,7 +59,7 @@ def init_logging_config(loggername, logfilename):
         level='DEBUG',
         propagate=False    # so it DOESN'T propagate to parent logger
     )
-    return lcd_ex
+    return lcd
 
 def boring(n):
     logging.getLogger(__name__).debug("Doing something boring with %d" % n)

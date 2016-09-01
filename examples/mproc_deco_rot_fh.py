@@ -51,16 +51,16 @@ import os
 def config_logging(use_locking):
     # NOTE: log_path dir should already exist
     log_path = os.path.join('_log/mproc_deco_rot_fh', 'LOCKING' if use_locking else 'NOLOCKING')
-    lcd_ex = LCDict(log_path=log_path,
-                                 root_level='DEBUG',
-                                 attach_handlers_to_root=True,
-                                 locking=use_locking)
+    lcd = LCDict(log_path=log_path,
+                 root_level='DEBUG',
+                 attach_handlers_to_root=True,
+                 locking=use_locking)
     # Set up console handler to show process name, time, handler name
-    lcd_ex.add_stderr_handler(
+    lcd.add_stderr_handler(
         'console', formatter='process_level_msg', level='INFO'
     )
     # Add main file handler, which will write to log_path + '/' + logfilename
-    lcd_ex.add_rotating_file_handler(
+    lcd.add_rotating_file_handler(
         'rot_fh',
         filename=LOGFILENAME,
         # formatter='process_time_level_msg',
@@ -68,8 +68,7 @@ def config_logging(use_locking):
         backup_count=10,
         # mode='w',
     )
-    lcd_ex.config()
-
+    lcd.config()
 
 
 def main(use_locking=None):

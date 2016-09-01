@@ -1,5 +1,5 @@
-`lcd` Setup
-===============
+`logging_config` Setup
+===========================
 
 .. todo::
     Blahh blah blah ???
@@ -7,20 +7,20 @@
 Requirements
 ---------------
 
-The `lcd` package requires only Python 2.7 or 3.4+. It has no external
+The `logging_config` package requires only Python 2.7 or 3.4+. It has no external
 dependencies.
 
-Very little of `lcd`\'s code varies between Python versions; however, to achieve
+Very little of `logging_config`\'s code varies between Python versions; however, to achieve
 backwards compatibility with 2.7 we had to sacrifice, with great reluctance,
-type annotations and keyword-only parameters. The `lcd` package includes a copy
+type annotations and keyword-only parameters. The `logging_config` package includes a copy
 of the module ``six.py`` (version 1.10.0, for what it's worth), which it uses
 sparingly (one decorator, one function, and one constant).
 
-The `lcd` distribution contains an ``examples/`` subdirectory. A few examples
+The `logging_config` distribution contains an ``examples/`` subdirectory. A few examples
 ((``mproc_deco*.py``)) use the `deco <https://github.com/alex-sherman/deco>`_
 package, which provides a "simplified parallel computing model for Python".
 However, the examples are just for illustration (and code coverage), and aren't
-installed with the `lcd` package.
+installed with the `logging_config` package.
 
 The distribution also contains subdirectories ``tests/`` and ``docs/``, which
 similarly are not installed.
@@ -28,9 +28,9 @@ similarly are not installed.
 Installation
 ---------------
 
-You can install `lcd` from PyPI (the Python Package Index) using ``pip``::
+You can install `logging_config` from PyPI (the Python Package Index) using ``pip``::
 
-    $ pip install lcd
+    $ pip install logging_config
 
 (Here and elsewhere, ``$`` at the beginning of a line indicates your command
 prompt, whatever that may be.) Alternately, you can download a ``.zip`` or
@@ -51,7 +51,7 @@ you'll do it in a virtual environment.
 Running tests and examples
 ------------------------------
 
-The top level directory of the `lcd` distribution (where ``setup.py`` resides)
+The top level directory of the `logging_config` distribution (where ``setup.py`` resides)
 contains subdirectories ``tests/`` and ``examples/``, which contain just what
 their names suggest. Neither of these sets of source files are installed.
 
@@ -63,7 +63,7 @@ examples, or both.
 Running tests
 ++++++++++++++
 
-You can run all the tests before installing `lcd` by running the script
+You can run all the tests before installing `logging_config` by running the script
 ``run_tests.py`` in the top level directory of the repository::
 
     $ ./run_tests.py
@@ -75,7 +75,7 @@ Alternately, you can run ::
 Coverage from tests
 ~~~~~~~~~~~~~~~~~~~
 
-`lcd` contains a small amount of Python-2-only code (workarounds
+`logging_config` contains a small amount of Python-2-only code (workarounds
 for Py2 shortcomings), and supports a few Python-3-only logging features.
 In addition, several methods in ``logging_config_dict_ex.py`` add various
 exotic handlers, which are easy to write examples for but difficult to test.
@@ -122,7 +122,7 @@ when these examples are run individually than when they're run via
 Coverage from tests + examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A few short passages, mostly Python-version-specific code, keep `lcd` shy of
+A few short passages, mostly Python-version-specific code, keep `logging_config` shy of
 100% coverage when both tests and examples are run:
 
 +----------------------------+--------+-------+

@@ -1,17 +1,17 @@
-Introduction: `lcd` does... *what*?
+Introduction: `logging_config` does... *what*?
 ==============================================
 
 .. todo::
 
-    Introduction to `lcd`: what  `lcd` is and does,
+    Introduction to `logging_config`: what  `logging_config` is and does,
     blah blah
 
-.. _lcd-all-classes-except-ABC:
+.. logging_config-all-classes-except-ABC:
 
 .. figure:: LCDict_classes-v2--flat.png
     :figwidth: 100%
 
-    **lcd** classes and their superclasses (LCDictBuilderABC omitted)
+    **logging_config** classes and their superclasses (LCDictBuilderABC omitted)
 
     +-----------------------+-----------------------+
     | Symbol                | Meaning               |

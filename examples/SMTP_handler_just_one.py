@@ -18,8 +18,8 @@ TEST_TO_ADDRESS = FROM_ADDRESS
 
 def main():
     # root, console handler levels: WARNING.
-    lcdx = LCDict(attach_handlers_to_root=True)
-    lcdx.add_stderr_handler('con-err',
+    lcd = LCDict(attach_handlers_to_root=True)
+    lcd.add_stderr_handler('con-err',
                             formatter='msg'
     ).add_email_handler('email-handler',
         level='ERROR',
@@ -33,7 +33,7 @@ def main():
         password=SMTP_PASSWORD
     )
 
-    lcdx.config()
+    lcd.config()
 
     root = logging.getLogger()
     root.debug("1.")        # not logged (loglevel too low)

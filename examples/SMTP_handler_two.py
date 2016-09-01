@@ -18,7 +18,7 @@ TEST_TO_ADDRESS = FROM_ADDRESS
 
 
 def add_smtp_handler_to_lcd(
-                     lcdx,          # *
+                     lcd,          # *
                      handler_name,
                      level,
                      toaddrs,        # string or list of strings
@@ -26,7 +26,7 @@ def add_smtp_handler_to_lcd(
                      filters=()):
     """Factor out calls to ``add_email_handler``.
     """
-    lcdx.add_email_handler(
+    lcd.add_email_handler(
         handler_name,
         level=level,
         filters=filters,
@@ -47,21 +47,21 @@ def filter_error_only(record):
 
 
 def configure_logging():
-    lcdx = LCDict(attach_handlers_to_root=True)
-    lcdx.add_stderr_handler('con-err', formatter='level_msg')
+    lcd = LCDict(attach_handlers_to_root=True)
+    lcd.add_stderr_handler('con-err', formatter='level_msg')
     # root, console handler levels: WARNING.
 
     # Add TWO SMTPHandlers, one for each level ERROR and CRITICAL,
     #    which will email technical staff with logged messages of levels >= ERROR.
     # We use a filter to make the first handler squelch CRITICAL messages:
-    lcdx.add_callable_filter("filter-error-only", filter_error_only)
+    lcd.add_callable_filter("filter-error-only", filter_error_only)
 
     # TEST_TO_ADDRESS included just for testing/trying out the example
     basic_toaddrs = [TEST_TO_ADDRESS, 'admin@kludge.ly']
 
     # add error-only SMTP handler
     add_smtp_handler_to_lcd(
-                     lcdx,
+                     lcd,
                      'email-error',
                      level='ERROR',
                      toaddrs=basic_toaddrs,
@@ -69,12 +69,12 @@ def configure_logging():
                      filters=['filter-error-only'])
     # add critical-only SMTP handler
     add_smtp_handler_to_lcd(
-                     lcdx,
+                     lcd,
                      'email-critical',
                      level='CRITICAL',
                      toaddrs=basic_toaddrs + ['cto@kludge.ly'],
                      subject='CRITICAL (Alert from SMTPHandler)')
-    lcdx.config()
+    lcd.config()
 
 # -----------------------------------------
 

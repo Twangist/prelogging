@@ -14,23 +14,23 @@ if PY2:
 else:
     def test_formatter_style():
         """
-        >>> lcdx = LCDict(attach_handlers_to_root=True)
+        >>> lcd = LCDict(attach_handlers_to_root=True)
 
         >>> # style='%' is the default, & could be omitted
-        >>> _ = lcdx.add_formatter('testform-%',
+        >>> _ = lcd.add_formatter('testform-%',
         ...                        format='%(levelname)s: %(name)s: %(message)s',
         ...                        style='%')
-        >>> _ = lcdx.add_formatter('testform-{',
+        >>> _ = lcd.add_formatter('testform-{',
         ...                        format='{levelname}: {name}: {message}',
         ...                        style='{')
-        >>> _ = lcdx.add_formatter('testform-$',
+        >>> _ = lcd.add_formatter('testform-$',
         ...                        format='$levelname: $name: $message',
         ...                        style='$')
 
-        >>> _ = lcdx.add_stdout_handler('con-%', formatter='testform-%')
-        >>> _ = lcdx.add_stdout_handler('con-{', formatter='testform-{')
-        >>> _ = lcdx.add_stdout_handler('con-$', formatter='testform-$')
-        >>> _ = lcdx.config()
+        >>> _ = lcd.add_stdout_handler('con-%', formatter='testform-%')
+        >>> _ = lcd.add_stdout_handler('con-{', formatter='testform-{')
+        >>> _ = lcd.add_stdout_handler('con-$', formatter='testform-$')
+        >>> _ = lcd.config()
 
         >>> root = logging.getLogger()
         >>> root.warning('Hi there')

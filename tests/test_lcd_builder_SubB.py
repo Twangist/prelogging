@@ -4,10 +4,10 @@ from test_lcd_builders_top import LCDBuilderSub
 
 class LCDBuilderSubB(LCDBuilderSub):
     @classmethod
-    def add_to_lcd(cls, lcdx):
-        """(Virtual) Call ``LCDict`` methods to augment ``lcdx``.
+    def add_to_lcdict(cls, lcd):
+        """(Virtual) Call ``LCDict`` methods to augment ``lcd``.
 
-        :param lcdx: a ``LCDict``
+        :param lcd: a ``LCDict``
         """
         # Configure so that:
         #   Messages logged by logger 'subB'
@@ -17,13 +17,13 @@ class LCDBuilderSubB(LCDBuilderSub):
         #   Root logger will NOT log to 'subB.log' (attach_to_root=False)
         # Assume the code that uses this logger is in development,
         # so we'll set level to ``DEBUG``.
-        lcdx.add_file_handler('subB-fh',
-                              filename='subB.log',
-                              mode='w',
-                              formatter='logger_level_msg',
-                              attach_to_root=False)
-        lcdx.add_logger('subB',
-                        handlers='subB-fh',
-                        level='DEBUG',
-                        propagate=False)
+        lcd.add_file_handler('subB-fh',
+                             filename='subB.log',
+                             mode='w',
+                             formatter='logger_level_msg',
+                             attach_to_root=False)
+        lcd.add_logger('subB',
+                       handlers='subB-fh',
+                       level='DEBUG',
+                       propagate=False)
 

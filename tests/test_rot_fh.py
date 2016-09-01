@@ -28,19 +28,19 @@ def config_logging():
     """
     # Defaults:
     #   attach_handlers_to_root=False,
-    lcd_ex = LCDict(log_path=LOG_PATH,
-                   attach_handlers_to_root=True,
-                   locking=True,
-                   root_level='DEBUG')
+    lcd = LCDict(log_path=LOG_PATH,
+                 attach_handlers_to_root=True,
+                 locking=True,
+                 root_level='DEBUG')
 
-    lcd_ex.add_stdout_handler('console', formatter='msg')
+    lcd.add_stdout_handler('console', formatter='msg')
 
     # add a file handler, which will write to log_path + '/' + logfilename
-    lcd_ex.add_formatter(
+    lcd.add_formatter(
         'my_file_formatter',
         format='%(levelname)-8s: %(message)s',
     )
-    lcd_ex.add_rotating_file_handler(
+    lcd.add_rotating_file_handler(
         'rot_fh',
         filename=LOGFILENAME,
         formatter='my_file_formatter',
@@ -48,9 +48,9 @@ def config_logging():
         backup_count=10,
         mode='w',
     )
-    # lcd_ex.dump()           # | DEBUG
+    # lcd.dump()           # | DEBUG
 
-    lcd_ex.config()
+    lcd.config()
 
 #############################################################################
 
