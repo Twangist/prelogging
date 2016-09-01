@@ -7,7 +7,7 @@
 Requirements
 ---------------
 
-The `logging_config` package requires only Python 2.7 or 3.4+. It has no external
+The `logging_config` package requires only Python 3.4+ or 2.7. It has no external
 dependencies.
 
 Very little of `logging_config`\'s code varies between Python versions; however, to achieve
@@ -17,7 +17,7 @@ of the module ``six.py`` (version 1.10.0, for what it's worth), which it uses
 sparingly (one decorator, one function, and one constant).
 
 The `logging_config` distribution contains an ``examples/`` subdirectory. A few examples
-((``mproc_deco*.py``)) use the `deco <https://github.com/alex-sherman/deco>`_
+(``mproc_deco*.py``) use the `deco <https://github.com/alex-sherman/deco>`_
 package, which provides a "simplified parallel computing model for Python".
 However, the examples are just for illustration (and code coverage), and aren't
 installed with the `logging_config` package.
@@ -33,29 +33,33 @@ You can install `logging_config` from PyPI (the Python Package Index) using ``pi
     $ pip install logging_config
 
 (Here and elsewhere, ``$`` at the beginning of a line indicates your command
-prompt, whatever that may be.) Alternately, you can download a ``.zip`` or
-``.tar.gz`` archive of the repository from github or PyPI, uncompress it to a
-fresh directory, ``cd`` to that directory, and run::
+prompt, whatever that may be.)
 
-    $ ./setup.py install
-
-or, on Windows, ::
+Alternately, you can download a ``.zip`` or ``.tar.gz`` archive of the
+repository from github or PyPI, uncompress it to a fresh directory, ``cd`` to
+that directory, and run::
 
     $ python setup.py install
 
-The latter approach lets you review and run the tests and examples, which are
-not installed by ``pip`` or ``setup.py``. Whichever way you choose, ideally
-you'll do it in a virtual environment.
+On *nix systems, including macOS, ``setup.py`` is executable, so on those
+platforms you can just run::
+
+    $ ./setup.py install
+
+Downloading and uncompressing the archive lets you review, run and/or copy the
+tests and examples, which aren't installed by ``pip`` or ``setup.py``. Whichever
+method you choose to install `logging_config`, ideally you'll do it in a virtual
+environment.
 
 
 Running tests and examples
 ------------------------------
 
-The top level directory of the `logging_config` distribution (where ``setup.py`` resides)
-contains subdirectories ``tests/`` and ``examples/``, which contain just what
+The top-level directory of the `logging_config` distribution (where ``setup.py``
+resides) has subdirectories ``tests/`` and ``examples/``, which contain just what
 their names suggest. Neither of these sets of source files are installed.
 
-In the top level directory are three executable scripts — ``run_tests.py``,
+In the top-level directory are three executable scripts — ``run_tests.py``,
 ``run_examples.py``, and ``run_all.py`` — which respectively run all tests, all
 examples, or both.
 
@@ -67,6 +71,7 @@ You can run all the tests before installing `logging_config` by running the scri
 ``run_tests.py`` in the top level directory of the repository::
 
     $ ./run_tests.py
+
 
 Alternately, you can run ::
 

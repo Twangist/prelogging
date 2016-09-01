@@ -2,9 +2,9 @@
 
 # PyPI supports rST, hence:
 __doc__ = """\
-`logging_config` (for "logging config dict") streamlines the configuration of Python
-logging, provides better error checking, and adds multiprocess-safe handlers
-for writing to streams, files, rotating files and the system log.
+`logging_config` streamlines the configuration of Python logging, provides
+better error checking, and adds multiprocess-safe handlers for writing to
+streams, files, rotating files and the system log.
 """
 from logging_config import __version__, __author__
 from setuptools import setup    #, find_packages

@@ -17,7 +17,7 @@ The centerpiece of `logging_config` is the ``LCDict`` class (see the
 ``LCDict``, which represent logging configuration dictionaries — *logging config
 dicts*, for short. ``LCDictBasic`` provides the basic model of building a logging config
 dict; ``LCDict`` supplies additional conveniences including predefined formatters
-and easy access to advanced features such filter creation and as
+and easy access to advanced features such as filter creation and
 multiprocessing-safe rotating file handlers.
 
 You use the methods of these classes to add specifications of named
