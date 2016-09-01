@@ -1,6 +1,6 @@
 
-Configuring logging using `logging_config`
-----------------------------------------------
+Configuration using `logging_config`
+================================================
 
 `logging_config` provides a hybrid approach to configuration, offering the best of both the
 static and dynamic worlds. It provides a streamlined API for setting up logging,
@@ -9,7 +9,8 @@ handlers. `logging_config` also supplies missing functionality: the package prov
 multiprocessing-safe logging to the console, to files and rotating files, and
 to `syslog`.
 
-The centerpiece of `logging_config` is the ``LCDict`` class (see the :ref:`diagram of classes <logging_config-all-classes-except-ABC>`).
+The centerpiece of `logging_config` is the ``LCDict`` class (see the
+:ref:`diagram of classes <logging_config-all-classes-except-ABC>`).
 
 
 `logging_config` defines two classes, a ``dict`` subclass ``LCDictBasic``, and `its` subclass

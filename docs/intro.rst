@@ -6,7 +6,7 @@ Introduction: `logging_config` does... *what*?
     Introduction to `logging_config`: what  `logging_config` is and does,
     blah blah
 
-.. logging_config-all-classes-except-ABC:
+.. _logging_config-all-classes-except-ABC:
 
 .. figure:: LCDict_classes-v2--flat.png
     :figwidth: 100%
