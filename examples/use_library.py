@@ -12,7 +12,7 @@ except ImportError:
 from logging_config import LCDict
 
 
-def configure_logging():
+def logging_config():
     d = LCDict(attach_handlers_to_root=True)  # default: disable_existing_loggers=False
     d.add_stdout_handler('stdout', formatter='logger_level_msg', level='DEBUG')
     # NOTE: root level is 'WARNING',
@@ -26,7 +26,7 @@ def main():
     # Exercise:
     # Comment out and uncomment the following two lines, individually
     # (4 cases); observe the console output in each case.
-    configure_logging()
+    logging_config()
     logging.getLogger().warning("I must caution you about that.")
 
     library.do_something()
@@ -35,7 +35,7 @@ def main():
     # Results:
     """
     (1)
-            configure_logging()
+            logging_config()
             logging.getLogger().warning("I must caution you about that.")
       writes to stdout:
             root                : WARNING : I must caution you about that.
@@ -44,7 +44,7 @@ def main():
             library.module.other: WARNING : WARNING msg
             Did something else.
     (2)
-            # configure_logging()
+            # logging_config()
             logging.getLogger().warning("I must caution you about that.")
 
       writes (to stdout)
@@ -55,7 +55,7 @@ def main():
       (possibly between or after the lines written to stdout).
 
     (3)
-            configure_logging()
+            logging_config()
             # logging.getLogger().warning("I must caution you about that.")
       writes to stdout:
             library.module      : INFO    : INFO msg
@@ -63,7 +63,7 @@ def main():
             library.module.other: WARNING : WARNING msg
             Did something else.
     (4)
-            # configure_logging()
+            # logging_config()
             # logging.getLogger().warning("I must caution you about that.")
       writes to stdout
             Did something.

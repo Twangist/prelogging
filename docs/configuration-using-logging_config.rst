@@ -78,6 +78,22 @@ subsequently with the ``attach_*`` methods. For example, in the following code:
 .. code::
 
     >>> from logging_config import LCDictBasic
+                >>> d = LCDictBasic()
+                >>> d.add_formatter('simple', '{message}', style='{')
+
+            the
+            >>> d = LCDictBasic()
+            >>> d.add_formatter('simple', '{message}', style='{')
+
+        the
+            >>> d = LCDictBasic()
+            >>> d.add_formatter('simple', '{message}', style='{')
+
+        the
+        >>> d = LCDictBasic()
+        >>> d.add_formatter('simple', '{message}', style='{')
+
+    the
             >>> d = LCDictBasic()
             >>> d.add_formatter('simple', '{message}', style='{')
 

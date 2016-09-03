@@ -818,15 +818,15 @@ It contains a simple ``main()`` function, which the program calls when run as
         # Exercise:
         #   Comment out and uncomment the following two lines, independently;
         #   observe the console output in each case.
-        configure_logging()
+        logging_config()
         logging.getLogger().warning("I must caution you about that.")
 
         library.do_something()
         library.do_something_else()
 
-and a simple ``configure_logging`` function::
+and a simple ``logging_config`` function::
 
-    def configure_logging():
+    def logging_config():
         d = LCDict(attach_handlers_to_root=True)
         # defaults: disable_existing_loggers=False, root_level='WARNING'
         d.add_stdout_handler('stdout', formatter='logger_level_msg', level='DEBUG')
@@ -849,7 +849,7 @@ Results (4 cases)
    ``'INFO'``. Messages of `library` propagate to the root, and those of levels
    ```INFO``` and up (not just ```WARNING``` and up) *are logged*.
 
-2. With just ``configure_logging()`` commented out, the library prints these
+2. With just ``logging_config()`` commented out, the library prints these
    to stdout::
 
             Did something.
@@ -865,7 +865,7 @@ Results (4 cases)
    Observe that the library's logged messages aren't written, even though
    the library's user *uses* logging (with the default configuration).
 
-3. With ``configure_logging()`` uncommented but the line following it commented
+3. With ``logging_config()`` uncommented but the line following it commented
    out, the program writes the following to stdout:
 
    .. code::

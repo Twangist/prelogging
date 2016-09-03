@@ -24,7 +24,7 @@ setup(
     packages=['logging_config'],
     test_suite='run_tests.py',
     scripts=[],
-    include_package_data=False,     # ???
+    include_package_data=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',

@@ -7,7 +7,7 @@ from logging_config import LCDict
 
 #############################################################################
 
-def configure_logging(log_path, logfilename=''):
+def logging_config(log_path, logfilename=''):
     """Create a root logger with a stdout console handler with level=INFO,
     and, if logfilename is not empty, a file handler with level=DEBUG.
     Root logger level will be INFO.
@@ -52,7 +52,7 @@ def test_root_logger():
     >>> LOG_PATH = '_testlogs'       # NOTE: directory should already exist
     >>> logfilename = 'logfile.log'
 
-    >>> configure_logging(LOG_PATH, logfilename)
+    >>> logging_config(LOG_PATH, logfilename)
 
     >>> logger = logging.getLogger()
     >>> logger.debug("1. Message not logged")          # logger level is INFO

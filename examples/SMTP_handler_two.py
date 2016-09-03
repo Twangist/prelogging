@@ -46,7 +46,7 @@ def filter_error_only(record):
     return record.levelname  == 'ERROR'
 
 
-def configure_logging():
+def logging_config():
     lcd = LCDict(attach_handlers_to_root=True)
     lcd.add_stderr_handler('con-err', formatter='level_msg')
     # root, console handler levels: WARNING.
@@ -79,7 +79,7 @@ def configure_logging():
 # -----------------------------------------
 
 def main():
-    configure_logging()
+    logging_config()
 
     root = logging.getLogger()
     root.warning("Be careful")                  # logged to console

@@ -7,7 +7,7 @@ from logging_config import LCDict
 
 #############################################################################
 
-def configure_logging(log_path, logfilename=''):
+def logging_config(log_path, logfilename=''):
     """Create a root logger with a stdout console handler with level=DEBUG,
     and, if logfilename is not empty, a file handler with level=INFO *and*
     with delay=True, so that the logfile is created only when written to.
@@ -57,7 +57,7 @@ def test_fh_delay():
     ...     # _ = p.wait(5)   # seconds
     ...     _ = p.wait()   # Py 2.7
 
-    >>> configure_logging(LOG_PATH, logfilename)
+    >>> logging_config(LOG_PATH, logfilename)
 
     # Nothing written, so file shouldn't exist:
     >>> not os.path.exists(fullfn)
