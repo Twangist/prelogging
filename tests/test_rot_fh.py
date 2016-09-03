@@ -9,11 +9,11 @@ import logging
 # from pprint import pformat
 
 try:
-    import logging_config
+    import logging_configuration
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
-from logging_config import LCDict
+from logging_configuration import LCDict
 
 
 LOG_PATH = '_testlogs/rot_fh/'      # NOTE: directory must exist

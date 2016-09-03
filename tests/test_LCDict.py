@@ -1,6 +1,6 @@
 __author__ = 'brianoneill'
 
-from logging_config import LCDict
+from logging_configuration import LCDict
 from unittest import TestCase
 import logging
 import sys
@@ -119,11 +119,11 @@ class TestLCDEx(TestCase):
 
         self.assertEqual(
             lcd['handlers'],
-            {'console': {'()': 'ext://logging_config.LockingStreamHandler',
+            {'console': {'()': 'ext://logging_configuration.LockingStreamHandler',
                          'create_lock': True,
                          'level': 'WARNING',
                          'stream': 'ext://sys.stderr'},
-             'default_file': {'()': 'ext://logging_config.LockingFileHandler',
+             'default_file': {'()': 'ext://logging_configuration.LockingFileHandler',
                               'create_lock': True,
                               'delay': False,
                               'filename': 'blather.log',
@@ -138,15 +138,15 @@ class TestLCDEx(TestCase):
 
         self.assertEqual(
             lcd['handlers'],
-            {'con2': {'()': 'ext://logging_config.LockingStreamHandler',
+            {'con2': {'()': 'ext://logging_configuration.LockingStreamHandler',
                       'create_lock': True,
                       'level': 'WARNING',
                       'stream': 'ext://sys.stderr'},
-             'console': {'()': 'ext://logging_config.LockingStreamHandler',
+             'console': {'()': 'ext://logging_configuration.LockingStreamHandler',
                          'create_lock': True,
                          'level': 'WARNING',
                          'stream': 'ext://sys.stderr'},
-             'default_file': {'()': 'ext://logging_config.LockingFileHandler',
+             'default_file': {'()': 'ext://logging_configuration.LockingFileHandler',
                               'create_lock': True,
                               'delay': False,
                               'filename': 'blather.log',

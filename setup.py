@@ -2,15 +2,15 @@
 
 # PyPI supports rST, hence:
 __doc__ = """\
-`logging_config` streamlines the configuration of Python logging, provides
+`logging_configuration` streamlines the configuration of Python logging, provides
 better error checking, and adds multiprocess-safe handlers for writing to
 streams, files, rotating files and the system log.
 """
-from logging_config import __version__, __author__
+from logging_configuration import __version__, __author__
 from setuptools import setup    #, find_packages
 
 setup(
-    name='logging_config',
+    name='logging_configuration',
     version=__version__,
     author=__author__,       # "Brian O'Neill",
     author_email='twangist@gmail.com',
@@ -20,8 +20,8 @@ setup(
     license='MIT',
     keywords='logging config dictConfig dict configuration multiprocessing '
              'rotating file syslog SMTP queue handler',
-    url='http://github.com/Twangist/logging_config',
-    packages=['logging_config'],
+    url='http://github.com/Twangist/logging_configuration',
+    packages=['logging_configuration'],
     test_suite='run_tests.py',
     scripts=[],
     include_package_data=False,

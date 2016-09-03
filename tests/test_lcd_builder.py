@@ -4,11 +4,11 @@ import logging
 # from pprint import pformat
 
 try:
-    import logging_config
+    import logging_configuration
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
-from logging_config import LCDict, LCDictBuilderABC
+from logging_configuration import LCDict, LCDictBuilderABC
 
 ##############################################################################
 

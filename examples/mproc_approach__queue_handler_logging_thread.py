@@ -3,7 +3,7 @@
 __author__ = 'brianoneill'
 
 __doc__ = """
-An `logging_config` version of the second variant in
+An `logging_configuration` version of the second variant in
 
    `Logging to a single file from multiple processes
    <https://docs.python.org/3/howto/logging-cookbook.html#logging-to-a-single-file-from-multiple-processes>`_
@@ -12,15 +12,15 @@ in the Logging Cookbook. Some small changes, some refactoring.
 """
 
 try:
-    import logging_config
+    import logging_configuration
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
 
 from ._time_util import elapsed_time_human_readable
 
-from logging_config import LCDict
-from logging_config.six import PY2
+from logging_configuration import LCDict
+from logging_configuration.six import PY2
 
 import logging
 import logging.handlers

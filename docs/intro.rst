@@ -1,9 +1,9 @@
-Introduction: `logging_config` does... *what*?
+Introduction: `logging_configuration` does... *what*?
 ==============================================
 
 .. todo::
 
-    Introduction to `logging_config`: what  `logging_config` is and does,
+    Introduction to `logging_configuration`: what  `logging_configuration` is and does,
     blah blah
 
 .. _logging_config-all-classes-except-ABC:
@@ -11,7 +11,7 @@ Introduction: `logging_config` does... *what*?
 .. figure:: LCDict_classes-v2--flat.png
     :figwidth: 100%
 
-    **logging_config** classes and their superclasses (LCDictBuilderABC omitted)
+    **logging_configuration** classes and their superclasses (LCDictBuilderABC omitted)
 
     +-----------------------+-----------------------+
     | Symbol                | Meaning               |

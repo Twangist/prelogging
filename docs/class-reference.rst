@@ -1,7 +1,7 @@
 Class Reference
 =========================
 
-`logging_config` is not a large package: a few, mostly small classes in four
+`logging_configuration` is not a large package: a few, mostly small classes in four
 modules.
 
 

@@ -4,7 +4,7 @@ Further Topics and Recipes
 .. include:: _global.rst
 
 
-* :ref:`using-logging_config-with-django`
+* :ref:`using-logging_configuration-with-django`
     .. hlist::
         :columns: 3
 
@@ -48,9 +48,9 @@ Further Topics and Recipes
         * :ref:`using-unsupported-logging-handler-classes`
 
 
-.. _using-logging_config-with-django:
+.. _using-logging_configuration-with-django:
 
-Using `logging_config` with `Django`
+Using `logging_configuration` with `Django`
 ------------------------------------
 
 blahblah
@@ -71,7 +71,7 @@ in Django is to provide a logging config dict as the value of the
     a logging config dict.
 
 .. todo::
-    (2) Illustrate how to use `logging_config` with Django. In ``settings.py``:
+    (2) Illustrate how to use `logging_configuration` with Django. In ``settings.py``:
 
         ``from mystuff import build_lcdict``
         ``LOGGING = build_lcdict()``
@@ -162,7 +162,7 @@ In this section we'll discuss the second and third approaches.
 
 .. topic:: Two solutions
 
-    In the approach provided natively by `logging_config`, serialization occurs at the
+    In the approach provided natively by `logging_configuration`, serialization occurs at the
     handler level, using the package's simple "locking handler" classes. Before
     an instance of a locking handler writes to its destination, it acquires
     a lock (*shared by all instances* of the handler), which it releases when
@@ -199,7 +199,7 @@ Using locking handlers
 +++++++++++++++++++++++++
 
 (MP blather)
-Provided natively by `logging_config`, only option under Py2.
+Provided natively by `logging_configuration`, only option under Py2.
 
 All but one of the multiprocessing examples use locking handlers.
 
@@ -750,7 +750,7 @@ Using a rotating file handler
 
 .. _null-handler:
 
-Using `logging_config` in libraries: using a null handler
+Using `logging_configuration` in libraries: using a null handler
 -----------------------------------------------------------------
 
 The ``add_null_handler`` method configures a handler of class
@@ -763,11 +763,11 @@ configured logging, the `logging` docs section
 recommends adding a ``NullHandler``, only, to the library's top-level logger.
 
 The example ``use_library.py`` and the ``library`` package it uses
-illustrate how to use `logging_config` in both a library and a program that uses it,
+illustrate how to use `logging_configuration` in both a library and a program that uses it,
 in a way that follows that recommendation. It's essential that both
 the library and its user set the logging configuration flag
-``disable_existing_loggers`` to ``False``. This is actually `logging_config`\'s default —
-one of the few instances where `logging_config` changes the default used by `logging`
+``disable_existing_loggers`` to ``False``. This is actually `logging_configuration`\'s default —
+one of the few instances where `logging_configuration` changes the default used by `logging`
 (the `logging` package defaults ``disable_existing_loggers`` to ``True``).
 
 
@@ -775,12 +775,12 @@ In this section we'll further discuss the configurations and interaction of
 the example library and library user.
 
 
-``library`` use of `logging_config` and `logging`
+``library`` use of `logging_configuration` and `logging`
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The package contains just two modules: ``__init__.py`` and ``module.py``.
 
-``__init__.py`` configures logging with `logging_config`, adding a null handler and
+``__init__.py`` configures logging with `logging_configuration`, adding a null handler and
 attaching it to the library's "top-level logger", ``'library'``:
 
 .. code::
@@ -807,7 +807,7 @@ If a user of `library` configures logging, the messages logged by these
 functions *will* actually be written; if it doesn't, those messages *won't*
 appear.
 
-``use_library.py`` use of `logging_config` and `logging`
+``use_library.py`` use of `logging_configuration` and `logging`
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The example ``use_library.py`` makes it easy to explore the various possibilities.
@@ -824,7 +824,7 @@ It contains a simple ``main()`` function, which the program calls when run as
         library.do_something()
         library.do_something_else()
 
-and a simple ``logging_config`` function::
+and a simple ``logging_configuration`` function::
 
     def logging_config():
         d = LCDict(attach_handlers_to_root=True)
@@ -849,7 +849,7 @@ Results (4 cases)
    ``'INFO'``. Messages of `library` propagate to the root, and those of levels
    ```INFO``` and up (not just ```WARNING``` and up) *are logged*.
 
-2. With just ``logging_config()`` commented out, the library prints these
+2. With just ``llogging_configuration()`` commented out, the library prints these
    to stdout::
 
             Did something.
@@ -912,7 +912,7 @@ Using a single SMTPHandler
 
 .. code::
 
-    from logging_config import LCDict
+    from logging_configuration import LCDict
     from _smtp_credentials import *
 
     # for testing/trying the example
@@ -954,7 +954,7 @@ Comment on the example ``SMTP_handler_two.py``
 
 .. code::
 
-    from logging_config import LCDict
+    from logging_configuration import LCDict
 
     from _smtp_credentials import *
 
@@ -1042,7 +1042,7 @@ The `logging` package defines more than a dozen handler classes — subclasses o
 ``logging.Handler`` — in the modules ``logging`` and ``logging.handlers``.
 ``logging`` defines the basic handler classes ... TODO ...
 
-`logging_config` supports a majority of the `logging` handlers, but not all.
+`logging_configuration` supports a majority of the `logging` handlers, but not all.
 
 BLAH BLAH.............
 
@@ -1062,7 +1062,7 @@ The following `logging` handler classes presently have no corresponding
     * logging.handlers.MemoryHandler
     * logging.handlers.HTTPHandler
 
-Nevertheless, all can be configured using `logging_config`.
+Nevertheless, all can be configured using `logging_configuration`.
 — use ``add_handler``, using keyword arguments to specify
 class-specific key/value pairs, and specifying the appropriate handler class
 with the ``class_`` keyword.
