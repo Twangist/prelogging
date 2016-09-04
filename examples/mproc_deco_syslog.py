@@ -10,11 +10,11 @@ from collections import defaultdict
 import logging
 
 try:
-    import logging_configuration
+    import prologging
 except ImportError:
     import sys
     sys.path[0:0] = ['..', '../..']
-from logging_configuration import LCDict
+from prologging import LCDict
 
 from examples._get_locking_pref import get_locking_pref
 

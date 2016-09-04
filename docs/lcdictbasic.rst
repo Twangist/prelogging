@@ -6,7 +6,7 @@ LCDictBasic
 This class resides in ``lcdictbasic.py``.
 
 
-.. autoclass:: logging_configuration.lcdictbasic.LCDictBasic
+.. autoclass:: prologging.lcdictbasic.LCDictBasic
     :members: __init__, formatters, filters, handlers, loggers, root,
               set_root_level,
               attach_root_filters, attach_root_handlers,

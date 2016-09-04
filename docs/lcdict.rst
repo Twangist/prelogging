@@ -5,9 +5,9 @@ LCDict
 
 This class resides in ``lcdict.py``.
 
-.. automodule:: logging_configuration.lcdict
+.. automodule:: prologging.lcdict
 
-.. autoclass:: logging_configuration.lcdict.LCDict
+.. autoclass:: prologging.lcdict.LCDict
     :members: __init__,
               locking, attach_handlers_to_root,
               create_formatter_preset,

@@ -12,12 +12,12 @@ in the Logging Cookbook.
 """
 
 try:
-    import logging_configuration
+    import prologging
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
-from logging_configuration import LCDict
-from logging_configuration.six import PY2
+from prologging import LCDict
+from prologging.six import PY2
 
 from ._time_util import elapsed_time_human_readable
 

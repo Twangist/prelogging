@@ -1,10 +1,10 @@
-.. logging_configuration documentation master file, created by
+.. prologging documentation master file, created by
    sphinx-quickstart on Sat Jul  9 18:19:34 2016.
 
-Documentation for `logging_configuration` (ver |version|)
+Documentation for `prologging` (ver |version|)
 ==================================================
 
-`logging_configuration` is a pure Python package that simplifies
+`prologging` is a pure Python package that simplifies
 configuration of `logging`, makes more advanced `logging` features easily accessible,
 and includes several "batteries":
 
@@ -12,7 +12,7 @@ and includes several "batteries":
     * simplified creation of handlers
     * multiprocessing-safe handlers which output to the console, to files and to rotating files.
 
-Using `logging_configuration`
+Using `prologging`
 ------------------------
 
 .. toctree::
@@ -21,7 +21,7 @@ Using `logging_configuration`
     intro
     setup-testing-examples
     overview-of-logging-and-configuration
-    configuration-using-logging_configuration
+    configuration-using-prologging
     organization-principles-basic_usage
     topics-recipes
     class-reference

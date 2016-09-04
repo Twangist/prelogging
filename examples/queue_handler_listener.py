@@ -3,7 +3,7 @@
 __author__ = 'brianoneill'
 
 __doc__ = """
-An example that illustrates how to use a QueueListener with `logging_configuration` so that
+An example that illustrates how to use a QueueListener with `prologging` so that
 messages can be logged on a separate thread. In this way, handlers that block
 and take long to complete (e.g. SMTP handlers, which send emails) won't make
 other threads (e.g. the UI thread) stall and stutter.
@@ -13,7 +13,7 @@ For motivation, see
     `Dealing with handlers that block
     <https://docs.python.org/3/howto/logging-cookbook.html#dealing-with-handlers-that-block>`_
 
-We've adapted the code in that section to `logging_configuration`.
+We've adapted the code in that section to `prologging`.
 
 Another approach can be found in the example
 ``mproc_approach__queue_handler_logging_thread.py``.
@@ -22,13 +22,13 @@ Another approach can be found in the example
 import logging
 
 try:
-    import logging_configuration
+    import prologging
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
-from logging_configuration import LCDict
+from prologging import LCDict
 
-from logging_configuration.six import PY2
+from prologging.six import PY2
 
 if PY2:
     from Queue import Queue

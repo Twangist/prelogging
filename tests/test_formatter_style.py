@@ -2,9 +2,9 @@ __author__ = 'brianoneill'
 
 import sys
 sys.path[0:0] = ['../..']          # prepend
-from logging_configuration import LCDict
+from prologging import LCDict
 import logging
-from logging_configuration.six import PY2
+from prologging.six import PY2
 
 if PY2:
     def test_formatter_style():

@@ -65,7 +65,7 @@ class LCDict(LCDictBasic):
         * optional automatic attaching of handlers to the root logger
           as they're added;
         * easy use of the "locking" (multiprocessing-safe) handler classes
-          that `logging_configuration` provides;
+          that `prologging` provides;
         * simplified filter creation.
 
     Except for properties and the ``__init__`` method, all public instance
@@ -104,7 +104,7 @@ class LCDict(LCDictBasic):
     When ``locking`` is true [default: False], by default the other methods of
     this class add :ref:`locking handlers <locking-handlers>`; if it's false,
     handlers instantiate the "usual" classes defined by `logging`. (See the
-    :ref:`class inheritance diagram <logging_configuration-all-classes-except-ABC>`.)
+    :ref:`class inheritance diagram <prologging-all-classes-except-ABC>`.)
     Each instance saves the value passed to its constructor, and exposes it as
     the read-only property ``locking``.
 
@@ -411,7 +411,7 @@ class LCDict(LCDictBasic):
         if formatter is not None:
             kwargs['formatter'] = formatter
         if locking:
-            kwargs['()'] = 'ext://logging_configuration.LockingStreamHandler'
+            kwargs['()'] = 'ext://prologging.LockingStreamHandler'
             kwargs['create_lock'] = True
         else:
             kwargs['class_'] = 'logging.StreamHandler'
@@ -498,7 +498,7 @@ class LCDict(LCDictBasic):
                          **kwargs)
         if locking:
             del self.handlers[handler_name]['class']
-            self.handlers[handler_name]['()'] = 'ext://logging_configuration.LockingFileHandler'
+            self.handlers[handler_name]['()'] = 'ext://prologging.LockingFileHandler'
             self.handlers[handler_name]['create_lock'] = True
         return self
 
@@ -566,7 +566,7 @@ class LCDict(LCDictBasic):
                          **kwargs)
         if locking:
             del self.handlers[handler_name]['class']
-            self.handlers[handler_name]['()'] = 'ext://logging_configuration.LockingRotatingFileHandler'
+            self.handlers[handler_name]['()'] = 'ext://prologging.LockingRotatingFileHandler'
             self.handlers[handler_name]['create_lock'] = True
         return self
 
@@ -621,7 +621,7 @@ class LCDict(LCDictBasic):
                          **kwargs)
         if locking:
             del self.handlers[handler_name]['class']
-            self.handlers[handler_name]['()'] = 'ext://logging_configuration.LockingSysLogHandler'
+            self.handlers[handler_name]['()'] = 'ext://prologging.LockingSysLogHandler'
             self.handlers[handler_name]['create_lock'] = True
         return self
 

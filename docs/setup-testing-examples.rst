@@ -1,4 +1,4 @@
-`logging_configuration` Setup
+`prologging` Setup
 ===========================
 
 .. todo::
@@ -7,20 +7,20 @@
 Requirements
 ---------------
 
-The `logging_configuration` package requires only Python 3.4+ or 2.7. It has no external
+The `prologging` package requires only Python 3.4+ or 2.7. It has no external
 dependencies.
 
-Very little of `logging_configuration`\'s code varies between Python versions; however, to achieve
+Very little of `prologging`\'s code varies between Python versions; however, to achieve
 backwards compatibility with 2.7 we had to sacrifice, with great reluctance,
-type annotations and keyword-only parameters. The `logging_configuration` package includes a copy
+type annotations and keyword-only parameters. The `prologging` package includes a copy
 of the module ``six.py`` (version 1.10.0, for what it's worth), which it uses
 sparingly (one decorator, one function, and one constant).
 
-The `logging_configuration` distribution contains an ``examples/`` subdirectory. A few examples
+The `prologging` distribution contains an ``examples/`` subdirectory. A few examples
 (``mproc_deco*.py``) use the `deco <https://github.com/alex-sherman/deco>`_
 package, which provides a "simplified parallel computing model for Python".
 However, the examples are just for illustration (and code coverage), and aren't
-installed with the `logging_configuration` package.
+installed with the `prologging` package.
 
 The distribution also contains subdirectories ``tests/`` and ``docs/``, which
 similarly are not installed.
@@ -28,9 +28,9 @@ similarly are not installed.
 Installation
 ---------------
 
-You can install `logging_configuration` from PyPI (the Python Package Index) using ``pip``::
+You can install `prologging` from PyPI (the Python Package Index) using ``pip``::
 
-    $ pip install logging_configuration
+    $ pip install prologging
 
 (Here and elsewhere, ``$`` at the beginning of a line indicates your command
 prompt, whatever that may be.)
@@ -41,21 +41,21 @@ that directory, and run::
 
     $ python setup.py install
 
-On *nix systems, including macOS, ``setup.py`` is executable, so on those
+On \*nix systems, including macOS, ``setup.py`` is executable, so on those
 platforms you can just run::
 
     $ ./setup.py install
 
 Downloading and uncompressing the archive lets you review, run and/or copy the
 tests and examples, which aren't installed by ``pip`` or ``setup.py``. Whichever
-method you choose to install `logging_configuration`, ideally you'll do it in a virtual
+method you choose to install `prologging`, ideally you'll do it in a virtual
 environment.
 
 
 Running tests and examples
 ------------------------------
 
-The top-level directory of the `logging_configuration` distribution (where ``setup.py``
+The top-level directory of the `prologging` distribution (where ``setup.py``
 resides) has subdirectories ``tests/`` and ``examples/``, which contain just what
 their names suggest. Neither of these sets of source files are installed.
 
@@ -67,7 +67,7 @@ examples, or both.
 Running tests
 ++++++++++++++
 
-You can run all the tests before installing `logging_configuration` by running the script
+You can run all the tests before installing `prologging` by running the script
 ``run_tests.py`` in the top level directory of the repository::
 
     $ ./run_tests.py
@@ -80,7 +80,7 @@ Alternately, you can run ::
 Coverage from tests
 ~~~~~~~~~~~~~~~~~~~
 
-`logging_configuration` contains a small amount of Python-2-only code (workarounds
+`prologging` contains a small amount of Python-2-only code (workarounds
 for Py2 shortcomings), and supports a few Python-3-only logging features.
 In addition, several methods in ``logging_config_dict_ex.py`` add various
 exotic handlers, which are easy to write examples for but difficult to test.
@@ -127,7 +127,7 @@ when these examples are run individually than when they're run via
 Coverage from tests + examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A few short passages, mostly Python-version-specific code, keep `logging_configuration` shy of
+A few short passages, mostly Python-version-specific code, keep `prologging` shy of
 100% coverage when both tests and examples are run:
 
 +----------------------------+--------+-------+

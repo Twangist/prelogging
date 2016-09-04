@@ -3,7 +3,7 @@ __author__ = 'brianoneill'
 import sys
 sys.path[0:0] = ['../..']          # prepend
 
-from logging_configuration import LCDict
+from prologging import LCDict
 
 #############################################################################
 

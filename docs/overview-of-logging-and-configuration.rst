@@ -15,7 +15,7 @@ It's not our purpose to rehash or repeat the extensive (and generally quite
 good) documentation of Python's `logging` package; in fact, we presuppose that
 you're familiar with basic concepts and standard use cases. At the end of this
 chapter we provide several :ref:`logging_docs_links`, which you can explore
-before or in tandem with the `logging_configuration` documentation. Nevertheless, it will be
+before or in tandem with the `prologging` documentation. Nevertheless, it will be
 helpful to review several topics.
 
 
@@ -169,7 +169,7 @@ Logging configuration requirements — use case
 
 We'll use a simple example to discuss and compare various approaches to logging
 configuration — using the facilities provided by the `logging` package, and then
-using `logging_configuration`.
+using `prologging`.
 
 Suppose we want the following configuration:
 
@@ -362,7 +362,7 @@ We will deal only with logging config dicts, ignoring the YAML-based approach.
 The Web frameworks Django and Flask configure logging with dictionaries.
 (Django can accomodate YAML-based configuration, but its path of least resistance
 is certainly the dict-based approach.) Dictionaries are native Python; YAML is not.
-YAML may be more readable than dictionary specifications, but `logging_configuration` offers
+YAML may be more readable than dictionary specifications, but `prologging` offers
 another, pure-Python solution to that problem.
 
 
@@ -445,7 +445,7 @@ written in thoroughgoing camelCase (except for inconsistencies — for example,
 
 In the next chapter, we'll
 
-<lead-in to next chapter -- `logging_configuration` provides a middle ground / hybrid / best of both worlds;
+<lead-in to next chapter -- `prologging` provides a middle ground / hybrid / best of both worlds;
  blah blah>
 
 --------------------------------------------------------
@@ -467,18 +467,18 @@ The logging `HOWTO <https://docs.python.org/3/howto/logging.html>`_
 contains tutorials that show typical setups and uses of logging, configured in
 code at runtime.
 The `logging Cookbook <https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook>`_
-contains a wealth of techniques, several of which exceed the scope of `logging_configuration` because
+contains a wealth of techniques, several of which exceed the scope of `prologging` because
 they involve `logging` capabilities that can't be configured statically (e.g.
 the use of
 `LoggerAdapters <https://docs.python.org/3/library/logging.html#loggeradapter-objects>`_,
 or
 `QueueListeners <https://docs.python.org/3/library/logging.handlers.html?#queuelistener>`_
-). A few of the examples contained in the `logging_configuration` distribution are examples from
-the Cookbook and HOWTO, reworked to use `logging_configuration`.
+). A few of the examples contained in the `prologging` distribution are examples from
+the Cookbook and HOWTO, reworked to use `prologging`.
 
 The `logging` package supports multithreaded operation, but does **not** directly support
 `logging to a single file from multiple processes <https://docs.python.org/3/howto/logging-cookbook.html#logging-to-a-single-file-from-multiple-processes>`_.
-Happily, `logging_configuration` does, in a couple of ways.
+Happily, `prologging` does, in a couple of ways.
 
 One additional resource merits mention: the documentation for
 `logging in Django <https://docs.djangoproject.com/en/1.9/topics/logging/>`_

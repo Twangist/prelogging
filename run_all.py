@@ -5,7 +5,7 @@ __author__ = 'brianoneill'
 import os
 from _execfile import _execfile
 
-_execfile('run_tests.py')       # cwd = logging_configuration/tests/
+_execfile('run_tests.py')       # cwd = prologging/tests/
 os.chdir('..')
 _execfile('run_examples.py')    # cwd = examples/
 # # print( ">>>>>>>>>>>>> CWD:", os.getcwd() )
