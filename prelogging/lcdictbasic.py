@@ -40,7 +40,7 @@ of creating a logging config dict into basic steps:
        ``add_file_handler()``, specifying its name, its formatter, its loglevel,
        and optionally attaching filters. The formatter and filters are specified
        by name, so they should already have been added in previous steps
-       (if they weren't, by default `prologging` will issue a warning). Although you
+       (if they weren't, by default `prelogging` will issue a warning). Although you
        can provide all these attributes of the handler in the ``add_*_handler``
        call, you can do so later, after the basic call: other methods let you
        attach a formatter, attach filters, and set the handler's loglevel.

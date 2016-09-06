@@ -1,7 +1,7 @@
 __author__ = 'brianoneill'
 
-from prologging import LCDictBasic
-from prologging.six import PY2
+from prelogging import LCDictBasic
+from prelogging.six import PY2
 
 from unittest import TestCase
 import logging

@@ -1,7 +1,7 @@
 Class Reference
 =========================
 
-`prologging` is not a large package: a few, mostly small classes in four
+`prelogging` is not a large package: a few, mostly small classes in four
 modules.
 
 

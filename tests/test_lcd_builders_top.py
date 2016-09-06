@@ -1,12 +1,12 @@
 __author__ = 'brianoneill'
 
 try:
-    import prologging
+    import prelogging
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
 
-from prologging import LCDictBuilderABC
+from prelogging import LCDictBuilderABC
 
 
 ##############################################################################

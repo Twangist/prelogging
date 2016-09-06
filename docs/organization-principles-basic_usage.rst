@@ -47,7 +47,7 @@ Organization, Principles and Basic Usage
     .. hlist::
         :columns: 3
 
-        * :ref:`prologging-warnings`
+        * :ref:`prelogging-warnings`
         * :ref:`check`
 
 
@@ -58,7 +58,7 @@ Organization, Principles and Basic Usage
 ``LCDictBasic``
 -------------------------------------------------------
 
-############### NOTE NOTE NOTE  prologging.LCDictBasic docstring  NOTE NOTE NOTE
+############### NOTE NOTE NOTE  prelogging.LCDictBasic docstring  NOTE NOTE NOTE
 
 ``LCDictBasic`` provides an API for building dictionaries that specify
 Python logging configuration -- *logging config dicts*.
@@ -92,7 +92,7 @@ of creating a logging config dict into basic steps:
        ``add_file_handler()``: for each filter, specify its name, formatter,
        and loglevel, and and optionally attach filters. Formatters and filters
        are specified by name, so they should already have been added in previous
-       steps (if they weren't, by default `prologging` will issue a warning). Although
+       steps (if they weren't, by default `prelogging` will issue a warning). Although
        you can provide all these attributes of a handler in the
        ``add_*_handler`` call, you can do so later, after the basic call: other
        methods let you attach a formatter, attach filters, and set the handler's
@@ -133,7 +133,7 @@ Methods, terminology
 
 Here's what a minimal, "blank" logging config dict looks like::
 
-    >>> from prologging import LCDictBasic
+    >>> from prelogging import LCDictBasic
     >>> d = LCDictBasic()
     >>> d.dump()        # prettyprint the underlying dict
     {'filters': {},
@@ -144,7 +144,7 @@ Here's what a minimal, "blank" logging config dict looks like::
      'root': {'handlers': [], 'level': 'WARNING'},
      'version': 1}
 
-Every logging config dict built by `prologging` has the five subdictionaries shown.
+Every logging config dict built by `prelogging` has the five subdictionaries shown.
 The ``LCDictBasic`` class exposes them as properties:
 ``formatters``, ``filters``, ``handlers``, ``loggers``, ``root``.
 ``root`` is a dict containing settings for that special logger. Every other
@@ -287,7 +287,7 @@ or discuss two ::
     root_level='WARNING',              # == logging default
     disable_existing_loggers=None,     # logging default: True
 
-``root_level`` -- the `prologging` default is the `logging` default.
+``root_level`` -- the `prelogging` default is the `logging` default.
 This can also be set with ``set_root_level`` method.
 
 TWO WAYS TO DO THIS. <<<<<<------------- is that good?
@@ -340,7 +340,7 @@ which we've commented as ``# NEW``):
 
 .. code::
 
-    from prologging import LCDictBasic
+    from prelogging import LCDictBasic
 
     lcd = LCDictBasic(root_level='DEBUG')
 
@@ -380,7 +380,7 @@ which we've commented as ``# NEW``):
 * optional automatic attaching of handlers to the root logger
   as they're added (/"defined"/specified/configured...);
 * easy use of the "locking" (multiprocessing-safe) handler classes
-  that `prologging` provides;
+  that `prelogging` provides;
 * simplified filter creation;
 * various ``add_*_handler`` methods for configuring handlers of several
   `logging` handler classes, with optional locking support in most cases:
@@ -434,7 +434,7 @@ value passed to its constructor, and exposes it as the read-only property
 When ``locking`` is true [default: False], by default the other methods of
 this class add :ref:`locking handlers <locking-handlers>`; if it's false,
 handlers instantiate the "usual" classes defined by `logging`. (See the
-:ref:`diagram of classes <prologging-all-classes-except-ABC>`) Each instance saves
+:ref:`diagram of classes <prelogging-all-classes-except-ABC>`) Each instance saves
 the value passed to its constructor, and exposes it as the read-only property
 ``locking``.
 
@@ -534,9 +534,9 @@ The value of ``style`` can be one of the following:
 
 A little example:
 
-    >>> import prologging
+    >>> import prelogging
     >>> import logging
-    >>> lcd = prologging.LCDict(attach_handlers_to_root=True)
+    >>> lcd = prelogging.LCDict(attach_handlers_to_root=True)
     # >>> lcd.add_formatter('testform', format='{levelname} {name} {message}', style='{')
     >>> lcd.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
     >>> lcd.add_stderr_handler('con', formatter='testform')
@@ -550,9 +550,9 @@ A little example:
 
 A little example:
 
-    >>> import prologging
+    >>> import prelogging
     >>> import logging
-    >>> lcd = prologging.LCDict(attach_handlers_to_root=True)
+    >>> lcd = prelogging.LCDict(attach_handlers_to_root=True)
     # >>> lcd.add_formatter('testform', format='{levelname} {name} {message}', style='{')
     >>> lcd.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
     >>> lcd.add_stderr_handler('con', formatter='testform')
@@ -566,9 +566,9 @@ A little example:
 
 A little example:
 
-    >>> import prologging
+    >>> import prelogging
     >>> import logging
-    >>> lcd = prologging.LCDict(attach_handlers_to_root=True)
+    >>> lcd = prelogging.LCDict(attach_handlers_to_root=True)
     # >>> lcd.add_formatter('testform', format='{levelname} {name} {message}', style='{')
     >>> lcd.add_formatter('testform', format='%(levelname)s %(name)s %(message)s', style='%')
     >>> lcd.add_stderr_handler('con', formatter='testform')
@@ -659,7 +659,7 @@ logged message will relate which module wrote it.
 
 The following example illustrates the general technique:
 
-    >>> from prologging import LCDict
+    >>> from prelogging import LCDict
     >>> import logging
     >>> lcd = LCDict(attach_handlers_to_root=True)
     >>> lcd.add_stdout_handler('con', formatter='logger_level_msg')
@@ -733,7 +733,7 @@ Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Root logger with a ``stderr`` console handler and a file handler,
-at their respective `prologging` default loglevels ``'WARNING'`` and ``'NOTSET'``;
+at their respective `prelogging` default loglevels ``'WARNING'`` and ``'NOTSET'``;
 
 a discrete logger, named let's say ``'extra'``, with loglevel ''`DEBUG`'',
 which will write to a different file using a handler at default loglevel
@@ -747,7 +747,7 @@ and file handlers; use root loglevel ``'DEBUG'``; put logfiles in the ``_log/``
 subdirectory of the current directory::
 
     import logging
-    from prologging import LCDict
+    from prelogging import LCDict
 
 
     lcd = LCDict(log_path='_log/',
@@ -890,20 +890,20 @@ handler and the ``'extra'`` logger.
 
 .. _warnings-consistency-checking:
 
-`prologging` warnings and consistency checking
+`prelogging` warnings and consistency checking
 -----------------------------------------------------------
 
-Added benefit provided by `prologging` that you don't enjoy by handing a big
+Added benefit provided by `prelogging` that you don't enjoy by handing a big
 hand-coded dict to `logging.config.dictConfig()``.
 
-`prologging` detects certain dubious practices, automatically corrects some of them
+`prelogging` detects certain dubious practices, automatically corrects some of them
 and optionally prints warnings about them.
 
 In addition, the ``check`` method ........ BLAH BLAH .......
 
 .. _prologging-warnings:
 
-`prologging` warnings
+`prelogging` warnings
 ++++++++++++++++++++++++++
 
 (blah blah...)
@@ -912,7 +912,7 @@ The inner class ``LCDictBasic.Warnings``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``LCDictBasic`` has an inner class ``Warnings`` which defines bit-field "constants"
-that indicate the different kinds of anomalies that `prologging` checks for, corrects
+that indicate the different kinds of anomalies that `prelogging` checks for, corrects
 when that's sensible, and optionally reported on with warning messages.
 
 +--------------------------+-------------------------------------------------------------+
@@ -941,9 +941,9 @@ as an ``LCDictBasic`` instance attribute, which is exposed by the read-write
 REATTACH (corrected; default: reported)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`prologging` detects and eliminates duplicates in lists of handlers or filters
+`prelogging` detects and eliminates duplicates in lists of handlers or filters
 that are to be attached to higher-level entities. If ``REATTACH`` is turned on
-in ``warnings``, `prologging` will report the duplicate (by printing a warning message
+in ``warnings``, `prelogging` will report the duplicate (by printing a warning message
 to stderr), indicating the source file and line number of the offending method
 call.
 

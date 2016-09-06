@@ -4,11 +4,11 @@ import logging
 # from pprint import pformat
 
 try:
-    import prologging
+    import prelogging
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
-from prologging import LCDict, LCDictBuilderABC
+from prelogging import LCDict, LCDictBuilderABC
 
 ##############################################################################
 

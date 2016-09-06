@@ -1,26 +1,37 @@
-`prologging` Setup
+`prelogging` Setup
 ===========================
 
-.. todo::
-    Blahh blah blah ???
+(TODO Review this lead-in)
+
+`prelogging` is a package for setting up, or *configuring*, the
+logging facility of the Python standard library.
+To *configure logging* is to specify the logging entities you wish to create —
+formatters, handlers, optional filters, and loggers — as well as which of them
+use which others. Once configured, logging messages with the `logging` facility
+is simple and powerful; configuration presents the only challenge. `logging`
+provides a couple of approaches to configuration — static, using a dict or an
+analogous YAML text file; and dynamic, using the `logging` API — both of which
+have their shortcomings. `prelogging` offers a hybrid approach: a streamlined,
+consistent API for incrementally constructing a dict used to configure logging
+statically.
 
 Requirements
 ---------------
 
-The `prologging` package requires only Python 3.4+ or 2.7. It has no external
+The `prelogging` package requires only Python 3.4+ or 2.7. It has no external
 dependencies.
 
-Very little of `prologging`\'s code varies between Python versions; however, to achieve
-backwards compatibility with 2.7 we had to sacrifice, with great reluctance,
-type annotations and keyword-only parameters. The `prologging` package includes a copy
-of the module ``six.py`` (version 1.10.0, for what it's worth), which it uses
-sparingly (one decorator, one function, and one constant).
+Very little of `prelogging`\'s code varies between Python versions; however, to
+achieve backwards compatibility with 2.7 we had to sacrifice, with great
+reluctance, type annotations and keyword-only parameters. The `prelogging`
+package includes a copy of the module ``six.py`` (version 1.10.0, for what it's
+worth), which it uses sparingly (one decorator, one function, and one constant).
 
-The `prologging` distribution contains an ``examples/`` subdirectory. A few examples
-(``mproc_deco*.py``) use the `deco <https://github.com/alex-sherman/deco>`_
+The `prelogging` distribution contains an ``examples/`` subdirectory. A few
+examples (``mproc_deco*.py``) use the `deco <https://github.com/alex-sherman/deco>`_
 package, which provides a "simplified parallel computing model for Python".
 However, the examples are just for illustration (and code coverage), and aren't
-installed with the `prologging` package.
+installed with the `prelogging` package.
 
 The distribution also contains subdirectories ``tests/`` and ``docs/``, which
 similarly are not installed.
@@ -28,9 +39,9 @@ similarly are not installed.
 Installation
 ---------------
 
-You can install `prologging` from PyPI (the Python Package Index) using ``pip``::
+You can install `prelogging` from PyPI (the Python Package Index) using ``pip``::
 
-    $ pip install prologging
+    $ pip install prelogging
 
 (Here and elsewhere, ``$`` at the beginning of a line indicates your command
 prompt, whatever that may be.)
@@ -42,32 +53,32 @@ that directory, and run::
     $ python setup.py install
 
 On \*nix systems, including macOS, ``setup.py`` is executable, so on those
-platforms you can just run::
+platforms you can just say::
 
     $ ./setup.py install
 
 Downloading and uncompressing the archive lets you review, run and/or copy the
 tests and examples, which aren't installed by ``pip`` or ``setup.py``. Whichever
-method you choose to install `prologging`, ideally you'll do it in a virtual
+method you choose to install `prelogging`, ideally you'll do it in a virtual
 environment.
 
 
 Running tests and examples
 ------------------------------
 
-The top-level directory of the `prologging` distribution (where ``setup.py``
-resides) has subdirectories ``tests/`` and ``examples/``, which contain just what
-their names suggest. Neither of these sets of source files are installed.
+The top-level directory of the `prelogging` distribution (where ``setup.py``
+resides) has subdirectories ``tests/`` and ``examples/``, which contain just
+what their names suggest.
 
-In the top-level directory are three executable scripts — ``run_tests.py``,
-``run_examples.py``, and ``run_all.py`` — which respectively run all tests, all
-examples, or both.
+In the top-level directory are three scripts — ``run_tests.py``,
+``run_examples.py``, and ``run_all.py``, all executable on \*nix platforms —
+which respectively run all tests, all examples, or both.
 
 
 Running tests
 ++++++++++++++
 
-You can run all the tests before installing `prologging` by running the script
+You can run all the tests before installing `prelogging` by running the script
 ``run_tests.py`` in the top level directory of the repository::
 
     $ ./run_tests.py
@@ -77,10 +88,11 @@ Alternately, you can run ::
 
     $ ./setup.py test
 
+
 Coverage from tests
 ~~~~~~~~~~~~~~~~~~~
 
-`prologging` contains a small amount of Python-2-only code (workarounds
+`prelogging` contains a small amount of Python-2-only code (workarounds
 for Py2 shortcomings), and supports a few Python-3-only logging features.
 In addition, several methods in ``logging_config_dict_ex.py`` add various
 exotic handlers, which are easy to write examples for but difficult to test.
@@ -127,8 +139,8 @@ when these examples are run individually than when they're run via
 Coverage from tests + examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A few short passages, mostly Python-version-specific code, keep `prologging` shy of
-100% coverage when both tests and examples are run:
+A few short passages, mostly Python-version-specific code, keep `prelogging` shy
+of 100% coverage when both tests and examples are run:
 
 +----------------------------+--------+-------+
 || Module                    || Py 3  || Py 2 |

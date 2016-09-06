@@ -8,11 +8,11 @@ import math
 import logging
 
 try:
-    import prologging
+    import prelogging
 except ImportError:
     import sys
     sys.path[0:0] = ['..']
-from prologging import LCDict
+from prelogging import LCDict
 
 import examples.child_logger2_sub_noprop as sub_noprop
 import examples.child_logger2_sub_prop as sub_prop

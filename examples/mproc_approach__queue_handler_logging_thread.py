@@ -3,7 +3,7 @@
 __author__ = 'brianoneill'
 
 __doc__ = """
-An `prologging` version of the second variant in
+An `prelogging` version of the second variant in
 
    `Logging to a single file from multiple processes
    <https://docs.python.org/3/howto/logging-cookbook.html#logging-to-a-single-file-from-multiple-processes>`_
@@ -12,15 +12,15 @@ in the Logging Cookbook. Some small changes, some refactoring.
 """
 
 try:
-    import prologging
+    import prelogging
 except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
 
 from ._time_util import elapsed_time_human_readable
 
-from prologging import LCDict
-from prologging.six import PY2
+from prelogging import LCDict
+from prelogging.six import PY2
 
 import logging
 import logging.handlers

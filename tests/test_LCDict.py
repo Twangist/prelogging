@@ -1,6 +1,6 @@
 __author__ = 'brianoneill'
 
-from prologging import LCDict
+from prelogging import LCDict
 from unittest import TestCase
 import logging
 import sys
@@ -119,11 +119,11 @@ class TestLCDEx(TestCase):
 
         self.assertEqual(
             lcd['handlers'],
-            {'console': {'()': 'ext://prologging.LockingStreamHandler',
+            {'console': {'()': 'ext://prelogging.LockingStreamHandler',
                          'create_lock': True,
                          'level': 'WARNING',
                          'stream': 'ext://sys.stderr'},
-             'default_file': {'()': 'ext://prologging.LockingFileHandler',
+             'default_file': {'()': 'ext://prelogging.LockingFileHandler',
                               'create_lock': True,
                               'delay': False,
                               'filename': 'blather.log',
@@ -138,15 +138,15 @@ class TestLCDEx(TestCase):
 
         self.assertEqual(
             lcd['handlers'],
-            {'con2': {'()': 'ext://prologging.LockingStreamHandler',
+            {'con2': {'()': 'ext://prelogging.LockingStreamHandler',
                       'create_lock': True,
                       'level': 'WARNING',
                       'stream': 'ext://sys.stderr'},
-             'console': {'()': 'ext://prologging.LockingStreamHandler',
+             'console': {'()': 'ext://prelogging.LockingStreamHandler',
                          'create_lock': True,
                          'level': 'WARNING',
                          'stream': 'ext://sys.stderr'},
-             'default_file': {'()': 'ext://prologging.LockingFileHandler',
+             'default_file': {'()': 'ext://prelogging.LockingFileHandler',
                               'create_lock': True,
                               'delay': False,
                               'filename': 'blather.log',

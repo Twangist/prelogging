@@ -1,19 +1,19 @@
 
-Configuration using `prologging`
+Configuration using `prelogging`
 ================================================
 
-`prologging` provides a hybrid approach to configuration, offering the best of both the
+`prelogging` provides a hybrid approach to configuration, offering the best of both the
 static and dynamic worlds. It provides a streamlined API for setting up logging,
 making it easy to use advanced features such as rotating log files and email
-handlers. `prologging` also supplies missing functionality: the package provides
+handlers. `prelogging` also supplies missing functionality: the package provides
 multiprocessing-safe logging to the console, to files and rotating files, and
 to `syslog`.
 
-The centerpiece of `prologging` is the ``LCDict`` class (see the
-:ref:`diagram of classes <prologging-all-classes-except-ABC>`).
+The centerpiece of `prelogging` is the ``LCDict`` class (see the
+:ref:`diagram of classes <prelogging-all-classes-except-ABC>`).
 
 
-`prologging` defines two classes, a ``dict`` subclass ``LCDictBasic``, and `its` subclass
+`prelogging` defines two classes, a ``dict`` subclass ``LCDictBasic``, and `its` subclass
 ``LCDict``, which represent logging configuration dictionaries — *logging config
 dicts*, for short. ``LCDictBasic`` provides the basic model of building a logging config
 dict; ``LCDict`` supplies additional conveniences including predefined formatters
@@ -31,7 +31,7 @@ and linkages specified by the underlying dictionary.
 
 
 
-Show how `prologging` can achieve the same configuration more concisely, readably and
+Show how `prelogging` can achieve the same configuration more concisely, readably and
 robustly.
 
 
@@ -39,10 +39,10 @@ robustly.
 
     example using LCDict, even more concisely
 
-`prologging` what it does why it's so cool -- redundant with stuff from next chapter
+`prelogging` what it does why it's so cool -- redundant with stuff from next chapter
 -----------------------------------------------------------------------------------------
 
-`prologging` occupies a middle ground: it provides a clean, consistent and concise
+`prelogging` occupies a middle ground: it provides a clean, consistent and concise
 API for incrementally constructing logging config dicts.
 
 
@@ -64,7 +64,7 @@ error-checking and warnings ! :)
 inconsistent camelCase <-- fixups
 
 
-Using `prologging`, you build a logging config dict using a succession of
+Using `prelogging`, you build a logging config dict using a succession of
 method calls that all take keyword parameters. The keyword parameters are
 consistently snake_case versions of their corresponding keys in logging config
 dicts; their default values are, with rare, documented exceptions, the same as
@@ -77,7 +77,7 @@ subsequently with the ``attach_*`` methods. For example, in the following code:
 
 .. code::
 
-    >>> from prologging import LCDictBasic
+    >>> from prelogging import LCDictBasic
                 >>> d = LCDictBasic()
                 >>> d.add_formatter('simple', '{message}', style='{')
 
@@ -147,9 +147,9 @@ lower-level objects by name.
 ``Formatter``\s and ``Filter``\s (if any) don't depend on any other logging
 objects, so they should be defined first. Next, define ``Handler``\s, and
 finally, ``Logger``\s that use already-defined ``Handler``\s (and, perhaps,
-``Filter``\s). `prologging` supplies dedicated methods for configuring the root logger
+``Filter``\s). `prelogging` supplies dedicated methods for configuring the root logger
 (setting its level, attaching handlers and filters to it), but often a
-general-purpose `prologging` method can also be used, by referring to the root logger
+general-purpose `prelogging` method can also be used, by referring to the root logger
 by name: ``''``.
 
 .. note::
@@ -167,7 +167,7 @@ involves just these steps:
 * define ``Logger``\s that use the ``Handler``\s.
 
 In common cases, such as the :ref:`Configuration requirements <example-overview-config>`,
-`prologging` eliminates the first step and makes the last step trivial.
+`prelogging` eliminates the first step and makes the last step trivial.
 
 
 
@@ -175,18 +175,18 @@ In common cases, such as the :ref:`Configuration requirements <example-overview-
 ----------------------
 
 
-Configuration with `prologging`
+Configuration with `prelogging`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`prologging` simplifies the creation of "logging config dicts" by breaking the process
-down into easy, natural steps. As much as is possible, with `prologging` you only have
+`prelogging` simplifies the creation of "logging config dicts" by breaking the process
+down into easy, natural steps. As much as is possible, with `prelogging` you only have
 to specify the objects you care about and what's special about them; everything
 else receives reasonable, expected defaults. Using the "batteries included"
-``prologging.LCDict`` class lets us concisely specify the desired setup:
+``prelogging.LCDict`` class lets us concisely specify the desired setup:
 
 .. code::
 
-    from prologging import LCDict
+    from prelogging import LCDict
 
     lcd = LCDict(root_level='DEBUG',
                  attach_handlers_to_root=True)

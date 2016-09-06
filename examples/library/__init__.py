@@ -2,11 +2,11 @@ __author__ = 'brianoneill'
 
 import logging
 try:
-    import prologging
+    import prelogging
 except ImportError:
     import sys
     sys.path[0:0] = ['../..']
-from prologging import LCDict
+from prelogging import LCDict
 
 from .module import do_something, do_something_else
 __all__ = ['do_something', 'do_something_else']

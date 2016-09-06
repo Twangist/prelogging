@@ -12,11 +12,11 @@ import logging
 
 
 try:
-    import prologging
+    import prelogging
 except ImportError:
     import sys
     sys.path[0:0] = ['..']
-from prologging import LCDict
+from prelogging import LCDict
 
 from examples._get_locking_pref import get_locking_pref
 
