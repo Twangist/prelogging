@@ -714,13 +714,13 @@ Using ``LCDictBuilderABC``
 A single ``LCDict`` can be passed around to different "areas"
 of a program, each area contributing specifications of its desired formatters,
 filters, handlers and loggers. The ``LCDictBuilderABC`` class provides a
-framework that automates this approach: each area of a program need only
+micro-framework that automates this approach: each area of a program need only
 define a ``LCDictBuilderABC`` subclass and override its method
 ``add_to_lcdict(lcd)``, where it contributes its specifications by calling
 methods on ``lcd``.
 
 The :ref:`LCDictBuilderABC` documentation describes how that class and its two
-methods operate. The test ``tests/test_configurator.py`` exemplifies using
+methods operate. The test ``tests/test_lcd_builder.py`` exemplifies using
 the class to configure logging across multiple modules.
 
     <<<<< TODO -- more... how much more? >>>>>
@@ -849,7 +849,7 @@ Results (4 cases)
    ``'INFO'``. Messages of `library` propagate to the root, and those of levels
    ```INFO``` and up (not just ```WARNING``` and up) *are logged*.
 
-2. With just ``llogging_configuration()`` commented out, the library prints these
+2. With just ``logging_config()`` commented out, the library prints these
    to stdout::
 
             Did something.

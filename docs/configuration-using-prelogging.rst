@@ -2,12 +2,12 @@
 Configuration using `prelogging`
 ================================================
 
-`prelogging` provides a hybrid approach to configuration, offering the best of both the
-static and dynamic worlds. It provides a streamlined API for setting up logging,
-making it easy to use advanced features such as rotating log files and email
-handlers. `prelogging` also supplies missing functionality: the package provides
-multiprocessing-safe logging to the console, to files and rotating files, and
-to `syslog`.
+`prelogging` provides an approach to configuration that attempts to offer the
+best of both the static and dynamic approaches. It provides a simple but
+powerful API for setting up logging, making it easy to use advanced features
+such as rotating log files and email handlers. `prelogging` also supplies
+missing functionality: the package provides multiprocessing-safe logging to
+the console, to files and rotating files, and to `syslog`.
 
 The centerpiece of `prelogging` is the ``LCDict`` class (see the
 :ref:`diagram of classes <prelogging-all-classes>`).
@@ -126,9 +126,9 @@ it would look like this::
         ...
     }
 
-An LCDict\_ makes its top-level subdictionaries available as properties with the
-same names as the keys: d.formatters == d['formatters'], d.handlers == d['handlers'],
-and similarly for d.filters, d.loggers, d.root. After the above ``add_formatter``
+An ``LCDict`` makes its top-level subdictionaries available as properties with the
+same names as the keys: ``d.formatters == d['formatters']``, ``d.handlers == d['handlers']``,
+and similarly for ``d.filters``, ``d.loggers``, ``d.root``. After the above ``add_formatter``
 call, ::
 
     >>> d.formatters                # ignoring whitespace,

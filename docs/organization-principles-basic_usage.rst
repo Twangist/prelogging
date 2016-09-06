@@ -513,7 +513,7 @@ that can appear in formatters — for a complete list, see the documentation for
 Each logged message can even include the name of the function, and/or the
 line number, where its originating logging call was issued.
 
-`logging` parameter names are all over the place. The ``Formatter`` class uses
+`logging` parameter names are "all over the place". The ``Formatter`` class uses
 ``fmt`` for the name of this parameter; static configuration uses ``format``.
 We allow both ``fmt`` and ``format``. If both ``format`` and ``fmt`` are given,
 ``format`` takes precedence.

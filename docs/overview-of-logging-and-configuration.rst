@@ -11,12 +11,12 @@ errors, together with enough context to aid diagnosis. Messages can be logged
 to multiple destinations at once — ``stderr`` in a terminal, a local file,
 the system log, email, or a Unix log server over TCP, to cite popular choices.
 
-It's not our purpose to rehash or repeat the extensive (and generally quite
-good) documentation of Python's `logging` package; in fact, we presuppose that
-you're familiar with basic concepts and standard use cases. At the end of this
-chapter we provide several :ref:`logging_docs_links`, which you can explore
-before or in tandem with the `prelogging` documentation. Nevertheless, it will be
-helpful to review several topics.
+At the end of this chapter we provide several :ref:`logging_docs_links`, some
+for reference and some for general culture. It's not our purpose to rehash or
+repeat the extensive (and generally quite good) documentation for Python's
+`logging` package; in fact, we presuppose that you're familiar with basic
+concepts and standard use cases. Nevertheless, it will be helpful to review
+several topics.
 
 
 The uses of logging
@@ -35,8 +35,8 @@ When a program calls a logger's ``log`` method to log a message, the logger
 dispatches the message data to its handlers.
 
 All messages have a `logging level`, or `loglevel`, indicating their severity
-or importance — ``DEBUG``, ``INFO``, ``WARNING``, ``ERROR``, ``CRITICAL`` are
-the basic categories, listed in order of increasing severity. Both loggers
+or importance — the predefined levels are ``DEBUG``, ``INFO``, ``WARNING``,
+``ERROR``, ``CRITICAL``, listed in order of increasing severity. Both loggers
 and handlers have an associated *loglevel*, indicating a severity threshold:
 a logger or a handler will filter out any message whose loglevel is less than
 its own. In order for a message to actually be written to a particular
@@ -371,7 +371,7 @@ Configuring logging for our requirements with a logging config dict
 
 Here's how to do so::
 
-    import logging
+    import logging
     from logging import config
 
     config_dict = \
@@ -462,6 +462,9 @@ For the definitive account of static configuration, see the documentation of
 `logging.config <https://docs.python.org/3/library/logging.config.html?highlight=logging>`_,
 in particular the documentation for
 `the format of a logging configuration dictionary <https://docs.python.org/3/library/logging.config.html#logging-config-dictschema>`_.
+
+Here's a useful reference:
+`the complete list of keywords that can appear in formatters <https://docs.python.org/3/library/logging.html?highlight=logging#logrecord-attributes>`_.
 
 The logging `HOWTO <https://docs.python.org/3/howto/logging.html>`_
 contains tutorials that show typical setups and uses of logging, configured in
