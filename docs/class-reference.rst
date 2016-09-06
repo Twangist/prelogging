@@ -8,7 +8,7 @@ modules.
 .. toctree::
     :maxdepth: 1
 
-    LCDictBasic
-    LCDict
+    lcdictbasic
+    lcdict
     locking_handlers
     LCDictBuilderABC

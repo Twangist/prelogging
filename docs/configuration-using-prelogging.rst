@@ -10,7 +10,7 @@ multiprocessing-safe logging to the console, to files and rotating files, and
 to `syslog`.
 
 The centerpiece of `prelogging` is the ``LCDict`` class (see the
-:ref:`diagram of classes <prelogging-all-classes-except-ABC>`).
+:ref:`diagram of classes <prelogging-all-classes>`).
 
 
 `prelogging` defines two classes, a ``dict`` subclass ``LCDictBasic``, and `its` subclass

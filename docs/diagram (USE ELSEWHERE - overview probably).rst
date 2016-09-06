@@ -19,12 +19,12 @@ Introduction: `prelogging` does... *what*?
 | before in time, place, order, etc.: *prologue*, *proactive*, *prognosis*.
 | ORIGIN from Greek *pro* ‘before’, 'beforehand', 'in front of'.
 
-.. _prologging-all-classes-except-ABC:
+.. _prelogging-all-classes:
 
-.. figure:: LCDict_classes-v2--flat.png
+.. figure:: LCDict_classes-v3.png
     :figwidth: 100%
 
-    **prelogging** classes and their superclasses (LCDictBuilderABC omitted)
+    **prelogging** classes and their superclasses
 
     +-----------------------+-----------------------+
     | Symbol                | Meaning               |

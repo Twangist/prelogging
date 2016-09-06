@@ -104,7 +104,7 @@ class LCDict(LCDictBasic):
     When ``locking`` is true [default: False], by default the other methods of
     this class add :ref:`locking handlers <locking-handlers>`; if it's false,
     handlers instantiate the "usual" classes defined by `logging`. (See the
-    :ref:`class inheritance diagram <prelogging-all-classes-except-ABC>`.)
+    :ref:`class inheritance diagram <prelogging-all-classes>`.)
     Each instance saves the value passed to its constructor, and exposes it as
     the read-only property ``locking``.
 

@@ -10,7 +10,8 @@ and includes several "batteries":
 
     * a basic fund of formatters
     * simplified creation of handlers
-    * multiprocessing-safe handlers which output to the console, to files and to rotating files.
+    * multiprocessing-safe handlers which output to the console, to files and
+      rotating files, and to the system log.
 
 Using `prelogging`
 ------------------------
@@ -18,7 +19,6 @@ Using `prelogging`
 .. toctree::
     :maxdepth: 2
 
-    intro
     setup-testing-examples
     overview-of-logging-and-configuration
     configuration-using-prelogging

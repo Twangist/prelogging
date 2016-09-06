@@ -434,7 +434,7 @@ value passed to its constructor, and exposes it as the read-only property
 When ``locking`` is true [default: False], by default the other methods of
 this class add :ref:`locking handlers <locking-handlers>`; if it's false,
 handlers instantiate the "usual" classes defined by `logging`. (See the
-:ref:`diagram of classes <prelogging-all-classes-except-ABC>`) Each instance saves
+:ref:`diagram of classes <prelogging-all-classes>`) Each instance saves
 the value passed to its constructor, and exposes it as the read-only property
 ``locking``.
 
@@ -901,7 +901,7 @@ and optionally prints warnings about them.
 
 In addition, the ``check`` method ........ BLAH BLAH .......
 
-.. _prologging-warnings:
+.. _prelogging-warnings:
 
 `prelogging` warnings
 ++++++++++++++++++++++++++
