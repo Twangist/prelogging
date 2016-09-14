@@ -1,5 +1,5 @@
-Organization, Principles and Basic Usage
-=========================================
+`prelogging` Organization, Principles and Basic Usage
+=======================================================
 
 .. include:: _global.rst
 

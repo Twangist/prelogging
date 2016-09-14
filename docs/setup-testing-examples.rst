@@ -14,6 +14,10 @@ analogous YAML text file; and dynamic, using the `logging` API — both of which
 have their shortcomings. `prelogging` offers a hybrid approach: a streamlined,
 consistent API for incrementally constructing a dict used to configure logging
 statically.
+As you build the configuration dict, by default `prelogging` checks for possible
+mistakes and issues warnings on encountering them. `prelogging` also supplies
+missing functionality: it provides multiprocessing-safe logging to the console,
+to files and rotating files, and to `syslog`.
 
 Requirements
 ---------------

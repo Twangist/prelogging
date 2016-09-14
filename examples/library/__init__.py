@@ -8,8 +8,12 @@ except ImportError:
     sys.path[0:0] = ['../..']
 from prelogging import LCDict
 
-from .module import do_something, do_something_else
-__all__ = ['do_something', 'do_something_else']
+# from .module import do_package_thing, do_something, do_something_else
+# __all__ = ['do_package_thing', 'do_something', 'do_something_else']
+
+from .module import *
+from . import module
+__all__ = module.__all__
 
 # configure logging
 lcd = LCDict()                  # default: disable_existing_loggers=False

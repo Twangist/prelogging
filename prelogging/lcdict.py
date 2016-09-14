@@ -196,7 +196,7 @@ class LCDict(LCDictBasic):
                  log_path='',
                  locking=False,
                  attach_handlers_to_root=False,
-                 disable_existing_loggers=False,  # logging default value is True
+                 disable_existing_loggers=False,  # NOTE: logging default value is True
                  warnings=LCDictBasic.Warnings.DEFAULT):
         """
         :param root_level: one of ``'DEBUG'``, ``'INFO'``, ``'WARNING'``,
@@ -218,7 +218,7 @@ class LCDict(LCDictBasic):
             key(/value) of the same name. This default value is ``False`` so
             that separate packages can use this class to create their own
             ("private") loggers before or after their clients do their own
-            logging configuration. The `logging` default value is ``True``.
+            logging configuration. NOTE: The `logging` default value is ``True``.
         :param warnings: as for ``LCDictBasic``. See the documentation for the inner
             class ``LCDictBasic.WARNINGS``.
 

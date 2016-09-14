@@ -13,7 +13,7 @@ from prelogging import LCDict
 
 
 def logging_config():
-    d = LCDict(attach_handlers_to_root=True)  # default: disable_existing_loggers=False
+    d = LCDict(attach_handlers_to_root=True)  # LCDict default: disable_existing_loggers=False
     d.add_stdout_handler('stdout', formatter='logger_level_msg', level='DEBUG')
     # NOTE: root level is 'WARNING',
     #  .    'library.module' logger level is 'INFO'.
@@ -26,9 +26,11 @@ def main():
     # Exercise:
     # Comment out and uncomment the following two lines, individually
     # (4 cases); observe the console output in each case.
+
     logging_config()
     logging.getLogger().warning("I must caution you about that.")
 
+    library.do_package_thing()
     library.do_something()
     library.do_something_else()
 
@@ -39,6 +41,8 @@ def main():
             logging.getLogger().warning("I must caution you about that.")
       writes to stdout:
             root                : WARNING : I must caution you about that.
+            library             : INFO    : INFO msg from package logger
+            Did package thing.
             library.module      : INFO    : INFO msg
             Did something.
             library.module.other: WARNING : WARNING msg
@@ -48,6 +52,7 @@ def main():
             logging.getLogger().warning("I must caution you about that.")
 
       writes (to stdout)
+            Did package thing.
             Did something.
             Did something else.
       and (to stderr)
@@ -58,6 +63,8 @@ def main():
             logging_config()
             # logging.getLogger().warning("I must caution you about that.")
       writes to stdout:
+            library             : INFO    : INFO msg from package logger
+            Did package thing.
             library.module      : INFO    : INFO msg
             Did something.
             library.module.other: WARNING : WARNING msg
@@ -66,6 +73,7 @@ def main():
             # logging_config()
             # logging.getLogger().warning("I must caution you about that.")
       writes to stdout
+            Did package thing.
             Did something.
             Did something else.
     """

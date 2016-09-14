@@ -20,8 +20,8 @@ Using `prelogging`
     :maxdepth: 2
 
     setup-testing-examples
-    overview-of-logging-and-configuration
-    configuration-using-prelogging
+    overview-of-logging
+    configuration
     organization-principles-basic_usage
     topics-recipes
     class-reference
