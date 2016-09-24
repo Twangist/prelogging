@@ -65,6 +65,8 @@ Configuration, then, is the only barrier to entry.
 The following diagram displays the types involved in logging configuration,
 and their dependencies:
 
+.. _logging-config-classes:
+
 .. figure:: logging_classes_v2.png
 
     The objects of `logging` configuration

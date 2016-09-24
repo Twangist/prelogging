@@ -1,4 +1,4 @@
-`prelogging` — Introduction and Setup
+Introduction and Setup
 ============================================
 
 (TODO Review this lead-in)

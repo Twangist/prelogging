@@ -8,10 +8,12 @@ import logging.config
 __author__ = "Brian O'Neill"
 
 __doc__ = """ \
+.. _lcdictbasic-module-docstring:
+
 ``LCDictBasic`` provides an API for building dictionaries that specify
 Python logging configuration -- *logging config dicts*.
 
-Entering a logging config dict as static data requires many nested curly
+Entering a logging config dict as static data requires many curly
 braces, colons, single-quoted keywords, and boilerplate default key/value pairs.
 Such dicts are significantly nested, and keys often appear among
 the data, as back-references to things "already defined".
@@ -37,15 +39,16 @@ of creating a logging config dict into basic steps:
     3. Add any filter specifications with ``add_filter()``.
 
     4. Add handler specifications with ``add_handler()`` and/or
-       ``add_file_handler()``, specifying its name, its formatter, its loglevel,
-       and optionally attaching filters. The formatter and filters are specified
-       by name, so they should already have been added in previous steps
-       (if they weren't, by default `prelogging` will issue a warning). Although you
-       can provide all these attributes of the handler in the ``add_*_handler``
-       call, you can do so later, after the basic call: other methods let you
-       attach a formatter, attach filters, and set the handler's loglevel.
+       ``add_file_handler()``: for each filter, specify its name, formatter,
+       and loglevel, and and optionally attach filters. Formatters and filters
+       are specified by name, so they should already have been added in previous
+       steps (if they weren't, by default `prelogging` will issue a warning). Although
+       you can provide all these attributes of a handler in the
+       ``add_*_handler`` call, you can do so later, after the basic call: other
+       methods let you attach a formatter, attach filters, and set the handler's
+       loglevel.
 
-    *In steps 2. – 4. you give each entity specified a name, by which you refer
+    *In steps 2. – 4. you give each specified entity a name, by which you refer
     to it subsequently when modifying it or attaching it to other, higher-level
     entities.*
 
@@ -61,13 +64,17 @@ of creating a logging config dict into basic steps:
     *Steps 2. and 3. can be interchanged, likewise 5. and 6.*
 
 Keyword parameters of the ``add_*`` methods are, with a few, documented exceptions,
-the very same keys that occur in the sub-subdictionaries of the corresponding
+the very same keys that occur in the configuring dictionaries of the corresponding
 kind of logging entities (with just one exception: ``class_`` instead of
-``class``). All receive correct and/or sensible default values.
+``class``). For example, the keyword parameters of ``add_file_handler`` are
+keys that can appear in a dictionary of configuration settings for a file handler;
+the keyword parameters of ``add_logger`` are keys that can appear in a dict that
+configures a logger. In any case, all receive sensible default values consistent
+with `logging`.
 
 Once you've built an ``LCDictBasic`` meeting your requirements, you
 configure logging by calling the object's ``config`` method, which
-passes itself (a dict) to
+passes itself (as a dict) to
 `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
 """
 
@@ -124,23 +131,23 @@ class LCDictBasic(dict):
         ||                     ||       || attached to                             |
         || REDEFINE            ||   2   || overwriting an existing definition of   |
         ||                     ||       || an entity (formatter, filter, etc.)     |
-        || REPLACE_FORMATTER   ||   4   || changing a handler's formatter          |
-        || UNDEFINED           ||   8   || attaching a {formatter/filter/handler}  |
+        || ATTACH_UNDEFINED    ||   4   || attaching a {formatter/filter/handler}  |
         ||                     ||       || that hasn't yet been added (defined)    |
+        || REPLACE_FORMATTER   ||   8   || changing a handler's formatter          |
         +----------------------+--------+------------------------------------------+
 
         The default value is
 
-            ``DEFAULT = REATTACH + REDEFINE + UNDEFINED``.
+            ``DEFAULT = REATTACH + REDEFINE + ATTACH_UNDEFINED``.
         """
         NONE = 0
         REATTACH            = 0b0001
         REDEFINE            = 0b0010
-        REPLACE_FORMATTER   = 0b0100
-        UNDEFINED           = 0b1000
+        ATTACH_UNDEFINED    = 0b0100
+        REPLACE_FORMATTER   = 0b1000
 
-        DEFAULT = REATTACH + REDEFINE + UNDEFINED
-        ALL = REATTACH + REDEFINE + REPLACE_FORMATTER + UNDEFINED
+        DEFAULT = REATTACH + REDEFINE + ATTACH_UNDEFINED
+        ALL     = REATTACH + REDEFINE + ATTACH_UNDEFINED + REPLACE_FORMATTER
 
 
     def __init__(self,      # *,
@@ -156,9 +163,9 @@ class LCDictBasic(dict):
             module's default value ``True`` to be used.
         :param warnings: A bit field, a combination of values defined in
             the inner class `LCDictBasic.Warnings``. The default value is
-            ``REATTACH + REDEFINE + UNDEFINED``.
+            ``REATTACH + REDEFINE + ATTACH_UNDEFINED``.
 
-            This value is saved; it can be read and written with the @warnings
+            This value is saved; it can be read and written with the ``warnings``
             property.
         """
 
@@ -215,7 +222,7 @@ class LCDictBasic(dict):
 
     @property
     def _warn_undefined(self):
-        return self._warnings & self.Warnings.UNDEFINED
+        return self._warnings & self.Warnings.ATTACH_UNDEFINED
 
     # notational conveniences
     @property
@@ -259,8 +266,16 @@ class LCDictBasic(dict):
         :param formatter_name: just that
 
         :param format: the format string. ``Formatter.__init__`` calls this
-            ``fmt``. This method recognizes ``fmt`` too, as a synonym;
-            "format" takes precedence over "fmt" if both are given.
+            ``fmt``; static configuration calls it ``format``. This method
+            recognizes ``fmt`` too, as a synonym; "format" takes precedence over
+            "fmt" if both are given.
+
+            The `logging` module supports a large number of keywords
+            that can appear in format strings — for a complete list, see
+            the documentation for
+            `LogRecord attributes <https://docs.python.org/3/library/logging.html?highlight=logging#logrecord-attributes>`_.
+            Each logged message can even include the name of the function,
+            and/or the line number, where its originating logging call was issued.
 
         :param dateformat: a format string for dates and times, with the same
             keys accepted by `time.strftime <https://docs.python.org/3/library/time.html#time.strftime>`_.
@@ -268,10 +283,19 @@ class LCDictBasic(dict):
             for which ``dateformat`` is a synonym. In this case,
             "datefmt" takes precedence over "dateformat" if both are given.
 
-        :param style: (*Python 3 only*) One of '%', '{' or '$' to specify the
-            formatting style used by the format string.
+        :param style: (*Python 3 only*)
+            Although the documentation for logging configuration doesn't mention
+            it, under Python 3 ``style`` also works in logging config dicts.
 
-        :param format_dict: Any other key/value pairs (for custom
+            ``style`` can be one of '%', '{' or '$', specifying the
+            formatting style used by the format string. These possible values
+            have the following significance:
+
+            |    ``'%'``     old-style, ``%``-based formatting (the default)
+            |    ``'{'``     new-style formatting, using ``str.format``
+            |    ``'$'``     template-based formatting
+
+        :param format_dict: Any other key/value pairs (for a custom
             subclasses, perhaps)
 
         :return: ``self``
@@ -461,20 +485,15 @@ class LCDictBasic(dict):
         """Attach formatter to handler.
         Raise ``KeyError`` if no such handler.
 
-        Of course you can't attach a formatter to anything other than a handler,
+        Of course you can't "set" the formatter of anything other than a handler,
         so admittedly the "_handler" part of the method name is redundant. In
-        its defense,
-
-            * it's by analogy with all the other "attach_*" functions,
-              which are of the form "attach_toWhat_thingsToAttach"
-
-            * it tells you the order of parameters.
+        its defense, the name does tell you the order of parameters.
 
         :param handler_name: name of handler to attach formatter to
-        ;param formatter_name: name of formatter
+        :param formatter_name: name of formatter
         :return: ``self``
         """
-        self._check_attach_formatter(handler_name, formatter_name)
+        self._check_set_formatter(handler_name, formatter_name)
         self._check_defined(
             defined=self.formatters,
             attach_to=handler_name,
@@ -491,7 +510,7 @@ class LCDictBasic(dict):
         Raise ``KeyError`` if no such handler.
 
         :param handler_name: (``str``) name of handler to attach filters to
-        :param filter_names: sequence of filter names
+        :param filter_names: (vararg) zero or more  of filter names
         :return: ``self``
         """
         if not filter_names:
@@ -532,8 +551,9 @@ class LCDictBasic(dict):
         return self
 
     def attach_root_handlers(self, * handler_names):
-        """Add handlers in ``handler_names`` to the root logger.
+        """Attach handlers in ``handler_names`` to the root logger.
 
+        :param handler_names: (vararg) zero or more  handler names
         :return: ``self``
         """
         root_handlers = self.root['handlers']
@@ -556,9 +576,9 @@ class LCDictBasic(dict):
         return self
 
     def attach_root_filters(self, * filter_names):
-        """Add filters in ``filter_names`` to the root logger.
+        """Attach filters in ``filter_names`` to the root logger.
 
-        :param filter_names: (vararg) tuple of filter names
+        :param filter_names: (vararg) zero or more  filter names
         :return: ``self``
         """
         if not filter_names:
@@ -669,7 +689,7 @@ class LCDictBasic(dict):
         Raise ``KeyError`` if no such logger.
 
         :param logger_name: (``str``) name of logger to attach handlers to
-        :param handler_names: sequence of handler names
+        :param handler_names: (vararg) zero or more  handler names
         :return: ``self``
         """
         if not logger_name:
@@ -697,7 +717,7 @@ class LCDictBasic(dict):
         Raise ``KeyError`` if no such logger.
 
         :param logger_name: (``str``) name of logger to attach filters to
-        :param filter_names: sequence of filter names
+        :param filter_names: (vararg) zero or more  filter names
         :return: ``self``
         """
         if not filter_names:
@@ -933,7 +953,7 @@ class LCDictBasic(dict):
                 % (srcfile, lineno, kind, key)
             )
 
-    def _check_attach_formatter(self, handler_name, formatter_name):
+    def _check_set_formatter(self, handler_name, formatter_name):
         if not self._warn_replace_formatter:
             return
         # If handler doesn't have a formatter yet, ok

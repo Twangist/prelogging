@@ -22,12 +22,14 @@ class LCDictBuilderABC():
     directly instantiate this class: it has an `abstractmethod`
     ``add_to_lcdict(lcd: LCDict)``. Every package or module that
     wants a say in the configuration of logging should define its own
-    (sub*)subclass of ``LCDictBuilderABC`` that implements ``add_to_lcdict``.
+    (sub*)subclass of ``LCDictBuilderABC`` implementing ``add_to_lcdict``.
 
-    Once (and once only), the application should call ``build_lcdict()``,
-    a classmethod which
+    Once (and once only), the application should call the classmethod
+    ``LCDict.build_lcdict(...)``, which returns an ``LCDict``. The parameters
+    of ``build_lcdict`` are the same as those of ``LCDict.__init__``.
+    ``build_lcdict`` does the following:
 
-        * creates a "blank" ``LCDict``, ``lcd``;
+        * creates a new ``LCDict``, ``lcd``, with the parameters provided;
         * calls ``subcls.add_to_lcdict(lcd)`` on every subclass ``subcls``
           that implements ``add_to_lcdict``, in a breadth-first way;
         * returns ``lcd``, the logging config dict built by the previous
@@ -42,8 +44,8 @@ class LCDictBuilderABC():
     .. code::
 
         LCDictBuilderABC < MainBuilder < BuilderModuleA
-                                    < BuilderModuleB
-                                    < BuilderPackage < BuilderSubPackage
+                                       < BuilderModuleB
+                                       < BuilderPackage < BuilderSubPackage
 
     Assuming that all classes shown implement ``add_to_lcdict``, that method
     will be called first on ``MainBuilder``; then on
@@ -59,10 +61,11 @@ class LCDictBuilderABC():
     def add_to_lcdict(cls, lcd):          # pragma: no cover
         """(abstractmethod) Customize the passed ``LCDict``.
 
-        :param lcd: a ``LCDict``
+        :param lcd: an ``LCDict``
 
         ``build_lcd`` calls this method on every ``LCDictBuilderABC``
-        subclass that implements it. All implementations are passed the same
+        subclass that implements it, **in breadth-first order**.
+        All implementations are passed the same
         object ``lcd``. Implementations should call ``LCDict``
         methods on ``lcd`` to augment and customize it.
 
@@ -78,14 +81,14 @@ class LCDictBuilderABC():
                      locking=False,
                      attach_handlers_to_root=False,
                      disable_existing_loggers=False):
-        """A single method which creates a ``LCDict``,
+        """A single method which creates an ``LCDict``,
         calls all ``add_to_lcdict`` methods with that object. Your program
         should call this method once (only), and then call ``config()``
         on the returned logging config dict.
 
-        Parameters are as for ``LCDict``.
+        Parameters are as for ``LCDict.__init__``.
 
-        This method creates a ``LCDict`` ``lcd``,
+        This method creates an ``LCDict`` ``lcd``,
         and calls ``subcls.add_to_lcdict(lcd)`` on all subclasses ``subcls``
         of ``LCDictBuilderABC`` *which implement the method*, in breadth-first
         order, passing the same ``LCDict`` instance to each.
@@ -96,10 +99,10 @@ class LCDictBuilderABC():
         Thus, make sure that your program has imported all such subclasses
         before it calls this method. If the contributions of the ``add_to_lcdict``
         method of some such subclass have no effect — its handlers and/or
-        loggers do nothing — it's quite likely because the subclass wasn't
+        loggers do nothing — it's probably because the subclass wasn't
         imported when ``build_lcdict()`` was called.
 
-        return: the built ``LCDict``
+        :return: the built ``LCDict``
         """
         lcd = LCDict(
                     root_level=root_level,

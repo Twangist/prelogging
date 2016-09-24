@@ -19,9 +19,11 @@ Using `prelogging`
 .. toctree::
     :maxdepth: 2
 
-    setup-testing-examples
+    intro-setup-testing-examples
     overview-of-logging
     configuration
+    LCDDictBasic-organization-basic_usage
+    LCDDict-features-and-usage
     organization-principles-basic_usage
     topics-recipes
     class-reference

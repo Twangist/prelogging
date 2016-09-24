@@ -7,7 +7,7 @@ class LCDBuilderSubB(LCDBuilderSub):
     def add_to_lcdict(cls, lcd):
         """(Virtual) Call ``LCDict`` methods to augment ``lcd``.
 
-        :param lcd: a ``LCDict``
+        :param lcd: an ``LCDict``
         """
         # Configure so that:
         #   Messages logged by logger 'subB'

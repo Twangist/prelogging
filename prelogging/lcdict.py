@@ -11,6 +11,7 @@ from collections import namedtuple
 __author__ = "Brian O'Neill"
 
 __doc__ = """\
+    .. include:: _global.rst
 """
 
 
@@ -57,21 +58,8 @@ class FormatterSpec(
 
 class LCDict(LCDictBasic):
     """ \
-    An ``LCDictBasic`` subclass with additional conveniences:
-
-        * formatter presets;
-        * various ``add_*_handler`` methods for configuring handlers of several
-          `logging` handler classes;
-        * optional automatic attaching of handlers to the root logger
-          as they're added;
-        * easy use of the "locking" (multiprocessing-safe) handler classes
-          that `prelogging` provides;
-        * simplified filter creation.
-
     Except for properties and the ``__init__`` method, all public instance
     methods of this class return ``self``.
-
-    .. include:: _global.rst
 
     .. _LCDict-init-params:
 
@@ -115,65 +103,6 @@ class LCDict(LCDictBasic):
     handler even if ``self.locking`` is false. The default value of these
     parameters in handler-adding methods is ``None``, meaning: use the
     corresponding value passed to the constructor.
-
-    .. _LCDEx-handler-classes-encapsulated:
-
-    .. index:: `'logging` handler classes encapsulated
-
-    **Handler classes that LCDict configures** |br|
-    ``- - - - - - - - - - - - - - - - -``
-
-    LCDict provides methods for configuring these `logging` handler classes,
-    with optional "locking" support in most cases:
-
-      +--------------------------------+---------------------------+-----------+
-      || method                        || creates                  || optional |
-      ||                               ||                          || locking? |
-      +================================+===========================+===========+
-      || ``add_stderr_handler``        || stderr ``StreamHandler`` ||   yes    |
-      || ``add_stdout_handler``        || stdout ``StreamHandler`` ||   yes    |
-      || ``add_file_handler``          || ``FileHandler``          ||   yes    |
-      || ``add_rotating_file_handler`` || ``RotatingFileHandler``  ||   yes    |
-      || ``add_syslog_handler``        || ``SyslogHandler``        ||   yes    |
-      || ``add_email_handler``         || ``SMTPHandler``          ||          |
-      || ``add_queue_handler``         || ``QueueHandler``         ||          |
-      || ``add_null_handler``          || ``NullHandler``          ||          |
-      +--------------------------------+---------------------------+-----------+
-
-    .. _preset-formatters:
-
-    .. index:: preset formatters (LCDict), formatter presets (LCDict)
-
-    **Formatter presets** |br|
-    ``- - - - - - - -``
-
-    Their names make it fairly obvious what their format strings are:
-
-    +--------------------------------------+-----------------------------------------------------------------------------------+
-    || Formatter name                      || Format string                                                                    |
-    +======================================+===================================================================================+
-    || ``'msg'``                           || ``'%(message)s'``                                                                |
-    +--------------------------------------+-----------------------------------------------------------------------------------+
-    || ``'level_msg'``                     || ``'%(levelname)-8s: %(message)s'``                                               |
-    +--------------------------------------+-----------------------------------------------------------------------------------+
-    || ``'process_msg'``                   || ``'%(processName)-10s: %(message)s'``                                            |
-    +--------------------------------------+-----------------------------------------------------------------------------------+
-    || ``'logger_process_msg'``            || ``'%(name)-20s: %(processName)-10s: %(message)s'``                               |
-    +--------------------------------------+-----------------------------------------------------------------------------------+
-    || ``'logger_level_msg'``              || ``'%(name)-20s: %(levelname)-8s: %(message)s'``                                  |
-    +--------------------------------------+-----------------------------------------------------------------------------------+
-    || ``'logger_msg'``                    || ``'%(name)-20s: %(message)s'``                                                   |
-    +--------------------------------------+-----------------------------------------------------------------------------------+
-    || ``'process_level_msg'``             || ``'%(processName)-10s: %(levelname)-8s: %(message)s'``                           |
-    +--------------------------------------+-----------------------------------------------------------------------------------+
-    || ``'process_time_level_msg'``        || ``'%(processName)-10s: %(asctime)s: %(levelname)-8s: %(message)s'``              |
-    +--------------------------------------+-----------------------------------------------------------------------------------+
-    || ``'process_logger_level_msg'``      || ``'%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s'``              |
-    +--------------------------------------+-----------------------------------------------------------------------------------+
-    || ``'process_time_logger_level_msg'`` || ``'%(processName)-10s: %(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'`` |
-    +--------------------------------------+-----------------------------------------------------------------------------------+
-    || ``'time_logger_level_msg'``         || ``'%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'``                     |
-    +--------------------------------------+-----------------------------------------------------------------------------------+
     """
 
     _formatter_presets = {
@@ -222,8 +151,7 @@ class LCDict(LCDictBasic):
         :param warnings: as for ``LCDictBasic``. See the documentation for the inner
             class ``LCDictBasic.WARNINGS``.
 
-        See also :ref:`__init__ keyword parameters <LCDict-init-params>`
-        above.
+        See also :ref:`__init__ keyword parameters <LCDict-init-params>`.
         """
         super(LCDict, self).__init__(
                         root_level=root_level,
@@ -232,18 +160,6 @@ class LCDict(LCDictBasic):
         self.log_path = log_path
         self._locking = locking
         self._attach_handlers_to_root = attach_handlers_to_root
-
-        # TODO '0.2.7b19' -- DON'T just add all these to every LCDict;
-        #  |    instead, add only the ones that are used :)
-        #  |    Already we intercept the places to do this (for warnings)
-        #  |    so just expand/emend the logic
-        # (TODO -- comment out the following passage)
-
-        # # Include some batteries (Formatters) --
-        # # The default is class_='logging.Formatter'
-        # for formatter_name in self._format_strs:
-        #     self.add_formatter(formatter_name,
-        #                        format=self._format_strs[formatter_name])
 
     @property
     def attach_handlers_to_root(self):

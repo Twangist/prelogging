@@ -715,7 +715,7 @@ A single ``LCDict`` can be passed around to different "areas"
 of a program, each area contributing specifications of its desired formatters,
 filters, handlers and loggers. The ``LCDictBuilderABC`` class provides a
 micro-framework that automates this approach: each area of a program need only
-define a ``LCDictBuilderABC`` subclass and override its method
+define an ``LCDictBuilderABC`` subclass and override its method
 ``add_to_lcdict(lcd)``, where it contributes its specifications by calling
 methods on ``lcd``.
 

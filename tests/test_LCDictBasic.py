@@ -912,7 +912,7 @@ class TestLCD_NoWarnings(TestCase):
             ['handler1']
         )
 
-    # Testing UNDEFINED -- which means testing ``_check_defined`` logic,
+    # Testing ATTACH_UNDEFINED -- which means testing ``_check_defined`` logic,
     # and that the correct args are passed to it by each of the 10 calls to it:
     """
     add_handler

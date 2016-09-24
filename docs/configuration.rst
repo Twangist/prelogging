@@ -66,19 +66,19 @@ and the logfile should contain (something much like) these lines:
     submodule_A         : INFO    : 4. submodule_A initialized
 
 
-Configuration using what `logging` provides
----------------------------------------------------
+Meeting the configuration requirements with `logging`
+---------------------------------------------------------------
 
 The `logging` package offers two approaches to configuration:
 
-* dynamic, in code;
+* dynamic, using code;
 * static (and then, there are two variations).
 
 These can be thought of as *imperative* and *declarative*, respectively.
 The following subsections show how each of these approaches can be used to meet
 the requirements stated above.
 
-Dynamic configuration of our requirements
+Using dynamic configuration
 +++++++++++++++++++++++++++++++++++++++++++++
 
 Here's how to dynamically configure logging to satisfy the given requirements::
@@ -177,7 +177,7 @@ Disadvantages of dynamic configuration
       in dynamic configuration code.
 
 
-Static configuration of our requirements
+Using static configuration
 ++++++++++++++++++++++++++++++++++++++++++
 
 The `logging.config` submodule offers two equivalent ways to specify
@@ -191,7 +191,7 @@ configuration statically:
 We'll call a dictionary that can be passed to ``dictConfig`` a *logging config
 dict*. The `schema for configuration dictionaries <https://docs.python.org/3/library/logging.config.html#configuration-dictionary-schema>`_
 documents the format of such dictionaries. (Amusingly, it uses YAML to do so!,
-to cut down on the clutter of quotation marks and curly braces.)
+to cut down on the clutter of quotation marks. colons and curly braces.)
 
 We'll deal only with logging config dicts, ignoring the YAML-based approach.
 The Web frameworks Django and Flask configure logging with dictionaries.
@@ -293,8 +293,8 @@ Configuration with `prelogging`
 best of both the static and dynamic worlds. The package provides a simple but
 powerful API for building a logging config dict incrementally, and makes it
 easy to use advanced features such as rotating log files and email handlers.
-As you add and attach items, by default `prelogging` issues warnings on
-encountering possible mistakes such as referencing nonexistent entities or
+As you add and attach items, by default `prelogging` issues warnings when it
+encounters possible mistakes such as referencing nonexistent entities or
 redefining entities.
 
 `prelogging` defines two classes which represent logging config dicts:
@@ -317,7 +317,9 @@ all the objects and linkages specified by the underlying dictionary.
 Let's see this in action, applied to our use case, and then further discuss
 how the `prelogging` classes operate.
 
-Configuring our requirements with `prelogging` (using ``LCDict``)
+.. _config-use-case-lcdict:
+
+Configuring our requirements using ``LCDict``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Here's how we might use ``LCDict`` to configure logging to satisfy our
@@ -337,9 +339,17 @@ Here's how we might use ``LCDict`` to configure logging to satisfy our
     )
     lcd.config()
 
+First we create an ``LCDict``, which we call ``lcd`` — a logging config dict
+with root loglevel ``'DEBUG'``. An ``LCDict`` has a few attributes that aren't
+part of the underlying dict, including the ``attach_handlers_to_root`` flag,
+which we set to ``True``. The ``add_*_handler`` methods do just what you'd
+expect: each adds a subdictionary to ``lcd['handlers']`` with the respective
+keys ``'h_stderr'`` and `'h_file'``, and with key/value pairs given by the
+keyword parameters.
+
 We've used a couple of the preset ``Formatter``\s supplied by ``LCDict``,
 ``'msg'`` and ``'logger_level_msg'``. Because we pass the flag
-``attach_handlers_to_root=True`` when creating the instance ``lcd``, every
+``attach_handlers_to_root=True`` when creating ``lcd``, every
 handler we add to ``lcd`` is (by default) automatically
 attached to the root logger. (You can override this default by passing
 ``add_to_root=False`` to any ``add_*_handler`` call.)
@@ -347,104 +357,14 @@ attached to the root logger. (You can override this default by passing
 **Note**: To allow chaining, as in the above example, the methods of
 ``LCDictBasic`` and ``LCDict`` generally return ``self``.
 
-
-Basic principles
-+++++++++++++++++
-
-The ``add_*`` methods
-let you specify new logging entities entities (formatters, possibly filters,
-handlers, loggers), which all have names.
-Each call to one of the ``add_*`` methods adds an item
-to one of the subdictionaries ``'formatters'``, ``'filters'``, ``'handlers'``
-or ``'loggers'``. In each such call, you can specify all of the data for
-the entity that the item describes — its loglevel, the other entities it will
-use, and any type-specific information, such as the stream that a StreamHandler
-will write to. You can specify all of the item's dependencies in this call,
-using names of previously added items, or you can add dependencies
-subsequently with the ``attach_*`` methods. In either case, you assign a list
-of values to a key of the item: for example, the value of the ``handlers`` key
-for a logger is a list of zero or more names of handler items.
-The ``set_*`` methods let you set single-valued fields (loglevels, and the
-formatter, if any of a handler).
-
-With `prelogging`, you build a logging config dict using a succession of
-these method calls, which all take keyword parameters. The keyword parameters
-are consistently snake_case versions of their corresponding keys in logging
-config dicts; their default values are, with rare, documented exceptions, the
-same as those of `logging`.
-
-Code illustration
-~~~~~~~~~~~~~~~~~~~~
-
-In the following code, ::
-
-    from prelogging import LCDictBasic
-    d = LCDictBasic()
-    d.add_formatter('simple', '{message}', style='{')
-
-the ``add_formatter`` call adds an item named ``'simple'`` to the ``'formatters'``
-subdictionary of ``d``. If ``d`` were declared statically as a dict,
-it would look like this::
-
-    d = {
-        ...
-        'filters':     {},
-
-        'formatters' : { 'simple': { 'class': 'logging.Formatter',
-                                     'format': '{message}',
-                                     'style': '{' },
-                       },
-        'handlers':    {},
-        'loggers':     {},
-        ...
-    }
-
-An ``LCDictBasic`` makes its top-level subdictionaries available as properties
-with the same names as the keys: ``d.formatters == d['formatters']``,
-``d.handlers == d['handlers']``, and similarly for ``d.filters``, ``d.loggers``,
-``d.root``. After the above ``add_formatter`` call, ::
-
-    >>> d.formatters                # ignoring whitespace
-    {'simple': {'class': 'logging.Formatter',
-                'format': '{message}',
-                'style': '{'}
-    }
-
-Order of specification
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-While configuring logging, you give a name to each of the entities that you
-add (i.e. specify). When adding a higher-level entity, you identify its constituent
-lower-level entities by name.
-
-``Formatter``\s and ``Filter``\s (if any) don't depend on any other logging
-entities, so they should be specified first. Next, specify ``Handler``\s, and
-finally, ``Logger``\s that use already-defined ``Handler``\s (and, perhaps,
-``Filter``\s). `prelogging` supplies dedicated methods for configuring the root
-logger (setting its level, attaching handlers and filters to it), but often a
-general-purpose `prelogging` method can also be used, by referring to the root
-logger by name: ``''``.
-
-Typically, we won't require any ``Filter``\s, and then, setting up logging
-involves just these steps:
-
-* specify ``Formatter``\s
-* specify ``Handler``\s that use the ``Formatter``\s
-* specify ``Logger``\s that use the ``Handler``\s.
-
-In common cases, such as the :ref:`Configuration requirements <example-overview-config>`,
-`prelogging` eliminates the first step, and makes the last step trivial.
-
-
 Configuring our requirements using ``LCDictBasic``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-It's instructive to see how to achieve the same configuration using only
-``LCDictBasic``, foregoing the conveniences of ``LCDict``. The code becomes
-just a little less concise. Now we have to add two formatters,
+It's instructive to see how to achieve :ref:`the example configuration <example-overview-config>`
+using only ``LCDictBasic``, foregoing the conveniences of ``LCDict``. The code
+becomes just a little less terse. Now we have to add two formatters,
 and we must explicitly attach the two handlers to the root logger. We've
-commented these passages with ``# NEW``::
-
+commented those passages with ``# NEW``::
 
     from prelogging import LCDictBasic
 
@@ -473,7 +393,11 @@ commented these passages with ``# NEW``::
     lcd.config()
 
 
-WHAT'S NEXT / WHERE TO GO NEXT [ <<<<<<<< TODO >>>>>>>> ]
-------------------------------------------------------------------
-
-BLAH BLAH.
+Summary
++++++++++++++++++
+As the preceding example hopefully shows, `prelogging` offers an attractive
+way to configure logging, one that's more straightforward, concise and easier
+on the eyes than the facilities provided by the `logging` package itself.
+The following chapters discuss basic organization and usage of ``LCDictBasic``
+and ``LCDict``. Later chapters present techniques and recipes showing how to
+use these classes to get more out of logging.
