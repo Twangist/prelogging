@@ -186,11 +186,10 @@ class TestLCDEx(TestCase):
 
 # ---------------------------------------------------------------------------
 # set_handler_formatter (the override)
-# create_formatter_preset
 # ---------------------------------------------------------------------------
 class TestLCDEx_Misc(TestCase):
 
-    def test_attach_handler_formatter(self):
+    def test_set_handler_formatter(self):
         d = LCDict()
         d.add_handler('h')
         d.set_handler_formatter('h', 'msg')
@@ -207,40 +206,6 @@ class TestLCDEx_Misc(TestCase):
              'formatters': {'msg': {'class': 'logging.Formatter',
                                         'format': '%(message)s'}},
              'handlers': {'h': {'formatter': 'msg'}},
-             'incremental': False,
-             'loggers': {},
-             'root': {'handlers': [], 'level': 'WARNING'},
-             'version': 1}
-        )
-
-    def test_create_formatter_preset(self):
-        num_presets = len(LCDict._formatter_presets)
-        LCDict.create_formatter_preset(
-            '_simple_',
-            format="{levelname: <8s}: %(message)s",
-            style='{'
-        )
-        self.assertEqual(
-            len(LCDict._formatter_presets),
-            num_presets + 1
-        )
-
-        d = LCDict()
-        d.add_handler('h', formatter='_simple_')
-        self.assertEqual(
-            d.handlers['h']['formatter'],
-            '_simple_'
-        )
-        # d.dump()          # TODO Comment out
-        # In fact,
-        self.assertEqual(
-            d,
-            {'disable_existing_loggers': False,
-             'filters': {},
-             'formatters': {'_simple_': {'class': 'logging.Formatter',
-                                         'format': '{levelname: <8s}: %(message)s',
-                                         'style': '{'}},
-             'handlers': {'h': {'formatter': '_simple_'}},
              'incremental': False,
              'loggers': {},
              'root': {'handlers': [], 'level': 'WARNING'},

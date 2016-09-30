@@ -131,9 +131,9 @@ logging config dicts aren't defined that way.
 Properties
 ~~~~~~~~~~~~
 An ``LCDictBasic`` makes its top-level subdictionaries available as properties
-with the same names as the keys: ``d.formatters == d['formatters']``,
-``d.handlers == d['handlers']``, and similarly for ``d.filters``, ``d.loggers``,
-``d.root``. Thus, after the above ``add_formatter`` call, ::
+with the same names as the keys: ``d.formatters is d['formatters']`` is true,
+so is ``d.handlers is d['handlers']``, and likewise for ``d.filters``,
+``d.loggers``, ``d.root``. Thus, after the above ``add_formatter`` call, ::
 
     >>> d.formatters                # ignoring whitespace
     {'simple': {'class': 'logging.Formatter',

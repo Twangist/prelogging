@@ -84,10 +84,10 @@ class LCDict(LCDictBasic):
     at runtime when ``config()`` is finally called.
 
     When ``attach_handlers_to_root`` is true [default: False], by default the
-    ``add_*`` methods of this class automatically attach handlers to the root
-    logger after adding them to the ``handlers`` subdictionary. Each instance
-    saves the value passed to its constructor, and exposes it as the read-only
-    property ``attach_handlers_to_root``.
+    ``add_*_handler`` methods of this class automatically attach handlers to
+    the root logger after adding them to the ``handlers`` subdictionary. Each
+    instance saves the value passed to its constructor, and exposes it as the
+    read-only property ``attach_handlers_to_root``.
 
     When ``locking`` is true [default: False], by default the other methods of
     this class add :ref:`locking handlers <locking-handlers>`; if it's false,
@@ -99,10 +99,10 @@ class LCDict(LCDictBasic):
     All of the methods that add a handler take parameters ``attach_to_root``
     and ``locking``, each a ``bool`` or ``None``; these allow overriding of
     the values passed to the constructor. Thus, for example, callers can
-    add a non-locking handler even if ``self.locking`` is true, or a locking
-    handler even if ``self.locking`` is false. The default value of these
-    parameters in handler-adding methods is ``None``, meaning: use the
-    corresponding value passed to the constructor.
+    add a non-locking handler to an ``LCDict`` even if its ``locking`` property
+    is true, or a locking handler even if ``locking`` is false. The default
+    value of these parameters in handler-adding methods is ``None``, meaning:
+    use the corresponding value passed to the constructor.
     """
 
     _formatter_presets = {
@@ -229,28 +229,6 @@ class LCDict(LCDictBasic):
                          attach_to_root=attach_to_root,
                          ** clone_dict)
         return self
-
-    @classmethod
-    def create_formatter_preset(cls,
-                                name, format,
-                                style='%',
-                                datefmt=None,
-                                dateformat=None):
-        """Add a named "formatter preset" to the collection ``cls._formatter_presets``.
-
-        :param name: name of the formatter
-        :param format: format string of the formatter
-        :param style: style of the formatter, one of ``'%'`` ``'{'`` ``'$'``
-            (Python 2: only ``'%'``)
-        :param datefmt: format string for date/times
-        :param dateformat: format string for date/times. Use this parameter
-            or ``datefmt`` (which has precedence)
-        :return: ``self``
-        """
-        cls._formatter_presets[name] = FormatterSpec(format,
-                                                     style=style,
-                                                     datefmt=datefmt,
-                                                     dateformat=dateformat)
 
     def _add_formatter_if_preset(self, formatter_name):
         if (formatter_name and
@@ -486,6 +464,30 @@ class LCDict(LCDictBasic):
             self.handlers[handler_name]['create_lock'] = True
         return self
 
+    def add_null_handler(self, handler_name,  # *
+                         level='NOTSET',
+                         # locking=None,
+                         attach_to_root=None,
+                         **kwargs):
+        """Add a ``logging.NullHandler``.
+
+        :param handler_name: name of the handler
+        :param level: the handler's loglevel
+        :param attach_to_root: If true, add the handler to the root
+            logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
+            if false, don't add to root.
+        :param kwargs: any additional key/value pairs for add_handler
+            (typically none)
+        :return: ``self``
+        """
+        attach_to_root = self._attach_to_root__adjust(attach_to_root)
+        return self.add_handler(
+            handler_name,
+            class_='logging.NullHandler',
+            level=level,
+            attach_to_root=attach_to_root,
+            **kwargs)
+
     import socket
     from logging.handlers import SysLogHandler, SYSLOG_UDP_PORT
 
@@ -556,6 +558,8 @@ class LCDict(LCDictBasic):
                           username=None,     # str
                           password=None,     # str
                           timeout=None,      # sec
+                          # Other
+                          attach_to_root=None,
                           **kwargs):
         """Add specifications for an
         `SMTPHandler <https://docs.python.org/3/library/logging.handlers.html#smtphandler>`_
@@ -594,6 +598,8 @@ class LCDict(LCDictBasic):
             and int(timeout) != 0 and timeout > 0):
             kwargs['timeout'] = timeout
 
+        attach_to_root = self._attach_to_root__adjust(attach_to_root)
+
         return self.add_handler(
             handler_name,
             class_='logging.handlers.SMTPHandler',
@@ -607,6 +613,7 @@ class LCDict(LCDictBasic):
             secure=secure,
             credentials=(username, password),
             # timeout=timeout,
+            attach_to_root=attach_to_root,
             **kwargs)
 
     def add_queue_handler(self,
@@ -614,6 +621,7 @@ class LCDict(LCDictBasic):
                           level='NOTSET',
                           # QueueHandler-specific:
                           queue=None,
+                          attach_to_root=None,
                           **kwargs):
         """(*Python 3 only*)
 
@@ -628,11 +636,15 @@ class LCDict(LCDictBasic):
         if PY2:
             raise NotImplementedError("logging.handlers.QueueHandler"
                                       " doesn't exist in Python 2")
+
+        attach_to_root = self._attach_to_root__adjust(attach_to_root)
+
         return self.add_handler(
             handler_name,
             class_='logging.handlers.QueueHandler',
             level=level,
             queue=queue,
+            attach_to_root=attach_to_root,
             **kwargs)
 
     # add_*_filter methods

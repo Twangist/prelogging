@@ -24,7 +24,7 @@ Using `prelogging`
     configuration
     LCDDictBasic-organization-basic_usage
     LCDDict-features-and-usage
-    organization-principles-basic_usage
+    configuring-loggers
     topics-recipes
     class-reference
     the-index

@@ -1,45 +1,42 @@
-`prelogging` Organization, Principles and Basic Usage
+Configuring loggers
 =======================================================
+
+We have already seen examples
+of how easy it can be to configure the root logger — e.g. with both a console
+handler and a file handler, as in the :ref:`overview<example-overview-config>`.
+
+This chapter is mainly concerned with configuring non-root loggers. However, we
+begin by considering the special case of configuring non-root loggers by not
+configuring them at all, so that the root does all the work. The "magic" of
+propagation makes this possible.
+
+For simplicity the examples use the root logger and non-root loggers,
+but they can be adapted to the more general situation of a non-propagating
+logger with handlers, and its descendants.
+
 
 .. include:: _global.rst
 
-* Configuring the root logger
+* Configuring non-root loggers by inheritance from the root
     .. hlist::
         :columns: 3
 
-        * :ref:`config-root-basic`
         * :ref:`config-root-use-children`
 
 * Configuring non-root loggers; using root and non-root loggers together
     .. hlist::
         :columns: 3
 
-        * :ref:`config-non-root-propagate`
-        * :ref:`config-discrete-non-root`
-
+        * :ref:`example-discrete-nonroot-logger`
+        * :ref:`propagate-docs-best-practices`
 
 --------------------------------------------------
 
 
-.. _easy-config-root:
-
-Configuring the root logger
-------------------------------------------
-
-We already saw :ref:`one example <example-overview-config>` of how easy it is to
-configure the root logger with both a console handler and a file handler.
-
-.. _config-root-basic:
-
-Basic usage: attaching handlers
-+++++++++++++++++++++++++++++++++++
-
-<<<< TODO blah^2 >>>>
-
 .. _config-root-use-children:
 
 Using non-root loggers without configuring them
-++++++++++++++++++++++++++++++++++++++++++++++++
+-------------------------------------------------------
 
 A common, useful approach is to attach handlers only to the root logger,
 and then have each module log messages using ``logging.getLogger(__name__)``.
@@ -74,40 +71,28 @@ The following example illustrates the general technique:
 Configuring and using non-root loggers
 ----------------------------------------------
 
-Reasons to do so:
+In the previous section we saw one common configuration of non-root loggers.
+Other configurations are possible and sometimes desirable:
 
-    * in a particular module or package, you want to use a different loglevel
-      from that of the root logger, using the same handlers as the root (& so,
-      writing to the same destination(s));
+    * you want the logger for a module or package to have a different loglevel
+      from that of the root, but to use the same handlers as the root (thus,
+      it will write to the same destination(s));
 
     * you want to write to destinations other than those of the root,
       either instead of or in addition to those.
 
+The first case is easily achieved simply by setting the loglevel of the non-root
+logger as desired, giving it no handlers; propagation takes care of the rest
+(a logger's ``propagate`` property is, by default, true).
 
-.. _config-non-root-propagate:
+The second case has many variations, depending upon whether the non-root logger
+propagates or not.  We consider a non-propagating example, where the
+non-root logger is totally "walled off" from the root logger. Variations will
+be easy to devise and configure.
 
-A propagating non-root logger
-+++++++++++++++++++++++++++++++++++++++++++++++
+.. _example-discrete-nonroot-logger:
 
-.. todo:: this.
-
-One which propagates. There are two possibilities:
-
-    1. the non-root logger has no handlers attached;
-    2. the non-root logger has handlers attached.
-
-Requirements
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<<<<< TODO >>>>> 
-
-How-to
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<<<<< TODO >>>>> 
-
-
-.. _config-discrete-non-root:
-
-A "discrete" non-root logger
+Example: A "discrete" non-root logger
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 In this example we use two loggers: the root, and another logger that's
@@ -125,19 +110,19 @@ should not "propagate" to its parent (the root, in this example).
 Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Root logger with a ``stderr`` console handler and a file handler,
-at their respective `prelogging` default loglevels ``'WARNING'`` and ``'NOTSET'``;
+* root logger with a ``stderr`` console handler and a file handler,
+  at their respective `prelogging` default loglevels ``'WARNING'`` and ``'NOTSET'``;
 
-a discrete logger, named let's say ``'extra'``, with loglevel ''`DEBUG`'',
-which will write to a different file using a handler at default loglevel
-``'NOTSET'``.
+* a discrete logger, named let's say ``'extra'``, with loglevel ''`DEBUG`'',
+  which will write to a different file using a handler at default loglevel
+  ``'NOTSET'``;
+* logfiles should be in the ``_log/`` subdirectory of the current directory.
 
 How-to
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Start with an ``LCDict`` that uses standard (non-locking) stream
-and file handlers; use root loglevel ``'DEBUG'``; put logfiles in the ``_log/``
-subdirectory of the current directory::
+and file handlers; use root loglevel ``'DEBUG'``; set ``log_path`` as required::
 
     import logging
     from prelogging import LCDict
@@ -150,10 +135,11 @@ subdirectory of the current directory::
 Set up the root logger with a ``stderr`` console handler and a file handler,
 at their respective default loglevels ``'WARNING'`` and ``'NOTSET'``::
 
-    lcd.add_stderr_handler('console', formatter='msg')
-    lcd.add_file_handler('root_fh',
-                         filename='root.log',
-                         formatter='logger_level_msg')
+    lcd.add_stderr_handler('console',
+                           formatter='msg'
+    ).add_file_handler('root_fh',
+                       filename='root.log',
+                       formatter='logger_level_msg')
 
 Add an ``'extra'`` logger, with loglevel ''`DEBUG`'', which will write to a
 different file using a handler at default loglevel ``'NOTSET'``.
@@ -165,18 +151,18 @@ Note the use of parameters ``attach_to_root`` and ``propagate``:
       above;
 
     * in the ``add_logger`` call, ``propagate=False`` ensures that messages
-      logged by ``'extra'`` don't also write to the root and its handlers:
+      logged by ``'extra'`` don't also bubble up to the root and its handlers:
 
 .. code::
 
         lcd.add_file_handler('extra_fh',
                              filename='extra.log',
                              formatter='logger_level_msg',
-                             attach_to_root=False)
-        lcd.add_logger('extra',
-                       handlers=['extra_fh'],
-                       level='DEBUG',
-                       propagate=False)
+                             attach_to_root=False
+        ).add_logger('extra',
+                     handlers=['extra_fh'],
+                     level='DEBUG',
+                     propagate=False)
 
 Finally, call ``config()`` to create actual objects of `logging` types —
 ``logging.Formatter``, ``logging.Logger``, etc. ::
@@ -196,6 +182,8 @@ To use the loggers, access them by name::
 
     # Root writes "ho hum" to `_LOG/root.log` only:
     logging.getLogger().debug("ho hum")
+
+.. index:: Exercise on ``propagate`` and ``attach_to_root``
 
 **Exercise**: Verify the claimed effects of the ``attach_to_root`` and
 ``propagate`` parameters in the two calls that configure the ``'extra_fh'``
@@ -246,15 +234,21 @@ handler and the ``'extra'`` logger.
             UH OH
 
 
-.. _propagate-docs:
-
 .. index:: Logger.propagate property
 .. index:: Propagation — best practices
 .. index:: Placement of handlers when using multiple loggers — best practices
 
-.. topic:: Best practices for propagation and handler placement
+-------------------------------------------
 
-    According to the documentation for
+.. _propagate-docs-best-practices:
+
+Best practices for propagation and handler placement
+------------------------------------------------------
+The examples in this chapter, and the preceding Exercise, have hopefully
+conveyed the significance of propagation and the importance of "right"
+handler placement. Now is a good time to reflect further on these matters.
+
+According to the documentation for
     `Logger.propagate <https://docs.python.org/3/library/logging.html#logging.Logger.propagate>`_,
 
 

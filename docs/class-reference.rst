@@ -14,7 +14,7 @@ modules.
     LCDictBuilderABC
 
 
-class diagram
+Class diagram
 ----------------
 
 .. include:: _global.rst
@@ -24,7 +24,7 @@ class diagram
 .. figure:: LCDict_classes-v4b.png
     :figwidth: 100%
 
-    |br| **prelogging** classes and their superclasses
+    |br| **prelogging** classes — inheritance, and who uses whom
 
     +-----------------------+-----------------------+
     | Symbol                | Meaning               |

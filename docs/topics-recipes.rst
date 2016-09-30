@@ -10,6 +10,9 @@ Further Topics and Recipes
 
         * :ref:`setting-LOGGING-Django-variable`
 
+* Configuration distributed across multiple modules or packages
+    * :ref:`config-abc`
+
 
 * :ref:`Multiprocessing — two approaches<tr-mp>`
     .. hlist::
@@ -22,30 +25,13 @@ Further Topics and Recipes
     .. hlist::
         :columns: 3
 
-        * :ref:`tr-filters-logger`
-        * :ref:`tr-filters-handler`
-        * :ref:`passing-initialization-data-to-a-filter`
-        * :ref:`passing-dynamic-data-to-a-filter`
+        * :ref:`providing-extra-static-data-to-a-filter`
+        * :ref:`providing-extra-dynamic-data-to-a-filter`
 
-
-* Configuration distributed across multiple modules or packages
-    * :ref:`config-abc`
-
-* Adding new formatter presets
-    * :ref:`adding-new-formatter-presets`
-
-* Rotating file handlers
-    * :ref:`tr-rot-fh`
 
 * :ref:`null-handler`
 
 * :ref:`smtp-handler`
-
-* Using other `logging` handler classes
-    .. hlist::
-        :columns: 3
-
-        * :ref:`using-unsupported-logging-handler-classes`
 
 
 .. _using-prelogging-with-django:
@@ -103,13 +89,38 @@ in Django is to provide a logging config dict as the value of the
         handle logging config yourself.
 
 
+----------------------------------
+
+.. _config-abc:
+
+Using ``LCDictBuilderABC``
+-------------------------------
+
+A single ``LCDict`` can be passed around to different "areas"
+of a program, each area contributing specifications of its desired formatters,
+filters, handlers and loggers. The ``LCDictBuilderABC`` class provides a
+micro-framework that automates this approach: each area of a program need only
+define an ``LCDictBuilderABC`` subclass and override its method
+``add_to_lcdict(lcd)``, where it contributes its specifications by calling
+methods on ``lcd``.
+
+The :ref:`LCDictBuilderABC` documentation describes how that class and its two
+methods operate. The test ``tests/test_lcd_builder.py`` illustrates using
+the class to configure logging across multiple modules.
+
+.. todo::
+    | <<<<< TODO -- more... how much more? >>>>>
+    | <<<<< Walk through code? Simplified further if possible >>>>>
+    | <<<<< Go look...  >>>>>
+
 --------------------------------------------------
 
 .. _tr-mp:
 
 Multiprocessing — two approaches
 ----------------------------------------------
-Refer to "multiple handlers logging to the same file" (sic)
+
+Refer to "multiple processes logging to the same file" (sic).
 PROVIDE A LINK, and/or quote from it. That section of the docs discusses
 three approaches:
 
@@ -361,237 +372,229 @@ Here's what the logging thread does:
 
 --------------------------------------------------
 
-.. _tr-filters:
+.. index:: Filters -- providing extra static data
 
-Filters
---------
+.. _providing-extra-static-data-to-a-filter:
 
-TODO: What do filters DO? LOL -- what's their purpose. To allow finer control
-over what actually gets logged than loglevels provide.
+Providing extra data to filters
+-----------------------------------
+Often you'll want the behavior of a filter to depend on more than just
+the ``LogRecord`` that's passed to it. In the first subsection of this topic,
+we'll see how to provide a filter with extra data that doesn't change.
+In :ref:`the second subsection<providing-extra-dynamic-data-to-a-filter>`,
+we'll discuss how to provide a filter with dynamic data,
+whose value may be different each time the filter is called.
 
-There are two principle kinds of filters: classes that implement a ``filter``
-method::
-
-    (self, record: logging.LogRecord) -> bool
-
-and callables of signature ``logging.LogRecord -> bool``. ``LCDict`` provides
-a pair of convenience methods ``add_class_filter`` and ``add_callable_filter``
-which are easier to use than the lower-level ``LCDictBasic`` method ``add_filter``.
-
-In Python 2, the `logging` module imposes a fussy requirement on callables
-that can be used as filters, which the Python 3 implementation of `logging`
-removes. ``add_callable_filter`` provides a single interface for adding callable
-filters that works in both Python versions.
-
-.. _filter-setup:
-
-Defining filters
-++++++++++++++++++++++++++++++++
-
-Here are a couple of examples of filters, both of which suppress
-certain kinds of messages. Each has the side effect of incrementing
-a distinct global variable::
-
-    _info_count = 0
-    _debug_count = 0
-
-Classic filters are any classes that implement a ``filter`` method with signature::
-
-        filter(self, record: logging.LogRecord) -> bool
-
-These include subclasses of ``logging.Filter``, but a filter class doesn't
-have to inherit from that `logging` class.::
-
-    class CountInfoSquelchOdd():
-        def filter(self, record):
-            """Suppress odd-numbered messages (records) whose level == INFO,
-            where the "first" message is the 0-th hence is even-numbered.
-
-            :param self: unused
-            :param record: logging.LogRecord
-            :return: bool -- True ==> let record through, False ==> squelch
-            """
-            global _info_count
-            if record.levelno == logging.INFO:
-                _info_count += 1
-                return _info_count % 2
-            else:
-                return True
-
-A filter can also be a callable, of signature ``logging.LogRecord -> bool``::
-
-
-    def count_debug_allow_2(record):
-        """
-        :param record: ``logging.LogRecord``
-        :return: ``bool`` -- True ==> let record through, False ==> squelch
-        """
-        global _debug_count
-        if record.levelno == logging.DEBUG:
-            _debug_count += 1
-            return _debug_count <= 2
-        else:
-            return True
-
-
-.. _tr-filters-logger:
-
-Filters on the root logger
-+++++++++++++++++++++++++++++
-
-Let's configure the root logger to use both filters shown above::
-
-    lcd = LCDict(
-        attach_handlers_to_root=True,
-        root_level='DEBUG')
-
-    lcd.add_stdout_handler(
-        'console',
-        level='DEBUG',
-        formatter='level_msg')
-
-    lcd.add_callable_filter('count_d', count_debug_allow_2)
-    lcd.add_class_filter('count_i', CountInfoSquelchOdd)
-
-    lcd.attach_root_filters('count_d', 'count_i')
-
-    lcd.config()
-
-Now use the root logger::
-
-    import logging
-    root = logging.getLogger()
-
-    # Py2: use u"Hi 1", etc.
-    for i in range(5):
-        root.debug(str(i))
-        root.info(str(i))
-
-    print("_debug_count:", _debug_count)
-    print("_info_count:", _info_count)
-
-This passage writes the following to ``stdout``::
-
-    DEBUG   : 0
-    INFO    : 0
-    DEBUG   : 1
-    INFO    : 2
-    INFO    : 4
-    _debug_count: 5
-    _info_count: 5
-
-.. note::
-    This example **is** the test ``test_add_xxx_filter.py``, with little
-    modification.
-
-
-Filters on a non-root logger
-+++++++++++++++++++++++++++++
-
-Attaching the example filters to a non-root logger ``'mylogger'`` requires just
-one change: instead of using ``attach_root_filters('count_d', 'count_i')`` to
-attach the filters to the root logger, now we have to attach them to an
-arbitrary logger. This can be accomplished either of in two ways:
-
-1. Attach the filters when calling ``add_logger`` for ``'mylogger'``, using the
-   ``filters`` keyword parameter::
-
-    lcd.add_logger('mylogger',
-                      filters=['count_d', 'count_i'],
-                      ...
-                     )
-
-    The value of the ``filters`` parameter can be either the name of a single
-    filter (a ``str``) or a sequence (list, tuple, etc.) of names of filters.
-
-2. Add the logger with ``add_logger``, without using the ``filters`` parameter::
-
-    lcd.add_logger('mylogger', ... )
-
-   and then attach filters to it with ``attach_logger_filters``::
-
-    lcd.attach_logger_filters('mylogger',
-                              'count_d', 'count_i')
-
-.. _tr-filters-handler:
-
-Filters on a handler
-+++++++++++++++++++++++++++++
-
-There are two ways to attach filters to a handler:
-
-1. Attach the filters in the same method call that adds the handler.
-   Use the ``filters`` keyword parameter to **any** ``add_*_handler`` method.
-   All such methods funnel through ``LCDictBasic.add_handler``. As with the
-   ``add_logger`` method, the value of the ``filters`` parameter can be either
-   the name of a single filter (a ``str``) or a sequence (list, tuple, etc.) of
-   names of filters.
-
-   For example, using our two example filters, each of the following method
-   calls adds a handler with just the ``'count_d'`` filter attached::
-
-    lcd.add_stderr_handler('con-err',
-                           filters='count_d')
-    lcd.add_file_handler('fh',
-                         filename='some-logfile.log',
-                         filters=['count_d'])
-
-   The following statement adds a rotating file handler with both filters
-   attached::
-
-    lcd.add_rotating_file_handler('rfh',
-                                  filename='some-rotating-logfile.log',
-                                  max_bytes=1024,
-                                  backup_count=5,
-                                  filters=['count_i', 'count_d'])
-
-2. Add the handler using any ``add_*_handler`` method, then use
-   ``add_handler_filters`` to attach filters to the handler. For example::
-
-    lcd.add_file_handler('myhandler',
-                         filename='mylogfile.log')
-    lcd.attach_handler_filters('myhandler',
-                               'count_d', 'count_i')
-
-
-.. index:: Filters -- passing initialization data
-
-.. _passing-initialization-data-to-a-filter:
-
-Passing initialization data to a filter
+Providing extra, static data to a filter
 +++++++++++++++++++++++++++++++++++++++++++++
-Blah blah
 
-    .. todo::
-        Filter examples:
+It's simple to provide a filter with
+extra, unchanging data, and in this section we'll go over how to do so.
 
-            Class Filter    that's initialized with some data:
-                            using keyword parameters for initialization
-
-            Callable filter  "    "     "       "         "     "
-
+.. _providing-extra-static-data-to-a-filter-class:
 
 Class filter
 ~~~~~~~~~~~~~~~~~~~
-<<<<< TODO >>>>>
+
+The ``add_class_filter`` method has the following signature:
+.. code::
+
+    def add_class_filter(self, filter_name, filter_class, **filter_init_kwargs):
+        """
+        ...
+        :param filter_init_kwargs: any other parameters to be passed to
+            ``add_filter``. These will be passed to the ``filter_class``
+            constructor. See the documentation for ``LCDictBasic.add_filter``.
+        :return: ``self``
+        """
+
+When logging is configured, the class ``filter_class`` is instantiated,
+and its ``__init__`` method is called. If the signature of ``__init__`` includes
+``**kwargs``, that dict will contain all the keyword parameters in ``filter_init_kwargs``.
+Thus, the filter class's ``__init__`` can save values in ``kwargs`` as
+instance attributes, for later use by the ``filter`` method.
+
+The following example illustrates this::
+
+    import logging
+    from prelogging import LCDict
+    import pprint
+
+    class CountAndSquelchOdd():
+        def __init__(self, *args, **kwargs):
+            self.level_count = 0
+
+            pprint.pprint(kwargs)
+            # {'filtername': _____, 'loglevel_to_count': nnn}
+            self.filtername = kwargs.get('filtername', '')
+            self.loglevel_to_count = kwargs.get('loglevel_to_count', 0)
+
+        def filter(self, record):
+            """Suppress odd-numbered messages (records)
+            whose level == self.loglevel_to_count,
+            where the "first" message is 0-th hence even-numbered.
+            """
+            if record.levelno == self.loglevel_to_count:
+                self.level_count += 1
+                ret = self.level_count % 2
+            else:
+                ret = True
+
+            print("{} > record levelname = {}, self.level_count = {}; returning {}".
+                  format(self.filtername, record.levelname,
+                         self.level_count, ret))
+            return ret
+
+    lcd = LCDict(attach_handlers_to_root=True,
+                 root_level='DEBUG')
+    lcd.add_stdout_handler('console-out',
+                           level='DEBUG',
+                           formatter='level_msg')
+    lcd.add_class_filter('count_debug', CountAndSquelchOdd,
+                         # extra, static data
+                         filtername='count_debug',
+                         loglevel_to_count=logging.DEBUG)
+    lcd.add_class_filter('count_info', CountAndSquelchOdd,
+                         # extra, static data
+                         filtername='count_info',
+                         loglevel_to_count=logging.INFO)
+    lcd.attach_root_filters('count_debug', 'count_info')
+
+    lcd.config()
+
+The call to ``lcd.config()`` creates two instances of ``CountAndSquelchOdd``,
+which print their ``kwargs`` to ``stdout`` in ``__init__``. Here's what
+they print::
+
+    {'filtername': 'count_info', 'loglevel_to_count': 20}
+    {'filtername': 'count_debug', 'loglevel_to_count': 10}
+
+Now let's use the root logger::
+
+    root = logging.getLogger()
+
+    for i in range(2):
+        root.debug(str(i))
+        root.info(str(i))
+
+This loop prints the following to stdout::
+
+    count_debug > record levelname = DEBUG, self.level_count = 1; returning 1
+    count_info > record levelname = DEBUG, self.level_count = 0; returning True
+    DEBUG   : 0
+    count_debug > record levelname = INFO, self.level_count = 1; returning True
+    count_info > record levelname = INFO, self.level_count = 1; returning 1
+    INFO    : 0
+    count_debug > record levelname = DEBUG, self.level_count = 2; returning 0
+    count_debug > record levelname = INFO, self.level_count = 2; returning True
+    count_info > record levelname = INFO, self.level_count = 2; returning 0
+
+Note that when ``i`` is ``1`` and ``root.debug(str(i))`` is called,
+the ``'count_debug'`` filter returns 0, suppressing the message,
+so the ``count_info`` filter doesn't get called, as there's no reason
+for `logging` to do so.
+
+.. _providing-extra-static-data-to-a-filter-callable:
 
 Callable filter
 ~~~~~~~~~~~~~~~~~~~
-<<<<< TODO >>>>>
-    (Cool new feature of ``add_callable_filter``, that you can do this)
+
+You can also pass extra data to a callable filter by passing additional keyword
+arguments and their values to ``add_callable_filter``. Here's the signature
+of that method, and part of its docstring:
+.. code::
+
+    def add_callable_filter(self, filter_name, filter_fn, **filter_init_kwargs):
+        """
+        ...
+        :param filter_fn: a callable, of signature
+            ``(logging.LogRecord, **kwargs) -> bool``.
+            A record is logged iff this callable returns true.
+        :param filter_init_kwargs: Keyword arguments that will be passed to
+            the filter_fn **each time it is called**. To pass dynamic data,
+            you can't just wrap it in a list or dict; use an object or callable
+            instead. See the documentation for an example of how to do that.
+
+            Note that this method is like "partial": it provides a kind
+            of Currying.
+        :return: ``self``
+        """
+
+The following example illustrates this::
+
+    import logging
+    from prelogging import LCDict
+
+    _level_count = 0
 
 
-.. index:: Filters -- passing dynamic data
+    def filter_fn(record, **kwargs):
 
-.. _passing-dynamic-data-to-a-filter:
+        filtername = kwargs.get('filtername', '')
+        loglevel_to_count = kwargs.get('loglevel_to_count', 0)
 
-Passing dynamic data to a filter
-++++++++++++++++++++++++++++++++++++
+        """Suppress odd-numbered messages (records)
+        whose level == loglevel_to_count,
+        where the "first" message is 0-th hence even-numbered.
+        """
+        global _level_count
+        if record.levelno == loglevel_to_count:
+            _level_count += 1
+            ret = _level_count % 2
+        else:
+            ret = True
 
-Sometimes you may want to pass a reference dynamic data to a filter, whose
-value may be different from one filter call to the next. A typical approach
-would be to wrap such data in a list or dict, as in the following code which
-uses a list:
+        print("{} > record levelname = {}, _level_count = {}; returning {}".
+              format(filtername, record.levelname,
+                     _level_count, ret))
+        return ret
+
+    lcd = LCDict(attach_handlers_to_root=True,
+                 root_level='DEBUG')
+    lcd.add_stdout_handler('console-out',
+                           level='DEBUG',
+                           formatter='level_msg')
+    lcd.add_callable_filter('count_info', filter_fn,
+                            # extra, static data
+                            filtername='count_info',
+                            loglevel_to_count=logging.INFO)
+    lcd.attach_root_filters('count_info')
+
+    lcd.config()
+
+Now use root logger::
+
+    root = logging.getLogger()
+
+    for i in range(2):
+        root.debug(str(i))
+        root.info(str(i))
+
+This prints the following to stdout::
+
+    count_info > record levelname = DEBUG, _level_count = 0; returning True
+    DEBUG   : 0
+    count_info > record levelname = INFO, _level_count = 1; returning 1
+    INFO    : 0
+    count_info > record levelname = DEBUG, _level_count = 1; returning True
+    DEBUG   : 1
+    count_info > record levelname = INFO, _level_count = 2; returning 0
+
+
+.. index:: Filters -- providing extra, dynamic data
+
+.. _providing-extra-dynamic-data-to-a-filter:
+
+Passing extra, dynamic data to a filter
+++++++++++++++++++++++++++++++++++++++++++
+
+Sometimes you may want a filter to access dynamic data, whose
+value may be different from one filter call to the next. Python doesn't provide
+references or pointers to immutable types, so the usual workaround
+would be to pass a list or dict containing the value. The value of the item in
+the wrapping collection can be changed dynamically, and any object that retained
+a reference to the containing collection would see those changes reflected.
+The following code illustrates this idiom, using a list to wrap an integer:
 
     >>> class A():
     ...     def __init__(self, list1=None):
@@ -608,7 +611,7 @@ uses a list:
     >>> a.method()
     101
 
-This will not work with logging configuration.
+This approach won't work with logging configuration.
 
 Configuring logging "freezes" lists and dicts in the logging config dict
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -703,48 +706,6 @@ as a container:
     dw = 101
 
 Of course, you could pass a data-returning callable rather than a container.
-
-----------------------------------
-
-.. _config-abc:
-
-Using ``LCDictBuilderABC``
--------------------------------
-
-A single ``LCDict`` can be passed around to different "areas"
-of a program, each area contributing specifications of its desired formatters,
-filters, handlers and loggers. The ``LCDictBuilderABC`` class provides a
-micro-framework that automates this approach: each area of a program need only
-define an ``LCDictBuilderABC`` subclass and override its method
-``add_to_lcdict(lcd)``, where it contributes its specifications by calling
-methods on ``lcd``.
-
-The :ref:`LCDictBuilderABC` documentation describes how that class and its two
-methods operate. The test ``tests/test_lcd_builder.py`` exemplifies using
-the class to configure logging across multiple modules.
-
-    <<<<< TODO -- more... how much more? >>>>>
-    <<<<< Walk through code? Simplified further if possible >>>>>
-    <<<<< Go look...  >>>>>
-
---------------------------------------------------
-
-.. _adding-new-formatter-presets:
-
-Adding new formatter presets
----------------------------------
-
-.. todo:: This facility is useful mainly in distributed configuration, so it's here.
-
-
---------------------------------------------------
-
-.. _tr-rot-fh:
-
-Using a rotating file handler
-------------------------------------
-
-<<<<< TODO >>>>>
 
 --------------------------------------------------
 
@@ -885,8 +846,8 @@ Results (4 cases)
 
 .. _smtp-handler:
 
-``add_email_handler`` — SMTPHandler
------------------------------------------
+Adding SMTPHandlers with ``add_email_handler``
+-------------------------------------------------
 
 ``add_email_handler``
 
@@ -1028,45 +989,5 @@ Comment on the example ``SMTP_handler_two.py``
     root.warning("Be careful")                  # logged to console
     root.error("Something bad just happened")   # logged to console, emailed
     root.critical("Time to restart")            # ditto
-
-
-----------------------------------
-
-Using other `logging` ``Handler`` classes
---------------------------------------------
-
-.. todo:: Bla blah.............
-
-
-The `logging` package defines more than a dozen handler classes — subclasses of
-``logging.Handler`` — in the modules ``logging`` and ``logging.handlers``.
-``logging`` defines the basic handler classes ... TODO ...
-
-`prelogging` supports a majority of the `logging` handlers, but not all.
-
-BLAH BLAH.............
-
-.. _using-unsupported-logging-handler-classes:
-
-Using `logging` handler classes with no corresponding ``add_*_handler`` method
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-The following `logging` handler classes presently have no corresponding
-``add_*_handler`` methods:
-
-    * logging.handlers.WatchedFileHandler ?
-    * logging.handlers.TimedRotatingFileHandler ?
-    * logging.handlers.SocketHandler
-    * logging.handlers.DatagramHandler
-    * logging.handlers.NTEventLogHandler
-    * logging.handlers.MemoryHandler
-    * logging.handlers.HTTPHandler
-
-Nevertheless, all can be configured using `prelogging`.
-— use ``add_handler``, using keyword arguments to specify
-class-specific key/value pairs, and specifying the appropriate handler class
-with the ``class_`` keyword.
-
-.. todo:: How? An example would be useful.
 
 

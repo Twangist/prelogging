@@ -10,7 +10,6 @@ This class resides in ``lcdict.py``.
 .. autoclass:: prelogging.lcdict.LCDict
     :members: __init__,
               locking, attach_handlers_to_root,
-              create_formatter_preset,
               clone_handler, add_handler,
               set_handler_formatter,
               add_stream_handler, add_stdout_handler, add_stderr_handler,
