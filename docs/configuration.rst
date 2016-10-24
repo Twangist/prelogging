@@ -1,3 +1,5 @@
+.. include:: _global.rst
+
 Configuration — with `logging`, and with `prelogging`
 =======================================================
 
@@ -129,16 +131,18 @@ Advantages of dynamic configuration
   handlers, loggers) one by one, in order, starting with those that don't
   depend on other entities, and proceeding to those that use entities
   already defined.
-
-* *You can take advantage of the reasonable defaults provided by the methods
-  of the `logging` API*
+  |br|
+  |br10th|
+* *Methods of the `logging` API provide reasonable defaults*
 
   With static configuration, certain fussy defaults must be specified explicitly.
-
+  |br|
+  |br10th|
 * *Error prevention*
 
   For instance, there's no way to attach things that simply don't exist.
-
+  |br|
+  |br10th|
 * *Fine-grained error detection*
 
   If you use a nonexistent keyword argument, for example, the line in which it
@@ -161,9 +165,12 @@ Disadvantages of dynamic configuration
           h_stderr = logging.StreamHandler(level=logging.INFO, stream=sys.stderr)
 
       but had to call ``h_stderr.setLevel`` after constructing the handler.
-
+      |br|
+      |br10th|
     * *In `logging`, only loggers have names; formatters, handlers and filters
-      don't*. Thus we have to use Python variables to reference the various
+      don't*
+
+      Thus we have to use Python variables to reference the various
       logging entities which we create and connect. If another part of the
       program later wanted to access, say, the file handler attached to the
       root logger, the only way it could do so would be by iterating through
@@ -172,8 +179,9 @@ Disadvantages of dynamic configuration
           root = logging.getLogger()
           fh = next(h for h in root.handlers if isinstance(h, logging.FileHandler))
 
-    * *Somehow it winds up more even verbose than static dictionaries* —
-      the methods are low-level, and many boilerplate passages recur
+    * *Somehow it winds up more even verbose than static dictionaries*
+
+      The methods are low-level, and many boilerplate passages recur
       in dynamic configuration code.
 
 
@@ -209,8 +217,7 @@ Here's how to do so::
     import logging
     from logging import config
 
-    config_dict = \
-        {
+    config_dict = {
          'formatters': {'logger_level_msg': {'class': 'logging.Formatter',
                                              'format': '%(name)-20s: %(levelname)-8s: '
                                                        '%(message)s'}},
@@ -221,8 +228,8 @@ Here's how to do so::
                                  'filename': 'blather_stat_cfg.log',
                                  'formatter': 'logger_level_msg'}},
          'root': {'handlers': ['h_stderr', 'h_file'], 'level': 'DEBUG'},
-         'version': 1}
-
+         'version': 1
+    }
     logging.config.dictConfig(config_dict)
 
 As with dynamic configuration, most keys have default values, and
@@ -240,7 +247,8 @@ Advantages of static configuration
   (It's true that after the call to ``dictConfig``, only the names of loggers
   endure; but that's a separate issue — a deficiency of `logging`, not of static
   configuration.)
-
+  |br|
+  |br10th|
 * *It's arguably more natural to specify configuration in a declarative way*,
   especially for the typical application which will "set it and forget it".
 
@@ -248,14 +256,17 @@ Disadvantages of static configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * *Not very good error detection* (none until the ``dictConfig`` call)
-
+  |br|
+  |br10th|
 * *Some boilerplate key/value pairs*
-
+  |br|
+  |br10th|
 * *Lots of noise* — a thicket of nested curly braces, quotes, colons, etc.
 
   Triply-nested dicts are hard to read.
-
-* *Logging config dicts seem complex*.
+  |br|
+  |br10th|
+* *Logging config dicts seem complex*
 
   At least on first exposure to static configuration, it's not easy to
   comprehend a medium- to large-sized dict of dicts of dicts, in which many

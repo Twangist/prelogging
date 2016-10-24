@@ -21,7 +21,7 @@ Further Topics and Recipes
         * :ref:`mp-locking-handlers`
         * :ref:`mp-queue-and-logging-thread`
 
-* Filters
+* :ref:`providing-extra-data-to-a-filter`
     .. hlist::
         :columns: 3
 
@@ -29,10 +29,14 @@ Further Topics and Recipes
         * :ref:`providing-extra-dynamic-data-to-a-filter`
 
 
-* :ref:`null-handler`
+* Using `prelogging` in libraries
+    * :ref:`Using add_null_handler <null-handler>`
 
 * :ref:`smtp-handler`
+    * :ref:`smtp-handler-one`
+    * :ref:`smtp-handlers-two-error-and-critical`
 
+--------------------------------------------------
 
 .. _using-prelogging-with-django:
 
@@ -372,11 +376,10 @@ Here's what the logging thread does:
 
 --------------------------------------------------
 
-.. index:: Filters -- providing extra static data
 
-.. _providing-extra-static-data-to-a-filter:
+.. _providing-extra-data-to-a-filter:
 
-Providing extra data to filters
+Providing extra data to a filter
 -----------------------------------
 Often you'll want the behavior of a filter to depend on more than just
 the ``LogRecord`` that's passed to it. In the first subsection of this topic,
@@ -384,6 +387,10 @@ we'll see how to provide a filter with extra data that doesn't change.
 In :ref:`the second subsection<providing-extra-dynamic-data-to-a-filter>`,
 we'll discuss how to provide a filter with dynamic data,
 whose value may be different each time the filter is called.
+
+.. index:: Filters -- providing extra static data
+
+.. _providing-extra-static-data-to-a-filter:
 
 Providing extra, static data to a filter
 +++++++++++++++++++++++++++++++++++++++++++++
@@ -581,11 +588,11 @@ This prints the following to stdout::
     count_info > record levelname = INFO, _level_count = 2; returning 0
 
 
-.. index:: Filters -- providing extra, dynamic data
+.. index:: Filters -- providing extra dynamic data
 
 .. _providing-extra-dynamic-data-to-a-filter:
 
-Passing extra, dynamic data to a filter
+Providing extra, dynamic data to a filter
 ++++++++++++++++++++++++++++++++++++++++++
 
 Sometimes you may want a filter to access dynamic data, whose
@@ -724,13 +731,12 @@ configured logging, the `logging` docs section
 recommends adding a ``NullHandler``, only, to the library's top-level logger.
 
 The example ``use_library.py`` and the ``library`` package it uses
-illustrate how to use `prelogging` in both a library and a program that uses it,
-in a way that follows that recommendation. It's essential that both
+illustrate how to use `prelogging` to follow that recommendation and achieve
+such a setup. It's essential that both
 the library and its user set the logging configuration flag
 ``disable_existing_loggers`` to ``False``. This is actually `prelogging`\'s default —
 one of the few instances where `prelogging` changes the default used by `logging`
 (the `logging` package defaults ``disable_existing_loggers`` to ``True``).
-
 
 In this section we'll further discuss the configurations and interaction of
 the example library and library user.
