@@ -432,7 +432,10 @@ Results (4 cases)
 Using `prelogging` with `Django`
 ------------------------------------
 
-blahblah
+Django uses Python logging for its logging needs, and supplies several classes
+that build on the facilities of the `logging. However, none of its additions
+address configuration. Fortunately, it's quite easy to use `prelogging` in
+conjunction with Django.
 
 .. _setting-LOGGING-Django-variable:
 
@@ -441,45 +444,23 @@ Setting the ``LOGGING`` variable in ``settings.py``
 
 Django uses logging config dicts: the easiest way to configure logging
 in Django is to provide a logging config dict as the value of the
-``LOGGING`` variable in ``settings.py``.
+``LOGGING`` variable in ``settings.py``. Of course, you can use `prelogging`
+to build an ``LCDict``; just refrain from calling its ``config`` method, as
+Django will pass the ``LOGGING`` dict to ``dictConfig``.
 
-..note::
-    (1) It would be great if ``LOGGING`` could be a callable;
-    the other logging-related setting ``LOGGING_CONFIG`` can be.
-    That way, you could specify a callable (no args, say) which just returns
-    a logging config dict.
+The general approach:
+    * Write a function that builds and returns an ``LCDict``, perhaps
+      by using the ``LCDictBuilderABC`` class.  For the  sake of example,
+      say the function is ``build_settings_lcdict``, in module ``mystuff``.
+    * Add the following two lines to your Django project's ``settings.py``,
+    either contiguous or not::
 
-.. todo::
-    (2) Illustrate how to use `prelogging` with Django. In ``settings.py``:
+        ``from mystuff import build_settings_lcdict``
+        ``LOGGING = build_settings_lcdict()``
 
-        ``from mystuff import build_lcdict``
-        ``LOGGING = build_lcdict()``
-
-    Here, `build_lcdict` is a function you supply which builds a logging
-    config dict but doesn't call its ``config`` method. Django will add its
-    logging specifications to the ``LOGGING`` dict and then pass that to
-    ``logging.config.dictConfig``.
-
-    (1) See the following for more info:
-
-    https://docs.djangoproject.com/en/1.9/topics/logging/
-
-    also
-
-    https://docs.djangoproject.com/en/1.9/releases/1.9/#default-logging-changes-19
-
-    (3) From https://docs.djangoproject.com/en/1.9/topics/logging/:
-
-        If the disable_existing_loggers key in the LOGGING dictConfig is set to
-        ``True`` (which is the default) then all loggers from the default
-        configuration will be disabled. Disabled loggers are not the same as
-        removed; the logger will still exist, but will silently discard anything
-        logged to it, not even propagating entries to a parent logger. Thus you
-        should be very careful using ``'disable_existing_loggers': True``; it’s
-        probably not what you want. Instead, you can set
-        ``disable_existing_loggers`` to ``False`` and redefine some or all of
-        the default loggers; or you can set ``LOGGING_CONFIG`` to ``None`` and
-        handle logging config yourself.
+`build_settings_lcdict` builds a logging config dict but doesn't call its
+``config`` method. Django will add its logging specifications to the ``LOGGING``
+dict and then pass that to ``logging.config.dictConfig``.
 
 --------------------------------------------------
 
