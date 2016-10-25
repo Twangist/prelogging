@@ -450,10 +450,10 @@ Django will pass the ``LOGGING`` dict to ``dictConfig``.
 
 The general approach:
     * Write a function that builds and returns an ``LCDict``, perhaps
-      by using the ``LCDictBuilderABC`` class.  For the  sake of example,
+      by using the ``LCDictBuilderABC`` class. For the  sake of example,
       say the function is ``build_settings_lcdict``, in module ``mystuff``.
     * Add the following two lines to your Django project's ``settings.py``,
-    either contiguous or not::
+      either contiguous or not::
 
         ``from mystuff import build_settings_lcdict``
         ``LOGGING = build_settings_lcdict()``
