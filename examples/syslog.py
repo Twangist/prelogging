@@ -16,14 +16,11 @@ except ImportError:
 from prelogging import LCDict
 
 
-# LOG_PATH = '_testlogs/rot_fh/'      # NOTE: directory must exist
-# LOGFILENAME = 'test_rot_fh.log'
-
 #############################################################################
 import sys
 
 def config_logging():
-    """Create a root logger with a stdout console handler with level=WARNING,
+    """Add a stdout console handler with level=WARNING to the root logger,
     and a syslog handler with default level=NOTSET.
     Root logger level will be DEBUG.
     """

@@ -373,8 +373,8 @@ Consistency checking — the ``check`` method
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
 This method checks for references to "undefined" entities, as described above
-for :ref:`ATTACH_UNDEFINED`. If any exist, ``check`` reports that, and raises
-``KeyError``; otherwise, it returns ``self``.
+for :ref:`ATTACH_UNDEFINED <ATTACH_UNDEFINED>`. If any exist, ``check`` reports
+that, and raises ``KeyError``; otherwise, it returns ``self``.
 
 If the ``Warnings.REATTACH`` flag of the ``warnings`` property is "off",
 ``config()`` calls ``check()`` automatically before calling ``logging.config.config()``.

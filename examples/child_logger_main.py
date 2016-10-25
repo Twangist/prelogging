@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 
+__doc__ = """
+Create a nonroot logger with two child loggers, one propagating and one not.
+The parent logger has a stderr handler and a file handler, shared by the
+propagating logger. The nonpropagating logger creates its own stderr handler
+by cloning its parent's stderr handler; however, it uses the same file handler
+as its parent (and by its sibling).
+
+Observe how the loglevels of the handlers and loggers determine what gets written
+to the two destinations.
+"""
 __author__ = 'brianoneill'
 
 import os
@@ -31,33 +41,31 @@ def config_logging(logfilename):
 
 
 def init_logging_config(loggername, logfilename):
-    # add handlers to root == False, default
+    # add handlers to root == False (default)
     lcd = LCDict(log_path=LOG_PATH)
 
     # Create stderr console handler; output shows logger name and loglevel;
     ## loglevel higher than DEBUG.
     lcd.add_formatter('busier_console_fmt',
-                         format='%(name)-25s: %(levelname)-8s: %(message)s')
-    lcd.add_stderr_handler('console',
-                                      formatter='busier_console_fmt',
-                                      level='INFO')
-
+                      format='%(name)-25s: %(levelname)-8s: %(message)s'
+    ).add_stderr_handler('console',
+                         formatter='busier_console_fmt',
+                         level='INFO'
+    )
     # Add main file handler, which will write to LOG_PATH + '/' + logfilename,
     # and add logger (loggername == __name__) that uses it
-    lcd.add_formatter(
-        'my_file_formatter',
-        format='%(name)-25s: %(levelname)-8s: %(asctime)24s: %(message)s'
-    ).add_file_handler(
-        'app_file',
-        filename=logfilename,
-        mode='w',
-        level='DEBUG',
-        formatter='my_file_formatter'
-    ).add_logger(
-        loggername,
-        handlers=('app_file', 'console'),
-        level='DEBUG',
-        propagate=False    # so it DOESN'T propagate to parent logger
+    lcd.add_formatter('my_file_formatter',
+                      format='%(name)-25s: %(levelname)-8s: '
+                             '%(asctime)24s: %(message)s'
+    ).add_file_handler('app_file',
+                       filename=logfilename,
+                       mode='w',
+                       level='DEBUG',
+                       formatter='my_file_formatter'
+    ).add_logger(loggername,
+                 handlers=('app_file', 'console'),
+                 level='DEBUG',
+                 propagate=False    # so it DOESN'T propagate to parent logger
     )
     return lcd
 
@@ -71,8 +79,6 @@ def special(n):
     sub_noprop.do_something_special(n)
     sub_prop.do_something_special(n)
 
-
-# print("__name__ = %r    __package__ = %r" % (__name__, __package__), flush=True)
 
 def main():
     config_logging('child_loggers.log')

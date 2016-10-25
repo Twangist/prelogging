@@ -1,18 +1,13 @@
+.. _further-topics-recipes:
+
 Further Topics and Recipes
 ========================================
 
 .. include:: _global.rst
 
 
-* :ref:`using-prelogging-with-django`
-    .. hlist::
-        :columns: 3
-
-        * :ref:`setting-LOGGING-Django-variable`
-
 * Configuration distributed across multiple modules or packages
     * :ref:`config-abc`
-
 
 * :ref:`Multiprocessing — two approaches<tr-mp>`
     .. hlist::
@@ -21,6 +16,15 @@ Further Topics and Recipes
         * :ref:`mp-locking-handlers`
         * :ref:`mp-queue-and-logging-thread`
 
+* Using `prelogging` in libraries
+    * :ref:`Using add_null_handler <null-handler>`
+
+* :ref:`using-prelogging-with-django`
+    .. hlist::
+        :columns: 3
+
+        * :ref:`setting-LOGGING-Django-variable`
+
 * :ref:`providing-extra-data-to-a-filter`
     .. hlist::
         :columns: 3
@@ -28,70 +32,9 @@ Further Topics and Recipes
         * :ref:`providing-extra-static-data-to-a-filter`
         * :ref:`providing-extra-dynamic-data-to-a-filter`
 
-
-* Using `prelogging` in libraries
-    * :ref:`Using add_null_handler <null-handler>`
-
 * :ref:`smtp-handler`
     * :ref:`smtp-handler-one`
     * :ref:`smtp-handlers-two-error-and-critical`
-
---------------------------------------------------
-
-.. _using-prelogging-with-django:
-
-Using `prelogging` with `Django`
-------------------------------------
-
-blahblah
-
-.. _setting-LOGGING-Django-variable:
-
-Setting the ``LOGGING`` variable in ``settings.py``
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-Django uses logging config dicts: the easiest way to configure logging
-in Django is to provide a logging config dict as the value of the
-``LOGGING`` variable in ``settings.py``.
-
-..note::
-    (1) It would be great if ``LOGGING`` could be a callable;
-    the other logging-related setting ``LOGGING_CONFIG`` can be.
-    That way, you could specify a callable (no args, say) which just returns
-    a logging config dict.
-
-.. todo::
-    (2) Illustrate how to use `prelogging` with Django. In ``settings.py``:
-
-        ``from mystuff import build_lcdict``
-        ``LOGGING = build_lcdict()``
-
-    Here, `build_lcdict` is a function you supply which builds a logging
-    config dict but doesn't call its ``config`` method. Django will add its
-    logging specifications to the ``LOGGING`` dict and then pass that to
-    ``logging.config.dictConfig``.
-
-    (1) See the following for more info:
-
-    https://docs.djangoproject.com/en/1.9/topics/logging/
-
-    also
-
-    https://docs.djangoproject.com/en/1.9/releases/1.9/#default-logging-changes-19
-
-    (3) From https://docs.djangoproject.com/en/1.9/topics/logging/:
-
-        If the disable_existing_loggers key in the LOGGING dictConfig is set to
-        ``True`` (which is the default) then all loggers from the default
-        configuration will be disabled. Disabled loggers are not the same as
-        removed; the logger will still exist, but will silently discard anything
-        logged to it, not even propagating entries to a parent logger. Thus you
-        should be very careful using ``'disable_existing_loggers': True``; it’s
-        probably not what you want. Instead, you can set
-        ``disable_existing_loggers`` to ``False`` and redefine some or all of
-        the default loggers; or you can set ``LOGGING_CONFIG`` to ``None`` and
-        handle logging config yourself.
-
 
 ----------------------------------
 
@@ -113,9 +56,7 @@ methods operate. The test ``tests/test_lcd_builder.py`` illustrates using
 the class to configure logging across multiple modules.
 
 .. todo::
-    | <<<<< TODO -- more... how much more? >>>>>
-    | <<<<< Walk through code? Simplified further if possible >>>>>
-    | <<<<< Go look...  >>>>>
+    | <<<<< TODO -- more? >>>>>
 
 --------------------------------------------------
 
@@ -124,19 +65,27 @@ the class to configure logging across multiple modules.
 Multiprocessing — two approaches
 ----------------------------------------------
 
-Refer to "multiple processes logging to the same file" (sic).
-PROVIDE A LINK, and/or quote from it. That section of the docs discusses
-three approaches:
+The section of the `logging` Cookbook entitled
+`Logging to a single file from multiple processes <https://docs.python.org/3/howto/logging-cookbook.html#logging-to-a-single-file-from-multiple-processes>`_
+begins by admitting that "logging to a single file from multiple processes is
+not supported". It goes on to discuss three approaches to providing this
+capability:
 
-    1. one based on ``SocketHandler``
-    2. locking versions of handlers, which our locking handlers implement
+    1. using ``SocketHandler``
+    2. developing locking versions of handlers, the approach taken by
+       `prelogging` with its "locking handlers"
     3. (*Python 3 only*) using a ``QueueHandler`` in each process, all writing
-       to a common Queue, and then either a ``QueueListener``
+       to a common Queue, and then using either a ``QueueListener``
        or a dedicated thread in another process (e.g. the main one)
        to extract ``LogRecord``\s from the queue and log them.
 
-**Note**: the third approach is unavailable in Python 2, as the class
+**Note**: the third approach is unavailable in Python 2 because the class
 ``QueueHandler`` is Python 3 only.
+
+The ``examples/`` top-level directory of the `prelogging` distribution contains
+several multiprocessing examples. See the :ref:`mproc_examples` section of the
+:ref:`guide-to-examples` for a list of them with descriptions of what
+each one does.
 
 In this section we'll discuss the second and third approaches.
 
@@ -144,22 +93,23 @@ In this section we'll discuss the second and third approaches.
 
 .. topic:: Basic situation and challenge
 
-    We have some amount of work to do, and the code that performs it uses
-    logging. Let's say there are :math:`L` many loggers used:
+    Suppose we have some significant amount of computational work to do, and
+    the code that performs it uses logging. Let's say there are :math:`L` many
+    loggers used:
 
         .. math::
 
             logger_1, \cdots, logger_i, \cdots, logger_L,
 
     Each logger :math:`logger_i` is denoted by some name :math:`name_i`,
-    and has some intended handlers
+    and has some intended handlers:
 
         .. math::
 
             handler_{i, j} \quad (j < n_i).
 
     Later, we notice that the work can be parallelized: we can partition it into
-    chunks which can be worked on simultaneously and then recombined.
+    chunks which can be worked on simultaneously and the results recombined.
     We put the code that performs the work into a function, and spawn :math:`N`
     worker processes
 
@@ -168,43 +118,42 @@ In this section we'll discuss the second and third approaches.
         P_1, ..., P_k, ... P_N,
 
     each of which runs that function on a discrete chunk of the data. The worker
-    processes are basically homogeneous, but for their distinct PIDs, names,
+    processes are basically homogeneous, except for their distinct PIDs, names,
     and the ranges of data they operate on. Now, each worker process :math:`P_k`
-    uses all the loggers :math:`logger_i, i < L`. All the loggers and handlers
-    have different instances in different processes; however, all the handler
+    uses all the loggers :math:`logger_i, i < L`. The loggers and handlers
+    all have different instances in different processes; however, all the handler
     destinations remain unique. Somehow, we have to serialize writing to single
     destinations from multiple concurrent processes.
 
 .. topic:: Two solutions
 
-    In the approach provided natively by `prelogging`, serialization occurs at the
-    handler level, using the package's simple "locking handler" classes. Before
-    an instance of a locking handler writes to its destination, it acquires
-    a lock (*shared by all instances* of the handler), which it releases when
-    done; attempts by other instances to write concurrently will block until
+    In the approach provided natively by `prelogging`, serialization occurs
+    at the handler level, using the package's simple "locking handler" classes.
+    Before an instance of a locking handler writes to its destination, it
+    acquires a lock ( *shared by all instances* of the handler), which it releases
+    when done; attempts by other instances to write concurrently will block until
     the lock is released by the handler that "got there first".
 
     The queue-based approach is an important and sometimes more performant
     alternative. Using an explicit shared queue and a layer of indirection,
     this approach serializes messages early in their lifecycle.
     Each process merely enqueues logged messages to the shared queue,
-    in the form of ``LogRecord``\s. The actual writing of the message to the
+    in the form of ``LogRecord``\s. The actual writing of messages to their
     intended destinations occurs later, in a dedicated *logging thread* of a
     non-worker process. That thread pulls logging records off the queue and
     *handles* them, so that messages are finally dispatched to their intended
     handlers and destinations. The `logging` package's ``QueueHandler`` class
     makes all this possible.
 
-
 .. note::
-    A pair of examples are "the same program" except for taking
-    one approach or the other:
+    The `prelogging` examples contain a pair of programs that are "the same"
+    except that each takes a different approach to multiprocessing:
 
     * ``mproc_approach__locking_handlers.py`` uses locking handlers,
     * ``mproc_approach__queue_handler_logging_thread.py`` uses a queue and
       logging thread (the only example that does so).
 
-    In these examples, the handlers only write to files, and performance
+    In these examples, the handlers only write to local files, and performance
     of the two approaches is about the same, with the queue-based approach
     slightly faster.
 
@@ -213,58 +162,26 @@ In this section we'll discuss the second and third approaches.
 Using locking handlers
 +++++++++++++++++++++++++
 
-(MP blather)
-Provided natively by `prelogging`, only option under Py2.
+`prelogging` provides multiprocessing-safe logging natively by using locking
+handlers — subclasses of certain `logging` handler classes which use locks
+to serialize their output. As only Python 3 implements ``QueueHandler``\s,
+this is the only option easily available under Python 2 for multiprocessing-safe
+logging with `prelogging`.
 
-All but one of the multiprocessing examples use locking handlers.
-
-For a particular ``LCDict``, there are two possibilities:
-
-.. topic:: locking handlers used by default
-    on every ``add_*_handler`` method call
-
-    ``locking=True`` was passed to constructor
-
-vs
-
-.. topic:: standard handlers used by default
-    on every ``add_*_handler`` method call
-
-    ``locking=False`` was passed to constructor
-
-    When you configure a handler by calling an ``add_*_handler`` method,
-    pass ``locking=True``, available when that kind of handler has a locking
-    subclass.
-
-
-.. _tr-mp-console:
-
-Using a locking console handler
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<<<<< TODO >>>>> 
-
-.. _tr-mp-fh:
-
-Using a locking file handler
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<<<<< TODO >>>>> 
-
-.. _tr-mp-rot-fh:
-
-Using a locking rotating file handler
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<<<<< TODO >>>>> 
-
-Using a locking syslog handler [?????]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-<<<<< TODO [?????] >>>>>
+All but one of the multiprocessing examples use locking handlers — see
+:ref:`mproc_examples` in the :ref:`guide-to-examples` for an overview. Those
+examples illustrate the use of every locking handler. The section
+:ref:`easy-mp-safe-logging` in the chapter :ref:`lcdict-features` explains how
+to use the Boolean ``locking`` parameter to enable locking. These resources
+more than suffice to explain how to take advantage of the simple interface
+that `prelogging` provides to its locking handlers.
 
 .. _mp-queue-and-logging-thread:
 
 Using QueueHandlers (*Python 3 only*)
 ++++++++++++++++++++++++++++++++++++++++++
 
-The queue based approach serializes logged messages as soon as possible,
+The queue-based approach serializes logged messages as soon as possible,
 moving the actual writing of messages out of the worker processes.
 Worker processes merely enqueue messages, with context, onto a common queue.
 The real handlers don't run in the worker processes: they run in
@@ -376,6 +293,195 @@ Here's what the logging thread does:
 
 --------------------------------------------------
 
+.. _null-handler:
+
+Using `prelogging` in libraries: using a null handler
+-----------------------------------------------------------------
+
+The ``add_null_handler`` method configures a handler of class
+``logging.NullHandler``, a do-nothing, placeholder handler that's useful in
+writing libraries (packages).
+
+If you want your library to write logging messages *only* if its user has
+configured logging, the `logging` docs section
+`Configuring Logging for a Library <https://docs.python.org/3/howto/logging.html#configuring-logging-for-a-library>`_,
+recommends adding a ``NullHandler``, only, to the library's top-level logger.
+
+The example ``use_library.py`` and the ``library`` package it uses
+illustrate how to use `prelogging` to follow that recommendation and achieve
+such a setup. It's essential that both
+the library and its user set the logging configuration flag
+``disable_existing_loggers`` to ``False``. This is actually `prelogging`\'s default —
+one of the few instances where `prelogging` changes the default used by `logging`
+(the `logging` package defaults ``disable_existing_loggers`` to ``True``).
+
+In this section we'll further discuss the configurations and interaction of
+the example library and library user.
+
+
+``library`` use of `prelogging` and `logging`
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The package contains just two modules: ``__init__.py`` and ``module.py``.
+
+``__init__.py`` configures logging with `prelogging`, adding a null handler and
+attaching it to the library's "top-level logger", ``'library'``:
+
+.. code::
+
+    lcd = LCDict()                  # default: disable_existing_loggers=False
+    lcd.add_null_handler('library-nullhandler')    # default: level='NOTSET'
+    lcd.add_logger('library', handlers='library-nullhandler', level='INFO')
+    lcd.config()
+
+``module.py`` contains two functions, which use logging::
+
+    def do_something():
+        logger = logging.getLogger(__name__)
+        logger.debug("DEBUG msg")
+        logger.info("INFO msg")
+        print("Did something.")
+
+    def do_something_else():
+        logging.getLogger(__name__ + '.other').warning("WARNING msg")
+        print("Did something else.")
+
+
+If a user of `library` configures logging, the messages logged by these
+functions *will* actually be written; if it doesn't, those messages *won't*
+appear.
+
+``use_library.py`` use of `prelogging` and `logging`
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The example ``use_library.py`` makes it easy to explore the various possibilities.
+It contains a simple ``main()`` function, which the program calls when run as
+``__main__``::
+
+    def main():
+        # Exercise:
+        #   Comment out and uncomment the following two lines, independently;
+        #   observe the console output in each case.
+        logging_config()
+        logging.getLogger().warning("I must caution you about that.")
+
+        library.do_something()
+        library.do_something_else()
+
+and a simple ``logging_config`` function::
+
+    def logging_config():
+        d = LCDict(attach_handlers_to_root=True)
+        # defaults: disable_existing_loggers=False, root_level='WARNING'
+        d.add_stdout_handler('stdout', formatter='logger_level_msg', level='DEBUG')
+        d.config()
+
+
+Results (4 cases)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+1. With both lines uncommented, the program writes the following to stdout::
+
+            root                : WARNING : I must caution you about that.
+            library.module      : INFO    : INFO msg
+            Did something.
+            library.module.other: WARNING : WARNING msg
+            Did something else.
+
+   **Note**: The loglevel of the root logger, configured in the library's user,
+   is ``'WARNING'``, whereas the loglevel of the ``'library.module'`` logger is
+   ``'INFO'``. Messages of `library` propagate to the root, and those of levels
+   ```INFO``` and up (not just ```WARNING``` and up) *are logged*.
+
+2. With just ``logging_config()`` commented out, the library prints these
+   to stdout::
+
+            Did something.
+            Did something else.
+
+   and the ``use_library.py`` logs this line to stderr (possibly between or
+   after those printed to stdout):
+
+   .. code::
+
+          I must caution you about that.
+
+   Observe that the library's logged messages aren't written, even though
+   the library's user *uses* logging (with the default configuration).
+
+3. With ``logging_config()`` uncommented but the line following it commented
+   out, the program writes the following to stdout:
+
+   .. code::
+
+            library.module      : INFO    : INFO msg
+            Did something.
+            library.module.other: WARNING : WARNING msg
+            Did something else.
+
+4. With both lines commented out, the program writes the following to stdout::
+
+            Did something.
+            Did something else.
+
+
+--------------------------------------------------
+
+.. _using-prelogging-with-django:
+
+Using `prelogging` with `Django`
+------------------------------------
+
+blahblah
+
+.. _setting-LOGGING-Django-variable:
+
+Setting the ``LOGGING`` variable in ``settings.py``
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Django uses logging config dicts: the easiest way to configure logging
+in Django is to provide a logging config dict as the value of the
+``LOGGING`` variable in ``settings.py``.
+
+..note::
+    (1) It would be great if ``LOGGING`` could be a callable;
+    the other logging-related setting ``LOGGING_CONFIG`` can be.
+    That way, you could specify a callable (no args, say) which just returns
+    a logging config dict.
+
+.. todo::
+    (2) Illustrate how to use `prelogging` with Django. In ``settings.py``:
+
+        ``from mystuff import build_lcdict``
+        ``LOGGING = build_lcdict()``
+
+    Here, `build_lcdict` is a function you supply which builds a logging
+    config dict but doesn't call its ``config`` method. Django will add its
+    logging specifications to the ``LOGGING`` dict and then pass that to
+    ``logging.config.dictConfig``.
+
+    (1) See the following for more info:
+
+    https://docs.djangoproject.com/en/1.9/topics/logging/
+
+    also
+
+    https://docs.djangoproject.com/en/1.9/releases/1.9/#default-logging-changes-19
+
+    (3) From https://docs.djangoproject.com/en/1.9/topics/logging/:
+
+        If the disable_existing_loggers key in the LOGGING dictConfig is set to
+        ``True`` (which is the default) then all loggers from the default
+        configuration will be disabled. Disabled loggers are not the same as
+        removed; the logger will still exist, but will silently discard anything
+        logged to it, not even propagating entries to a parent logger. Thus you
+        should be very careful using ``'disable_existing_loggers': True``; it’s
+        probably not what you want. Instead, you can set
+        ``disable_existing_loggers`` to ``False`` and redefine some or all of
+        the default loggers; or you can set ``LOGGING_CONFIG`` to ``None`` and
+        handle logging config yourself.
+
+--------------------------------------------------
 
 .. _providing-extra-data-to-a-filter:
 
@@ -714,140 +820,6 @@ as a container:
 
 Of course, you could pass a data-returning callable rather than a container.
 
---------------------------------------------------
-
-.. _null-handler:
-
-Using `prelogging` in libraries: using a null handler
------------------------------------------------------------------
-
-The ``add_null_handler`` method configures a handler of class
-``logging.NullHandler``, a do-nothing, placeholder handler that's useful in
-writing libraries (packages).
-
-If you want your library to write logging messages *only* if its user has
-configured logging, the `logging` docs section
-`Configuring Logging for a Library <https://docs.python.org/3/howto/logging.html#configuring-logging-for-a-library>`_,
-recommends adding a ``NullHandler``, only, to the library's top-level logger.
-
-The example ``use_library.py`` and the ``library`` package it uses
-illustrate how to use `prelogging` to follow that recommendation and achieve
-such a setup. It's essential that both
-the library and its user set the logging configuration flag
-``disable_existing_loggers`` to ``False``. This is actually `prelogging`\'s default —
-one of the few instances where `prelogging` changes the default used by `logging`
-(the `logging` package defaults ``disable_existing_loggers`` to ``True``).
-
-In this section we'll further discuss the configurations and interaction of
-the example library and library user.
-
-
-``library`` use of `prelogging` and `logging`
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-The package contains just two modules: ``__init__.py`` and ``module.py``.
-
-``__init__.py`` configures logging with `prelogging`, adding a null handler and
-attaching it to the library's "top-level logger", ``'library'``:
-
-.. code::
-
-    lcd = LCDict()                  # default: disable_existing_loggers=False
-    lcd.add_null_handler('library-nullhandler')    # default: level='NOTSET'
-    lcd.add_logger('library', handlers='library-nullhandler', level='INFO')
-    lcd.config()
-
-``module.py`` contains two functions, which use logging::
-
-    def do_something():
-        logger = logging.getLogger(__name__)
-        logger.debug("DEBUG msg")
-        logger.info("INFO msg")
-        print("Did something.")
-
-    def do_something_else():
-        logging.getLogger(__name__ + '.other').warning("WARNING msg")
-        print("Did something else.")
-
-
-If a user of `library` configures logging, the messages logged by these
-functions *will* actually be written; if it doesn't, those messages *won't*
-appear.
-
-``use_library.py`` use of `prelogging` and `logging`
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-The example ``use_library.py`` makes it easy to explore the various possibilities.
-It contains a simple ``main()`` function, which the program calls when run as
-``__main__``::
-
-    def main():
-        # Exercise:
-        #   Comment out and uncomment the following two lines, independently;
-        #   observe the console output in each case.
-        logging_config()
-        logging.getLogger().warning("I must caution you about that.")
-
-        library.do_something()
-        library.do_something_else()
-
-and a simple ``prelogging`` function::
-
-    def logging_config():
-        d = LCDict(attach_handlers_to_root=True)
-        # defaults: disable_existing_loggers=False, root_level='WARNING'
-        d.add_stdout_handler('stdout', formatter='logger_level_msg', level='DEBUG')
-        d.config()
-
-
-Results (4 cases)
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-1. With both lines uncommented, the program writes the following to stdout::
-
-            root                : WARNING : I must caution you about that.
-            library.module      : INFO    : INFO msg
-            Did something.
-            library.module.other: WARNING : WARNING msg
-            Did something else.
-
-   **Note**: The loglevel of the root logger, configured in the library's user,
-   is ``'WARNING'``, whereas the loglevel of the ``'library.module'`` logger is
-   ``'INFO'``. Messages of `library` propagate to the root, and those of levels
-   ```INFO``` and up (not just ```WARNING``` and up) *are logged*.
-
-2. With just ``logging_config()`` commented out, the library prints these
-   to stdout::
-
-            Did something.
-            Did something else.
-
-   and the ``use_library.py`` logs this line to stderr (possibly between or
-   after those printed to stdout):
-
-   .. code::
-
-          I must caution you about that.
-
-   Observe that the library's logged messages aren't written, even though
-   the library's user *uses* logging (with the default configuration).
-
-3. With ``logging_config()`` uncommented but the line following it commented
-   out, the program writes the following to stdout:
-
-   .. code::
-
-            library.module      : INFO    : INFO msg
-            Did something.
-            library.module.other: WARNING : WARNING msg
-            Did something else.
-
-4. With both lines commented out, the program writes the following to stdout::
-
-            Did something.
-            Did something else.
-
-
 ------------------------------------------------------
 
 .. _smtp-handler:
@@ -995,5 +967,4 @@ Comment on the example ``SMTP_handler_two.py``
     root.warning("Be careful")                  # logged to console
     root.error("Something bad just happened")   # logged to console, emailed
     root.critical("Time to restart")            # ditto
-
 

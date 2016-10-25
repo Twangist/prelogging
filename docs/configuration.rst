@@ -131,17 +131,17 @@ Advantages of dynamic configuration
   handlers, loggers) one by one, in order, starting with those that don't
   depend on other entities, and proceeding to those that use entities
   already defined.
-  |br|
+  |br10th|
   |br10th|
 * *Methods of the `logging` API provide reasonable defaults*
 
   With static configuration, certain fussy defaults must be specified explicitly.
-  |br|
+  |br10th|
   |br10th|
 * *Error prevention*
 
   For instance, there's no way to attach things that simply don't exist.
-  |br|
+  |br10th|
   |br10th|
 * *Fine-grained error detection*
 
@@ -165,7 +165,7 @@ Disadvantages of dynamic configuration
           h_stderr = logging.StreamHandler(level=logging.INFO, stream=sys.stderr)
 
       but had to call ``h_stderr.setLevel`` after constructing the handler.
-      |br|
+      |br10th|
       |br10th|
     * *In `logging`, only loggers have names; formatters, handlers and filters
       don't*
@@ -247,7 +247,7 @@ Advantages of static configuration
   (It's true that after the call to ``dictConfig``, only the names of loggers
   endure; but that's a separate issue — a deficiency of `logging`, not of static
   configuration.)
-  |br|
+  |br10th|
   |br10th|
 * *It's arguably more natural to specify configuration in a declarative way*,
   especially for the typical application which will "set it and forget it".
@@ -256,15 +256,15 @@ Disadvantages of static configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * *Not very good error detection* (none until the ``dictConfig`` call)
-  |br|
+  |br10th|
   |br10th|
 * *Some boilerplate key/value pairs*
-  |br|
+  |br10th|
   |br10th|
 * *Lots of noise* — a thicket of nested curly braces, quotes, colons, etc.
 
   Triply-nested dicts are hard to read.
-  |br|
+  |br10th|
   |br10th|
 * *Logging config dicts seem complex*
 

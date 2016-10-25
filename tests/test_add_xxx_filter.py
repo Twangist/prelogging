@@ -64,17 +64,18 @@ def test_xxx_filter():
     ...     level='DEBUG',
     ...     formatter='level_msg')
 
-    # Configure the root logger to use both filters shown above:
+Configure the root logger to use both filters shown above:
+
     >>> _ = lcd.add_class_filter('count_i', CountInfoSquelchOdd)
     >>> _ = lcd.add_callable_filter('count_d', count_debug_allow_2)
     >>> _ = lcd.attach_root_filters('count_i', 'count_d')
 
     # lcd.dump()      # | DEBUG comment out
 
-    # TODO:  TROUBLE STARTS HERE ?
     >>> lcd.config()
 
-    # Now use the root logger::
+Now use the root logger:
+
     >>> root = logging.getLogger()
     >>> for i in range(5):
     ...     root.debug(str(i))
@@ -90,10 +91,10 @@ def test_xxx_filter():
 Do build_lcd() for, say, test_root_logger.py and get the root logger:
 it will still have the two filters!, from the above/this module.
 
-Simply ensuring that the default is used "disable_existing_loggers=True"
+Simply ensuring that the default is used ("disable_existing_loggers=True")
 doesn't remove the filters on the root.
 
-SO: delete them manually:
+SO, delete them manually:
 
     >>> root = logging.getLogger()
     >>> filters = root.filters[:]

@@ -1,3 +1,5 @@
+.. include:: _global.rst
+
 .. _lcdict-features:
 
 `LCDict` Features and Usage
@@ -19,14 +21,13 @@ Formatter presets
 -------------------------------------------------------
 
 We've already seen simple examples of adding new formatters using
-``add_formatter``. See the documentation of that method in :ref:`LCDict` for
-details of its parameters and their possible values.
+``add_formatter``. See the documentation of that method in :ref:`LCDictBasic`
+for details of its parameters and their possible values.
 
 As our :ref:`first example <config-use-case-lcdict>` indicated,
 often it's not necessary to specify formatters from scratch,
-because ``LCDict`` provides formatter *presets* —
-a collection of about a dozen predefined formatter specifications
-among which you can frequently find just the one you need.
+because ``LCDict`` provides about a dozen formatter *presets* —
+predefined formatter specifications which cover many needs.
 You can use the name of any of these presets as the ``formatter`` argument
 to ``add_*_handler`` methods and to ``set_handler_formatter``.
 
@@ -119,9 +120,8 @@ provides corresponding ``add_*_handler`` methods.
 Handler classes that LCDict configures
 ++++++++++++++++++++++++++++++++++++++++++
 
-LCDict provides methods for configuring these `logging` handler classes,
-all defined in the ``logging.handlers`` module, with optional "locking" support
-in most cases:
+LCDict provides methods for configuring these `logging` handler classes, with
+optional "locking" support in most cases:
 
   +--------------------------------+---------------------------+-----------+
   || method                        || creates                  || optional |
@@ -150,17 +150,16 @@ The following `logging` handler classes presently have no corresponding
 * logging.handlers.TimedRotatingFileHandler
 * logging.handlers.SocketHandler
 * logging.handlers.DatagramHandler
-* logging.handlers.NTEventLogHandler
 * logging.handlers.MemoryHandler
+* logging.handlers.NTEventLogHandler
 * logging.handlers.HTTPHandler
 
-Future versions of `prelogging` may supply methods for these handler classes.
+Future versions of `prelogging` may supply methods for at least some of these.
 In any case, all can be configured using `prelogging` currently. It is
-straightforward to write ``add_*_handler`` methods for any or all of these,
-on the model of the existing methods, which call ``add_handler`` with the
-appropriate handler class as value of the ``class_`` keyword, and passing any
+straightforward to write ``add_*_handler`` methods for any or all of these
+classes, on the model of the existing methods: call ``add_handler`` with the
+appropriate handler class as value of the ``class_`` keyword, and pass any
 other class-specific key/value pairs as keyword arguments.
-
 
 ------------------------------------------------------
 
@@ -170,7 +169,7 @@ Automatically attaching handlers to the root logger
 --------------------------------------------------------
 
 Because handlers are so commonly attached to the root logger,
-``LCDict`` makes it easy to do so. Two parameters and their defaults
+``LCDict`` makes it easy to do. Two parameters and their defaults
 govern this:
 
 * The initializer method ``LCDict.__init__`` has a boolean parameter
@@ -181,7 +180,8 @@ govern this:
   When ``attach_handlers_to_root`` is true, by default the
   handler-adding methods of this class automatically attach handlers to
   the root logger after adding them to the ``handlers`` subdictionary.
-
+  |br10th|
+  |br10th|
 * All ``add_*_handler`` methods **called on an** ``LCDict``, as well as
   the ``clone_handler`` method, have an ``attach_to_root`` parameter
   [type: ``bool`` or ``None``; default: ``None``].
@@ -203,7 +203,7 @@ you can still add a handler to ``lcd`` without attaching it to the root::
 
     lcd.add_stdout_handler('stdout', attach_to_root=False, ...)
 
-Similarly, if lcd`` is created with the default ``attach_handlers_to_root=False``,
+Similarly, if lcd`` is created with ``attach_handlers_to_root=False`` (the default),
 
     ``lcd = LCDict(...)``
 
@@ -221,7 +221,7 @@ without having to subsequently call ``lcd.attach_root_handlers('fh', ...)``.
 Easy multiprocessing-safe logging
 --------------------------------------------------------------------------
 
-As we have mentioned, most recently in the this chapter's earlier section
+As we've mentioned, most recently in the this chapter's earlier section
 :ref:`LCDict-handler-classes-encapsulated`,
 `prelogging` provides multiprocessing-safe ("locking") versions of the essential
 handler classes that write to the console, streams, files, rotating files, and
@@ -247,7 +247,8 @@ will be created:
   and exposes it as the read-only property ``locking``.
   When ``locking`` is true, by default the ``add_*_handler`` methods listed above
   will create locking handlers.
-
+  |br10th|
+  |br10th|
 * The ``add_*_handler`` methods listed above have a ``locking`` parameter
   [type: ``bool`` or ``None``; default: ``None``], which
   allows overriding of the value ``locking`` passed to the constructor.
@@ -257,7 +258,6 @@ will be created:
   ``locking`` passed to the constructor. If the ``add_*_handler`` parameter
   ``locking`` has any value other than ``None``,
   a locking handler will be created *iff* the parameter's value is true/truthy.
-
 
 ------------------------------------------------------
 
@@ -277,8 +277,8 @@ There are two kinds of filters: class filters and callable filters.
 
 In Python 2, the `logging` module imposes a fussy requirement on callables
 that can be used as filters, which the Python 3 implementation of `logging`
-removes. ``add_callable_filter`` provides a single interface for adding callable
-filters that works in both Python versions.
+removes. The ``add_callable_filter`` method provides a single interface for
+adding callable filters that works in both Python versions.
 
 .. _filter-setup:
 
@@ -297,9 +297,9 @@ with the following signature::
 
         filter(self, record: logging.LogRecord) -> int
 
-where ``int`` is treated like ``bool`` — nonzero means true, zero means false.
-These include subclasses of ``logging.Filter``, but a filter class doesn't
-have to inherit from that `logging` class.
+where ``int`` is treated like ``bool`` — nonzero means true (log the record),
+zero means false (don't). These include subclasses of ``logging.Filter``, but
+a filter class doesn't have to inherit from that `logging` class.
 
 Class filter example
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -340,6 +340,8 @@ Callable filter example
 
     def count_debug_allow_2(record):
         """
+        Allow at most 2 messages with loglevel ``DEBUG``.
+
         :param record: ``logging.LogRecord``
         :return: ``bool`` -- True ==> let record through, False ==> squelch
         """
@@ -379,7 +381,6 @@ Now use the root logger::
     import logging
     root = logging.getLogger()
 
-    # Py2: use u"Hi 1", etc.
     for i in range(5):
         root.debug(str(i))
         root.info(str(i))
@@ -406,26 +407,27 @@ Filters on a non-root logger
 +++++++++++++++++++++++++++++
 
 Attaching the example filters to a non-root logger ``'mylogger'`` requires just
-one change: instead of using ``attach_root_filters('count_d', 'count_i')`` to
+one change: instead of using ``attach_root_filters`` to
 attach the filters to the root logger, now we have to attach them to an
-arbitrary logger. This can be accomplished either of in two ways:
+arbitrary logger. This can be accomplished in either of two ways:
 
-1. Attach the filters when calling ``add_logger`` for ``'mylogger'``, using the
-   ``filters`` keyword parameter::
+* Attach the filters when calling ``add_logger`` for ``'mylogger'``, using the
+  ``filters`` keyword parameter::
 
     lcd.add_logger('mylogger',
                       filters=['count_d', 'count_i'],
                       ...
                      )
 
-   The value of the ``filters`` parameter can be either the name of a single
-   filter (a ``str``) or a sequence (list, tuple, etc.) of names of filters.
-
-2. Add the logger with ``add_logger``, without using the ``filters`` parameter::
+  The value of the ``filters`` parameter can be either the name of a single
+  filter (a ``str``) or a sequence (list, tuple, etc.) of names of filters.
+  |br10th|
+  |br10th|
+* Add the logger with ``add_logger``, without using the ``filters`` parameter::
 
     lcd.add_logger('mylogger', ... )
 
-   and then attach filters to it with ``attach_logger_filters``::
+  and then attach filters to it with ``attach_logger_filters``::
 
     lcd.attach_logger_filters('mylogger',
                               'count_d', 'count_i')
@@ -437,15 +439,15 @@ Filters on a handler
 
 There are two ways to attach filters to a handler:
 
-1. Attach the filters in the same method call that adds the handler.
-   Every ``add_*_handler`` method takes a ``filters`` keyword parameter —
-   all those methods funnel through ``LCDictBasic.add_handler``. As with the
-   ``add_logger`` method, the value of the ``filters`` parameter can be either
-   the name of a single filter (a ``str``) or a sequence (list, tuple, etc.) of
-   names of filters.
+* Attach the filters in the same method call that adds the handler.
+  Every ``add_*_handler`` method takes a ``filters`` keyword parameter —
+  all those methods funnel through ``LCDictBasic.add_handler``. As with the
+  ``add_logger`` method, the value of the ``filters`` parameter can be either
+  the name of a single filter (a ``str``) or a sequence (list, tuple, etc.) of
+  names of filters.
 
-   For example, each of the following method calls adds a handler with
-   only the ``'count_d'`` filter attached::
+  For example, each of the following method calls adds a handler with
+  only the ``'count_d'`` filter attached::
 
     lcd.add_stderr_handler('con-err',
                            filters='count_d'
@@ -453,8 +455,8 @@ There are two ways to attach filters to a handler:
                        filename='some-logfile.log',
                        filters=['count_d'])
 
-   For another example, the following statement adds a rotating file handler with
-   both the 'count_i' and 'count_d' filters attached::
+  For another example, the following statement adds a rotating file handler with
+  both the ``'count_i'`` and ``'count_d'`` filters attached::
 
     lcd.add_rotating_file_handler('rfh',
                                   filename='some-rotating-logfile.log',
@@ -462,8 +464,8 @@ There are two ways to attach filters to a handler:
                                   backup_count=5,
                                   filters=['count_i', 'count_d'])
 
-2. Add the handler using any ``add_*_handler`` method, then use
-   ``add_handler_filters`` to attach filters to the handler. For example::
+* Add the handler using any ``add_*_handler`` method, then use
+  ``add_handler_filters`` to attach filters to the handler. For example::
 
     lcd.add_file_handler('myhandler',
                          filename='mylogfile.log'
@@ -472,6 +474,5 @@ There are two ways to attach filters to a handler:
 
 
 In :ref:`a later chapter <providing-extra-static-data-to-a-filter>` we'll
-discuss providing filters with extra data, in addition to the ``LogRecord``\s
+discuss providing extra data to filters, in addition to the ``LogRecord``\s
 they're called with.
-

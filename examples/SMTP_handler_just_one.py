@@ -20,8 +20,9 @@ def main():
     # root, console handler levels: WARNING.
     lcd = LCDict(attach_handlers_to_root=True)
     lcd.add_stderr_handler('con-err',
-                            formatter='msg'
-    ).add_email_handler('email-handler',
+                           formatter='msg'
+    ).add_email_handler(
+        'email-handler',
         level='ERROR',
         formatter='time_logger_level_msg',
         # SMTPHandler-specific kwargs:

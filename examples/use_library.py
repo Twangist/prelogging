@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 __author__ = 'brianoneill'
 
 import library
@@ -13,11 +15,11 @@ from prelogging import LCDict
 
 
 def logging_config():
-    d = LCDict(attach_handlers_to_root=True)  # LCDict default: disable_existing_loggers=False
+    d = LCDict(attach_handlers_to_root=True)  # LCDict default: =False
     d.add_stdout_handler('stdout', formatter='logger_level_msg', level='DEBUG')
-    # NOTE: root level is 'WARNING',
-    #  .    'library.module' logger level is 'INFO'.
-    #  .    Messages of 'library.module' propagate,
+    # NOTE: root level is WARNING (default),
+    #  .    'library' logger level is INFO.
+    #  .    Messages of 'library' propagate,
     #  .        and those of levels INFO and up *are logged*.
     d.config()
 

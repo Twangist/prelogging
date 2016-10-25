@@ -13,13 +13,15 @@ def logging_config_sub(lcd):
     So this logger will need its own handlers.
     """
     # # clone console handler, DON'T add to root, set loglevel = DEBUG
-
-    lcd.clone_handler(clone='console_DEBUG', handler='console', attach_to_root=False)
-    lcd.handlers['console_DEBUG']['level'] = 'DEBUG'
+    lcd.clone_handler(clone='console_DEBUG',
+                      handler='console',
+                      attach_to_root=False)
+    lcd.set_handler_level('console_DEBUG', 'DEBUG')
 
     # use file handler 'app_file' (magic string eh)
-    lcd.add_logger(__name__, handlers=['console_DEBUG', 'app_file'],
-                      propagate=False)   # propagate=True, logging default
+    lcd.add_logger(__name__,
+                   handlers=['console_DEBUG', 'app_file'],
+                   propagate=False)   # propagate=True, logging default
 
 
 def do_something_boring(n):

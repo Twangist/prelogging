@@ -3,7 +3,7 @@
 __author__ = 'brianoneill'
 
 __doc__ = """
-An `prelogging` version of the second variant in
+A `prelogging` version of the second approach listed in
 
    `Logging to a single file from multiple processes
    <https://docs.python.org/3/howto/logging-cookbook.html#logging-to-a-single-file-from-multiple-processes>`_

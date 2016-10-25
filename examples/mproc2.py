@@ -30,7 +30,6 @@ from examples._get_locking_pref import get_locking_pref
 LOG_PATH = '_log/mproc2'    # Note, "...2"
 
 
-
 def extract_document_data_in_range(docs, start_doc_num, end_doc_num,
                                    out_q,   # : JoinableQueue,
                                    process_num):

@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 
+__doc__ = """
+Give the root logger a stderr handler and a file handler. Create two loggers,
+one propagating and the other not. The nonpropagating logger creates its own
+stderr handler by cloning the root's stderr handler; however, it uses the same
+file handler used by the root (and by its sibling).
+
+Observe how the loglevels of the handlers and loggers determine what gets written
+to the two destinations.
+"""
 __author__ = 'brianoneill'
 
 import os
@@ -31,20 +40,19 @@ def config_logging(logfilename):
 
 def init_logging_config(logfilename):
 
-    lcd = LCDict(log_path=LOG_PATH,
-                                 attach_handlers_to_root=True)
+    lcd = LCDict(log_path=LOG_PATH, attach_handlers_to_root=True)
     lcd.set_root_level('DEBUG')
 
-    # Change format of console handler to show logger `name` and loglevel `levelname`.
+    # Set format of console handler to show logger name and loglevel.
     ## Make sure 'console' handler level is higher than DEBUG
     lcd.add_formatter('busier_console_fmt',
-                         format='%(name)-34s: %(levelname)-8s: %(message)s')
-    lcd.add_stderr_handler('console',
-                                      formatter='busier_console_fmt',
-                                      level='INFO')
-
-    # Add main file handler, which will write to '_log/child_loggers/' + logfilename,
-    # and add logger that uses it
+                      format='%(name)-34s: %(levelname)-8s: %(message)s'
+    ).add_stderr_handler('console',
+                         formatter='busier_console_fmt',
+                         level='INFO'
+    )
+    # Add main file handler that writes to '_log/child_loggers2/' + logfilename,
+    # and add a logger that uses it
     lcd.add_formatter(
         'my_file_formatter',
         format='%(name)-34s: %(levelname)-8s: %(asctime)24s: %(message)s'

@@ -45,7 +45,7 @@ of the root because, by default, loggers are created with ``propagate=True``.
 
 If the formatters of the handlers include the logger name — as does
 ``logger_level_msg`` of ``LCDict`` objects, for example — each
-logged message will relate which module wrote it.
+logged message will state which module wrote it.
 
 The following example illustrates the general technique:
 
@@ -55,14 +55,12 @@ The following example illustrates the general technique:
     >>> lcd.add_stdout_handler('con', formatter='logger_level_msg')
     >>> lcd.config()
 
-    >>> logging.getLogger().warning("Look out!")657
+    >>> logging.getLogger().warning("Look out!")
     root                : WARNING : Look out!
     >>> logging.getLogger('my_submodule').warning("Something wasn't right.")
     my_submodule        : WARNING : Something's wasn't right.
     >>> logging.getLogger('your_submodule').error("Uh oh, there was an error.")
     your_submodule      : ERROR   : Uh oh, there was an error.
-
-
 
 --------------------------------------------------
 
@@ -111,11 +109,11 @@ Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * root logger with a ``stderr`` console handler and a file handler,
-  at their respective `prelogging` default loglevels ``'WARNING'`` and ``'NOTSET'``;
+  at their respective `prelogging` default loglevels ``WARNING`` and ``NOTSET``;
 
-* a discrete logger, named let's say ``'extra'``, with loglevel ''`DEBUG`'',
+* a discrete logger, named let's say ``'extra'``, with loglevel ``DEBUG``,
   which will write to a different file using a handler at default loglevel
-  ``'NOTSET'``;
+  ``NOTSET``;
 * logfiles should be in the ``_log/`` subdirectory of the current directory.
 
 How-to
@@ -133,7 +131,7 @@ and file handlers; use root loglevel ``'DEBUG'``; set ``log_path`` as required::
                  attach_handlers_to_root=True)
 
 Set up the root logger with a ``stderr`` console handler and a file handler,
-at their respective default loglevels ``'WARNING'`` and ``'NOTSET'``::
+at their default loglevels::
 
     lcd.add_stderr_handler('console',
                            formatter='msg'
@@ -141,8 +139,8 @@ at their respective default loglevels ``'WARNING'`` and ``'NOTSET'``::
                        filename='root.log',
                        formatter='logger_level_msg')
 
-Add an ``'extra'`` logger, with loglevel ''`DEBUG`'', which will write to a
-different file using a handler at default loglevel ``'NOTSET'``.
+Add an ``'extra'`` logger, with loglevel ``DEBUG``, which will write to a
+different file using a handler at default loglevel ``NOTSET``.
 Note the use of parameters ``attach_to_root`` and ``propagate``:
 
     * in the ``add_file_handler`` call, passing ``attach_to_root=False`` ensures
@@ -248,8 +246,7 @@ The examples in this chapter, and the preceding Exercise, have hopefully
 conveyed the significance of propagation and the importance of "right"
 handler placement. Now is a good time to reflect further on these matters.
 
-According to the documentation for
-    `Logger.propagate <https://docs.python.org/3/library/logging.html#logging.Logger.propagate>`_,
+According to the documentation for `Logger.propagate <https://docs.python.org/3/library/logging.html#logging.Logger.propagate>`_,
 
 
     | if [a logger's ``propagate`` property] evaluates to true [the default],

@@ -22,10 +22,11 @@ Using `prelogging`
     intro-setup-testing-examples
     overview-of-logging
     configuration
-    LCDDictBasic-organization-basic_usage
-    LCDDict-features-and-usage
+    LCDictBasic-organization-basic_usage
+    LCDict-features-and-usage
     configuring-loggers
     topics-recipes
     class-reference
+    examples
     the-index
 
