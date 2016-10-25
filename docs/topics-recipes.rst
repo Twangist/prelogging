@@ -55,8 +55,6 @@ The :ref:`LCDictBuilderABC` documentation describes how that class and its two
 methods operate. The test ``tests/test_lcd_builder.py`` illustrates using
 the class to configure logging across multiple modules.
 
-.. todo::
-    | <<<<< TODO -- more? >>>>>
 
 --------------------------------------------------
 
@@ -449,14 +447,16 @@ to build an ``LCDict``; just refrain from calling its ``config`` method, as
 Django will pass the ``LOGGING`` dict to ``dictConfig``.
 
 The general approach:
+
     * Write a function that builds and returns an ``LCDict``, perhaps
-      by using the ``LCDictBuilderABC`` class. For the  sake of example,
-      say the function is ``build_settings_lcdict``, in module ``mystuff``.
+      by using the :ref:`LCDictBuilderABC class <config-abc>`. For the sake of
+      example, say the function is ``build_settings_lcdict``, in module
+      ``mystuff``.
     * Add the following two lines to your Django project's ``settings.py``,
       either contiguous or not::
 
         ``from mystuff import build_settings_lcdict``
-        ``LOGGING = build_settings_lcdict()``
+        ``LOGGING = dict(build_settings_lcdict())``
 
 `build_settings_lcdict` builds a logging config dict but doesn't call its
 ``config`` method. Django will add its logging specifications to the ``LOGGING``
@@ -827,8 +827,9 @@ is sent.
 Using a single SMTPHandler
 ++++++++++++++++++++++++++++++++++++++++++++++
 
-.. todo:: comment on the following code
-    Commentary on example ``SMTP_handler_just_one.py``
+The following program uses ``add_email_handler`` to add an ``SMTPHandler``
+with loglevel ``ERROR``. The emails sent will have the same Subject and
+recipients for both ``ERROR`` and ``CRITICAL`` logged messages.
 
 .. code::
 
@@ -868,9 +869,12 @@ Using a single SMTPHandler
 Using two SMTPHandlers, one filtered
 ++++++++++++++++++++++++++++++++++++++++++++++
 
-Comment on the example ``SMTP_handler_two.py``
-
-.. todo:: comment on the following code
+The following program uses ``add_email_handler`` to add two ``SMTPHandler``\s,
+one with loglevel ``ERROR``, and another with loglevel ``CRITICAL``.
+The handler with loglevel ``ERROR`` has a filter to screen out logged messages
+of loglevel ``CRITICAL``. In this way, emails sent for ``ERROR`` and ``CRITICAL``
+logged messages can have different Subjects and recipients, specific to the
+triggering loglevel.
 
 .. code::
 
@@ -910,7 +914,7 @@ Comment on the example ``SMTP_handler_two.py``
         return record.levelname  == 'ERROR'
 
 
-    def build_lcdict():
+    def build_lcd():
         lcd = LCDict(attach_handlers_to_root=True)
         lcd.add_stderr_handler('con-err', formatter='level_msg')
         # root, console handler levels: WARNING.
@@ -942,7 +946,7 @@ Comment on the example ``SMTP_handler_two.py``
 
     # -----------------------------------------
 
-    build_lcdict()
+    build_lcd()
 
     root = logging.getLogger()
     root.warning("Be careful")                  # logged to console

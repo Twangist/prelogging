@@ -1,8 +1,6 @@
 Introduction and Setup
 ============================================
 
-(TODO Review this lead-in)
-
 `prelogging` is a package for setting up, or *configuring*, the
 logging facility of the Python standard library.
 To *configure logging* is to specify the logging entities you wish to create —
