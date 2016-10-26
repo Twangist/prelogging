@@ -2,16 +2,17 @@ Introduction and Setup
 ============================================
 
 `prelogging` is a package for setting up, or *configuring*, the
-logging facility of the Python standard library.
-To *configure logging* is to specify the logging entities you wish to create —
-formatters, handlers, optional filters, and loggers — as well as which of them
-use which others. Once configured, logging messages with the `logging` facility
-is simple and powerful; configuration presents the only challenge. `logging`
-provides a couple of approaches to configuration — static, using a dict or an
-analogous YAML text file; and dynamic, using the `logging` API — both of which
-have their shortcomings. `prelogging` offers a hybrid approach: a streamlined,
-consistent API for incrementally constructing a dict used to configure logging
-statically.
+logging facility of the Python standard library. To *configure logging* is to
+specify the logging entities you wish to create — formatters, handlers, optional
+filters, and loggers — as well as which of them use which others.
+
+Once configured, logging messages with the `logging` facility is simple and
+powerful; configuration presents the only challenge. `logging` provides a couple
+of approaches to configuration — static, using a dict or an analogous YAML text
+file; and dynamic, using the `logging` API — both of which have their shortcomings.
+
+`prelogging` offers a hybrid approach: a streamlined, consistent API for
+incrementally constructing a dict used to configure logging statically.
 As you build the configuration dict, by default `prelogging` checks for possible
 mistakes and issues warnings on encountering them. `prelogging` also supplies
 missing functionality: it provides multiprocessing-safe logging to the console,
