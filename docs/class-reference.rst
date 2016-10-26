@@ -21,7 +21,7 @@ Class diagram
 
 .. _prelogging-all-classes:
 
-.. figure:: LCDict_classes-v4b.png
+.. figure:: prelogging_classes-v4c.png
     :figwidth: 100%
 
     |br| **prelogging** classes — inheritance, and who uses whom

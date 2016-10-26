@@ -205,7 +205,7 @@ with an appropriate logging configuration.
 
 .. figure:: mproc_queue_paradigm.png
 
-    Multiprocess logging with a queue
+    Multiprocess logging with a queue and a logging thread
 
 This design gives better performance, especially for blocking, slow handlers
 (SMTP, for example). Generally, the worker processes have better things to do

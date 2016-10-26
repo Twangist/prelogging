@@ -1,0 +1,130 @@
+/*
+h2 {
+    font-size: 100%;
+    color: #0B0B0B;
+    /!*font-style: italic;*!/
+    opacity: 0.7;
+}
+
+h3 {
+    font-size: 100%;
+    /!*color : #0B0000;*!/
+    font-style: italic;
+    opacity: 0.8;
+}
+
+h4 {
+    font-size: 95%;
+    opacity: 0.8;
+}
+
+h5 {
+    font-size: 97%;
+    font-style: italic;
+    opacity: 0.7;
+}
+
+h6 {
+    font-size: 94%;
+}
+
+*/
+
+/*
+.tt.literal {
+    color: #404040;
+}
+*/
+/*
+ Trying to override the hideous font and color
+    #E74C3C
+ of inline code in the RTD theme. So far, nothing works.
+*/
+
+span.literal {
+    /*color: #0044DD !important;*/
+    /*color: #003aa9 !important;*/
+    /*color: #003398 !important;*/
+    /*color: #3D4B66 !important;*/
+    color: #3D4B6E !important;
+
+    /*background-color: #efefff;*/
+    /*background-color: #f0f0ff;*/
+    background-color: #f3f4fc;
+    /*background-color: #f6f7ff;*/
+    /*font-size: 110% !important;*/
+    font-size: 107% !important;
+}
+
+/* TRY THIS -- tighten padding, on right?
+ */
+.rst-content tt, .rst-content tt, .rst-content code {
+	color: #000;
+	/*padding: 2px 5px;*/
+	padding: 2px 1px;
+}
+
+code.literal {
+    /*color: #003398 !important;*/
+    /*color: #3D4B66 !important;*/
+    color: #3D4B6E !important;
+    background-color: #f3f4fc;
+    /*background-color: #f6f7ff;*/
+    /*font-size: 87% !important */
+    /*font-size: 87% !important;*/
+    font-size: 90% !important;
+}
+
+/* THIS works -- code blocks */
+pre {
+    font-size: 83% !important;
+}
+
+/* Suppress breadcrumbs */
+div[aria-label="breadcrumbs navigation"] {
+    display: none
+}
+
+/* Code-block comments: */
+.c1 {
+    color: #6f83d2;
+}
+/*
+Make HRs more visible, they're ridiculous with 'border-top: 1px solid #e1e4e5;''
+*/
+hr {
+    border-top: 1px solid #bec1c3;
+}
+/*
+DUNNO HOW TO CHANGE SIZE OF CODE BLOCKS.
+They're too small.
+
+div.highlight-python {
+    font-size: 125% !important;
+}
+*/
+
+/*h2 {*/
+    /*font-size: 110%;*/
+    /*/!*font-style: italic;*!/*/
+/*}*/
+h3 {
+    font-size: 116%;
+    font-style: italic;
+}
+
+h4 {
+    font-size: 104%;
+    opacity: 0.8;
+}
+
+h5 {
+    font-size: 95%;
+    font-style: italic;
+    opacity: 0.7;
+}
+
+h6 {
+    font-size: 96%;
+    /*font-style: italic;*/
+}

@@ -1,5 +1,6 @@
 /_HIDE/
 /dist/
+/_readme/_build/
 /docs/_build/
 .DS_Store
 .idea
