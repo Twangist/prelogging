@@ -3,8 +3,8 @@
 # PyPI supports rST, hence:
 __doc__ = """\
 `prelogging` streamlines the configuration of Python logging, provides
-better error checking, and adds multiprocess-safe handlers for writing to
-streams, files, rotating files and the system log.
+better error checking, and offers easy multiprocessing-safe
+logging to streams, files, rotating files and the system log.
 """
 from prelogging import __version__, __author__
 from setuptools import setup    #, find_packages

@@ -19,6 +19,8 @@ Class diagram
 
 .. include:: _global.rst
 
+.. index:: diagram: `prelogging` classes — inheritance, and who uses whom
+
 .. _prelogging-all-classes:
 
 .. figure:: prelogging_classes-v4c.png

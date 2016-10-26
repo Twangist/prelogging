@@ -203,6 +203,8 @@ uses this information to dispatch the record via the originating logger,
 and finally the intended handlers execute. This setup too is easily achieved
 with an appropriate logging configuration.
 
+.. index:: diagram: Multiprocess logging with a queue and a logging thread
+
 .. figure:: mproc_queue_paradigm.png
 
     Multiprocess logging with a queue and a logging thread

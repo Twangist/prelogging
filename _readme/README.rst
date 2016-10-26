@@ -1,9 +1,7 @@
-README for prelogging |version|
+README for `prelogging` |release|
 =================================
 
-.. todo:: README.rst for `prelogging`
-
-.. todo:: link to full docs on readthedocs
+See the full documentation at `https://pythonhosted.org/prelogging/ <https://pythonhosted.org/prelogging/>`_.
 
 
 What `prelogging` is and does
@@ -15,7 +13,7 @@ Installation
 Logging, `logging`, and Logging Configuration
 ------------------------------------------------
 
-Multiprocessing-Safe logging, two ways
+Multiprocessing-safe logging, two ways
 -----------------------------------------
 
 * using "locking handlers", simple subclasses of `logging` handlers
@@ -88,8 +86,8 @@ written.
 
 -------------------------------------------------------------------------------
 
-Class diagram
-----------------
+`prelogging` classes and their superclasses
+------------------------------------------------
 
 .. include:: ../docs/_global.rst
 
