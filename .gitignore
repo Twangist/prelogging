@@ -5,6 +5,4 @@
 .ipynb_checkpoints/*.*
 temp*.py
 temp*.txt
-
-/_log/
-/examples/_log/
+*.pyc
