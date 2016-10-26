@@ -1,7 +1,10 @@
 /_HIDE/
+/dist/
+/docs/_build/
 .DS_Store
 .idea
 /__pycache__/
+/prelogging.egg-info/
 .ipynb_checkpoints/*.*
 temp*.py
 temp*.txt
