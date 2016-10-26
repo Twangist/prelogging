@@ -27,7 +27,7 @@ Logging, `logging`, and Logging Configuration
 
 .. _logging-config-classes:
 
-.. figure:: logging_classes_v2.png
+.. figure:: docs/logging_classes_v2.png
 
     The objects of `logging` configuration
 
@@ -83,7 +83,7 @@ Class diagram
 
 .. _prelogging-all-classes:
 
-.. figure:: LCDict_classes-v4b.png
+.. figure:: docs/LCDict_classes-v4b.png
     :figwidth: 100%
 
     |br| **prelogging** classes — inheritance, and who uses whom
