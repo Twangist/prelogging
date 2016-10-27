@@ -8,6 +8,7 @@ Further Topics and Recipes
 
 * Configuration distributed across multiple modules or packages
     * :ref:`config-abc`
+    * :ref:`migration`
 
 * :ref:`Multiprocessing — two approaches<tr-mp>`
     .. hlist::
@@ -54,6 +55,35 @@ methods on ``lcd``.
 The :ref:`LCDictBuilderABC` documentation describes how that class and its two
 methods operate. The test ``tests/test_lcd_builder.py`` illustrates using
 the class to configure logging across multiple modules.
+
+
+.. _migration:
+
+Migrating a project that uses static dict-based configuration to `prelogging`
+------------------------------------------------------------------------------
+
+A common pattern for a large program that uses static dict-based configuration
+is to pass around a single (logging config) dict to each "area" of the program;
+each "area" adds its own required entities and possibly modifies those already
+added; finally a top-level routine passes the dict to ``logging.config.dictConfig``.
+
+Let's suppose that each program "area" modifies the logging config dict in
+a function called ``add_to_config_dict(d: dict)``. These ``add_to_config_dict``
+functions performs dict operations on the parameter ``d`` such as
+
+    ``d['handlers']['another_formatter'] = { ... }``
+
+and
+
+    ``d.update( ... )``.
+
+*Assuming your* ``add_to_config_dict`` *functions use "duck typing" and work
+on any parameter* ``d`` *such that* ``isinstance(d, dict)`` *is true, they
+should continue to work properly if you pass them an* LCDict.
+
+Thus, the ``add_to_config_dict`` function specific to each
+program area can easily be converted to an ``add_to_lcdict(cls, lcd: LCDict)``
+classmethod of an ``LCDictBuilderABC`` subclass specific to that program area.
 
 
 --------------------------------------------------

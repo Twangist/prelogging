@@ -47,7 +47,6 @@ Multiprocessing-Safe logging, two ways
     +----------------------------+-----------------------+
     | Symbol                     | Meaning               |
     +============================+=======================+
-    +----------------------------+-----------------------+
     | .. image:: docs/arrowO.png | has zero or more      |
     +----------------------------+-----------------------+
     | m: 0/1                     | many-to-(zero-or-one) |
@@ -95,7 +94,7 @@ Class diagram
 
 .. _prelogging-all-classes:
 
-.. figure:: docs/prelogging_classes-v4c.png
+.. figure:: docs/prelogging_classes-v4d.png
     :figwidth: 100%
 
     |br| **prelogging** classes — inheritance, and who uses whom

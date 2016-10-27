@@ -23,7 +23,7 @@ Class diagram
 
 .. _prelogging-all-classes:
 
-.. figure:: prelogging_classes-v4c.png
+.. figure:: prelogging_classes-v4d.png
     :figwidth: 100%
 
     |br| **prelogging** classes — inheritance, and who uses whom

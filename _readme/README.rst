@@ -23,7 +23,7 @@ Multiprocessing-safe logging, two ways
     - as shown in an example, ``mproc_approach__queue_handler_logging_thread.py``
     - as depicted in the following diagram
 
-.. figure:: mproc_queue_paradigm.png
+.. figure:: ../docs/mproc_queue_paradigm.png
 
     Multiprocess logging with a queue and a logging thread
 
@@ -37,20 +37,19 @@ Multiprocessing-safe logging, two ways
 
 .. _logging-config-classes:
 
-.. figure:: logging_classes_v2.png
+.. figure:: ../docs/logging_classes_v2.png
 
     The objects of `logging` configuration
 
-    +-----------------------+-----------------------+
-    | Symbol                | Meaning               |
-    +=======================+=======================+
-    +-----------------------+-----------------------+
-    | .. image:: arrowO.png | has zero or more      |
-    +-----------------------+-----------------------+
-    | m: 0/1                | many-to-(zero-or-one) |
-    +-----------------------+-----------------------+
-    | m: n                  | many-to-many          |
-    +-----------------------+-----------------------+
+    +-------------------------------+-----------------------+
+    | Symbol                        | Meaning               |
+    +===============================+=======================+
+    | .. image:: ../docs/arrowO.png | has zero or more      |
+    +-------------------------------+-----------------------+
+    | m: 0/1                        | many-to-(zero-or-one) |
+    +-------------------------------+-----------------------+
+    | m: n                          | many-to-many          |
+    +-------------------------------+-----------------------+
 
 
 In words:
@@ -91,20 +90,21 @@ written.
 
 .. include:: ../docs/_global.rst
 
+
 .. _prelogging-all-classes:
 
-.. figure:: prelogging_classes-v4c.png
+.. figure:: ../docs/prelogging_classes-v4d.png
     :figwidth: 100%
 
     |br| **prelogging** classes — inheritance, and who uses whom
 
-    +-----------------------+-----------------------+
-    | Symbol                | Meaning               |
-    +=======================+=======================+
-    | .. image:: arrsup.png | is a superclass of    |
-    +-----------------------+-----------------------+
-    | .. image:: arruse.png | uses (instantiates)   |
-    +-----------------------+-----------------------+
+    +-------------------------------+-----------------------+
+    | Symbol                        | Meaning               |
+    +===============================+=======================+
+    | .. image:: ../docs/arrsup.png | is a superclass of    |
+    +-------------------------------+-----------------------+
+    | .. image:: ../docs/arruse.png | uses (instantiates)   |
+    +-------------------------------+-----------------------+
 
 -------------------------------------------------------------------------------
 

@@ -49,9 +49,13 @@ You can install `prelogging` from PyPI (the Python Package Index) using ``pip``:
 (Here and elsewhere, ``$`` at the beginning of a line indicates your command
 prompt, whatever that may be.)
 
-Alternately, you can download a ``.zip`` or ``.tar.gz`` archive of the
-repository from github or PyPI, uncompress it to a fresh directory, ``cd`` to
-that directory, and run::
+Alternately, you can
+
+* clone the github repo, or
+* download a ``.zip`` or ``.tar.gz`` archive of the repository
+  from github or PyPI, and uncompress it
+
+to a fresh directory, ``cd`` to that directory, and run::
 
     $ python setup.py install
 
