@@ -13,7 +13,6 @@ recursive-include docs *
 exclude build/*
 exclude dist/*
 exclude _HIDE/*
-exclude _readme/*
 prune _readme/*
 prune docs/_build/*
 
