@@ -8,13 +8,15 @@ include README.rst
 
 recursive-include tests *
 recursive-include examples *
+recursive-include docs *
 
 exclude build/*
-exclude docs/*
+exclude dist/*
 exclude _HIDE/*
+exclude _readme/*
+prune _readme/*
+prune docs/_build/*
 
 global-exclude *.pyc
 global-exclude .DS_Store
 global-exclude */__pycache__/*
-
-

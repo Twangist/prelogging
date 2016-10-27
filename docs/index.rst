@@ -4,16 +4,17 @@
 `prelogging` v\ |version|
 ==================================================
 
-`prelogging` is a pure Python package that simplifies
-configuration of `logging`, makes more advanced `logging` features easily accessible,
-and includes several "batteries":
+`prelogging` is a pure Python package that provides a simple, consistent, powerful
+API for configuring logging. The package includes several "batteries":
 
-    * a basic fund of formatters
-    * simplified creation of handlers
+    * formatter presets — a basic fund of useful formatters
+    * consistent methods to add handlers both mundane and exotic
     * multiprocessing-safe handlers which output to the console, to files and
       rotating files, and to the system log.
 
-Using `prelogging`
+.. Using `prelogging`
+
+Contents
 ------------------------
 
 .. toctree::
