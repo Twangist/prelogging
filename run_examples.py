@@ -86,5 +86,10 @@ mproc_approach__locking_handlers.main()
 mproc_approach__queue_handler_logging_thread.main()
 SMTP_handler_just_one.main()
 SMTP_handler_two.main()
-syslog.main()
-mproc_deco_syslog.main()
+
+import sys
+if sys.platform.startswith('darwin'):
+    syslog.main()
+    mproc_deco_syslog.main()
+else:
+    print("*** Syslog examples are for macOS / OS X only; skipping them. ***")

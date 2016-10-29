@@ -53,7 +53,7 @@ class LCDictBuilderABC():
     ``BuilderPackage``, in some order; then on ``BuilderSubPackage``.
 
     See the test ``test_lcd_builder.py`` for a multi-module example
-    that uses these capabilities.
+    of these capabilities.
     |hr|
     """
     @classmethod

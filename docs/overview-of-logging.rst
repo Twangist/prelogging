@@ -19,7 +19,7 @@ concepts and standard use cases. Nevertheless, it will be helpful to review
 several topics.
 
 
-The uses of logging
+Using `logging`
 -------------------------------------
 
 A program logs messages using the ``log`` method of objects called *loggers*,
@@ -48,21 +48,21 @@ This allows developers to dial in different amounts of logging verbosity:
 you might set a logger's level to ``DEBUG`` in development but to
 ``ERROR`` in production. There's no need to delete or comment out
 the lines of code that log messages, or to precede each such block with a
-conditional guard. The logging facility is a very sophisticated version of using
-the `print` statement for debugging.
+conditional guard. The logging facility is a very sophisticated version
+of using the `print` statement for debugging.
 
 
-`logging` classes used in configuration
+`logging` classes that can be configured
 -----------------------------------------------
 
-`logging` defines a few types of entities, which support the ``Logger``
+`logging` defines a few types of entities, culminating in the ``Logger``
 class. In general, a program or library will set up, or *configure*, logging
 only once, at startup. This entails specifying message formats, destinations,
 loggers, and containment relations between those things. Once a program has
 configured logging as desired, use of loggers is very straightforward.
 Configuration, then, is the only barrier to entry.
 
-The following diagram displays the types involved in logging configuration,
+The following diagram displays the types that can be configured statically,
 and their dependencies:
 
 .. index:: diagram: The objects of `logging` configuration

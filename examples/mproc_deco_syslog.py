@@ -3,7 +3,12 @@
 __author__ = 'brianoneill'
 __version__ = '0.2'
 
-from deco import *
+try:
+    from deco import *
+except ImportError:
+    exit("`mproc_deco_syslog.py` requires the `deco` package -- "
+         "https://github.com/alex-sherman/deco")
+
 import time
 import random
 from collections import defaultdict
@@ -47,6 +52,10 @@ def process_data_set(data):
 
 
 def config_logging(use_locking):
+
+    if not sys.platform.startswith('darwin'):
+        raise NotImplementedError(
+            "This example is currently implemented only for OS X / macOS")
 
     print("%s locking" % ("Using" if use_locking else "NOT using"))
 

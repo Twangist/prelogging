@@ -60,7 +60,7 @@ the class to configure logging across multiple modules.
 .. _migration:
 
 Migrating a project that uses static dict-based configuration to `prelogging`
-------------------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 A common pattern for a large program that uses static dict-based configuration
 is to pass around a single (logging config) dict to each "area" of the program;
