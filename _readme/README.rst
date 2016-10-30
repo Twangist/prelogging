@@ -31,9 +31,11 @@ Requirements
 The `prelogging` package requires only Python 3.4+ or 2.7. It has no external
 dependencies.
 
-Very little of `prelogging`\'s code varies between Python versions. We've used
-`six` sparingly (one decorator, one function, and one constant) to unify the
-few differences. The `prelogging` package includes a copy of the ``six.py``
+Very little of `prelogging`\'s code is sensitive to Python 3 vs 2.
+To achieve backwards compatibility with 2.7 we had to sacrifice, with great
+reluctance, type annotations and keyword-only parameters. To address the
+few remaining differences, we've used `six` sparingly (one decorator, one
+function, and one constant). The `prelogging` package includes a copy of the ``six.py``
 module (v1.10.0, for what it's worth), so no separate installation is required.
 
 The `prelogging` distribution contains an ``examples/`` subdirectory. A few
@@ -73,6 +75,14 @@ environment.
 Running tests and examples
 ----------------------------
 
+.. sidebar:: All these scripts are executable on \*nix
+
+    On Unix systems, including macOS, ``setup.py``, the ``run_*.py`` scripts
+    and the examples are all executable and have proper
+    `shebang <https://en.wikipedia.org/wiki/Shebang_(Unix)>`_\s, so for example
+    you can use the command ``./root_logger.py`` instead of
+    ``python root_logger.py``.
+
 The top-level directory of the `prelogging` repository contains three scripts —
 ``run_tests.py``, ``run_examples.py`` and ``run_all.py`` — which let you run
 all tests, all examples, or both, from the top-level directory. You can run
@@ -82,12 +92,6 @@ their subdirectory, as in this example::
     $ cd examples/
     $ python root_logger.py
 
-.. note::
-    On \*nix systems, including macOS, ``setup.py``, the ``run_*.py`` scripts
-    and the examples are all executable and have proper
-    `shebang <https://en.wikipedia.org/wiki/Shebang_(Unix)>`_\s, so for example
-    you can use the command ``./root_logger.py`` instead of
-    ``python root_logger.py``.
 
 Coverage from tests + examples
 +++++++++++++++++++++++++++++++++++
@@ -155,12 +159,22 @@ loglevel is less than its own. In order for a message to actually be written
 to a particular destination, its loglevel must equal or exceed the loglevels
 of both the logger and the handler representing the destination.
 
-This allows developers to dial in different amounts of logging verbosity:
-you might set a logger's level to ``DEBUG`` in development but to
-``ERROR`` in production. There's no need to delete or comment out
-the lines of code that log messages, or to precede each such block with a
-conditional guard. The logging facility is a very sophisticated version
-of using the `print` statement for debugging.
+.. sidebar:: Sensible choices for dedicated loggers
+
+    The logger named ``'__name__'`` is the standard choice for a module's
+    dedicated logger; the logger named ``'__package__'`` is a great choice for
+    a package. Without any configuration, these will just write message text to
+    ``stderr``.
+
+This elegant system allows developers to easily dial in different amounts
+of logging verbosity. When developing a module or package, you can use a
+dedicated logger to log internal messages at thoughtfully chosen loglevels.
+In development, set the logger's loglevel to ``DEBUG`` or ``INFO`` as needed;
+once the module/package is in good condition, raise that to ``WARNING``; in
+production, use ``ERROR``. There's no need to delete or comment out the lines
+of code that log messages, or to precede each such block with a conditional guard.
+The logging facility is a very sophisticated version of using the `print`
+statement for debugging.
 
 
 `logging` classes that can be configured
@@ -212,7 +226,7 @@ A ``Formatter`` is basically just a format string that uses keywords
 defined by the `logging` module — for example, ``'%(message)s'`` and
 ``'%(name)-20s: %(levelname)-8s: %(message)s'``.
 
-A ``Handler`` formats and writes formatted logged messages to a particular
+A ``Handler`` formats and writes logged messages to a particular
 destination — a stream (e.g. ``sys.stderr``, ``sys.stdout``, or an in-memory
 stream such as an ``io.StringIO()``), a file, a rotating set of files, a socket,
 etc. A handler without a formatter behaves as if it had a ``'%(message)s'``

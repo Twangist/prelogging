@@ -106,8 +106,9 @@ Handler examples
     ``SMTP_handler_two.py`` adds two, one with a filter, in order
     to send different email messages for different loglevels.
 
-    Both programs use ``_smtp_credentials.py``, which you must edit
-    appropriately for these examples to work.
+    For these examples to work properly, you must edit
+    ``examples/_smtp_credentials.py`` to contain a valid username,
+    password and SMTP server.
 
 ``syslog.py``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -157,18 +158,23 @@ Multiprocessing examples
          -N, --NOLOCKING    Use non-locking handlers   [default: False]
          -h, --help         Write this help message and exit.
 
+    When run without locking, the multiprocessing examples *will* eventually
+    misbehave -- ``NUL`` (0) bytes will appear in the logged output, and messages
+    logged by different processes will barge in on each other. The directory
+    ``examples/_log saved`` contains subdirectories
+    ``_log--2.7-runs``, ``_log--3.5-runs (I)`` and ``_log--3.5-runs (II)`` which
+    capture several instances of this misbehavior. Though your mileage
+    may vary, experience has shown that this expected misbehavior is more likely
+    when these examples are run individually than when they're run via
+    ``run_examples.py`` or ``run_all.py``.
 
-    Typically, when any of of these programs is run with non-locking handlers,
-    messages from different processes will barge in on each other, and ``NUL``
-    bytes will be written.
-    Thus, after running any of them, you can use ``check_for_NUL.py``
+    After running any of these examples, you can use ``check_for_NUL.py``
     to check whether or not its logfile output is garbled:
 
         ``$ ./check_for_NUL.py`` `filename`
 
-    reports which if any lines of a text file `filename` contain ``NUL`` (0)
-    bytes. Here, `filename` would be the name of the logfile that the program
-    wrote to.
+    reports which if any lines of a text file `filename` contain ``NUL`` bytes.
+    Here, `filename` would be the name of the logfile that the program wrote to.
 
 ``mproc.py``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -24,11 +24,12 @@ Requirements
 The `prelogging` package requires only Python 3.4+ or 2.7. It has no external
 dependencies.
 
-Very little of `prelogging`\'s code varies between Python versions; however, to
-achieve backwards compatibility with 2.7 we had to sacrifice, with great
-reluctance, type annotations and keyword-only parameters. The `prelogging`
-package includes a copy of the module ``six.py`` (version 1.10.0, for what it's
-worth), which it uses sparingly (one decorator, one function, and one constant).
+Very little of `prelogging`\'s code is sensitive to Python 3 vs 2.
+To achieve backwards compatibility with 2.7 we had to sacrifice, with great
+reluctance, type annotations and keyword-only parameters. To address the
+few remaining differences, we've used `six` sparingly (one decorator, one
+function, and one constant). The `prelogging` package includes a copy of the ``six.py``
+module (v1.10.0, for what it's worth), so no separate installation is required.
 
 The `prelogging` distribution contains an ``examples/`` subdirectory. A few
 examples (``mproc_deco*.py``) use the `deco <https://github.com/alex-sherman/deco>`_
@@ -59,7 +60,8 @@ to a fresh directory, ``cd`` to that directory, and run::
 
     $ python setup.py install
 
-On \*nix systems, including macOS, ``setup.py`` is executable, so on those
+On \*nix systems, including macOS, ``setup.py`` is executable and has a proper
+`shebang <https://en.wikipedia.org/wiki/Shebang_(Unix)>`_, so on those
 platforms you can just say::
 
     $ ./setup.py install
@@ -88,12 +90,12 @@ Running tests
 You can run all the tests before installing `prelogging` by running the script
 ``run_tests.py`` in the top level directory of the repository::
 
-    $ ./run_tests.py
+    $ python run_tests.py
 
 
 Alternately, you can run ::
 
-    $ ./setup.py test
+    $ python setup.py test
 
 
 Coverage from tests
@@ -121,27 +123,15 @@ Examples are not installed; they're in the ``examples/`` subdirectory of the
 distribution. You can run all the examples by running the script
 ``run_examples.py`` in the top-level directory:
 
-    ``$ ./run_examples.py``
+    ``$ python run_examples.py``
 
 From the same directory, you can run all tests and examples with the script
 ``run_all.py``:
 
-    ``$ ./run_all.py``
+    ``$ python run_all.py``
 
-Two examples use the ``add_email_handler`` method to send emails. *In order to
-run these without errors, you must first edit the file*
-``examples/_smtp_credentials.py`` *to contain a valid username, password and
-SMTP server.*
-
-When run without locking, the multiprocessing examples *will* eventually
-misbehave -- NUL bytes will appear in the logged output, and messages logged by
-different processes will barge in on each other. The directory
-``examples/_log saved`` contains subdirectories
-``_log--2.7-runs``, ``_log--3.5-runs (I)`` and ``_log--3.5-runs (II)`` which
-capture several instances of this misbehavior. Though your mileage
-may vary, experience has shown that this expected misbehavior is more likely
-when these examples are run individually than when they're run via
-``run_examples.py`` or ``run_all.py``.
+The chapter :ref:`guide-to-examples` catalogs all the examples and briefly
+describes each one.
 
 Coverage from tests + examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

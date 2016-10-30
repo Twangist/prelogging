@@ -28,6 +28,6 @@ Contents
     configuring-loggers
     topics-recipes
     class-reference
-    examples
+    guide-to-examples
     the-index
 

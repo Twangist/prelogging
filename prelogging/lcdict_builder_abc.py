@@ -81,15 +81,15 @@ class LCDictBuilderABC():
                      locking=False,
                      attach_handlers_to_root=False,
                      disable_existing_loggers=False):
-        """A single method which creates an ``LCDict``,
-        calls all ``add_to_lcdict`` methods with that object. Your program
-        should call this method once (only), and then call ``config()``
+        """A single method which creates an ``LCDict``, and returns it
+        after calling all ``add_to_lcdict`` methods with that object. Your
+        program should call this method once (only), and then call ``config()``
         on the returned logging config dict.
 
         Parameters are as for ``LCDict.__init__``.
 
-        This method creates an ``LCDict`` ``lcd``,
-        and calls ``subcls.add_to_lcdict(lcd)`` on all subclasses ``subcls``
+        This method creates an ``LCDict`` ``lcd``, and calls
+        ``subcls.add_to_lcdict(lcd)`` on all subclasses ``subcls``
         of ``LCDictBuilderABC`` *which implement the method*, in breadth-first
         order, passing the same ``LCDict`` instance to each.
 
@@ -99,8 +99,8 @@ class LCDictBuilderABC():
         Thus, make sure that your program has imported all such subclasses
         before it calls this method. If the contributions of the ``add_to_lcdict``
         method of some such subclass have no effect — its handlers and/or
-        loggers do nothing — it's probably because the subclass wasn't
-        imported when ``build_lcdict()`` was called.
+        loggers do nothing — it may be because the subclass wasn't imported
+        when ``build_lcdict()`` was called.
 
         :return: the built ``LCDict``
         """
