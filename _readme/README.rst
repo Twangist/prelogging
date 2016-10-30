@@ -86,12 +86,17 @@ Running tests and examples
 The top-level directory of the `prelogging` repository contains three scripts —
 ``run_tests.py``, ``run_examples.py`` and ``run_all.py`` — which let you run
 all tests, all examples, or both, from the top-level directory. You can run
-these before installing `prelogging`. To run individual examples, first CD into
-their subdirectory, as in this example::
+these before installing `prelogging`.
+
+To run individual examples, first CD into their subdirectory, as in this example::
 
     $ cd examples/
     $ python root_logger.py
 
+
+The `Guide to Examples <https://pythonhosted.org/prelogging/guide-to-examples.html>`_
+in the full documentation catalogs all the examples and briefly
+describes each one.
 
 Coverage from tests + examples
 +++++++++++++++++++++++++++++++++++
@@ -118,7 +123,7 @@ Quick start
 
 .. BACKGROUND / REVIEW section:
 
-Overview of Logging
+Overview of logging
 -------------------------
 
 Logging is an important part of a program's internal operations, an essential
@@ -140,7 +145,7 @@ Using `logging`
 A program logs messages using the ``log`` method of objects called *loggers*,
 which are implemented in `logging` by the ``Logger`` class. You can think of
 the ``log`` method as a pumped-up ``print`` statement. It writes a message,
-tagged with a level of severity, to one or more destinations.
+tagged with a level of severity, to zero or more destinations.
 In `logging`, a ``Handler`` object — a *handler* — represents a single
 destination, together with a specified output format.
 A handler implements abstract methods which format message data into structured
@@ -222,6 +227,11 @@ In words:
 What these objects do
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. sidebar:: Keywords that can appear in formatters
+
+    Here's
+    `the complete list of them <https://docs.python.org/3/library/logging.html?highlight=logging#logrecord-attributes>`_.
+
 A ``Formatter`` is basically just a format string that uses keywords
 defined by the `logging` module — for example, ``'%(message)s'`` and
 ``'%(name)-20s: %(levelname)-8s: %(message)s'``.
@@ -243,30 +253,259 @@ written.
 Logging configuration — with `logging`, with `prelogging`
 ------------------------------------------------------------------------------
 
-.. todo:: blah
+.. todo:: <<<<<<<<<<<<<<<< TODO >>>>>>>>>>>>>>>>
+
+We'll use a simple example to discuss and compare various approaches to logging
+configuration — using the facilities provided by the `logging` package, and then
+using `prelogging`.
+
+Logging configuration requirements — example use case
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-Multiprocessing-safe logging, two ways
------------------------------------------
+Suppose we want the following configuration:
 
-* using "locking handlers", simple subclasses of `logging` handlers
-  which `prelogging` provides natively << TODO -- more about this >>
-* using a QueueHandler and a logging thread,
-    - as explained in the docs
-    - as shown in an example, ``mproc_approach__queue_handler_logging_thread.py``
-    - as depicted in the following diagram
+.. _example-overview-config:
 
-.. figure:: ../docs/mproc_queue_paradigm.png
+    **Configuration requirements**
 
-    Multiprocess logging with a queue and a logging thread
+    Messages should be logged to both ``stderr`` and a file. Only messages with
+    loglevel ``INFO`` or higher should appear on-screen, but all messages should
+    be logged to the file. Messages to ``stderr`` should consist of just the
+    message, but messages written to the file should also contain the logger
+    name and the message's loglevel.
 
+    The logfile contents should persist: the file handler should **append**
+    to the logfile, rather than overwriting it each time the program using these
+    loggers is run.
+
+This suggests two handlers, each with an appropriate formatter — a ``stderr``
+stream handler with level ``INFO``, and a file handler with level ``DEBUG``
+or, better, ``NOTSET``. (``NOTSET`` is the default loglevel for handlers.
+Numerically less than ``DEBUG``, all loglevels are greater than or equal to it.)
+Both handlers should be attached to the root logger, which should have level
+``DEBUG`` to allow all messages through. The file handler should be created with
+``mode='a'`` (append, not ``'w'`` for overwrite) so that the the logfile
+contents can persist.
+
+Using the example configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Once this configuration is established, these logging calls:
+
+.. code::
+
+    import logging
+    root_logger = logging.getLogger()
+    root_logger.debug("1. 0 = 0")
+    root_logger.info("2. days are getting shorter")
+    root_logger.debug("3. 0 != 1")
+    # ...
+    logging.getLogger('submodule_A').info("4. submodule_A initialized")
+
+should produce the following ``stderr`` output:
+
+.. code::
+
+    2. days are getting shorter
+    4. submodule_A initialized
+
+and the logfile should contain (something much like) these lines:
+
+.. code::
+
+    root                : DEBUG   : 1. 0 = 0
+    root                : INFO    : 2. days are getting shorter
+    root                : DEBUG   : 3. 0 != 1
+    submodule_A         : INFO    : 4. submodule_A initialized
+
+
+Configuration with what the `logging` package provides
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The `logging` package offers two approaches to configuration:
+
+* dynamic, using code;
+* static (and then, there are two variations).
+
+These can be thought of as *imperative* and *declarative*, respectively.
+The following subsections show how each of these approaches can be used to meet
+the requirements stated above.
+
+Using dynamic configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here's how to dynamically configure logging to satisfy the given requirements::
+
+    import logging
+    import sys
+
+    root = logging.getLogger()
+    root.setLevel(logging.DEBUG)
+
+    # Create stderr handler,
+    #   level = INFO, formatter = default i.e. '%(message)s';
+    # attach it to root
+    h_stderr = logging.StreamHandler(stream=sys.stderr)
+    h_stderr.setLevel(logging.INFO)
+    root.addHandler(h_stderr)
+
+    # Create file handler, level = NOTSET (default),
+    #   filename='blather_dyn_cfg.log', formatter = logger:level:msg, mode = 'a'
+    # attach it to root
+    logger_level_msg_fmtr = logging.Formatter('%(name)-20s: %(levelname)-8s: %(message)s')
+    h_file = logging.FileHandler(filename='blather_dyn_cfg.log')
+    h_file.setFormatter(logger_level_msg_fmtr)
+    root.addHandler(h_file)
+
+We've used a number of defaults. It was unnecessary to add::
+
+    msg_fmtr = logging.Formatter('%(message)s')
+    h_stderr.setFormatter(msg_fmtr)
+
+because the same effect is achieved without them. The default ``mode`` of a
+``FileHandler`` is ``a``, which opens the logfile for appending, as per our
+requirements; thus it wasn't necessary to pass ``mode='a'`` to the
+``FileHandler`` constructor. (We omitted other arguments to this constructor,
+e.g. ``delay``, whose default values are suitable.) Similarly, it wasn't
+necessary to set the level of the file handler, as the default level ``NOTSET``
+is just what we want.
+
+Using static configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The `logging.config` submodule offers two equivalent ways to specify
+configuration statically:
+
+* with a dictionary meeting various requirements (mandatory and optional keys,
+  and their possible values), which is passed to ``logging.config.dictConfig()``;
+* with a text file written in YAML, meeting analogous requirements,
+  and passed to ``logging.config.fileConfig()``.
+
+We'll call a dictionary that can be passed to ``dictConfig`` a *logging config
+dict*. The `schema for configuration dictionaries <https://docs.python.org/3/library/logging.config.html#configuration-dictionary-schema>`_
+documents the format of such dictionaries. (Amusingly, it uses YAML to do so!,
+to cut down on the clutter of quotation marks. colons and curly braces.)
+
+We'll deal only with logging config dicts, ignoring the YAML-based approach.
+The Web frameworks Django and Flask configure logging with dictionaries.
+(Django can accomodate YAML-based configuration, but its path of least resistance
+is certainly the dict-based approach.) Dictionaries are native Python; YAML isn't.
+YAML may be more readable than dictionary specifications, but `prelogging` offers
+another, pure-Python solution to that problem.
+
+
+Configuring our requirements statically
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Here's how to do so::
+
+    import logging
+    from logging import config
+
+    config_dict = {
+         'formatters': {'logger_level_msg': {'class': 'logging.Formatter',
+                                             'format': '%(name)-20s: %(levelname)-8s: '
+                                                       '%(message)s'}},
+         'handlers': {'h_stderr': {'class': 'logging.StreamHandler',
+                                   'level': 'INFO',
+                                   'stream': 'ext://sys.stderr'},
+                      'h_file': {'class': 'logging.FileHandler',
+                                 'filename': 'blather_stat_cfg.log',
+                                 'formatter': 'logger_level_msg'}},
+         'root': {'handlers': ['h_stderr', 'h_file'], 'level': 'DEBUG'},
+         'version': 1
+    }
+    logging.config.dictConfig(config_dict)
+
+As with dynamic configuration, most keys have default values, and
+in the interest of brevity we've omitted those that already suit our needs. We
+didn't specify a formatter for the stream handler, nor the file
+handler's mode or loglevel, and so on.
+
+
+Configuration with `prelogging`
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+`prelogging` provides a hybrid approach to configuration that offers the
+best of both the static and dynamic worlds. The package provides a simple but
+powerful API for building a logging config dict incrementally, and makes it
+easy to use advanced features such as rotating log files and email handlers.
+As you add and attach items, by default `prelogging` issues warnings when it
+encounters possible mistakes such as referencing nonexistent entities or
+redefining entities.
+
+`prelogging` defines two classes which represent logging config dicts:
+a ``dict`` subclass ``LCDictBasic``, and `its` subclass ``LCDict``. (The
+:ref:`diagram of classes <prelogging-all-classes>`
+shows all the classes in the `prelogging` package and their interrelations.)
+``LCDictBasic`` provides the basic model of building a logging config
+dict; ``LCDict`` supplies additional conveniences — for example, formatter
+presets (i.e. predefined formatters), and easy access to advanced features
+such as filter creation and multiprocessing-safe rotating file handlers.
+The centerpiece of `prelogging` is the ``LCDict`` class.
+
+You use the methods of these classes to add specifications of named
+``Formatter``\s, ``Handler``\s, ``Logger``\s, and optional ``Filter``\s,
+together with containment relations between them. Once you've done so, calling
+the ``config()`` method of an ``LCDictBasic`` configures logging by passing
+itself, as a ``dict``, to ``logging.config.dictConfig()``. This call creates
+all the objects and linkages specified by the underlying dictionary.
+
+Let's see this in action, applied to our use case, and then further discuss
+how the `prelogging` classes operate.
+
+.. _config-use-case-lcdict:
+
+Configuring our requirements using ``LCDict``
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Here's how we might use ``LCDict`` to configure logging to satisfy our
+:ref:`Configuration requirements <example-overview-config>`::
+
+    from prelogging import LCDict
+
+    lcd = LCDict(root_level='DEBUG',
+                 attach_handlers_to_root=True)
+    lcd.add_stderr_handler(
+                    'h_stderr',
+                    formatter='msg',
+                    level='INFO'
+    ).add_file_handler('h_file',
+                       formatter='logger_level_msg',
+                       filename='blather.log',
+    )
+    lcd.config()
+
+First we create an ``LCDict``, which we call ``lcd`` — a logging config dict
+with root loglevel ``'DEBUG'``. An ``LCDict`` has a few attributes that aren't
+part of the underlying dict, including the ``attach_handlers_to_root`` flag,
+which we set to ``True``. The ``add_*_handler`` methods do just what you'd
+expect: each adds a subdictionary to ``lcd['handlers']`` with the respective
+keys ``'h_stderr'`` and `'h_file'``, and with key/value pairs given by the
+keyword parameters.
+
+We've used a couple of the preset ``Formatter``\s supplied by ``LCDict``,
+``'msg'`` and ``'logger_level_msg'``. Because we pass the flag
+``attach_handlers_to_root=True`` when creating ``lcd``, every
+handler we add to ``lcd`` is (by default) automatically
+attached to the root logger. (You can override this default by passing
+``add_to_root=False`` to any ``add_*_handler`` call.)
+
+**Note**: To allow chaining, as in the above example, the methods of
+``LCDictBasic`` and ``LCDict`` generally return ``self``.
+
+-------------------------------------------------------------------------------
+
+.. todo:: More examples of use -- material from
+
+    * LCDictBasic-organization-basic_usage.rst
+    * LCDict-features-and-usage.rst
 
 -------------------------------------------------------------------------------
 
 .. stuff to include:
 
-
--------------------------------------------------------------------------------
 
 `prelogging` classes and their superclasses
 ------------------------------------------------

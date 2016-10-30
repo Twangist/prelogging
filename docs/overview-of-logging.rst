@@ -25,7 +25,7 @@ Using `logging`
 A program logs messages using the ``log`` method of objects called *loggers*,
 which are implemented in `logging` by the ``Logger`` class. You can think of
 the ``log`` method as a pumped-up ``print`` statement. It writes a message,
-tagged with a level of severity, to one or more destinations.
+tagged with a level of severity, to zero or more destinations.
 In `logging`, a ``Handler`` object — a *handler* — represents a single
 destination, together with a specified output format.
 A handler implements abstract methods which format message data into structured
