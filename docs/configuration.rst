@@ -358,15 +358,19 @@ expect: each adds a subdictionary to ``lcd['handlers']`` with the respective
 keys ``'h_stderr'`` and `'h_file'``, and with key/value pairs given by the
 keyword parameters.
 
-We've used a couple of the preset ``Formatter``\s supplied by ``LCDict``,
+We've used a couple of the Formatter presets supplied by ``LCDict`` —
 ``'msg'`` and ``'logger_level_msg'``. Because we pass the flag
 ``attach_handlers_to_root=True`` when creating ``lcd``, every
 handler we add to ``lcd`` is (by default) automatically
 attached to the root logger. (You can override this default by passing
 ``add_to_root=False`` to any ``add_*_handler`` call.)
 
-**Note**: To allow chaining, as in the above example, the methods of
-``LCDictBasic`` and ``LCDict`` generally return ``self``.
+**Notes**
+
+* To allow chaining, as in the above example, the methods of
+  ``LCDictBasic`` and ``LCDict`` generally return ``self``.
+
+* Here's the :ref:`complete table of prelogging's formatter presets <preset-formatters>`.
 
 Configuring our requirements using ``LCDictBasic``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++

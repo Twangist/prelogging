@@ -8,7 +8,8 @@ Further Topics and Recipes
 
 * Configuration distributed across multiple modules or packages
     * :ref:`config-abc`
-    * :ref:`migration`
+    * :ref:`migration-dynamic`
+    * :ref:`migration-static`
 
 * :ref:`Multiprocessing — two approaches<tr-mp>`
     .. hlist::
@@ -44,20 +45,36 @@ Further Topics and Recipes
 Using ``LCDictBuilderABC``
 -------------------------------
 
-A single ``LCDict`` can be passed around to different "areas"
-of a program, each area contributing specifications of its desired formatters,
-filters, handlers and loggers. The ``LCDictBuilderABC`` class provides a
-micro-framework that automates this approach: each area of a program need only
-define an ``LCDictBuilderABC`` subclass and override its method
-``add_to_lcdict(lcd)``, where it contributes its specifications by calling
-methods on ``lcd``.
+One way for a larger program to configure logging is to pass around an
+``LCDict`` to the different "areas" of the program, each area contributing
+specifications of its desired formatters, filters, handlers and loggers.
+The ``LCDictBuilderABC`` class provides a mini-microframework that automates
+this approach: each area of a program need only define an ``LCDictBuilderABC``
+subclass and override its method ``add_to_lcdict(lcd)``, where it contributes
+its specifications by calling methods on ``lcd``.
 
-The :ref:`LCDictBuilderABC` documentation describes how that class and its two
-methods operate. The test ``tests/test_lcd_builder.py`` illustrates using
-the class to configure logging across multiple modules.
+The `LCDictBuilderABC <https://pythonhosted.org/prelogging/LCDictBuilderABC.html>`_
+documentation describes how that class and its two methods operate. The test
+``tests/test_lcd_builder.py`` illustrates using the class to configure logging
+across multiple modules.
 
+.. _migration-dynamic:
 
-.. _migration:
+Migrating a project that uses dynamic configuration to `prelogging`
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+First a caveat: If your program uses the `logging` API throughout the course of
+its execution to create or (re)configure logging entities, then
+migration to `prelogging` may offer little gain: many of the runtime calls to
+`logging` methods probably can't be replaced. In particular, obviously `prelogging`
+provides no means to delete or detach logging entities.
+
+However, if your program uses the `logging` API to configure logging
+only at startup, in a "set it and forget it" way, then it's probably easy
+to migrate it to `prelogging`. Benefits of doing so include clearer, more
+concise code, and access to the various amenities of `prelogging`.
+
+.. _migration-static:
 
 Migrating a project that uses static dict-based configuration to `prelogging`
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -83,7 +100,8 @@ should continue to work properly if you pass them an* LCDict.
 
 Thus, the ``add_to_config_dict`` function specific to each
 program area can easily be converted to an ``add_to_lcdict(cls, lcd: LCDict)``
-classmethod of an ``LCDictBuilderABC`` subclass specific to that program area.
+classmethod of an `LCDictBuilderABC <https://pythonhosted.org/prelogging/LCDictBuilderABC.html>`_
+subclass specific to that program area.
 
 
 --------------------------------------------------

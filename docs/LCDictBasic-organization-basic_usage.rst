@@ -1,7 +1,6 @@
 `LCDictBasic` Organization and Basic Usage
 ===============================================
 
-
 ``LCDictBasic`` provides an API for building dictionaries that specify
 Python logging configurations — *logging config dicts*.
 The class is fully documented in :ref:`LCDictBasic`; this chapter discusses its
@@ -14,18 +13,19 @@ Configuration with ``LCDictBasic``
 
 Logging configuration involves :ref:`a small hierarchy <logging-config-classes>`
 of only four kinds of entities, which can be specified in a layered way.
-``LCDictBasic`` lets you build a logging config dict modularly and
-incrementally. It flattens the process of specifying the dict, letting you
-define each entity one by one, instead of entering a thicket of triply-nested dicts.
+``LCDictBasic`` lets you build a logging config dict modularly and incrementally.
+You add each logging entity and its attached entities one by one, instead of
+entering a single large thicket of triply-nested dicts.
 
 An ``LCDictBasic`` instance *is* a logging config dict. It inherits from
 ``dict``, and its methods —``add_formatter``, ``add_handler``, ``add_logger``,
 ``attach_logger_handlers`` and so on — operate on the underlying dictionary,
 breaking down the process of creating a logging config dict into basic steps.
 
-While configuring logging, you give a name to each of the entities that you add
-(i.e. specify). When adding a higher-level entity, you identify its constituent
-lower-level entities by name.
+While configuring logging, you give a name to each of the entities that you add.
+(Strictly speaking, you're adding *specifications* entities)
+When adding a higher-level entity, you
+identify its constituent lower-level entities by name.
 
 Once you’ve built an ``LCDictBasic`` meeting your requirements, you configure
 logging by calling the object’s ``config`` method, which passes itself (as
@@ -43,8 +43,8 @@ Specification order
 **Note**:
 ``LCDictBasic`` has dedicated methods for configuring the root logger (setting
 its level, attaching handlers and filters to it), but you can also use the
-class's general-purpose handler methods for this, identifying the root logger by its
-name, ``''``.
+class's general-purpose handler methods for this, identifying the root logger by
+its name, ``''``.
 
 Typically, ``Filter``\s aren't required, and then, setting up logging
 involves just these steps:
@@ -97,8 +97,7 @@ For example, the keyword parameters of ``add_file_handler`` are keys that can
 appear in a (sub-sub-)dictionary of configuration settings for a file handler;
 the keyword parameters of ``add_logger`` are keys that can appear in the
 (sub-sub-)dicts that configures loggers. In any case, all receive sensible
-default values consistent
-with `logging`.
+default values consistent with `logging`.
 
 Items of a logging config dict
 ++++++++++++++++++++++++++++++++
@@ -163,7 +162,7 @@ The basic ``add_*`` methods are these four::
 
 which correspond to all the handler classes defined in the ``logging`` module.
 (:ref:`LCDict <LCDict>` defines methods for many of the handler classes defined in
-``logging.handlers``.)
+``logging.handlers`` -- see below, :ref:`supported-handlers`.)
 
 Each ``add_*`` method adds an item to (or replaces an item in) the corresponding
 subdictionary. For example, when you add a formatter::
@@ -211,7 +210,7 @@ for a new handler ``'fh'``::
      'version': 1}
 
 Similarly, ``add_filter`` and ``add_logger`` add items to the ``filters`` and
-``loggers`` dictionaries.
+``loggers`` dictionaries respectively.
 
 The ``attach_*_*`` methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -219,7 +218,7 @@ The ``attach_*_*`` methods
 The configuring dict of a handler has an optional ``'filters'`` list;
 the configuring dict of a logger can have a ``'filters'`` list and/or
 a ``'handlers'`` list. The ``attach_``\ *entity*\ ``_``\ *entities* methods
-extend these filters and handlers collections::
+extend these lists of filters and handlers::
 
     attach_handler_filters(self, handler_name, * filter_names)
 

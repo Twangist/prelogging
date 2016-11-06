@@ -40,7 +40,14 @@ h6 {
     #E74C3C
  of inline code in the RTD theme. So far, nothing works.
 */
-
+p, li {
+    font-family: "Helvetica";
+    /*color: #202020;*/
+    color: #404040;
+}
+li {
+    font-size: 96%;
+}
 span.literal {
     /*color: #0044DD !important;*/
     /*color: #003aa9 !important;*/
@@ -93,7 +100,15 @@ div[aria-label="breadcrumbs navigation"] {
 Make HRs more visible, they're ridiculous with 'border-top: 1px solid #e1e4e5;''
 */
 hr {
-    border-top: 1px solid #bec1c3;
+    /*border-top: 1px solid #bec1c3;*/
+    /*border-top: 4px solid #202020;*/
+    height: 4px;        /* 6px; */
+    color:#202020;
+    background-color: #800;
+    border-style: solid;
+    border-width: 1px;   /* 2px; */
+    margin-top: 2em;
+    margin-bottom: 0;
 }
 /*
 DUNNO HOW TO CHANGE SIZE OF CODE BLOCKS.

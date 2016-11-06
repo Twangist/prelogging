@@ -1,6 +1,0 @@
-TODOs
-=====
-
-*   ¿ EXPOSE the FilterMaker class that's INSIDE ``LCDEx.add_callable_filter``?
-    It's pretty nice
-        (Django has a similar thing but it doesn't do Currying)
