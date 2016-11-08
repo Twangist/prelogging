@@ -39,7 +39,7 @@ dependencies.
 Very little of `prelogging`\'s code is sensitive to Python 3 vs 2.
 To achieve backwards compatibility with 2.7 we had to sacrifice, with great
 reluctance, type annotations and keyword-only parameters. To address the
-few remaining differences, we've used `six` sparingly (one decorator, one
+few remaining differences, we've used `six`, sparingly (one decorator, one
 function, and one constant). The `prelogging` package includes a copy of the ``six.py``
 module (v1.10.0, for what it's worth), so no separate installation is required.
 
@@ -138,6 +138,8 @@ its successive states, and to report any anomalies, unexpected situations or
 errors, together with enough context to aid diagnosis. Messages can be logged
 to multiple destinations at once — ``stderr`` in a terminal, a local file,
 the system log, email, or a Unix log server over TCP, to cite common choices.
+The logging facility is a very sophisticated version of using the `print`
+statement for debugging.
 
 It's not our purpose to rehash or repeat the extensive (and generally quite
 good) documentation for Python's `logging` package; in fact, we presuppose that
@@ -931,7 +933,7 @@ Formatter presets are added to an ``LCDict`` "just in time", when they're used::
 Only ``'level_msg'`` has been added to ``lcd.formatters``.
 
 
-------------------------------------------------------
+.. ------------------------------------------------------
 
 .. _supported-handlers:
 
