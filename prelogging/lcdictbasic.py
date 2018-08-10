@@ -328,8 +328,7 @@ class LCDictBasic(dict):
         :param filter_dict: keyword/value pairs
             The value of the key '()' is a callable that returns
             the Filter class or callable filter;
-            other key/value pairs are arguments for this callable
-            (used once, to construct/initialize the filter).
+            other key/value pairs are arguments for this callable.
         :return: ``self``
         """
         self._check_readd(self.filters, filter_name, 'filter')
@@ -361,7 +360,7 @@ class LCDictBasic(dict):
         :param formatter: name of a previously added formatter
         :param filters: the name of a filter, or a sequence of names of filters,
             to be used by the handler
-        :param ** handler_dict: keyword/value pairs (values are generally
+        :param handler_dict: keyword/value pairs (values are generally
             strings). For the special keyword ``class``, use ``class_``.
         :return: ``self``
         """
@@ -414,9 +413,9 @@ class LCDictBasic(dict):
         """
         :param handler_name:
         :param stream: e.g. 'ext://sys.stderr' or sys.stderr
-        :param formatter:
-        :param level:
-        :param kwargs:
+        :param formatter: the name of a formatter
+        :param level: the stream handler's loglevel
+        :param kwargs: any additional keyword arguments
         :return: ``self``
         """
         kwargs['class'] = class_
@@ -771,7 +770,7 @@ class LCDictBasic(dict):
         """
         .. _config-method:
 
-        Call ``logging.config.dictConfig()`` with the dict we've built.
+        Call ``logging.config.dictConfig()`` with the dict that has been built.
         If ``self._warn_undefined`` is false, first call ``check()`` to verify
         consistency (that everything referred to exists).
 
@@ -789,12 +788,15 @@ class LCDictBasic(dict):
             self.check()                # 0.2.7b13
         logging.config.dictConfig(dict(self))
 
-    def dump(self, **kwargs):                               # pragma: no cover
-        """Pretty-print the underlying ``dict``.
+    def dump(self, **kwargs):
+        """
+        .. comment def line used to end with "# pragma: no cover"
+
+        Prettyprint the underlying ``dict``.
         For debugging, sanity checks, etc.
         This method does NOT return ''self''.
 
-        :param kwargs: any kwargs that can be passed to ``print``, e.g. ``file``.
+        :param kwargs: any keyword arguments that can be passed to ``print``, e.g. ``file``.
         """
         from pprint import pformat
         print(pformat(dict(self)), **kwargs)
@@ -813,8 +815,10 @@ class LCDictBasic(dict):
         Presently, this method doesn't check for duplicate attachments
         of handlers (or filters).
 
-        :param verbose: If true, write details of all problems to ``stderr``.
-        :return: ``self`` if self is consistent.
+        :param verbose: If true, and if there inconsistencies, write details of
+            all problems to ``stderr`` before raising ``KeyError``.
+
+        :return: ``self`` if consistent.
 
         Raises ``KeyError`` if ``self`` is not consistent.
         """

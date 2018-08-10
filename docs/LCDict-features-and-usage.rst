@@ -21,8 +21,8 @@ Formatter presets
 -------------------------------------------------------
 
 We've already seen simple examples of adding new formatters using
-``add_formatter``. See the documentation of that method in :ref:`LCDictBasic`
-for details of its parameters and their possible values.
+``add_formatter``. The documentation of that method in :ref:`LCDictBasic`
+details its parameters and their possible values.
 
 As our :ref:`first example <config-use-case-lcdict>` indicated,
 often it's not necessary to specify formatters from scratch,
@@ -81,7 +81,7 @@ Formatter presets are added to an ``LCDict`` "just in time", when they're used::
      'version': 1}
 
     >>> # Using the 'level_msg' preset adds it to lcd.formatters:
-    >>> _ = lcd.add_std err_handler('console', 'level_msg')
+    >>> _ = lcd.add_stderr_handler('console', 'level_msg')
     >>> lcd.dump()
     {'disable_existing_loggers': False,
      'filters': {},
@@ -106,12 +106,12 @@ Only ``'level_msg'`` has been added to ``lcd.formatters``.
 Handler classes encapsulated by ``LCDict``
 -----------------------------------------------------
 
-The `logging` package defines more than a dozen handler classes — subclasses of
+`logging` defines more than a dozen handler classes — subclasses of
 ``logging.Handler`` — in the modules ``logging`` and ``logging.handlers``.
-``logging`` defines the basic stream, file and null handler classes, for which
-``LCDictBasic`` supplies  ``add_*_handler`` methods. ``logging.handlers`` defines
-more specialized handler classes, for about half of which (presently) ``LCDict``
-provides corresponding ``add_*_handler`` methods.
+The package defines the basic stream, file and null handler classes,
+for which ``LCDictBasic`` supplies  ``add_*_handler`` methods. Its ``handlers``
+module defines more specialized handler classes, for about half of which (presently)
+``LCDict`` provides corresponding ``add_*_handler`` methods.
 
 .. index:: `'logging` handler classes encapsulated
 
@@ -155,11 +155,11 @@ The following `logging` handler classes presently have no corresponding
 * logging.handlers.HTTPHandler
 
 Future versions of `prelogging` may supply methods for at least some of these.
-In any case, all can be configured using `prelogging` currently. It is
-straightforward to write ``add_*_handler`` methods for any or all of these
-classes, on the model of the existing methods: call ``add_handler`` with the
-appropriate handler class as value of the ``class_`` keyword, and pass any
-other class-specific key/value pairs as keyword arguments.
+In any case, all can be configured using `prelogging`. It's straightforward to
+write ``add_*_handler`` methods for any or all of these classes, on the model of
+the existing methods: call ``add_handler`` with the appropriate handler class as
+value of the ``class_`` keyword, and pass any other class-specific key/value
+pairs as keyword arguments.
 
 ------------------------------------------------------
 
@@ -169,7 +169,7 @@ Automatically attaching handlers to the root logger
 --------------------------------------------------------
 
 Because handlers are so commonly attached to the root logger,
-``LCDict`` makes it easy to do. Two parameters and their defaults
+``LCDict`` makes it easy to do that. Two parameters and their defaults
 govern this:
 
 * The initializer method ``LCDict.__init__`` has a boolean parameter
@@ -267,7 +267,7 @@ will be created:
 Simplified creation and use of filters
 ------------------------------------------
 
-Filter allow finer control than mere loglevel comparison over which messages
+Filters allow finer control than mere loglevel comparison over which messages
 actually get logged.
 
 There are two kinds of filters: class filters and callable filters.
@@ -327,7 +327,7 @@ Class filter example
 Callable filters
 ~~~~~~~~~~~~~~~~~~~~~~
 A filter can also be a callable, of signature ``logging.LogRecord -> int``.
-(In fact, prelogging lets you use callables of signature
+(In fact, `prelogging` lets you use callables of signature
 ``(logging.LogRecord, **kwargs) -> int``; see the section below on
 :ref:`providing extra, static data to callable filters <providing-extra-static-data-to-a-filter-callable>`
 for discussion and an example.)

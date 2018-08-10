@@ -51,7 +51,7 @@ Simple examples
     The parent logger has a stderr handler and a file handler, shared by the
     propagating logger. The non-propagating logger creates its own stderr handler
     by cloning its parent's stderr handler; however, it uses the same file handler
-    as its parent (and by its sibling).
+    as its parent (and its sibling).
 
     Observe how the loglevels of the handlers and loggers determine what gets
     written to the two destinations.
@@ -67,7 +67,7 @@ Simple examples
     Give the root logger a stderr handler and a file handler. Create two loggers,
     one propagating and the other not. The non-propagating logger creates its own
     stderr handler by cloning the root's stderr handler; however, it uses the same
-    file handler used by the root (and by its sibling).
+    file handler used by the root (and its sibling).
 
     Observe how the loglevels of the handlers and loggers determine what gets written
     to the two destinations.
@@ -106,9 +106,10 @@ Handler examples
     ``SMTP_handler_two.py`` adds two, one with a filter, in order
     to send different email messages for different loglevels.
 
-    For these examples to work properly, you must edit
-    ``examples/_smtp_credentials.py`` to contain a valid username,
-    password and SMTP server.
+    .. attention::
+        For these examples to work properly, you must edit
+        ``examples/_smtp_credentials.py`` to contain a valid username,
+        password and SMTP server.
 
 ``syslog.py``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,7 +163,7 @@ Multiprocessing examples
     misbehave -- ``NUL`` (0) bytes will appear in the logged output, and messages
     logged by different processes will barge in on each other. The directory
     ``examples/_log saved`` contains subdirectories
-    ``_log--2.7-runs``, ``_log--3.5-runs (I)`` and ``_log--3.5-runs (II)`` which
+    ``_log--2.7-runs``, ``_log--3.x-runs (I)`` and ``_log--3.x-runs (II)`` which
     capture several instances of this misbehavior. Though your mileage
     may vary, experience has shown that this expected misbehavior is more likely
     when these examples are run individually than when they're run via

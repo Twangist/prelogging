@@ -35,8 +35,6 @@ Further Topics and Recipes
         * :ref:`providing-extra-dynamic-data-to-a-filter`
 
 * :ref:`smtp-handler`
-    * :ref:`smtp-handler-one`
-    * :ref:`smtp-handlers-two-error-and-critical`
 
 ----------------------------------
 
@@ -174,11 +172,12 @@ In this section we'll discuss the second and third approaches.
 .. topic:: Two solutions
 
     In the approach provided natively by `prelogging`, serialization occurs
-    at the handler level, using the package's simple "locking handler" classes.
-    Before an instance of a locking handler writes to its destination, it
-    acquires a lock ( *shared by all instances* of the handler), which it releases
-    when done; attempts by other instances to write concurrently will block until
-    the lock is released by the handler that "got there first".
+    at the ultimate outputting handlers, using the package's simple "locking
+    handler" classes. Before an instance of a locking handler writes to its
+    destination, it acquires a lock (*shared by all instances* of the handler),
+    which it releases when done; attempts by other instances to write
+    concurrently will block until the lock is released by the handler that "got
+    there first".
 
     The queue-based approach is an important and sometimes more performant
     alternative. Using an explicit shared queue and a layer of indirection,
@@ -300,10 +299,11 @@ Worker process configuration
 The main process creates a common queue, then spawns the worker processes
 :math:`P_k`, passing the queue to each one. The worker processes *use, but
 do not configure* the intended loggers :math:`logger_i`. In the logging
-configuration of the worker processes, these loggers have *no handlers*. Thus,
-because of inheritance, all messages are actually logged by their common
-ancestor, the root logger. The root is equipped with a single handler:
-a ``QueueHandler``, which puts messages on a queue it's initialized with.
+configuration of the worker processes, these loggers have *no handlers*.
+Thus, because of inheritance, all messages are actually logged by their
+common ancestor, the root logger. The root is equipped with a single handler:
+a ``QueueHandler`` (``qh`` in the diagram above), which puts messages on
+the queue it's initialized with.
 
 At startup, every worker process configures logging in this simple way:
 
@@ -325,7 +325,7 @@ the locking handlers approach (but with ``locking=False``).
 The logging configuration specifies all the intended loggers :math:`logger_i`,
 after specifying, for each logger, all of its intended handlers
 :math:`handler_{i, j}, j < n_i` and any formatters they use.
-As a result, the 'real' handlers finally execute.
+As a result, the "real" handlers finally execute.
 
 Here's what the logging thread does:
 
@@ -352,7 +352,7 @@ writing libraries (packages).
 
 If you want your library to write logging messages *only* if its user has
 configured logging, the `logging` docs section
-`Configuring Logging for a Library <https://docs.python.org/3/howto/logging.html#configuring-logging-for-a-library>`_,
+`Configuring Logging for a Library <https://docs.python.org/3/howto/logging.html#configuring-logging-for-a-library>`_
 recommends adding a ``NullHandler``, only, to the library's top-level logger.
 
 The example ``use_library.py`` and the ``library`` package it uses
@@ -438,8 +438,19 @@ Results (4 cases)
 
    **Note**: The loglevel of the root logger, configured in the library's user,
    is ``'WARNING'``, whereas the loglevel of the ``'library.module'`` logger is
-   ``'INFO'``. Messages of `library` propagate to the root, and those of levels
-   ```INFO``` and up (not just ```WARNING``` and up) *are logged*.
+   ``'INFO'``. Although ``'WARNING'`` is more restrictive than ``'INFO'``,
+   propagated messages
+
+        | are passed directly to the ancestor loggers' handlers –
+        | neither the level nor filters of the ancestor loggers in question
+        | are considered.
+
+            (*from the* `'propagate' <https://docs.python.org/3/library/logging.html#logging.Logger.propagate>`_ *documentation*)
+
+   In our example, messages of `library` propagate to the root, and those of
+   level ```INFO``` and up (not just ```WARNING``` and up) *are logged*.
+
+   |br|
 
 2. With just ``logging_config()`` commented out, the library prints these
    to stdout::
@@ -447,15 +458,17 @@ Results (4 cases)
             Did something.
             Did something else.
 
-   and the ``use_library.py`` logs this line to stderr (possibly between or
-   after those printed to stdout):
+   and ``use_library.py`` logs this line to stderr (possibly between or after
+   those printed to stdout):
 
    .. code::
 
           I must caution you about that.
 
-   Observe that the library's logged messages aren't written, even though
+   Observe that the library's logged messages are **not** written, even though
    the library's user *uses* logging (with the default configuration).
+
+   |br|
 
 3. With ``logging_config()`` uncommented but the line following it commented
    out, the program writes the following to stdout:
@@ -481,7 +494,7 @@ Using `prelogging` with `Django`
 ------------------------------------
 
 Django uses Python logging for its logging needs, and supplies several classes
-that build on the facilities of the `logging. However, none of its additions
+that build on the facilities of the `logging` package. However, none of its additions
 address configuration. Fortunately, it's quite easy to use `prelogging` in
 conjunction with Django.
 
@@ -505,8 +518,8 @@ The general approach:
     * Add the following two lines to your Django project's ``settings.py``,
       either contiguous or not::
 
-        ``from mystuff import build_settings_lcdict``
-        ``LOGGING = dict(build_settings_lcdict())``
+        from mystuff import build_settings_lcdict
+        LOGGING = dict(build_settings_lcdict())
 
 `build_settings_lcdict` builds a logging config dict but doesn't call its
 ``config`` method. Django will add its logging specifications to the ``LOGGING``
@@ -533,23 +546,21 @@ Providing extra, static data to a filter
 +++++++++++++++++++++++++++++++++++++++++++++
 
 It's simple to provide a filter with
-extra, unchanging data, and in this section we'll go over how to do so.
+extra, unchanging data, and in this section we'll see how to do so.
 
 .. _providing-extra-static-data-to-a-filter-class:
 
 Class filter
 ~~~~~~~~~~~~~~~~~~~
 
-The ``add_class_filter`` method has the following signature:
-.. code::
+The ``add_class_filter`` method has the following signature::
 
     def add_class_filter(self, filter_name, filter_class, **filter_init_kwargs):
         """
-        ...
-        :param filter_init_kwargs: any other parameters to be passed to
-            ``add_filter``. These will be passed to the ``filter_class``
-            constructor. See the documentation for ``LCDictBasic.add_filter``.
-        :return: ``self``
+        filter_init_kwargs: any other parameters to be passed to `add_filter`.
+                            These will be passed to the `filter_class` constructor.
+                            See the documentation for `LCDictBasic.add_filter`.
+        Return: self
         """
 
 When logging is configured, the class ``filter_class`` is instantiated,
@@ -618,50 +629,53 @@ Now let's use the root logger::
     root = logging.getLogger()
 
     for i in range(2):
+        print("i ==", i)
         root.debug(str(i))
         root.info(str(i))
 
 This loop prints the following to stdout::
 
+    i == 0
     count_debug > record levelname = DEBUG, self.level_count = 1; returning 1
     count_info > record levelname = DEBUG, self.level_count = 0; returning True
     DEBUG   : 0
     count_debug > record levelname = INFO, self.level_count = 1; returning True
     count_info > record levelname = INFO, self.level_count = 1; returning 1
     INFO    : 0
+    i == 1
     count_debug > record levelname = DEBUG, self.level_count = 2; returning 0
     count_debug > record levelname = INFO, self.level_count = 2; returning True
     count_info > record levelname = INFO, self.level_count = 2; returning 0
 
-Note that when ``i`` is ``1`` and ``root.debug(str(i))`` is called,
-the ``'count_debug'`` filter returns 0, suppressing the message,
-so the ``count_info`` filter doesn't get called, as there's no reason
-for `logging` to do so.
+.. note::
+    When ``root.debug(str(1))`` is called, only one line
+    is printed. The ``'count_debug'`` filter returns 0, which suppresses not only
+    the logger's message, but also any calls to the logger's other filters – ``count_info``, in this case.
+
+    When ``root.info(str(1))`` is called, two lines are printed.
+    ``'count_debug'`` returns ``True``, so ``count_info`` is called; it returns 0,
+    suppressing the logger's message.
+
 
 .. _providing-extra-static-data-to-a-filter-callable:
 
 Callable filter
 ~~~~~~~~~~~~~~~~~~~
 
-You can also pass extra data to a callable filter by passing additional keyword
-arguments and their values to ``add_callable_filter``. Here's the signature
-of that method, and part of its docstring:
-.. code::
+You can also pass extra, static data to a callable filter by passing additional
+keyword arguments and their values to ``add_callable_filter``. Here's the signature
+of that method, and part of its docstring::
 
     def add_callable_filter(self, filter_name, filter_fn, **filter_init_kwargs):
         """
-        ...
-        :param filter_fn: a callable, of signature
-            ``(logging.LogRecord, **kwargs) -> bool``.
+        filter_fn: a callable, of signature
+                (logging.LogRecord, **kwargs) -> bool.
             A record is logged iff this callable returns true.
-        :param filter_init_kwargs: Keyword arguments that will be passed to
-            the filter_fn **each time it is called**. To pass dynamic data,
-            you can't just wrap it in a list or dict; use an object or callable
-            instead. See the documentation for an example of how to do that.
-
-            Note that this method is like "partial": it provides a kind
-            of Currying.
-        :return: ``self``
+        filter_init_kwargs: Keyword arguments that will be passed,
+            with these same values, to the filter_fn **each time it is called**.
+            (So, this method is something like "partial" -- it provides
+             a kind of Currying.)
+        return: self
         """
 
 The following example illustrates this::
@@ -760,9 +774,9 @@ This approach won't work with logging configuration.
 Configuring logging "freezes" lists and dicts in the logging config dict
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-While you're still building a logging config dict, the dict for a filter will
-reflect changes to any data that's accessible through dict or list references
-you've passed. For example,
+While you're still building a logging config dict, the subdict for an added
+filter will reflect changes to any data that's accessible through dict or list
+references you've passed as keyword arguments. For example,
 
     >>> def my_filter_fn(record, list1=None):
     ...     assert list1
@@ -845,11 +859,11 @@ as a container:
     dw.data = 101
     >>> # In the filter, data_wrapper.data == 101,
     >>> #  so message is logged:
-    logging.getLogger().debug("dw = %s" % dw)
+    logging.getLogger().debug("dw =", dw)
     101
     dw = 101
 
-Of course, you could pass a data-returning callable rather than a container.
+Of course, you can pass a data-returning callable rather than a container.
 
 ------------------------------------------------------
 
@@ -858,148 +872,21 @@ Of course, you could pass a data-returning callable rather than a container.
 Adding SMTPHandlers with ``add_email_handler``
 -------------------------------------------------
 
-``add_email_handler``
-
-class: ``logging.handlers.SMTPHandler``
-
-
-docs: `<https://docs.python.org/3/library/logging.handlers.html#module-logging.handlers>`_
-
-Use the queue handler/queue listener approach (see the example
+Sending an email can take a comparatively long time, so you'll want to do that
+"in the background", so that other processes, or the UI, aren't impeded by
+sending emails. Use the queue handler/queue listener approach (see the example
 ``queue_handler_listener.py``) to send emails from a thread other than
-the main one (and other than the UI thread).  Sending an email can
-take a comparatively long time, so you'll want to do that "in the background",
-and not have other processes, or the UI, block and stutter whenever an email
-is sent.
+the main one (and other than the UI thread).
 
-.. _smtp-handler-one:
+Two of the examples illustrate relevant techniques.
 
-Using a single SMTPHandler
-++++++++++++++++++++++++++++++++++++++++++++++
+``examples/SMTP_handler_just_one.py`` uses ``add_email_handler`` to add an
+``SMTPHandler`` with loglevel ``ERROR``. The emails sent will have the same
+Subject and recipients for both ``ERROR`` and ``CRITICAL`` logged messages.
 
-The following program uses ``add_email_handler`` to add an ``SMTPHandler``
-with loglevel ``ERROR``. The emails sent will have the same Subject and
-recipients for both ``ERROR`` and ``CRITICAL`` logged messages.
-
-.. code::
-
-    from prelogging import LCDict
-    from _smtp_credentials import *
-
-    # for testing/trying the example
-    TEST_TO_ADDRESS = FROM_ADDRESS
-
-    # root, console handler levels: WARNING.
-    lcd = LCDict(attach_handlers_to_root=True)
-    lcd.add_stderr_handler('con-err', formatter='msg'
-    ).add_email_handler(
-        'email-handler',
-        level='ERROR',
-        formatter='time_logger_level_msg',
-        # SMTPHandler-specific kwargs:
-        mailhost='smtp.gmail.com',
-        fromaddr=FROM_ADDRESS,
-        toaddrs=[TEST_TO_ADDRESS, 'uh.oh@kludge.ly'], # string or list of strings
-        subject='Alert from SMTPHandler',
-        username=SMTP_USERNAME,
-        password=SMTP_PASSWORD
-    )
-
-    lcd.config()
-
-    root = logging.getLogger()
-    root.debug("1.")        # not logged (loglevel too low)
-    root.info("2.")         # ditto
-    root.warning("3.")      # logged to console
-    root.error("4.")        # logged to console, emailed
-    root.critical("5.")     # ditto
-
-.. _smtp-handlers-two-error-and-critical:
-
-Using two SMTPHandlers, one filtered
-++++++++++++++++++++++++++++++++++++++++++++++
-
-The following program uses ``add_email_handler`` to add two ``SMTPHandler``\s,
-one with loglevel ``ERROR``, and another with loglevel ``CRITICAL``.
+``examples/SMTP_handler_two.py`` uses ``add_email_handler`` to add two ``SMTPHandler``\s –
+one with loglevel ``ERROR``, the other with loglevel ``CRITICAL``.
 The handler with loglevel ``ERROR`` has a filter to screen out logged messages
 of loglevel ``CRITICAL``. In this way, emails sent for ``ERROR`` and ``CRITICAL``
 logged messages can have different Subjects and recipients, specific to the
 triggering loglevel.
-
-.. code::
-
-    from prelogging import LCDict
-
-    from _smtp_credentials import *
-
-    # for testing/trying it the example
-    TEST_TO_ADDRESS = FROM_ADDRESS
-
-    def add_email_handler_to_lcdict(
-                         lcd,          # *
-                         handler_name,
-                         level,
-                         toaddrs,        # string or list of strings
-                         subject,
-                         filters=()):
-        """Factor out calls to ``add_email_handler``.
-        """
-        lcd.add_email_handler(
-            handler_name,
-            level=level,
-            filters=filters,
-
-            toaddrs=toaddrs,
-            subject=subject,
-
-            formatter='time_logger_level_msg',
-            fromaddr=FROM_ADDRESS,
-            mailhost=SMTP_SERVER,
-            username=SMTP_USERNAME,
-            password=SMTP_PASSWORD
-        )
-
-    def filter_error_only(record):
-        "Let only ERROR messages through"
-        return record.levelname  == 'ERROR'
-
-
-    def build_lcd():
-        lcd = LCDict(attach_handlers_to_root=True)
-        lcd.add_stderr_handler('con-err', formatter='level_msg')
-        # root, console handler levels: WARNING.
-
-        # Add TWO SMTPHandlers, one for each level ERROR and CRITICAL,
-        #    which will email technical staff with logged messages of levels >= ERROR.
-        # We use a filter to make the first handler squelch CRITICAL messages:
-        lcd.add_callable_filter("filter-error-only", filter_error_only)
-
-        # TEST_TO_ADDRESS included just for testing/trying out the example
-        basic_toaddrs = [TEST_TO_ADDRESS, 'problems@kludge.ly']
-
-        # add error-only SMTP handler
-        add_email_handler_to_lcdict(
-                         lcd,
-                         'email-error',
-                         level='ERROR',
-                         toaddrs=basic_toaddrs,
-                         subject='ERROR (Alert from SMTPHandler)',
-                         filters=['filter-error-only'])
-        # add critical-only SMTP handler
-        add_email_handler_to_lcdict(
-                         lcd,
-                         'email-critical',
-                         level='CRITICAL',
-                         toaddrs=basic_toaddrs + ['cto@kludge.ly'],
-                         subject='CRITICAL (Alert from SMTPHandler)')
-        lcd.config()
-
-    # -----------------------------------------
-
-    build_lcd()
-
-    root = logging.getLogger()
-    root.warning("Be careful")                  # logged to console
-    root.error("Something bad just happened")   # logged to console, emailed
-    root.critical("Time to restart")            # ditto
-

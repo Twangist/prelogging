@@ -29,24 +29,21 @@ except ImportError:
 from prelogging import LCDict
 
 from prelogging.six import PY2
-
 if PY2:
-    from Queue import Queue
-else:
-    from queue import Queue
+    exit("%s: logging.handlers.QueueHandler doesn't exist in Python 2"
+         % __file__)
+
+from queue import Queue
+from time import sleep
+
 
 def main():
-    if PY2:
-        import sys
-        print("%s: logging.handlers.QueueHandler doesn't exist in Python 2"
-              % __file__)
-        return
 
     q = Queue(-1)  # no limit on size
 
     lcd = LCDict(attach_handlers_to_root=True)
     lcd.add_formatter(
-        'fmtr', format='%(threadName)s: %(name)s: %(message)s'
+        'fmtr', format='%(threadName)s: %(name)s: %(levelname)-8s: %(message)s'
     ).add_stderr_handler(
         'con', formatter='fmtr'
     ).add_queue_handler(
@@ -67,12 +64,14 @@ def main():
     # thread which monitors the internal queue. This is what
     # you want to happen.
     root.warning('Look out!')
+    sleep(1)
+    root.error('Too late!')
     listener.stop()
 
     # which, when run, will produce:
-    # MainThread: root: Look out!
+    # MainThread: root: WARNING : Look out!
+    # MainThread: root: ERROR   : Too late!
 
 
 if __name__ == '__main__':
     main()
-

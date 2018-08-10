@@ -5,8 +5,8 @@
 Python logging configurations — *logging config dicts*.
 The class is fully documented in :ref:`LCDictBasic`; this chapter discusses its
 organization and use. Everything said here about ``LCDictBasic`` will also be
-true of ``LCDict``; in the next chapter we'll discuss unique features of the
-subclass.
+true of its subclass ``LCDict``, whose unique features we'll discuss in the next
+chapter.
 
 Configuration with ``LCDictBasic``
 ----------------------------------
@@ -23,12 +23,12 @@ An ``LCDictBasic`` instance *is* a logging config dict. It inherits from
 breaking down the process of creating a logging config dict into basic steps.
 
 While configuring logging, you give a name to each of the entities that you add.
-(Strictly speaking, you're adding *specifications* entities)
-When adding a higher-level entity, you
-identify its constituent lower-level entities by name.
+(Strictly speaking, you're adding *specifications* of logging objects.)
+When adding a higher-level entity, you identify its constituent lower-level
+entities by name.
 
 Once you’ve built an ``LCDictBasic`` meeting your requirements, you configure
-logging by calling the object’s ``config`` method, which passes itself (as
+logging by calling that object’s ``config`` method, which passes it (``self``,
 a dict) to `logging.config.dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_.
 
 Specification order
@@ -36,9 +36,8 @@ Specification order
 
 * ``Formatter``\s and ``Filter``\s (if any) don't depend on any other
   logging entities, so they should be specified first.
-* Next, specify ``Handler``\s (and any ``Filter``\s they use).
-* Finally, specify ``Logger``\s, indicating their use of already-defined
-  ``Handler``\s (and ``Filter``\s, if any).
+* Next, specify ``Handler``\s, referencing any ``Formatter``\s and ``Filter``\s that the handlers use.
+* Finally, specify ``Logger``\s, referencing any ``Handler``\s (and possibly ``Filter``\s) that they use.
 
 **Note**:
 ``LCDictBasic`` has dedicated methods for configuring the root logger (setting
@@ -96,7 +95,7 @@ as the latter is a Python reserved word and can't be a parameter.)
 For example, the keyword parameters of ``add_file_handler`` are keys that can
 appear in a (sub-sub-)dictionary of configuration settings for a file handler;
 the keyword parameters of ``add_logger`` are keys that can appear in the
-(sub-sub-)dicts that configures loggers. In any case, all receive sensible
+(sub-sub-)dicts that configure loggers. In any case, all receive sensible
 default values consistent with `logging`.
 
 Items of a logging config dict
@@ -120,9 +119,9 @@ and two non-dict items shown; no `prelogging` methods remove any of these items
 or add further items. The ``LCDictBasic`` class exposes the subdictionaries
 as properties:
 ``formatters``, ``filters``, ``handlers``, ``loggers``, ``root``.
-``root`` is a dict containing settings for that special logger. Every other
-subdict contains keys that are names of entities of the appropriate kind;
-the value of each such key is a dict containing configuration settings for
+The last, ``root``, is a dict containing settings for that special logger.
+Every other subdict contains keys that are names of entities of the appropriate
+kind; the value of each such key is a dict containing configuration settings for
 the entity. In an alternate universe, ``'root'`` and its value (the ``root``
 subdict) could be just a special item in the ``loggers`` subdict; but
 logging config dicts aren't defined that way.
@@ -132,12 +131,16 @@ Properties
 An ``LCDictBasic`` makes its top-level subdictionaries available as properties
 with the same names as the keys: ``d.formatters is d['formatters']`` is true,
 so is ``d.handlers is d['handlers']``, and likewise for ``d.filters``,
-``d.loggers``, ``d.root``. Thus, after the above ``add_formatter`` call, ::
+``d.loggers``, ``d.root``. For example, adding a formatter ``'simple'``
+to ``d``::
+
+    >>> d.add_formatter('simple')
+
+changes the ``formatters`` collection to::
 
     >>> d.formatters                # ignoring whitespace
     {'simple': {'class': 'logging.Formatter',
-                'format': '{message}',
-                'style': '{'}
+                'format': None}
     }
 
 Methods, terminology
@@ -162,7 +165,7 @@ The basic ``add_*`` methods are these four::
 
 which correspond to all the handler classes defined in the ``logging`` module.
 (:ref:`LCDict <LCDict>` defines methods for many of the handler classes defined in
-``logging.handlers`` -- see below, :ref:`supported-handlers`.)
+``logging.handlers`` -- see the later section, :ref:`supported-handlers`.)
 
 Each ``add_*`` method adds an item to (or replaces an item in) the corresponding
 subdictionary. For example, when you add a formatter::
@@ -228,6 +231,11 @@ extend these lists of filters and handlers::
     attach_root_handlers(self, * handler_names)
     attach_root_filters(self, * filter_names)
 
+**Note**:
+All these methods attach *entities* to an *entity*. Each takes a variable number
+of *entities* as their final parameters, and attach them to *entity*, which
+precedes them in the parameter list. The method names reflect the parameter order.
+
 To illustrate, Let's add another handler, attach both handlers to the root,
 and examine the underlying dict::
 
@@ -257,8 +265,7 @@ and examine the underlying dict::
 The ``set_*_*`` methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-These methods modify a single value — a loglevel, or a formatter (the outlier
-case)::
+These methods modify a single value — a loglevel, or a formatter::
 
     set_handler_level(self, handler_name, level)
     set_root_level(self, root_level)
@@ -282,12 +289,13 @@ delete or replace items. Hence "set_handler_formatter".
 `prelogging` warnings and consistency checking
 -----------------------------------------------------------
 
-Another benefit provided by `prelogging` that you don't enjoy by handing
-a possibly large) dict to `logging.config.dictConfig()``:
+Here's another benefit provided by `prelogging` that you don't enjoy by handing
+a (possibly large) dict to `logging.config.dictConfig()``:
 `prelogging` detects certain dubious practices and probable mistakes,
 and optionally prints warnings about them. In any case it automatically
 prevents some of those detected problems, such as attempting to attach
-a handler to a logger multiple times.
+a handler to a logger multiple times, or referencing an entity that doesn't exist
+(because you haven't added it yet, or mistyped its name).
 
 
 The inner class ``LCDictBasic.Warnings``

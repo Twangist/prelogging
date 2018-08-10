@@ -1,23 +1,22 @@
 Configuring loggers
 =======================================================
 
-We have already seen examples
-of how easy it can be to configure the root logger — e.g. with both a console
-handler and a file handler, as in the :ref:`overview<example-overview-config>`.
+We have already seen examples of how easy it can be to configure the root logger
+— for example, with both a console handler and a file handler, as in the
+:ref:`overview<example-overview-config>`.
 
-This chapter is mainly concerned with configuring non-root loggers. However, we
-begin by considering the special case of configuring non-root loggers by not
-configuring them at all, so that the root does all the work. The "magic" of
-propagation makes this possible.
+This chapter is mainly concerned with configuring non-root loggers. We'll
+begin by considering the special case of "configuring" non-root loggers by not
+configuring them at all, so that the root does all the work via propagation.
 
-For simplicity the examples use the root logger and non-root loggers,
+For simplicity the examples in this chapter use the root logger and non-root loggers,
 but they can be adapted to the more general situation of a non-propagating
 logger with handlers, and its descendants.
 
 
 .. include:: _global.rst
 
-* Configuring non-root loggers by inheritance from the root
+* Configuring non-root loggers by propagation to the root
     .. hlist::
         :columns: 3
 
@@ -43,9 +42,9 @@ and then have each module log messages using ``logging.getLogger(__name__)``.
 These "child" loggers require no configuration; they use the handlers
 of the root because, by default, loggers are created with ``propagate=True``.
 
-If the formatters of the handlers include the logger name — as does
-``logger_level_msg`` of ``LCDict`` objects, for example — each
-logged message will state which module wrote it.
+If the formatters of the handlers include the logger name — as the formatter
+preset ``logger_level_msg`` does, for example — each logged message will state
+which module wrote it.
 
 The following example illustrates the general technique:
 
@@ -172,13 +171,13 @@ configuration, but then, arguably, neither does `logging`).
 
 To use the loggers, access them by name::
 
-    # 'extra' writes "Hi there" to file `_LOG/extra.log`:
+    # 'extra' writes "Hi there" to file `_log/extra.log`:
     logging.getLogger('extra').warning("Hi there.")
 
-    # Root writes "UH OH" to `stderr` and to `_LOG/root.log`:
+    # Root writes "UH OH" to `stderr` and to `_log/root.log`:
     logging.getLogger().error("UH OH")
 
-    # Root writes "ho hum" to `_LOG/root.log` only:
+    # Root writes "ho hum" to `_log/root.log` only:
     logging.getLogger().debug("ho hum")
 
 .. index:: Exercise on ``propagate`` and ``attach_to_root``
@@ -191,10 +190,10 @@ handler and the ``'extra'`` logger.
        for ``'extra_fh'``.
 
        Now, ``'extra_fh'`` is a handler of the root logger *too*, so
-       it logs its messages ``"UH OH"`` and ``"ho hum"`` to ``_LOG/extra.log``,
+       it logs its messages ``"UH OH"`` and ``"ho hum"`` to ``_log/extra.log``,
        as well as to ``root.log`` and ``stderr`` as before.
 
-       ``_LOG/root.log`` contains::
+       ``_log/root.log`` contains::
 
             root                : ERROR   : UH OH
             root                : DEBUG   : ho hum
@@ -214,15 +213,15 @@ handler and the ``'extra'`` logger.
 
        Now, ``'extra'`` writes to the root's handlers as well as its own,
        so it logs a warning ``"Hi there."`` to both ``stderr`` and
-       ``_LOG/root.log``.
+       ``_log/root.log``.
 
-       ``_LOG/root.log`` contains::
+       ``_log/root.log`` contains::
 
             extra               : WARNING : Hi there.
             root                : ERROR   : UH OH
             root                : DEBUG   : ho hum
 
-       ``_LOG/extra.log`` contains::
+       ``_log/extra.log`` contains::
 
             extra               : WARNING : Hi there.
 
@@ -255,11 +254,10 @@ According to the documentation for `Logger.propagate <https://docs.python.org/3/
     | Messages are passed directly to the ancestor loggers’ handlers - neither
     | the level nor filters of the ancestor loggers in question are considered.
 
-    |br|
-    This suggests that truly intricate, and no doubt surprising, configurations
-    can be achieved using propagation and fussy placements of handlers on
-    loggers. The **Note** at the end of the above link clearly states best
-    practice:
+This suggests that truly intricate, and no doubt surprising, configurations
+can be achieved using propagation and fussy placements of handlers on
+loggers. The **Note** at the end of the above link clearly states best
+practice:
 
     | If you attach a handler to a logger and one or more of its ancestors,
     | it may emit the same record multiple times. In general, you should not

@@ -7,7 +7,7 @@ We'll use a simple example to discuss and compare various approaches to logging
 configuration — using the facilities provided by the `logging` package, and then
 using `prelogging`.
 
-Logging configuration requirements — example use case
+Logging configuration requirements — example
 ------------------------------------------------------------
 
 
@@ -29,12 +29,12 @@ Suppose we want the following configuration:
 
 This suggests two handlers, each with an appropriate formatter — a ``stderr``
 stream handler with level ``INFO``, and a file handler with level ``DEBUG``
-or, better, ``NOTSET``. (``NOTSET`` is the default loglevel for handlers.
+or ``NOTSET``. (``NOTSET`` is the default loglevel for handlers.
 Numerically less than ``DEBUG``, all loglevels are greater than or equal to it.)
 Both handlers should be attached to the root logger, which should have level
 ``DEBUG`` to allow all messages through. The file handler should be created with
-``mode='a'`` (append, not ``'w'`` for overwrite) so that the the logfile
-contents can persist.
+``mode='a'`` (for append, not ``'w'`` for overwrite) so that existing logfile
+contents persist.
 
 Using the example configuration
 +++++++++++++++++++++++++++++++++++
@@ -45,27 +45,27 @@ Once this configuration is established, these logging calls:
 
     import logging
     root_logger = logging.getLogger()
-    root_logger.debug("1. 0 = 0")
-    root_logger.info("2. days are getting shorter")
-    root_logger.debug("3. 0 != 1")
     # ...
-    logging.getLogger('submodule_A').info("4. submodule_A initialized")
+    root_logger.debug("1. 0 = 0")
+    root_logger.info("2. Couldn't create new Foo object")
+    root_logger.debug("3. 0 != 1")
+    root_logger.warning("4. Foo factory raised IndexError")
 
 should produce the following ``stderr`` output:
 
 .. code::
 
-    2. days are getting shorter
-    4. submodule_A initialized
+    2. Couldn't create new Foo object
+    4. Foo factory raised IndexError
 
 and the logfile should contain (something much like) these lines:
 
 .. code::
 
     root                : DEBUG   : 1. 0 = 0
-    root                : INFO    : 2. days are getting shorter
+    root                : INFO    : 2. Couldn't create new Foo object
     root                : DEBUG   : 3. 0 != 1
-    submodule_A         : INFO    : 4. submodule_A initialized
+    root                : WARNING : 4. Foo factory raised IndexError
 
 
 Meeting the configuration requirements with `logging`
@@ -158,7 +158,7 @@ Disadvantages of dynamic configuration
 
     * *Low-level methods, inconsistent API*
 
-      The ``Handler`` base class takes a keyword argument ``level``,
+      The ``Handler`` base class takes a keyword argument ``level``; however,
       its subclass ``StreamHandler`` takes a keyword argument ``stream``,
       but doesn't recognize ``level``. Thus we couldn't concisely say::
 
@@ -192,7 +192,8 @@ The `logging.config` submodule offers two equivalent ways to specify
 configuration statically:
 
 * with a dictionary meeting various requirements (mandatory and optional keys,
-  and their possible values), which is passed to ``logging.config.dictConfig()``;
+  and their values), which is passed to ``logging.config.dictConfig()``;
+  |br10th|
 * with a text file written in YAML, meeting analogous requirements,
   and passed to ``logging.config.fileConfig()``.
 
@@ -342,7 +343,7 @@ Here's how we might use ``LCDict`` to configure logging to satisfy our
                  attach_handlers_to_root=True)
     lcd.add_stderr_handler(
                     'h_stderr',
-                    formatter='msg',
+                    formatter='msg',    # actually not needed
                     level='INFO'
     ).add_file_handler('h_file',
                        formatter='logger_level_msg',
@@ -355,7 +356,7 @@ with root loglevel ``'DEBUG'``. An ``LCDict`` has a few attributes that aren't
 part of the underlying dict, including the ``attach_handlers_to_root`` flag,
 which we set to ``True``. The ``add_*_handler`` methods do just what you'd
 expect: each adds a subdictionary to ``lcd['handlers']`` with the respective
-keys ``'h_stderr'`` and `'h_file'``, and with key/value pairs given by the
+keys ``'h_stderr'`` and ``'h_file'``, and with key/value pairs given by the
 keyword parameters.
 
 We've used a couple of the Formatter presets supplied by ``LCDict`` —

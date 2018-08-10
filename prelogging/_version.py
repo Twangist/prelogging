@@ -1,2 +1,2 @@
-__version_sans_release__ = '0.3.0'
-__version__ = __version_sans_release__ + 'b6'
+__version_sans_release__ = '0.3.1'
+__version__ = __version_sans_release__ + 'r0'

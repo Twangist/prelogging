@@ -16,6 +16,7 @@ from ._smtp_credentials import *
 # for testing/trying the example
 TEST_TO_ADDRESS = FROM_ADDRESS
 
+
 def main():
     # root, console handler levels: WARNING.
     lcd = LCDict(attach_handlers_to_root=True)

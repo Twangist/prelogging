@@ -47,7 +47,7 @@ def init_logging_config(loggername, logfilename):
     # Create stderr console handler; output shows logger name and loglevel;
     ## loglevel higher than DEBUG.
     lcd.add_formatter('busier_console_fmt',
-                      format='%(name)-25s: %(levelname)-8s: %(message)s'
+                      format='%(name)-40s: %(levelname)-8s: %(message)s'
     ).add_stderr_handler('console',
                          formatter='busier_console_fmt',
                          level='INFO'
@@ -55,7 +55,7 @@ def init_logging_config(loggername, logfilename):
     # Add main file handler, which will write to LOG_PATH + '/' + logfilename,
     # and add logger (loggername == __name__) that uses it
     lcd.add_formatter('my_file_formatter',
-                      format='%(name)-25s: %(levelname)-8s: '
+                      format='%(name)-40s: %(levelname)-8s: '
                              '%(asctime)24s: %(message)s'
     ).add_file_handler('app_file',
                        filename=logfilename,
@@ -95,7 +95,7 @@ def main():
 if __name__ == '__main__':
     main()
 
-    # Written to stderr (flush left):
+    # Written to stderr -- something like this (but flush left)::
     '''
     __main__                 : INFO    : Starting up...
     __main__.sub_noprop      : DEBUG   : Doing something boring with 0

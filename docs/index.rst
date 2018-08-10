@@ -27,7 +27,8 @@ Contents
     LCDict-features-and-usage
     configuring-loggers
     topics-recipes
-    class-reference
     guide-to-examples
-    the-index
+    class-reference
 
+.. TODO !!!! mark/tag index items, and restore this last TOC item:
+..    the-index

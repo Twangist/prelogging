@@ -6,8 +6,9 @@ SMTP_USERNAME = 'john.doe'  # assuming your sending email address is
                             # 'john.doe@' + hostname, e.g. 'john.doe@gmail.com'
 SMTP_PASSWORD = 'password'  # your password
 
-FROM_ADDRESS = SMTP_USERNAME + '@' + hostname_eg__gmail_dot_com
-SMTP_SERVER = tuple_eg__smtp_dot_hostname_comma_TLS_port
+FROM_ADDRESS = SMTP_USERNAME + '@' + 'gmail.com'    # or @ another host
+SMTP_SERVER = ('smtp.gmail.com', 587)               # for example (actually valid)
+
 # For gmail:
 # FROM_ADDRESS =  SMTP_USERNAME + '@gmail.com'
 # SMTP_SERVER = ('smtp.gmail.com', 587)

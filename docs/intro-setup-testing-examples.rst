@@ -18,6 +18,7 @@ mistakes and issues warnings on encountering them. `prelogging` also supplies
 missing functionality: it provides multiprocessing-safe logging to the console,
 to files and rotating files, and to `syslog`.
 
+
 Requirements
 ---------------
 
@@ -25,7 +26,7 @@ The `prelogging` package requires only Python 3.4+ or 2.7. It has no external
 dependencies.
 
 Very little of `prelogging`\'s code is sensitive to Python 3 vs 2.
-To achieve backwards compatibility with 2.7 we had to sacrifice, with great
+To achieve backwards compatibility with 2.7 we sacrificed, with some
 reluctance, type annotations and keyword-only parameters. To address the
 few remaining differences, we've used `six` sparingly (one decorator, one
 function, and one constant). The `prelogging` package includes a copy of the ``six.py``
@@ -54,9 +55,8 @@ Alternately, you can
 
 * clone the github repo, or
 * download a ``.zip`` or ``.tar.gz`` archive of the repository
-  from github or PyPI, and uncompress it
-
-to a fresh directory, ``cd`` to that directory, and run::
+  from github or PyPI, uncompress it to a fresh directory, change to
+  that directory, and run the command::
 
     $ python setup.py install
 
@@ -103,8 +103,9 @@ Coverage from tests
 
 `prelogging` contains a small amount of Python-2-only code (workarounds
 for Py2 shortcomings), and supports a few Python-3-only logging features.
-In addition, several methods in ``logging_config_dict_ex.py`` add various
-exotic handlers, which are easy to write examples for but difficult to test.
+In addition, several methods in ``lcdict.py`` add various exotic handlers,
+which are easy to write examples for but difficult to test (coverage for this
+module increases to 98%/96% when examples are included — see the following section).
 
 +----------------------------+--------+-------+
 || Module                    || Py 3  || Py 2 |
@@ -130,14 +131,18 @@ From the same directory, you can run all tests and examples with the script
 
     ``$ python run_all.py``
 
-The chapter :ref:`guide-to-examples` catalogs all the examples and briefly
-describes each one.
+Note: the examples that use ``deco`` of course require that package to be installed;
+the SMTP examples require that you edit ``examples/_smtp_credentials.py`` to contain
+valid email credentials.
+
+The section `Guide to Examples <https://pythonhosted.org/prelogging/guide-to-examples.html>`_
+catalogs all the examples and briefly describes each one.
 
 Coverage from tests + examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A few short passages, mostly Python-version-specific code, keep `prelogging` shy
-of 100% coverage when both tests and examples are run:
+A few short passages, mostly Python-major-version-specific code, keep `prelogging`
+shy of 100% coverage when both tests and examples are run:
 
 +----------------------------+--------+-------+
 || Module                    || Py 3  || Py 2 |

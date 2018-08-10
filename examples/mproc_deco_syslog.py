@@ -13,11 +13,11 @@ import time
 import random
 from collections import defaultdict
 import logging
+import sys
 
 try:
     import prelogging
 except ImportError:
-    import sys
     sys.path[0:0] = ['..', '../..']
 from prelogging import LCDict
 

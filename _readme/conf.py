@@ -51,7 +51,7 @@ master_doc = 'README'
 
 # General information about the project.
 project = 'prelogging'
-copyright = '2016, Brian O\'Neill'
+copyright = '2016-2018, Brian O\'Neill'
 author = 'Brian O\'Neill'
 
 # The version info for the project you're documenting, acts as replacement for

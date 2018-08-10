@@ -18,8 +18,9 @@ except ImportError:
     sys.path[0:0] = ['..']          # , '../..'
 from prelogging import LCDict
 from prelogging.six import PY2
-
-from ._time_util import elapsed_time_human_readable
+if PY2:
+    exit("%s: logging.handlers.QueueHandler doesn't exist in Python 2"
+         % __file__)
 
 import logging
 import logging.handlers
@@ -74,16 +75,10 @@ def worker_process(chunksize):
         lvl = random.choice(levels)
         logger = logging.getLogger(random.choice(loggers))
         logger.log(lvl, 'Message no. %d', i+1)
-        time.sleep(random.random()/8)
+        time.sleep(random.random() / 8)
 
 
 def main():
-    if PY2:
-        import sys
-        print("%s: logging.handlers.QueueHandler doesn't exist in Python 2"
-              % __file__)
-        return
-
     CHUNKSIZE = 10  # 2500 -- 2m40s
 
     t0 = time.perf_counter()
@@ -103,10 +98,8 @@ def main():
         wp.join()
 
     t_elapsed = time.perf_counter() - t0
-    print("\nElapsed time:",
-          elapsed_time_human_readable(t_elapsed))
+    print("\nElapsed time: %.3f" % t_elapsed)
 
 
 if __name__ == '__main__':
     main()
-

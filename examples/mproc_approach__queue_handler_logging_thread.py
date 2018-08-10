@@ -17,10 +17,11 @@ except ImportError:
     import sys
     sys.path[0:0] = ['..']          # , '../..'
 
-from ._time_util import elapsed_time_human_readable
-
 from prelogging import LCDict
 from prelogging.six import PY2
+if PY2:
+    exit("%s: logging.handlers.QueueHandler doesn't exist in Python 2"
+         % __file__)
 
 import logging
 import logging.handlers
@@ -51,7 +52,7 @@ def worker_process(q, chunksize):
         lvl = random.choice(levels)
         logger = logging.getLogger(random.choice(loggers))
         logger.log(lvl, 'Message no. %d', i+1)
-        time.sleep(random.random()/8)
+        time.sleep(random.random() / 8)
 
 
 def logging_thread(q):
@@ -97,12 +98,6 @@ def main_process_config_logging():
 
 
 def main():
-    if PY2:
-        import sys
-        print("%s: logging.handlers.QueueHandler doesn't exist in Python 2"
-              % __file__)
-        return
-
     CHUNKSIZE = 10  # 2500 -- 2m44s
 
     t_start = time.time()
@@ -122,8 +117,8 @@ def main():
     the_log_thread.start()
 
     # At this point, the main process could do some useful work of its own...
-    # (BTO) ... e.g. UI activity that would stall and stutter
-    #       if the logging handlers were running in the same process and thread.
+    #  ... e.g. UI activity that would stutter
+    #      if the logging handlers were running in the same process and thread.
 
     # Once it has done that, it can wait for the workers to terminate...
 
@@ -135,8 +130,7 @@ def main():
     the_log_thread.join()
 
     t_elapsed = time.time() - t_start
-    print("\nElapsed time:",
-          elapsed_time_human_readable(t_elapsed))
+    print("\nElapsed time: %.3f" % t_elapsed)
 
 
 if __name__ == '__main__':

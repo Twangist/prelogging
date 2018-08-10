@@ -21,8 +21,8 @@ def main():
                        dateformat='%H:%M:%S')
 
     lcd.add_formatter('fmtr2',
-                       format='%(asctime)s -- %(message)s',
-                       datefmt='%y.%m.%d')
+                       fmt='%(asctime)s -- %(message)s',
+                       datefmt='%Y.%m.%d')  # %Y: 4-digit years; %y: 2-digit years
 
     lcd.add_stdout_handler('con1', formatter='fmtr1')
     lcd.add_stdout_handler('con2', formatter='fmtr2')
@@ -32,7 +32,7 @@ def main():
     logging.getLogger().warning('Danger, Will Robinson!')
     # Prints, for example:
     #     02:32:07 WARNING: Danger, Will Robinson!
-    #     16.08.08 -- Danger, Will Robinson!
+    #     2018.08.08 -- Danger, Will Robinson!
 
 if __name__ == "__main__":
     main()

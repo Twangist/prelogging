@@ -25,13 +25,13 @@ class LCDictBuilderABC():
     (sub*)subclass of ``LCDictBuilderABC`` implementing ``add_to_lcdict``.
 
     Once (and once only), the application should call the classmethod
-    ``LCDict.build_lcdict(...)``, which returns an ``LCDict``. The parameters
-    of ``build_lcdict`` are the same as those of ``LCDict.__init__``.
-    ``build_lcdict`` does the following:
+    ``LCDictBuilderABC.build_lcdict(...)``, which returns an ``LCDict``.
+    The parameters of ``build_lcdict`` are the same as those of ``LCDict.__init__``.
+    The ``build_lcdict`` method does the following:
 
         * creates a new ``LCDict``, ``lcd``, with the parameters provided;
-        * calls ``subcls.add_to_lcdict(lcd)`` on every subclass ``subcls``
-          that implements ``add_to_lcdict``, in a breadth-first way;
+        * calls ``subcls.add_to_lcdict(lcd)`` on every (imported!) subclass
+          ``subcls`` that implements ``add_to_lcdict``, in a breadth-first way;
         * returns ``lcd``, the logging config dict built by the previous
           steps.
 
@@ -90,19 +90,20 @@ class LCDictBuilderABC():
 
         This method creates an ``LCDict`` ``lcd``, and calls
         ``subcls.add_to_lcdict(lcd)`` on all subclasses ``subcls``
-        of ``LCDictBuilderABC`` *which implement the method*, in breadth-first
+        of ``LCDictBuilderABC`` which implement the method, in breadth-first
         order, passing the same ``LCDict`` instance to each.
 
-        **Note**: ``build_lcdict()`` will call ``add_to_lcdict`` only on
-        ``LCDictBuilderABC`` subclasses that have actually been imported
-        at the time ``build_lcdict()`` is called.
-        Thus, make sure that your program has imported all such subclasses
-        before it calls this method. If the contributions of the ``add_to_lcdict``
-        method of some such subclass have no effect — its handlers and/or
-        loggers do nothing — it may be because the subclass wasn't imported
-        when ``build_lcdict()`` was called.
-
         :return: the built ``LCDict``
+
+        .. note::
+            ``build_lcdict()`` will call ``add_to_lcdict`` only on
+            ``LCDictBuilderABC`` subclasses that have actually been imported
+            at the time ``build_lcdict()`` is called.
+            Thus, make sure that your program has imported all such subclasses
+            before it calls this method. If the contributions of the ``add_to_lcdict``
+            method of some such subclass have no effect — its handlers and/or
+            loggers do nothing — it may be because the subclass wasn't imported
+            when ``build_lcdict()`` was called.
         """
         lcd = LCDict(
                     root_level=root_level,

@@ -66,7 +66,7 @@ statement for debugging.
 -----------------------------------------------
 
 `logging` defines a few types of entities, culminating in the ``Logger``
-class. In general, a program or library will set up, or *configure*, logging
+class. Typically, a program or library will set up, or *configure*, logging
 only once, at startup. This entails specifying message formats, destinations,
 loggers, and containment relations between those things. Once a program has
 configured logging as desired, use of loggers is very straightforward.
@@ -184,7 +184,7 @@ In many cases, to configure logging it's sufficient just to add a handler or
 two and attach them to the root.
 
     The `logging.basicConfig() <https://docs.python.org/3/library/logging.html#logging.basicConfig>`_
-    function lets you configure the root logger, anyway to a point, using
+    function lets you configure the root logger (up to a point), using
     a monolithic function that's somewhat complex yet of limited capabilities.
 
 --------------------------------------------------------

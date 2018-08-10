@@ -6,8 +6,8 @@ __version__ = '0.2'
 try:
     from deco import *
 except ImportError:
-    exit("`mproc_deco.py` requires the `deco` package -- "
-         "https://github.com/alex-sherman/deco")
+    raise ImportError("`mproc_deco.py` requires the `deco` package -- "
+                      "https://github.com/alex-sherman/deco")
 
 import time
 import random
