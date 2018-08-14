@@ -5,31 +5,54 @@ README for `prelogging` |release|
 
 See the full documentation at `https://pythonhosted.org/prelogging/ <https://pythonhosted.org/prelogging/>`_.
 
-
 What `prelogging` is and does
 ------------------------------------------------
 
-`prelogging` is a package for or *configuring*, logging in Python, as provided by the
+`prelogging` streamlines the process of *configuring* logging in Python, as provided by the
 `logging <https://docs.python.org/3/library/logging.html?highlight=logging#module-logging>`_
-package in the Python standard library. To *configure logging* is to set it up,
-by specifying the logging entities you wish to create — formatters, handlers,
-optional filters, and, ultimately, loggers — as well as which of them use which others.
+package in the Python standard library. It presents a simple, consistent API for
+speficying how you want logging set up — the format of messages, their destinations
+and loglevels (severity thresholds), and so on. You can use it to configure logging
+once and for all at startup, as well as to add additional logging entities.
 
-Once logging is configured, logging messages is simple and powerful; configuration
-presents the only challenge. `logging` provides a couple of approaches to configuration
-— declarative, using a dict or an analogous YAML text file; and procedural, using the
-`logging` API. Both have their virtues and shortcomings.
+Logging is an essential tool for development, debugging, troubleshooting,
+performance-tuning and general maintenance. A program *logs messages* in order
+to record its successive states, and to report any anomalies, unexpected situations
+or errors, together with enough context to aid understanding and diagnosis. Messages
+can be logged to multiple destinations at once — ``stderr`` in a terminal, a local file,
+the system log, email, or a Unix log server over TCP, to cite common choices.
+Logging is a very sophisticated version of using the `print` statement for debugging.
+
+You *configure logging* by specifying message formats, destinations,
+loggers (objects that log messages), and relationships between those things.
+Once you've done so, use of loggers is straightforward and powerful.
+Configuration, then, is the only barrier to entry.
+
+The `logging` package provides a couple of approaches to configuration — static
+(or declarative), using a dict or an analogous YAML text file; and dynamic (or
+procedural), using the `logging` API. Both have their virtues and shortcomings.
 
 `prelogging` offers a hybrid approach: a streamlined, consistent API for
-incrementally constructing a *logging config dict* – dict used to configure logging.
-It's a thin, extensible wrapper around the configuration capabilities of the `logging`
-package. You add each logging entity and its dependencies (other, previously added logging
-entities) one by one, instead of entering a single large thicket of triply-nested
-dicts. As you build the configuration dict, by default `prelogging` checks for
-possible mistakes, and issues warnings on encountering them.
+incrementally constructing a *logging config dict* – a dict used to configure
+logging, ultimately passed to ``logging.config.dictConfig()``. It's a thin,
+extensible wrapper around the configuration capabilities of the `logging`
+package.
+
+In `prelogging`, you create an ``LCDict``, an object of a ``dict`` subclass representing
+a logging config dict. You use the methods of this class to add each logging
+entity and its dependencies (other, previously added logging entities) one by one,
+instead of entering a single large thicket of triply-nested dicts. As you build
+the configuration dict, by default `prelogging` checks for possible mistakes, and
+issues warnings on encountering them.
 
 `prelogging` also supplies missing functionality: it provides multiprocessing-safe
 logging to the console, files, rotating files, and `syslog`.
+
+For more information about `logging`, see the
+`Overview of Logging <https://pythonhosted.org/prelogging/overview-of-logging.html>`_
+chapter in the full documentation. Its last section provides several links to
+`logging documentation, other overviews, and how-to's
+<https://pythonhosted.org/prelogging/overview-of-logging.html#logging-documentation-links>`_.
 
 
 Requirements
@@ -39,20 +62,9 @@ The `prelogging` package requires only Python 3.4+ or 2.7. It has no external
 dependencies.
 
 Very little of `prelogging`\'s code is sensitive to Python 3 vs 2.
-To achieve backwards compatibility with 2.7 we had to sacrifice, with some
-reluctance, type annotations and keyword-only parameters. To address the
-few remaining differences, we've used `six`, sparingly (one decorator, one
-function, and one constant). The `prelogging` package includes a copy of the ``six.py``
-module (v1.10.0, for what it's worth), so no separate installation is required.
-
-The `prelogging` distribution contains an ``examples/`` subdirectory. A few
-examples (``mproc_deco*.py``) use the `deco <https://github.com/alex-sherman/deco>`_
-package, which provides a "simplified parallel computing model for Python".
-However, the examples are just for illustration (and code coverage), and aren't
-installed with the `prelogging` package.
-
-The distribution also contains subdirectories ``tests/`` and ``docs/``, which
-similarly are not installed.
+To address the few remaining differences, we've used `six`, sparingly (one decorator,
+one function, and one constant). The `prelogging` package includes a copy of the
+``six.py`` module (v1.10.0, for what it's worth), so no separate installation is required.
 
 Installation
 ---------------
@@ -70,7 +82,7 @@ Alternately, you can
 * download a ``.zip`` or ``.tar.gz`` archive of the repository
   from github or PyPI, and uncompress it
 
-to a fresh directory, ``cd`` to that directory, and run::
+to a fresh directory, change to that directory, and run::
 
     $ python setup.py install
 
@@ -79,8 +91,14 @@ tests and examples, which aren't installed by ``pip`` or ``setup.py``. Whichever
 method you choose to install `prelogging`, ideally you'll do it in a `virtual
 environment <https://docs.python.org/3/tutorial/venv.html?highlight=virtual>`_.
 
+
 Running tests and examples
 ----------------------------
+
+The `prelogging` repository has a subdirectory `examples/` illustrating many
+basic and advanced uses, including adaptations of examples in
+the `logging HOWTO <https://docs.python.org/3/howto/logging.html>`_ guide
+and the `logging Cookbook <https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook>`_.
 
 .. sidebar:: All these scripts are executable on \*nix
 
@@ -90,16 +108,16 @@ Running tests and examples
     you can use the command ``./root_logger.py`` instead of
     ``python root_logger.py``.
 
+
 The top-level directory of the `prelogging` repository contains three scripts —
 ``run_tests.py``, ``run_examples.py`` and ``run_all.py`` — which let you run
 all tests, all examples, or both, from the top-level directory. You can run
 these before installing `prelogging`.
 
-To run individual examples, first CD into their subdirectory, as in this example::
+To run individual examples, first change into their subdirectory::
 
     $ cd examples/
-    $ python root_logger.py
-
+    $ python root_logger.py     # or just ./root_logger.py
 
 The `Guide to Examples <https://pythonhosted.org/prelogging/guide-to-examples.html>`_
 in the full documentation catalogs all the examples and briefly
@@ -108,8 +126,8 @@ describes each one.
 Coverage from tests + examples
 +++++++++++++++++++++++++++++++++++
 
-A few short passages, mostly Python-major-version-specific code, keep `prelogging` shy
-of 100% coverage when both tests and examples are run:
+A few short passages, mostly Python-major-version-specific code, keep `prelogging`
+shy of 100% coverage when both tests and examples are run:
 
 +----------------------------+--------+-------+
 || Module                    || Py 3  || Py 2 |
@@ -125,103 +143,175 @@ of 100% coverage when both tests and examples are run:
 Quick Start
 -------------------
 
+Suppose we want the following configuration:
 
-static vs dynamic configuration
----------------------------------------------------------------------
+.. _example-overview-config:
 
-`prelogging` is for static config
-++++++++++++++++++++++++++++++++++++
+    **Configuration requirements**
 
-.. todo::
-    When building the config dict, you give a name to every logging entity
-    that you add; you specify attachments between entities using these names.
+    Messages should be logged to both ``stderr`` and a file. Only messages with
+    loglevel ``INFO`` or higher should appear on-screen, but all messages should
+    be logged to the file. Messages to ``stderr`` should consist of just the
+    message, but messages written to the file should also contain the logger
+    name and the message's loglevel.
 
-    After you call .config() to actually configure logging,
-    only the names of loggers persist; the names you used when specifying
-    handlers, formatters and filters are no longer useful. `logging` provides
-    no way to give names to those entities, and thus no way to refer to them by
-    (any) name "at runtime".
-    Indeed, there's no good reliable way to get a reference at runtime to
-    a specific entity in the context of something it's attached to. For example,
-    *the QueueHandler
+    The logfile contents should persist: the file handler should **append**
+    to the logfile, rather than overwriting it each time the program using these
+    loggers is run.
 
-    `prelogging` is a thin wrapper around an aspect of `logging`. Mostly it
-    provides a consistent API that has reasonable defaults;
-    It does no second-guessing of the `logging` module, no ..... RESUME HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    it does no heavy
-    lifting and it doesn't do anything hacky.
+This suggests two handlers, each with an appropriate formatter — a ``stderr``
+stream handler with level ``INFO``, and a file handler with level ``NOTSET``.
+(``NOTSET`` is the default loglevel for handlers. Numerically less than ``DEBUG``,
+all loglevels are greater than or equal to it.)
+Both handlers should be attached to the root logger, which should have level
+``DEBUG`` to allow all messages through. The file handler should be created with
+``mode='a'`` (append, not ``'w'`` for overwrite) so that the the logfile
+contents can persist.
+
+Using the example configuration
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Once this configuration is established, these logging calls:
+
+.. code::
+
+    import logging
+    root_logger = logging.getLogger()
+    # ...
+    root_logger.debug("1. 0 = 0")
+    root_logger.info("2. Couldn't create new Foo object")
+    root_logger.debug("3. 0 != 1")
+    root_logger.warning("4. Foo factory raised IndexError")
+
+should produce the following ``stderr`` output – the messages with loglevel ``INFO``
+or greater, with the simplest formatting:
+
+.. code::
+
+    2. Couldn't create new Foo object
+    4. Foo factory raised IndexError
+
+and the logfile should contain (something much like) these lines:
+
+.. code::
+
+    root                : DEBUG   : 1. 0 = 0
+    root                : INFO    : 2. Couldn't create new Foo object
+    root                : DEBUG   : 3. 0 != 1
+    root                : WARNING : 4. Foo factory raised IndexError
+
+Creating the example configuration
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Here's how we can use ``LCDict`` to configure logging to satisfy the above
+:ref:`Configuration requirements <example-overview-config>`::
+
+    from prelogging import LCDict
+
+    lcd = LCDict(root_level='DEBUG',
+                 attach_handlers_to_root=True)
+    lcd.add_stderr_handler(
+                    'h_stderr',
+                    formatter='msg',    # actually not needed
+                    level='INFO'
+    ).add_file_handler('h_file',
+                       formatter='logger_level_msg',
+                       filename='blather.log',
+    )
+    lcd.config()
+
+First we create an ``LCDict``, which we call ``lcd`` — a logging config dict
+with root loglevel ``'DEBUG'``. An ``LCDict`` has a few attributes that aren't
+part of the underlying dict, including the ``attach_handlers_to_root`` flag,
+which we set to ``True``. The ``add_*_handler`` methods do just what you'd
+expect: each adds a subdictionary to ``lcd['handlers']`` with the respective
+keys ``'h_stderr'`` and ``'h_file'``, and with key/value pairs given by the
+keyword parameters. Because lcd was initialized with ``attach_handlers_to_root=True``,
+the two handlers were attached to the root logger upon creation; it wasn't
+necessary to call ``lcd.add_root_handlers('h_stderr', 'h_file')``.
+
+We've used a couple of the `Formatter presets` supplied by ``LCDict`` —
+``'msg'`` and ``'logger_level_msg'``. Because we pass the flag
+``attach_handlers_to_root=True`` when creating ``lcd``, every
+handler we add to ``lcd`` is (by default) automatically
+attached to the root logger. (You can override this default by passing
+``add_to_root=False`` to any ``add_*_handler`` call.)
+
+**Notes**
+
+* To allow chaining, as in the above example, the methods of
+  ``LCDict`` and its superclass ``LCDictBasic`` generally return ``self``.
+
+* ``add_file_handler`` takes a ``mode`` keyword parameter, which we didn't have
+  to specify, as its default value is ``'a'``.
+
+* Here's the :ref:`complete table of prelogging's formatter presets <preset-formatters>`.
 
 
+Adding additional loggers that use the existing handlers
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Quick start
-------------
+Suppose you later add to your project a module ``new_module.py``, which will also
+use logging, via its own logger ``'new_module'``. If it meets your needs for this
+logger to use the existing handlers, then you can just use this logger,
+no extra configuration required!
 
-.. todo:: BLAH BLAH quick start BLAH BLAH
+For example::
 
+    # new_module.py
+    import logging
 
-.. BACKGROUND / REVIEW section:
+    logger = logging.getLogger(__name__)
+    # ...
+    logger.debug("It's 11:11 pm")
+    logger.error("UH OH!")
+    # ...
 
-Overview of logging
--------------------------
+This writes the error message to ``stderr``::
 
-Logging is an important part of a program's internal operations, an essential
-tool for development, debugging, troubleshooting, performance-tuning and
-general maintenance. A program *logs messages* in order to record
-its successive states, and to report any anomalies, unexpected situations or
-errors, together with enough context to aid diagnosis. Messages can be logged
-to multiple destinations at once — ``stderr`` in a terminal, a local file,
-the system log, email, or a Unix log server over TCP, to cite common choices.
-The logging facility is a very sophisticated version of using the `print`
-statement for debugging.
+    UH OH!!!!
 
-It's not our purpose to rehash or repeat the extensive (and generally quite
-good) documentation for Python's `logging` package; in fact, we presuppose that
-you're familiar with basic concepts and standard use cases.
+and also appends both messages to the file, together with the logger name and level::
 
-.. todo:: NOT "Nevertheless, it will be helpful to review a few topics." but
+    new_module          : DEBUG   : It's 11:11 pm
+    new_module          : ERROR   : UH OH!!!!
 
-    * to links to full doc "Overview" etc sections
-    * link to section in full doc with links to other resources - `logging` docs, Django overview, etc.
+.. sidebar:: Ancestors and descendants
 
-See the
-`Overview of Logging <https://pythonhosted.org/prelogging/overview-of-logging.html>`_
-chapter in the full documentation. The last section of that chapter provides
-several links to
-`logging documentation, other overviews, and how-to's
-<https://pythonhosted.org/prelogging/overview-of-logging.html#logging-documentation-links>`_.
+    The ancestor relation among loggers is the simple relation
+    between their dotted names: L1 is an ancestor of L2 *iff* the name of L1 is a prefix
+    of the name of L2, and no part between dots is split.
+    For example, a logger ``foo`` is ancestor of ``foo.bar`` and ``foo.bar.baz``,
+    but not of ``foolserrand``; ``foo.bar`` is an ancestor (the parent) of ``foo.bar.baz``,
+    but not of ``foo.bargeld`` nor of ``foo.bartend.sunday``.
 
-Dynamic vs static configuration -- the distinction refined
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+A call to ``logging.getLogger`` creates the requested logger just in time, if it
+doesn't already exist; all subsequent requests to get the logger of the same name
+will return the same ``Logger`` object. Here, the name of the logger requested is
+'new_module', the value of ``__name__`` in this module. Like any newly created logger,
+it has no handlers, its loglevel is ``'NOTSET'``, and logged messages *propagate*
+to the handlers of its *ancestors* (``logger.propagate`` is ``True``).
+The name of the root logger is simply ``''`` (empty string),
+and it is the only ancestor of ``logger``. Thus, without any extra work,
+all messages logged by ``logger`` will be sent directly to the root's handlers.
 
-.. todo:: This section
+|br|
 
-Dynamic configuration in name only: use of logging API in an essentially static,
-"set it and forget it" way.
-That's the kind of "dynamic config" that we compare `prelogging` to, below.
-
-Truly dynamic config: use of the logging API to create delete attach detach reconfigure
-logging entities at multiple junctures throughout the execution of a program.
-If a program does such things, surely it has its reasons, but there's no way to
-compare it with `prelogging`, and no point in doing so. Certainly it's a bad match
-for migration to `prelogging`.
+-------------------------------------------------------------------------------
 
 
 `logging` classes that can be configured
-+++++++++++++++++++++++++++++++++++++++++
+--------------------------------------------------------
+
+.. todo:: lead-in
+
 
 `logging` defines a few types of entities, culminating in the ``Logger``
-class.
+class. To configure logging is to specify message formats (formatters),
+destinations (handlers), filters if any, loggers, and containment relations
+between those things.
 
-**NOT SO**: |br|
-In general, a program or library will set up, or *configure*, logging
-only once, at startup.
-
-This entails specifying message formats, destinations,
-loggers, and containment relations between those things. Once a program has
-configured logging as desired, use of loggers is very straightforward.
-Configuration, then, is the only barrier to entry.
-
-The following diagram displays the types that can be configured statically,
+The following diagram displays the four types that can be configured statically,
 and their dependencies:
 
 .. index:: diagram: The objects of `logging` configuration
@@ -254,7 +344,7 @@ In words:
 
 
 What these objects do
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++++++++++++++++++++++++++++++++
 
 .. sidebar:: Keywords that can appear in formatters
 
@@ -273,10 +363,54 @@ formatter.
 
 A ``Logger`` sends logged messages to its associated handlers. Various
 criteria filter out which messages are actually written, notably loglevel
-thresholding as described above.
+thresholding.
 
 ``Filter``\s provide still more fine-grained control over which messages are
 written.
+
+`prelogging`'s role
++++++++++++++++++++++++++++++++++++++++++
+
+`prelogging` defines two classes which represent logging config dicts:
+a ``dict`` subclass ``LCDictBasic``, and `its` subclass ``LCDict``. (The
+:ref:`diagram of classes <prelogging-all-classes>`
+shows all the classes in the `prelogging` package and their interrelations.)
+``LCDictBasic`` provides the basic model of building a logging config
+dict; ``LCDict`` supplies additional conveniences — for example, formatter
+presets (i.e. predefined formatters), and easy access to advanced features
+such as filter creation and multiprocessing-safe rotating file handlers.
+The centerpiece of `prelogging` is the ``LCDict`` class.
+
+You use the methods of these classes to add specifications of named
+``Formatter``\s, ``Handler``\s, ``Logger``\s, and optional ``Filter``\s,
+together with containment relations between them. Once you've done so, calling
+the ``config()`` method of an ``LCDictBasic`` configures logging by passing
+itself, as a ``dict``, to ``logging.config.dictConfig()``. This call creates
+all the objects and linkages specified by the underlying dictionary.
+
+
+
+`prelogging` classes and their superclasses
+-------------------------------------------------------------------
+
+.. _prelogging-all-classes:
+
+.. figure:: ../docs/prelogging_classes-v4d.png
+    :figwidth: 100%
+
+    |br| **prelogging** classes — inheritance, and who uses whom
+
+    +-------------------------------+-----------------------+
+    | Symbol                        | Meaning               |
+    +===============================+=======================+
+    | .. image:: ../docs/arrsup.png | is a superclass of    |
+    +-------------------------------+-----------------------+
+    | .. image:: ../docs/arruse.png | uses (instantiates)   |
+    +-------------------------------+-----------------------+
+
+
+.. todo:: <<<<<<<<<<<<<<<< RESUME >>>>>>>>>>>>>>>>
+
 
 -------------------------------------------------------------------------------
 
@@ -295,7 +429,7 @@ Logging-configuration requirements — an example
 
 Suppose we want the following configuration:
 
-.. _example-overview-config:
+.. _example-overview-config2:
 
     **Configuration requirements**
 
@@ -491,7 +625,7 @@ Configuring our requirements using ``LCDict``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Here's how we might use ``LCDict`` to configure logging to satisfy our
-:ref:`Configuration requirements <example-overview-config>`::
+:ref:`Configuration requirements _<example-overview-config>`::
 
     from prelogging import LCDict
 
@@ -541,10 +675,10 @@ Structure of `prelogging`
 `prelogging` classes and their superclasses
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. _prelogging-all-classes:
+.. _prelogging-all-classes2:
 
 .. figure:: ../docs/prelogging_classes-v4d.png
-:figwidth: 100%
+    :figwidth: 100%
 
     |br| **prelogging** classes — inheritance, and who uses whom
 
@@ -1082,13 +1216,13 @@ actually get logged.
 
 There are two kinds of filters: class filters and callable filters.
 ``LCDict`` provides a pair of convenience methods, ``add_class_filter`` and
-``add_callable_filter``, which are easier to use than the lower-level
+``add_callable_filter``, which are much easier to use than the lower-level
 ``LCDictBasic`` method ``add_filter``.
 
 In Python 2, the `logging` module imposes a fussy requirement on callables
 that can be used as filters, which the Python 3 implementation of `logging`
-removes. The ``add_callable_filter`` method provides a single interface for
-adding callable filters that works in both Python versions.
+removes. The ``add_callable_filter`` method provides a single, sane interface
+for adding callable filters that works in both Python versions.
 
 The use of filters, and of these methods, is described and illustrated in the section
 `Simplified creation and use of filters <https://pythonhosted.org/prelogging/LCDict-features-and-usage.html#simplified-creation-and-use-of-filters>`_.
@@ -1162,4 +1296,4 @@ subclass specific to that program area.
 ---------------------------------------------------------------------------
 
 .. todo::
-(watch this space)
+    (watch this space)

@@ -68,8 +68,8 @@ platforms you can just say::
 
 Downloading and uncompressing the archive lets you review, run and/or copy the
 tests and examples, which aren't installed by ``pip`` or ``setup.py``. Whichever
-method you choose to install `prelogging`, ideally you'll do it in a virtual
-environment.
+method you choose to install `prelogging`, ideally you'll do it in a `virtual
+environment <https://docs.python.org/3/tutorial/venv.html?highlight=virtual>`_.
 
 
 Running tests and examples

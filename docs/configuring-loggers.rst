@@ -40,7 +40,8 @@ Using non-root loggers without configuring them
 A common, useful approach is to attach handlers only to the root logger,
 and then have each module log messages using ``logging.getLogger(__name__)``.
 These "child" loggers require no configuration; they use the handlers
-of the root because, by default, loggers are created with ``propagate=True``.
+of the root because, by default, loggers are created with ``propagate=True``
+(and with ``level='NOTSET'``).
 
 If the formatters of the handlers include the logger name — as the formatter
 preset ``logger_level_msg`` does, for example — each logged message will state

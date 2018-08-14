@@ -14,12 +14,29 @@ from prelogging import LCDictBuilderABC
 ##############################################################################
 
 class LCDictBuilder(LCDictBuilderABC):
+    # override
     @classmethod
-    def add_to_lcdict(cls, lcd):
+    def build_lcdict(cls,
+                     root_level='WARNING',
+                     log_path='',
+                     locking=False,
+                     attach_handlers_to_root=False,
+                     disable_existing_loggers=False,
+                     **kwargs):
         """(Virtual) Call ``LCDict`` methods to augment ``lcd``.
-
         :param lcd: an ``LCDict``
         """
+        return super().build_lcdict(
+            root_level=root_level,
+            log_path=log_path,
+            locking=locking,
+            attach_handlers_to_root=attach_handlers_to_root,
+            disable_existing_loggers=disable_existing_loggers,
+            # kwargs
+            common_file_handler_name='common_filehandler',
+            console_handler_name='consolehandler',
+        )
+
         lcd.add_stdout_handler('con-out',
                                formatter='logger_level_msg',
                                attach_to_root=True)
