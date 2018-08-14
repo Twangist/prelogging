@@ -12,9 +12,9 @@ from prelogging import LCDict, LCDictBuilderABC
 
 ##############################################################################
 
-from test_lcd_builders_top import LCDictBuilder
-import test_lcd_builder_SubA
-import test_lcd_builder_SubB
+from example_lcd_builders_top import LCDictBuilder
+import example_lcd_builder_SubA
+import example_lcd_builder_SubB
 
 ##############################################################################
 # test(s)

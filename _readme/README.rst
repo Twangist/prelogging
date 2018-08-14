@@ -1245,7 +1245,7 @@ its specifications by calling methods on ``lcd``.
 
 The `LCDictBuilderABC <https://pythonhosted.org/prelogging/LCDictBuilderABC.html>`_
 documentation describes how that class and its two methods operate. The test
-``tests/test_lcd_builder.py`` illustrates using the class to configure logging
+``tests/test_lcdict_builder.py`` illustrates using the class to configure logging
 across multiple modules.
 
 .. _migration-dynamic:

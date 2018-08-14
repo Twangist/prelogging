@@ -11,9 +11,9 @@ from prelogging import LCDict, LCDictBuilderABC
 
 ##############################################################################
 
-from example_lcdict_builders_top import LCDictBuilder
-import example_lcdict_builder_SubA
-import example_lcdict_builder_SubB
+from test_lcdict_builders_top import LCDictBuilder
+import test_lcdict_builder_SubA
+import test_lcdict_builder_SubB
 
 ##############################################################################
 # test(s)

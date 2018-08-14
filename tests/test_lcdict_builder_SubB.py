@@ -1,6 +1,6 @@
 __author__ = 'brianoneill'
 
-from test_lcd_builders_top import LCDBuilderSub
+from test_lcdict_builders_top import LCDBuilderSub
 
 class LCDBuilderSubB(LCDBuilderSub):
     @classmethod
@@ -9,12 +9,10 @@ class LCDBuilderSubB(LCDBuilderSub):
 
         :param lcd: an ``LCDict``
         """
-        # Configure so that:
-        #   Messages logged by logger 'subB'
-        #       will be written to logfile 'subB.log', and
-        #       will NOT be written to root logger (propagate=False)
-        #
-        #   Root logger will NOT log to 'subB.log' (attach_to_root=False)
+        # Configure so that messages logged by logger 'subB'
+        #   will be written to logfile 'subB.log', and
+        #   will NOT also be written by root logger's handlers (propagate=False)
+        # Root logger will NOT log to 'subB.log' (attach_to_root=False)
         # Assume the code that uses this logger is in development,
         # so we'll set level to ``DEBUG``.
         lcd.add_file_handler('subB-fh',

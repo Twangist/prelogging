@@ -1,6 +1,6 @@
 __author__ = 'brianoneill'
 
-from test_lcd_builders_top import LCDBuilderSub
+from test_lcdict_builders_top import LCDBuilderSub
 
 
 class LCDBuilderSubA(LCDBuilderSub):
