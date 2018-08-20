@@ -318,7 +318,7 @@ class LCDict(LCDictBasic):
 
     def add_stdout_handler(self, handler_name,  # *,
                            formatter=None,
-                           level='WARNING',
+                           level='NOTSET',
                            locking=None,
                            attach_to_root=None,
                            **kwargs):
@@ -337,7 +337,7 @@ class LCDict(LCDictBasic):
 
     def add_stderr_handler(self, handler_name,  # *,
                            formatter=None,
-                           level='WARNING',
+                           level='NOTSET',
                            locking=None,
                            attach_to_root=None,
                            **kwargs):
@@ -496,7 +496,7 @@ class LCDict(LCDictBasic):
                          facility=SysLogHandler.LOG_USER,
                          socktype=socket.SOCK_DGRAM,
                          formatter=None,
-                         level='DEBUG',
+                         level='NOTSET',
                          locking=None,
                          attach_to_root=None,
                          **kwargs):

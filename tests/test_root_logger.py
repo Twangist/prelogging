@@ -18,7 +18,7 @@ def logging_config(log_path, logfilename=''):
     lcd = LCDict(log_path=log_path,
                  attach_handlers_to_root=True,
                  root_level='CRITICAL')
-    lcd.add_stdout_handler('con', formatter="msg")
+    lcd.add_stdout_handler('con', level='WARNING', formatter="msg")
 
     lcd.set_logger_level(None, 'INFO')    # . coverage ho'
 

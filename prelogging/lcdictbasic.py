@@ -780,7 +780,15 @@ class LCDictBasic(dict):
 
             ``self['disable_existing_loggers'] == False``
 
-        The `logging` module defaults this setting to ``True``.
+        The `logging` module defaults this setting to ``True``,
+
+            | for reasons of backward compatibility. This may or may not be
+            | what you want, since it will cause any loggers existing before
+            | the [dictConfig()] call to be disabled unless they (or an ancestor)
+            | are explicitly named in the configuration. ... [S]pecify False
+            | for this parameter if you wish.
+
+            (*from* `Warning in "Configuring Logging" section of logging HOWTO <https://docs.python.org/3/howto/logging.html#configuring-logging>`_)
         """
         if disable_existing_loggers is not None:
             self['disable_existing_loggers'] = bool(disable_existing_loggers)
@@ -788,10 +796,8 @@ class LCDictBasic(dict):
             self.check()                # 0.2.7b13
         logging.config.dictConfig(dict(self))
 
-    def dump(self, **kwargs):
+    def dump(self, **kwargs):                   # pragma: no cover
         """
-        .. comment def line used to end with "# pragma: no cover"
-
         Prettyprint the underlying ``dict``.
         For debugging, sanity checks, etc.
         This method does NOT return ''self''.

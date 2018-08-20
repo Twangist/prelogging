@@ -29,6 +29,6 @@ Contents
     topics-recipes
     guide-to-examples
     class-reference
+    the-index
 
 .. TODO !!!! mark/tag index items, and restore this last TOC item:
-..    the-index

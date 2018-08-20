@@ -64,7 +64,7 @@ def config_logging(use_locking):
                  locking=use_locking)
     # Set up console handler to show process name, time, handler name
     lcd.add_stderr_handler(
-        'console', formatter='process_level_msg'
+        'console', level='WARNING', formatter='process_level_msg'
     )
     # Add syslog handler with same formatter
     lcd.add_syslog_handler(

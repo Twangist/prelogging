@@ -16,7 +16,7 @@ for reference and general culture. It's not our purpose to rehash or
 repeat the extensive (and generally quite good) documentation for Python's
 `logging` package; in fact, we presuppose that you're familiar with basic
 concepts and standard use cases. Nevertheless, it will be helpful to review
-several topics.
+several topics, and in the process clarify some obscure features of `logging`.
 
 
 Using `logging`
@@ -26,7 +26,7 @@ A program logs messages using the ``log`` method of objects called *loggers*,
 which are implemented in `logging` by the ``Logger`` class. You can think of
 the ``log`` method as a pumped-up ``print`` statement. It writes a message,
 tagged with a level of severity, to zero or more destinations.
-In `logging`, a ``Handler`` object — a *handler* — represents a single
+In `logging`, a *handler* — a ``Handler`` object — represents a single
 destination, together with a specified output format.
 A handler implements abstract methods which format message data into structured
 text and write or transmit that text to the output.
@@ -40,9 +40,12 @@ or importance. The predefined levels in ``logging`` are ``DEBUG``, ``INFO``,
 ``WARNING``, ``ERROR``, ``CRITICAL``, listed in order of increasing severity.
 Both loggers and handlers have an associated *loglevel*, indicating a
 severity threshold: a logger or a handler will filter out any message whose
-loglevel is less than its own. In order for a message to actually be written
+loglevel is less than its own. In order for a message to actually be sent
 to a particular destination, its loglevel must equal or exceed the loglevels
 of both the logger and the handler representing the destination.
+
+**Note**: This last statement is *basically* true, but glosses over details.
+We'll sharpen it below, in the subsection :ref:`How a message is logged <how_a_message_is_logged>`.
 
 .. sidebar:: Sensible choices for dedicated loggers
 
@@ -58,7 +61,7 @@ In development, set the logger's loglevel to ``DEBUG`` or ``INFO`` as needed;
 once the module/package is in good condition, raise that to ``WARNING``; in
 production, use ``ERROR``. There's no need to delete or comment out the lines
 of code that log messages, or to precede each such block with a conditional guard.
-The logging facility is a very sophisticated version of using the `print`
+The logging facility is a very sophisticated version of using the ``print``
 statement for debugging.
 
 
@@ -80,6 +83,7 @@ and their dependencies:
 .. _logging-config-classes:
 
 .. figure:: logging_classes_v2.png
+    :figwidth: 80%
 
     The objects of `logging` configuration
 
@@ -92,7 +96,6 @@ and their dependencies:
     +-----------------------+-----------------------+
     | m: n                  | many-to-many          |
     +-----------------------+-----------------------+
-
 
 In words:
 
@@ -113,26 +116,41 @@ defined by the `logging` module — for example, ``'%(message)s'`` and
 
 A ``Handler`` formats and writes logged messages to a particular
 destination — a stream (e.g. ``sys.stderr``, ``sys.stdout``, or an in-memory
-stream such as an ``io.StringIO()``), a file, a rotating set of files, a socket,
-etc. A handler without a formatter behaves as if it had a ``'%(message)s'``
-formatter.
+stream such as an ``io.StringIO``), a file, a rotating set of files, a socket,
+etc.
 
 A ``Logger`` sends logged messages to its associated handlers. Various
 criteria filter out which messages are actually written, notably loglevel
-thresholding as described above.
+thresholding as described above and in greater detail :ref:`below <how_a_message_is_logged>`.
 
 ``Filter``\s provide still more fine-grained control over which messages are
-written.
+written. They can also be used to modify messages or supplement them with
+additional context.
 
 Loggers are identified by name
 -------------------------------------------
 
-A logger is uniquely identified by name: the expression
-``logging.getLogger('mylogger')``, for example, always denotes the same object,
-no matter where in a program it occurs or when it's evaluated.
-The `logging` package always creates a special logger, the *root logger*, whose
-name is ``''``; it's accessed by the expression ``logging.getLogger('')``,
-or equivalently by ``logging.getLogger()``.
+A logger is uniquely identified by name (except for the name ``'root'``: see the
+Warning below). For example, the expression ``logging.getLogger('mylogger')``
+always denotes the same object, no matter where in a program it occurs or when
+it's evaluated. The `logging` package always creates a special logger, the *root
+logger*, which *we*, as users of `logging`, identify by the name ``''`` (the
+empty string); it's accessed by the expression ``logging.getLogger('')``, or
+equivalently by ``logging.getLogger()``.
+
+.. warning::
+
+    The root logger's name is set to, and reported as, ``'root'``:
+        >>> logging.getLogger('').name
+        'root'
+    Confusingly, however, you cannot access the root logger by that name:
+        >>> logging.getLogger('') is logging.getLogger('root')
+        False
+    It's most unfortunate that these two *distinct* loggers share the same name:
+        >>> logging.getLogger('root').name
+        'root'
+
+    **Do not use the logger name** ``'root'``.
 
 Logger names are *dotted names*, and behave in a way that's analogous to package
 and module names. The analogy is intentional, to facilitate a style of logging
@@ -145,9 +163,116 @@ and::
 
     logging.getLogger(__package__).warning("dict of defaults is empty")
 
-A parent-child relation obtains among loggers: the parent of a logger ``a.b.c``
-is the logger ``a.b``, whose parent is ``a``; the parent of logger ``a`` is the
-root logger.
+
+Broadly speaking, a logger corresponds to an "area" of your program; you're free
+to construe that in whatever way suits your needs and situation.
+
+.. _ANCESTORS:
+
+The parent-child and ancestor relationships between loggers
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+A parent-child relation obtains among loggers: the parent of a logger ``'a.b.c'``
+is the logger ``'a.b'``, whose parent is ``'a'``; the parent of logger ``'a'``
+is the root logger, identified by ``''``. The logger ``'a'`` is an *ancestor* of
+both ``'a.b'`` and ``'a.b.c'``; ``'a.b'`` is an ancestor of ``'a.b.c'``;
+the root logger is an ancestor of every other logger. (Note, though, that ``aa``
+is *not* a parent or ancestor of ``a``, nor is ``a.b`` a parent or ancestor
+of ``a.bxyz``: the relation isn't just "startswith" between strings.)
+
+.. _how_a_message_is_logged:
+
+How a message is logged
+---------------------------------
+
+In order to explain what happens when a logger logs a message,
+
+.. code::
+
+    logger.log(level, message)
+
+we first have to introduce a few more concepts:
+
+    * the 'NOTSET' loglevel
+    * the "effective level" of a logger
+    * the ``propagate`` flag of a logger.
+
+
+.. _NOTSET:
+
+The special loglevel **NOTSET**
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+There's actually a sixth predefined loglevel, ``NOTSET``, whose numeric
+value is 0, lower than the "real" loglevels (``DEBUG`` = 10, ..., ``CRITICAL`` = 50),
+which are all non-zero. The root logger by default has loglevel ``WARNING``, but
+all created loggers and handlers have default loglevel ``NOTSET``.
+
+``NOTSET`` is useless as a loglevel of individual messages. You can't successfully
+log a message at level ``NOTSET`` — nothing happens (unless you do something unusual.
+If you call ``logging.disable(neg)`` with some negative integer ``neg``, you can get
+``logger.log(0, message)`` to emit ``message``; but ordinarily, you wouldn't, and
+it won't.)
+
+A handler with loglevel ``NOTSET`` rejects no messages; it's the most inclusive
+level.
+
+When a logger has loglevel ``NOTSET``, the loglevels of its ancestors
+are examined to compute its *effective level* — the level that `logging` uses
+to determine whether a message that the logger logs will be sent to handlers or not.
+
+.. _effective_level:
+
+The "effective level" of a logger
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The *effective level* of a logger is its own level if that is non-zero;
+otherwise, it's the level of its nearest ancestor whose level is non-zero;
+otherwise, if there's no such ancestor, it's ``NOTSET`` (0). The ``Logger`` method
+``getEffectiveLevel()`` returns this value. Its docstring explains that it "[loops]
+through [the] logger and its parents in the logger hierarchy, looking for a non-zero
+logging level[, returning] the first one found." (``getEffectiveLevel()`` is in the
+``__init__.py`` module of `logging`.)
+
+Now we can make good on an earlier promise – the following statement isn't just
+"basically true" but really is the case:
+
+    | In order for a message to actually be written to a particular destination,
+    | its level must equal or exceed the *effective level* of the logger that
+    | logged it, as well as the level of the handler representing the destination.
+
+In the next subsection we'll explain just which handlers a message is sent to
+when its level clears the effective level threshold.
+
+.. _propagation:
+
+Propagation
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Loggers have a ``propagate`` attribute, a flag, which by default is True.
+
+``propagate`` determines which handlers a ``message`` is sent to when a ``logger``
+logs it at a particular ``level`` via a call such as ``logger.log(level, message)``.
+
+If ``logger`` has handlers, the ``message`` is sent to them. If ``logger`` isn't
+the root and ``logger.propagate`` is True, the message is *also* sent to any
+handlers of the logger's parent; if the parent isn't the root and its ``propagate``
+flag is True, the message is sent to the handlers of the parent's parent; and so
+on, until this process reaches either the root or an ancestor whose ``propagate``
+flag is False.
+
+If no handlers are encountered in this procedure, in Python 3.2+ the message is sent
+to the "handler of last resort", ``logging.LastResort``, whose loglevel is 'WARNING',
+and which simply writes the message to ``stderr``.  (In earlier versions of Python,
+or if you set ``logging.LastResort = None`` in 3.2+, an error message is written
+to ``stderr`` that no handlers could be found for the logger.)
+
+.. note::
+    The `logging` documentation contains a `pair of flowcharts <https://docs.python.org/3/howto/logging.html#logging-flow>`_,
+    "Logging flow" and "Handler flow", which summarize what this section,
+    :ref:`How a message is logged<how_a_message_is_logged>`, has described; however,
+    they predate Python 3.2, so "Handler flow" doesn't mention the "last resort" handler.
+
 
 `logging` defaults
 ---------------------
@@ -157,19 +282,25 @@ can easily start to use its capabilities.
 When accessed for the first time, the ``Logger`` named ``'mylogger'`` is created
 "just in time" if it hasn't been explicitly configured. You don't *have* to
 attach handlers to ``'mylogger'``; logging a message with that logger will "just
-work". If ``'mylogger'`` has no handlers and you say:
+work". Suppose this is a complete program::
 
+    import logging
     ``logging.getLogger('mylogger').warning("Hi there")``
 
-then ``Hi there`` will be written to ``stderr``. Here's why: by default, a
-logger "propagates" messages to its parent, so if ``'mylogger'`` lacks
-handlers, the message will be logged by its parent, using the parent's handlers.
-The parent of ``'mylogger'`` is the root, which by default (in the absence of
-configured handlers) writes messages to ``stderr``.
+When run, it writes ``Hi there`` to ``stderr``. In light of the last section,
+we can now understand why. The effective level of ``'mylogger'`` is the level of
+its parent, the root logger, which is ``WARNING``, and the level of the message clears
+that. Thus, the message is sent to ``'mylogger'``'s handlers (none). Because
+``'mylogger'`` has ``propagate`` set to True, the message is also sent to
+the handlers of the root. The root has no handlers, so the message is sent to the
+last resort handler, whose loglevel is ``WARNING``, which lets the message through,
+writing it to ``stderr``.
 
-The ``debug(...)`` logger method shown above is a shorthand for
-``log(logging.DEBUG, ...)``. Similarly, there are convenience methods ``debug``,
+The ``warning(...)`` logger method shown above is a shorthand for
+``log(logging.WARNING, ...)``. Similarly, there are convenience methods ``debug``,
 ``info``, ``error`` and ``critical``.
+
+--------------------------------------------------------
 
 For another example, you can just say:
 
@@ -180,19 +311,20 @@ and something plausible will happen (again, the string will be written to
 ``logging.log(logging.ERROR, ...)``, which in turn is a shorthand for
 ``logging.getLogger().log(logging.ERROR, ...)``.
 
-In many cases, to configure logging it's sufficient just to add a handler or
-two and attach them to the root.
+--------------------------------------------------------
+
+.. sidebar:: logging.basicConfig()
 
     The `logging.basicConfig() <https://docs.python.org/3/library/logging.html#logging.basicConfig>`_
     function lets you configure the root logger (up to a point), using
     a monolithic function that's somewhat complex yet of limited capabilities.
 
---------------------------------------------------------
+In many cases, to configure logging it's sufficient just to add a handler or
+two and attach them to the root.
+
 
 In the next chapter, we'll examine the approaches to configuration offered by
 `logging`, and then see how `prelogging` simplifies the process.
-
---------------------------------------------------------
 
 .. _logging_docs_links:
 
@@ -225,7 +357,7 @@ the Cookbook and HOWTO, reworked to use `prelogging`.
 
 The `logging` package supports multithreaded operation, but does **not** directly support
 `logging to a single file from multiple processes <https://docs.python.org/3/howto/logging-cookbook.html#logging-to-a-single-file-from-multiple-processes>`_.
-Happily, `prelogging` does, in a couple of ways.
+Happily, `prelogging` does, in a couple of ways, both illustrated by examples.
 
 One additional resource merits mention: the documentation for
 `logging in Django <https://docs.djangoproject.com/en/1.9/topics/logging/>`_

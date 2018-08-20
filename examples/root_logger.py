@@ -22,7 +22,7 @@ def config_logging(log_path, logfilename=''):
     lcd = LCDict(log_path=log_path,
                  attach_handlers_to_root=True,
                  root_level='INFO')
-    lcd.add_stdout_handler('console', formatter='msg')
+    lcd.add_stdout_handler('console', level='INFO', formatter='msg')
     if logfilename:
         # add a file handler, which will write to log_path + '/' + logfilename
         lcd.add_formatter(

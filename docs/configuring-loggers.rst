@@ -108,8 +108,8 @@ should not "propagate" to its parent (the root, in this example).
 Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* root logger with a ``stderr`` console handler and a file handler,
-  at their respective `prelogging` default loglevels ``WARNING`` and ``NOTSET``;
+* root logger with a ``stderr`` console handler at loglevel ``WARNING``,
+  and a file handler at default loglevel ``NOTSET``;
 
 * a discrete logger, named let's say ``'extra'``, with loglevel ``DEBUG``,
   which will write to a different file using a handler at default loglevel
@@ -130,10 +130,11 @@ and file handlers; use root loglevel ``'DEBUG'``; set ``log_path`` as required::
                  root_level='DEBUG',
                  attach_handlers_to_root=True)
 
-Set up the root logger with a ``stderr`` console handler and a file handler,
-at their default loglevels::
+Set up the root logger with a ``stderr`` console handler at loglevel 'WARNING',
+and a file handler at its default loglevel 'NOTSET'::
 
     lcd.add_stderr_handler('console',
+                           level='WARNING',
                            formatter='msg'
     ).add_file_handler('root_fh',
                        filename='root.log',

@@ -163,7 +163,7 @@ The basic ``add_*`` methods are these four::
     add_file_handler
     add_null_handler
 
-which correspond to all the handler classes defined in the ``logging`` module.
+which correspond to all the handler classes defined in the core module of ``logging``.
 (:ref:`LCDict <LCDict>` defines methods for many of the handler classes defined in
 ``logging.handlers`` -- see the later section, :ref:`supported-handlers`.)
 

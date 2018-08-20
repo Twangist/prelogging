@@ -30,7 +30,7 @@ def config_logging():
                  locking=True,
                  root_level='DEBUG')
 
-    lcd.add_stdout_handler('console', formatter='msg')
+    lcd.add_stdout_handler('console', level='WARNING', formatter='msg')
 
     if not sys.platform.startswith('darwin'):
         raise NotImplementedError(

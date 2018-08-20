@@ -48,8 +48,9 @@ def filter_error_only(record):
 
 def logging_config():
     lcd = LCDict(attach_handlers_to_root=True)
+    # root level: WARNING
     lcd.add_stderr_handler('con-err', formatter='level_msg')
-    # root, console handler levels: WARNING.
+    # console handler level: NOTSET
 
     # Add TWO SMTPHandlers, one for each level ERROR and CRITICAL,
     #    which will email technical staff with logged messages of levels >= ERROR.

@@ -81,7 +81,7 @@ Formatter presets are added to an ``LCDict`` "just in time", when they're used::
      'version': 1}
 
     >>> # Using the 'level_msg' preset adds it to lcd.formatters:
-    >>> _ = lcd.add_stderr_handler('console', 'level_msg')
+    >>> _ = lcd.add_stderr_handler('console', formatter='level_msg')
     >>> lcd.dump()
     {'disable_existing_loggers': False,
      'filters': {},
@@ -89,7 +89,7 @@ Formatter presets are added to an ``LCDict`` "just in time", when they're used::
                                   'format': '%(levelname)-8s: %(message)s'}},
      'handlers': {'console': {'class': 'logging.StreamHandler',
                               'formatter': 'level_msg',
-                              'level': 'WARNING',
+                              'level': 'NOTSET',
                               'stream': 'ext://sys.stderr'}},
      'incremental': False,
      'loggers': {},

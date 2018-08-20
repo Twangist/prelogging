@@ -44,7 +44,7 @@ class TestLCDEx(TestCase):
         self.assertEqual(lcd, expected)
 
         lcd.add_stderr_handler(
-            'console', formatter='msg'
+            'console', level='WARNING', formatter='msg'
         )
         # lcd.dump()      # | DEBUG comment out
 
@@ -110,6 +110,7 @@ class TestLCDEx(TestCase):
         # No formatters, use default
         lcd.add_stderr_handler(
             'console',
+            level='WARNING'
         ).add_file_handler(
             'default_file',
             filename='blather.log',
@@ -167,7 +168,7 @@ class TestLCDEx(TestCase):
         expected = self.get_expected_starting_dict()
         self.assertEqual(lcd, expected)
 
-        lcd.add_stdout_handler('con', formatter='msg')
+        lcd.add_stdout_handler('con', level='WARNING', formatter='msg')
         lcd.clone_handler(clone='con2', handler='con')
 
         # lcd.dump()      # | DEBUG comment out

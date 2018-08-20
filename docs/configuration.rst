@@ -246,12 +246,19 @@ Advantages of static configuration
   You give a name to every logging entity you specify, and then refer
   to it by that name when attaching it to higher-level entities.
   (It's true that after the call to ``dictConfig``, only the names of loggers
-  endure; but that's a separate issue — a deficiency of `logging`, not of static
+  endure [*as per the documentation! but see :ref:`Note <HANDLER_NAMES_TOO>` below*];
+  however, that's a separate issue — a deficiency of `logging`, not of static
   configuration.)
   |br10th|
   |br10th|
 * *It's arguably more natural to specify configuration in a declarative way*,
   especially for the typical application which will "set it and forget it".
+
+.. _HANDLER_NAMES_TOO:
+    .. note::
+        Although it's not documented (as of Python 3.7), every ``Handler``
+        has a read-write property ``name``, and the name used in a logging config
+        dict to identify a handler becomes the ``Handler`` object's ``.name``.
 
 Disadvantages of static configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -284,7 +291,8 @@ package have virtues, but both have shortcomings:
 * With static configuration, no warnings are issued and no error checking occurs
   until ``dictConfig`` (or ``fileConfig``) is called.
 * Of the various kinds of entities that `logging` constructs, only loggers have
-  names, which, as seen above, can lead to various conundrums and contortions.
+  (documented) names, which, as seen above, can lead to various conundrums and
+  contortions.
 
   Said another way, once logging is configured, only the names of ``Logger``\s
   endure. `logging` retains *no associations* between the names you used to
