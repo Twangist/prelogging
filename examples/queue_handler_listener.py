@@ -41,8 +41,9 @@ def main():
 
     q = Queue(-1)  # no limit on size
 
-    lcd = LCDict(attach_handlers_to_root=True)
-    lcd.add_formatter(
+    LCDict(
+        attach_handlers_to_root=True
+    ).add_formatter(
         'fmtr', format='%(threadName)s: %(name)s: %(levelname)-8s: %(message)s'
     ).add_stderr_handler(
         'con', formatter='fmtr'
@@ -52,12 +53,15 @@ def main():
 
     root = logging.getLogger()
 
-    # NOTE the following kludge for obtaining references to the QueueHandlers
-    # attached to root:
-    qhandlers = [handler for handler in root.handlers
-                 if isinstance(handler, logging.handlers.QueueHandler)]
-
-    listener = logging.handlers.QueueListener(q, * qhandlers)
+    # NOTE the following kludge for obtaining a reference to the QueueHandler
+    # attached to root. As of Py3.7, the ``handlers`` attribute of a Logger
+    # is undocumented. A more concise way to write the condition is to use
+    # the ``name`` property of Handlers, also undocumented as of 3.7:
+    #       if handler.name == 'qhandler'
+    #
+    the_qhandler = [handler for handler in root.handlers
+                    if isinstance(handler, logging.handlers.QueueHandler)][0]
+    listener = logging.handlers.QueueListener(q, the_qhandler)
     listener.start()
     # The log output will display the thread which generated
     # the event (the main thread) rather than the internal

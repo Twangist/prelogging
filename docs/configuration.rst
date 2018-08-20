@@ -257,8 +257,9 @@ Advantages of static configuration
 .. _HANDLER_NAMES_TOO:
     .. note::
         Although it's not documented (as of Python 3.7), every ``Handler``
-        has a read-write property ``name``, and the name used in a logging config
-        dict to identify a handler becomes the ``Handler`` object's ``.name``.
+        has a read-write property ``name``; moreover, the name used in a logging
+        config dict to identify a handler becomes the ``Handler`` object's ``.name``.
+        It seems that `logging` only uses the ``name`` property during configuration.
 
 Disadvantages of static configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
