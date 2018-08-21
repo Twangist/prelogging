@@ -372,9 +372,10 @@ class LCDictBasic(dict):
         if 'class_' in handler_dict:
             handler_dict['class'] = handler_dict.pop('class_')
 
+        if level != 'NOTSET':               # v0.3.1: add only if not NOTSET
+            handler_dict['level'] = level
         # A little preprocessing, inspired by 'encoding=None':
         # discard items in handler_dict with value None
-        handler_dict['level'] = level
         handler_dict = {k: v for k, v in iteritems(handler_dict)
                         if v is not None}
 

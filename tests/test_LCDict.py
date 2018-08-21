@@ -73,7 +73,7 @@ class TestLCDEx(TestCase):
                               'delay': False,
                               'filename': 'blather.log',
                               'formatter': 'msg',
-                              'level': 'NOTSET',
+                              # 'level': 'NOTSET',
                               'mode': 'a'}}
         )
 
@@ -129,7 +129,7 @@ class TestLCDEx(TestCase):
                               'delay': False,
                               'filename': 'blather.log',
                               'formatter': 'process_time_logger_level_msg',
-                              'level': 'NOTSET',
+                              # 'level': 'NOTSET',
                               'mode': 'a'}}
         )
 
@@ -152,7 +152,7 @@ class TestLCDEx(TestCase):
                               'delay': False,
                               'filename': 'blather.log',
                               'formatter': 'process_time_logger_level_msg',
-                              'level': 'NOTSET',
+                              # 'level': 'NOTSET',
                               'mode': 'a'}}
         )
 
@@ -206,7 +206,7 @@ class TestLCDEx_Misc(TestCase):
              'filters': {},
              'formatters': {'msg': {'class': 'logging.Formatter',
                                     'format': '%(message)s'}},
-             'handlers': {'h': {'level': 'NOTSET',
+             'handlers': {'h': { # 'level': 'NOTSET',
                                 'formatter': 'msg'}},
              'incremental': False,
              'loggers': {},
