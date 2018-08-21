@@ -255,6 +255,10 @@ class LCDict(LCDictBasic):
         """
         (Virtual) Adds the ``attach_to_root`` parameter to
         ``LCDictBasic.add_handler()``.
+        :param formatter: name of formatter (-spec), or name of formatter preset
+        :param attach_to_root: If true, add the handler to the root
+            logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
+            if false, don't add to root.
 
         :return: ``self``
         """
@@ -267,43 +271,32 @@ class LCDict(LCDictBasic):
         self._add_formatter_if_preset(formatter)
 
         super(LCDict, self).add_handler(handler_name,
-                                       formatter=formatter,
-                                       ** handler_dict)
+                                        formatter=formatter,
+                                        ** handler_dict)
         if self._attach_to_root__adjust(attach_to_root):
             super(LCDict, self).attach_root_handlers(handler_name)
         return self
 
     def add_stream_handler(self, handler_name,    # *,
                            stream,
-                           formatter=None,
-                           level='NOTSET',      # logging default
                            locking=None,
-                           attach_to_root=None,
                            **kwargs):
         """
         :param handler_name: just that
         :param stream: stream or name of stream, e.g. ``sys.stderr``
             or ``'ext://sys.stderr'``
-        :param formatter: name of the formatter this handler should use, or ``None``
-        :param level: loglevel of this handler
         :param locking: If true, this handler will be a
             :ref:`LockingStreamHandler <LockingStreamHandler>`;
             if ``None``, do what ``self.locking`` says;
             if false, the handler will be a ``logging.StreamHandler``.
-        :param attach_to_root: If true, add the handler to the root
-            logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
-            if false, don't add to root.
-        :param kwargs:
+        :param kwargs: Other keyword args as for LCDict.add_handler,
+            LCDictBasic.add_handler, e.g. ``level``, ``formatter``,
+            ``attach_to_root``, ``filters``
         :return: ``self``
         """
-        # So: self can be created with (self.)locking=False,
+        # self can be created with (self.)locking=False,
         # but a handler can be locking.
         locking = self._locking__adjust(locking)
-        attach_to_root = self._attach_to_root__adjust(attach_to_root)
-
-        kwargs['level'] = level
-        if formatter is not None:
-            kwargs['formatter'] = formatter
         if locking:
             kwargs['()'] = 'ext://prelogging.LockingStreamHandler'
             kwargs['create_lock'] = True
@@ -312,69 +305,56 @@ class LCDict(LCDictBasic):
 
         self.add_handler(handler_name,
                          stream=stream,
-                         attach_to_root=attach_to_root,
                          ** kwargs)
         return self
 
     def add_stdout_handler(self, handler_name,  # *,
-                           formatter=None,
-                           level='NOTSET',
-                           locking=None,
-                           attach_to_root=None,
                            **kwargs):
         """Add a console (stream) handler that writes to ``sys.stdout``.
 
+        :param kwargs: Keyword args for
+            add_stream_handler, LCDict.add_handler, LCDictBasic.add_handler,
+            e.g. ``locking``, ``level``, ``formatter``, ``attach_to_root``, ``filters``
         :return: ``self``
         """
         self.add_stream_handler(handler_name,
                                 stream='ext://sys.stdout',
-                                formatter=formatter,
-                                level=level,
-                                locking=locking,
-                                attach_to_root=attach_to_root,
                                 **kwargs)
         return self
 
     def add_stderr_handler(self, handler_name,  # *,
-                           formatter=None,
-                           level='NOTSET',
-                           locking=None,
-                           attach_to_root=None,
                            **kwargs):
         """Add a console (stream) handler that writes to ``sys.stderr``.
-
+        :param kwargs: Keyword args for
+            add_stream_handler, LCDict.add_handler, LCDictBasic.add_handler,
+            e.g. ``locking``, ``level``, ``formatter``, ``attach_to_root``, ``filters``
         :return: ``self``
         """
         self.add_stream_handler(handler_name,
                                 stream='ext://sys.stderr',
-                                formatter=formatter,
-                                level=level,
-                                locking=locking,
-                                attach_to_root=attach_to_root,
                                 **kwargs)
         return self
 
     def add_file_handler(self, handler_name,    # *,
                          filename,
                          formatter=None,
-                         # mode='w',
                          mode='a',
                          encoding=None,
                          delay=False,       # `logging` default
-                         level='NOTSET',    # log everything: `logging` default
                          locking=None,
-                         attach_to_root=None,
                          **kwargs):
         """
         (Virtual) Adds keyword parameters ``locking`` and ``attach_to_root``
         to the parameters of ``LCDictBasic.add_file_handler()``.
 
+        :param kwargs: Keyword args for
+            LCDict.add_handler, LCDictBasic.add_handler,
+            e.g. ``attach_to_root``, ``level``, ``filters``
         :return: ``self``
         """
         # So: self can be created with (self.)locking=False,
         # but a handler can be locking.
         locking = self._locking__adjust(locking)
-        attach_to_root = self._attach_to_root__adjust(attach_to_root)
 
         if not formatter:
             formatter = ('process_time_logger_level_msg'
@@ -386,9 +366,7 @@ class LCDict(LCDictBasic):
                          mode=mode,
                          encoding=encoding,
                          delay=delay,
-                         level=level,
                          formatter=formatter,
-                         attach_to_root=attach_to_root,
                          **kwargs)
         if locking:
             del self.handlers[handler_name]['class']
@@ -404,9 +382,7 @@ class LCDict(LCDictBasic):
                          mode='a',
                          encoding=None,
                          delay=False,       # `logging` default
-                         level='NOTSET',
                          locking=None,
-                         attach_to_root=None,
                          **kwargs):
         """
         :param handler_name: just that
@@ -430,17 +406,14 @@ class LCDict(LCDictBasic):
             encoding
         :param delay: if True, the log file won't be created until it's
             actually written to
-        :param level: the loglevel of this handler
         :param locking: Mandatory if multiprocessing -- things won't even work,
             logfile can't be found: FileNotFoundError: [Errno 2]...
-        :param attach_to_root: If true, add the handler to the root
-            logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
-            if false, don't add to root.
-        :param kwargs: additional key/value pairs
+        :param kwargs: Keyword args for
+            LCDict.add_handler, LCDictBasic.add_handler,
+            e.g. ``level``, ``attach_to_root``, ``filters``
         :return: ``self``
         """
         locking = self._locking__adjust(locking)
-        attach_to_root = self._attach_to_root__adjust(attach_to_root)
 
         if not formatter:
             formatter = ('process_time_logger_level_msg'
@@ -452,22 +425,18 @@ class LCDict(LCDictBasic):
                          mode=mode,
                          encoding=encoding,
                          delay=delay,
-                         level=level,
                          formatter=formatter,
-                         attach_to_root=attach_to_root,
                          maxBytes=max_bytes,
                          backupCount=backup_count,
                          **kwargs)
         if locking:
             del self.handlers[handler_name]['class']
-            self.handlers[handler_name]['()'] = 'ext://prelogging.LockingRotatingFileHandler'
+            self.handlers[handler_name]['()'] = \
+                'ext://prelogging.LockingRotatingFileHandler'
             self.handlers[handler_name]['create_lock'] = True
         return self
 
     def add_null_handler(self, handler_name,  # *
-                         level='NOTSET',
-                         # locking=None,
-                         attach_to_root=None,
                          **kwargs):
         """Add a ``logging.NullHandler``.
 
@@ -476,16 +445,14 @@ class LCDict(LCDictBasic):
         :param attach_to_root: If true, add the handler to the root
             logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
             if false, don't add to root.
-        :param kwargs: any additional key/value pairs for add_handler
-            (typically none)
+        :param kwargs: Keyword args for
+            LCDict.add_handler, LCDictBasic.add_handler,
+            e.g. ``attach_to_root``, ``level``, ``filters``
         :return: ``self``
         """
-        attach_to_root = self._attach_to_root__adjust(attach_to_root)
         return self.add_handler(
             handler_name,
             class_='logging.NullHandler',
-            level=level,
-            attach_to_root=attach_to_root,
             **kwargs)
 
     import socket
@@ -495,10 +462,7 @@ class LCDict(LCDictBasic):
                          address=('localhost', SYSLOG_UDP_PORT),
                          facility=SysLogHandler.LOG_USER,
                          socktype=socket.SOCK_DGRAM,
-                         formatter=None,
-                         level='NOTSET',
                          locking=None,
-                         attach_to_root=None,
                          **kwargs):
         """
         :param handler_name: just that
@@ -514,39 +478,31 @@ class LCDict(LCDictBasic):
         On OS X, use ``address='/var/run/syslog'`` to write to the system log
         (``system.log``); on \*nix, use ``address='/dev/log'``.
 
-        :param formatter: the name of the formatter that this handler will use
-        :param level: the loglevel of this handler
         :param locking: if false, use ``logging.handlers.SysLogHandler``;
             if ``None``, do what ``self.locking`` says;
             if true, use the multiprocessing-safe version of that handler.
-        :param attach_to_root: If true, add the handler to the root
-            logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
-            if false, don't add to root.
-        :param kwargs: additional key/value pairs
+        :param kwargs: Keyword args for
+            LCDict.add_handler, LCDictBasic.add_handler,
+            e.g. ``formatter``, ``attach_to_root``, ``level``, ``filters``
         :return: ``self``
         """
         locking = self._locking__adjust(locking)
-        attach_to_root = self._attach_to_root__adjust(attach_to_root)
 
         self.add_handler(handler_name,
                          class_='logging.handlers.SysLogHandler',
                          address=address,
                          facility=facility,
                          socktype=socktype,
-                         level=level,
-                         formatter=formatter,
-                         attach_to_root=attach_to_root,
                          **kwargs)
         if locking:
             del self.handlers[handler_name]['class']
-            self.handlers[handler_name]['()'] = 'ext://prelogging.LockingSysLogHandler'
+            self.handlers[handler_name]['()'] = \
+                'ext://prelogging.LockingSysLogHandler'
             self.handlers[handler_name]['create_lock'] = True
         return self
 
     def add_email_handler(self,
                           handler_name,  # *
-                          level='NOTSET',
-                          formatter=None,    # str, name of formatter
                           # filters=None,
                           # SMTPHandler-specific:
                           mailhost=None,  # e.g. 'smtp.gmail.com'
@@ -559,7 +515,6 @@ class LCDict(LCDictBasic):
                           password=None,     # str
                           timeout=None,      # sec
                           # Other
-                          attach_to_root=None,
                           **kwargs):
         """Add specifications for an
         `SMTPHandler <https://docs.python.org/3/library/logging.handlers.html#smtphandler>`_
@@ -590,21 +545,18 @@ class LCDict(LCDictBasic):
             parameter expected by the SMTPHandler constructor
         :param timeout: Timeout (seconds) for communication with the SMTP server
             or 0.0 or 0 or None or < 0 to indicate "no timeout"
-        :param kwargs: Any other keyword arguments to be passed to
-            ``add_handler``, such as ``filters``
+        :param kwargs: Keyword args for
+            LCDict.add_handler, LCDictBasic.add_handler,
+            e.g. ``formatter``, ``attach_to_root``, ``level``, ``filters``
         :return: ``self``
         """
         if (timeout is not None and timeout != 0.0
             and int(timeout) != 0 and timeout > 0):
             kwargs['timeout'] = timeout
 
-        attach_to_root = self._attach_to_root__adjust(attach_to_root)
-
         return self.add_handler(
             handler_name,
             class_='logging.handlers.SMTPHandler',
-            level=level,
-            formatter=formatter,
             # SMTPHandler-specific kwargs:
             mailhost=mailhost,
             fromaddr=fromaddr,
@@ -613,15 +565,12 @@ class LCDict(LCDictBasic):
             secure=secure,
             credentials=(username, password),
             # timeout=timeout,
-            attach_to_root=attach_to_root,
             **kwargs)
 
     def add_queue_handler(self,
                           handler_name,
-                          level='NOTSET',
                           # QueueHandler-specific:
                           queue=None,
-                          attach_to_root=None,
                           **kwargs):
         """(*Python 3 only*)
 
@@ -630,21 +579,18 @@ class LCDict(LCDictBasic):
         :param queue: an actual queue object (``multiproccessing.Queue``).
             Thus, **don't** use ``clone_handler`` on a queue handler!
 
-        :param kwargs: any other key/value pairs for ``add_handler``
+        :param kwargs: Keyword args for
+            LCDict.add_handler, LCDictBasic.add_handler,
+            e.g. ``formatter``, ``attach_to_root``, ``level``, ``filters``
         :return: ``self``
         """
         if PY2:
             raise NotImplementedError("logging.handlers.QueueHandler"
                                       " doesn't exist in Python 2")
-
-        attach_to_root = self._attach_to_root__adjust(attach_to_root)
-
         return self.add_handler(
             handler_name,
             class_='logging.handlers.QueueHandler',
-            level=level,
             queue=queue,
-            attach_to_root=attach_to_root,
             **kwargs)
 
     # add_*_filter methods

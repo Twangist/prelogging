@@ -351,12 +351,14 @@ class LCDictBasic(dict):
         return list(str_or_seq or [])
 
     def add_handler(self, handler_name,     # *,
+                    level='NOTSET',
                     formatter=None,
                     filters=None,
                     ** handler_dict):
         """Add a handler to the ``'handlers'`` subdictionary.
 
         :param handler_name: just that
+        :param level: the loglevel of this handler (default: 'NOTSET')
         :param formatter: name of a previously added formatter
         :param filters: the name of a filter, or a sequence of names of filters,
             to be used by the handler
@@ -372,6 +374,7 @@ class LCDictBasic(dict):
 
         # A little preprocessing, inspired by 'encoding=None':
         # discard items in handler_dict with value None
+        handler_dict['level'] = level
         handler_dict = {k: v for k, v in iteritems(handler_dict)
                         if v is not None}
 

@@ -175,14 +175,14 @@ class TestLCDEx(TestCase):
 
         self.assertEqual(
             lcd['handlers'],
-            {'con2': {'class': 'logging.StreamHandler',
-                      'formatter': 'msg',
-                      'level': 'WARNING',
-                      'stream': 'ext://sys.stdout'},
-             'con': {'class': 'logging.StreamHandler',
+            {'con': {'class': 'logging.StreamHandler',
                      'formatter': 'msg',
                      'level': 'WARNING',
-                     'stream': 'ext://sys.stdout'}}
+                     'stream': 'ext://sys.stdout'},
+             'con2': {'class': 'logging.StreamHandler',
+                      'formatter': 'msg',
+                      'level': 'WARNING',
+                      'stream': 'ext://sys.stdout'}}
         )
 
 # ---------------------------------------------------------------------------
@@ -205,8 +205,9 @@ class TestLCDEx_Misc(TestCase):
             {'disable_existing_loggers': False,
              'filters': {},
              'formatters': {'msg': {'class': 'logging.Formatter',
-                                        'format': '%(message)s'}},
-             'handlers': {'h': {'formatter': 'msg'}},
+                                    'format': '%(message)s'}},
+             'handlers': {'h': {'level': 'NOTSET',
+                                'formatter': 'msg'}},
              'incremental': False,
              'loggers': {},
              'root': {'handlers': [], 'level': 'WARNING'},
