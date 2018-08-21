@@ -20,7 +20,7 @@ __doc__ = """\
 #                  of formatter specifications
 # -----------------------------------------------------------------------
 
-_formatter_spec_fields = ('format', 'style', 'dateformat')
+_formatter_spec_fields = ('format', 'dateformat', 'style')
 
 class FormatterSpec(
     namedtuple('_FormatterSpec_',
@@ -33,11 +33,11 @@ class FormatterSpec(
     __slots__ = ()
 
     def __new__(cls, format,
-                style='%',
                 datefmt=None,
-                dateformat=None):
+                dateformat=None,
+                style='%'):
         dateformat = datefmt or dateformat
-        return super(FormatterSpec, cls).__new__(cls, format, style, dateformat)
+        return super(FormatterSpec, cls).__new__(cls, format, dateformat, style)
 
     def to_dict(self):
         """
@@ -105,6 +105,7 @@ class LCDict(LCDictBasic):
     use the corresponding value passed to the constructor.
     """
 
+    # TODO: Make these external, load
     _formatter_presets = {
         'msg': FormatterSpec("%(message)s"),
         'level_msg': FormatterSpec('%(levelname)-8s: %(message)s'),
