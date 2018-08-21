@@ -22,10 +22,7 @@ __doc__ = """\
 
 _formatter_spec_fields = ('format', 'dateformat', 'style')
 
-class FormatterSpec(
-    namedtuple('_FormatterSpec_',
-               _formatter_spec_fields)
-):
+class FormatterSpec( namedtuple('_FormatterSpec_', _formatter_spec_fields) ):
     """ A namedtuple-derived lightweight class representing formatters.
     We subclass in order to allow variant spellings for parameters,
     to allow default values, and to easily convert to a dict.
@@ -36,6 +33,12 @@ class FormatterSpec(
                 datefmt=None,
                 dateformat=None,
                 style='%'):
+        """
+        :param format: a (logging) format string
+        :param datefmt: a date-format string; mutually exclusive with dateformat
+        :param dateformat: a date-format string; mutually exclusive with datefmt
+        :param style: one of "%{$"
+        """
         dateformat = datefmt or dateformat
         return super(FormatterSpec, cls).__new__(cls, format, dateformat, style)
 
@@ -50,6 +53,23 @@ class FormatterSpec(
         d = {k: getattr(self, k) for k in _formatter_spec_fields}
         d['datefmt'] = d.pop('dateformat', None)
         return {k: v for k, v in d.items() if v}
+
+
+# TODO: Make these external, load at "startup"
+_formatter_presets = {
+    'msg': FormatterSpec("%(message)s"),
+    'level_msg': FormatterSpec('%(levelname)-8s: %(message)s'),
+    'process_msg': FormatterSpec('%(processName)-10s: %(message)s'),
+    'logger_process_msg': FormatterSpec('%(name)-20s: %(processName)-10s: %(message)s'),
+    'logger_level_msg': FormatterSpec('%(name)-20s: %(levelname)-8s: %(message)s'),
+    'logger_msg': FormatterSpec('%(name)-20s: %(message)s'),
+    'process_level_msg': FormatterSpec('%(processName)-10s: %(levelname)-8s: %(message)s'),
+    'process_time_level_msg': FormatterSpec('%(processName)-10s: %(asctime)s: %(levelname)-8s: %(message)s'),
+    'process_logger_level_msg': FormatterSpec('%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s'),
+    'process_time_logger_level_msg': FormatterSpec('%(processName)-10s: %(asctime)s:'
+                                                   ' %(name)-20s: %(levelname)-8s: %(message)s'),
+    'time_logger_level_msg': FormatterSpec('%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'),
+}
 
 
 # -----------------------------------------------------------------------
@@ -104,23 +124,6 @@ class LCDict(LCDictBasic):
     value of these parameters in handler-adding methods is ``None``, meaning:
     use the corresponding value passed to the constructor.
     """
-
-    # TODO: Make these external, load
-    _formatter_presets = {
-        'msg': FormatterSpec("%(message)s"),
-        'level_msg': FormatterSpec('%(levelname)-8s: %(message)s'),
-        'process_msg': FormatterSpec('%(processName)-10s: %(message)s'),
-        'logger_process_msg': FormatterSpec('%(name)-20s: %(processName)-10s: %(message)s'),
-        'logger_level_msg': FormatterSpec('%(name)-20s: %(levelname)-8s: %(message)s'),
-        'logger_msg': FormatterSpec('%(name)-20s: %(message)s'),
-        'process_level_msg': FormatterSpec('%(processName)-10s: %(levelname)-8s: %(message)s'),
-        'process_time_level_msg': FormatterSpec('%(processName)-10s: %(asctime)s: %(levelname)-8s: %(message)s'),
-        'process_logger_level_msg': FormatterSpec('%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s'),
-        'process_time_logger_level_msg': FormatterSpec('%(processName)-10s: %(asctime)s:'
-                                                       ' %(name)-20s: %(levelname)-8s: %(message)s'),
-        'time_logger_level_msg': FormatterSpec('%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'),
-    }
-
     def __init__(self,                  # *,
                  root_level='WARNING',       # == logging default level
                  log_path='',
@@ -234,10 +237,10 @@ class LCDict(LCDictBasic):
     def _add_formatter_if_preset(self, formatter_name):
         if (formatter_name and
             formatter_name not in self.formatters and
-            formatter_name in self._formatter_presets
+            formatter_name in _formatter_presets
            ):
             self.add_formatter(formatter_name,
-                               ** self._formatter_presets[formatter_name].to_dict())
+                               ** _formatter_presets[formatter_name].to_dict())
 
     def set_handler_formatter(self, handler_name, formatter_name):
         """
