@@ -44,7 +44,7 @@ class FormatterSpec( namedtuple('_FormatterSpec_', _formatter_spec_fields) ):
         return {k: v for k, v in d.items() if v}
 
 
-# TODO: Make these external, load at "startup"
+# TODO: Make these external -- some simple text file format?
 __formatter_presets = {
     'msg': FormatterSpec("%(message)s"),
     'level_msg': FormatterSpec('%(levelname)-8s: %(message)s'),
@@ -61,6 +61,5 @@ __formatter_presets = {
 }
 
 def load_formatter_presets():
-    # TODO: Make __formatter_presets external, some simple text file format?;
-    #  |    load them here
+    # TODO: If/when formatter presets are external, load them here. Meanwhile:
     return __formatter_presets

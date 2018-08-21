@@ -340,18 +340,18 @@ in particular the documentation for
 `the format of a logging configuration dictionary <https://docs.python.org/3/library/logging.config.html#logging-config-dictschema>`_.
 
 Here's a useful reference:
-`the complete list of keywords that can appear in formatters <https://docs.python.org/3/library/logging.html?highlight=logging#logrecord-attributes>`_.
+`the complete list of keywords that can appear in formatters <https://docs.python.org/3/library/logging.html#logrecord-attributes>`_.
 
 The logging `HOWTO <https://docs.python.org/3/howto/logging.html>`_
 contains tutorials that show typical setups and uses of logging, configured in
 code at runtime.
 The `logging Cookbook <https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook>`_
 contains a wealth of techniques, several of which exceed the scope of `prelogging` because
-they involve `logging` capabilities that can't be configured statically (e.g.
+ they involve `logging` capabilities that can't be configured statically (e.g.
 the use of
 `LoggerAdapters <https://docs.python.org/3/library/logging.html#loggeradapter-objects>`_,
 or
-`QueueListeners <https://docs.python.org/3/library/logging.handlers.html?#queuelistener>`_
+`QueueListeners <https://docs.python.org/3/library/logging.handlers.html#queuelistener>`_
 ). A few of the examples contained in the `prelogging` distribution are examples from
 the Cookbook and HOWTO, reworked to use `prelogging`.
 
