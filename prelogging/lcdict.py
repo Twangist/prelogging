@@ -259,6 +259,8 @@ class LCDict(LCDictBasic):
         :param attach_to_root: If true, add the handler to the root
             logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
             if false, don't add to root.
+        :param handler_dict: Other keyword args as for LCDictBasic.add_handler,
+            e.g. ``level``, ``filters``
 
         :return: ``self``
         """
