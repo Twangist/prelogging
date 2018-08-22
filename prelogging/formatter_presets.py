@@ -1,5 +1,6 @@
 from collections import namedtuple
 import sys
+from .six import PY2
 
 __author__ = "Brian O'Neill"
 __all__ = ('update_formatter_presets', 'FormatterSpec')
@@ -51,6 +52,8 @@ _formatter_presets = {}      # type: Dict[str, FormatterSpec]
 # -----------------------------------------------------------------------
 # update_formatter_presets
 # -----------------------------------------------------------------------
+if PY2: FileNotFoundError = IOError
+
 
 def update_formatter_presets(filename):       # -> Dict[str, FormatterSpec]
     try:
@@ -59,17 +62,21 @@ def update_formatter_presets(filename):       # -> Dict[str, FormatterSpec]
     except FileNotFoundError:
         #  | raise
         # print("File '%s' not found" % filename, file=sys.stderr)
-        # Py2
-        sys.stderr.write("File '%s' not found\n" % filename)
+        # Py2 horror
+        s = "File '%s' not found\n" % filename
+        if PY2: s = unicode(s)
+        sys.stderr.write(s)
         return
 
     try:
-       new_formatter_specs = _read_formatter_presets(lines)
+        new_formatter_specs = _read_formatter_presets(lines)
     except ValueError as e:
         #  | raised, bubbled up
         # print(..., file=sys.stderr)
-        # Py2
-        sys.stderr.write(("File %s, " % filename) + str(e) + "\n")
+        # Py2 horror
+        s = ("File %s, " % filename) + str(e) + "\n"
+        if PY2: s = unicode(s)
+        sys.stderr.write(s)
         return
 
     _formatter_presets.update(new_formatter_specs)
@@ -82,7 +89,8 @@ def update_formatter_presets(filename):       # -> Dict[str, FormatterSpec]
 # Line types
 NAME = 0
 KEY_VAL = 1
-BLANK = 2
+BAD_KEY_VAL = 2
+BLANK = 3
 
 
 def _clean(s, part_type):           # -> str
@@ -106,8 +114,7 @@ def _parse_line(line):   # -> Tuple[LineType, (str or Tuple[str, str] or None)]
     # it's a key/value pair or bust
     parts = stripped.split(':', 1)          # PY2, no kwd arg (maxsplit=1)
     if len(parts) != 2:
-        raise ValueError("expected key:value")                  # | raise
-
+        return BAD_KEY_VAL, (parts)
     return KEY_VAL, (_clean(parts[0], "key"), _clean(parts[1], "value"))
 
 
@@ -131,33 +138,17 @@ def _read_formatter_presets(lines):
     # Run state machine
     for lineno, line in enumerate(lines):
         try:
-            # TODO: Simplify. Regrettably, this got convoluted. Without "try"
-            #  |    and `bad_key_value`, error message would be "bad key:value"
-            #  |    rather than "expected name", when `expecting == NAME` and
-            #  |    an indented line is encountered.
-            bad_key_value = False
-            try:
-                linetype, data = _parse_line(line)
-            except ValueError as valerr:
-                bad_key_value = True
+            linetype, data = _parse_line(line)
 
             if expecting == NAME:
-                try:
-                    linetype, data = _parse_line(line)
-                except ValueError as valerr:
-                    bad_key_value = True
-
                 if linetype == NAME:
                     name = data
                     fields = {'style': '%'}
                     expecting = KEY_VAL
-                elif bad_key_value:
-                    raise ValueError("expected name, starting in column 1") # | raise
                 elif linetype == BLANK:
                     continue
-
-            elif bad_key_value:
-                raise valerr
+                elif linetype in (KEY_VAL, BAD_KEY_VAL):
+                    raise ValueError("expected name, starting in column 1") # | raise
 
             elif expecting == KEY_VAL:
                 if linetype == KEY_VAL:
@@ -171,39 +162,16 @@ def _read_formatter_presets(lines):
                     add_new_fs()
                     fields = {}
                     expecting = NAME
-                else:   # linetype == NAME
+                else:                   # linetype in (NAME, BAD_KEY_VAL)
                     raise ValueError("expected key:value")              # | raise
 
         except ValueError as e:
             raise ValueError(("line %d: " % (lineno+1)) + str(e))
 
     if fields:
-        add_new_fs()
+        try:
+            add_new_fs()            # raises, if 'format' key missing
+        except ValueError as e:
+            raise ValueError(("line %d: " % (lineno+1)) + str(e))
+
     return new_formatter_specs
-
-
-if __name__ == '__main__':
-    # path to this module: __file__
-    # call update_formatter_presets on path + 'formatter_presets.txt'
-    import os
-    formatter_presets_filename = os.path.join(
-                                    os.path.dirname(__file__),
-                                    'formatter_presets.txt')
-    update_formatter_presets(formatter_presets_filename)
-
-    # compare formatter_presets_ with this:
-    __formatter_presets = {
-        'msg': FormatterSpec("%(message)s"),
-        'level_msg': FormatterSpec('%(levelname)-8s: %(message)s'),
-        'process_msg': FormatterSpec('%(processName)-10s: %(message)s'),
-        'logger_process_msg': FormatterSpec('%(name)-20s: %(processName)-10s: %(message)s'),
-        'logger_level_msg': FormatterSpec('%(name)-20s: %(levelname)-8s: %(message)s'),
-        'logger_msg': FormatterSpec('%(name)-20s: %(message)s'),
-        'process_level_msg': FormatterSpec('%(processName)-10s: %(levelname)-8s: %(message)s'),
-        'process_time_level_msg': FormatterSpec('%(processName)-10s: %(asctime)s: %(levelname)-8s: %(message)s'),
-        'process_logger_level_msg': FormatterSpec('%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s'),
-        'process_time_logger_level_msg': FormatterSpec('%(processName)-10s: %(asctime)s:'
-                                                       ' %(name)-20s: %(levelname)-8s: %(message)s'),
-        'time_logger_level_msg': FormatterSpec('%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'),
-    }
-    print("Results OK:", _formatter_presets == __formatter_presets)

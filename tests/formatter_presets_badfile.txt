@@ -1,0 +1,2 @@
+formatter_name
+    bad-key-value-line
