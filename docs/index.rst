@@ -14,7 +14,7 @@ API for configuring logging. The package includes several "batteries":
 
 .. Using `prelogging`
 
-Contents
+Chapters
 ------------------------
 
 .. toctree::
@@ -29,6 +29,11 @@ Contents
     topics-recipes
     guide-to-examples
     class-reference
-    the-index
+
+Index
+----------
+
+* :ref:`genindex`
 
 .. TODO !!!! mark/tag index items, and restore this last TOC item:
+    the-index

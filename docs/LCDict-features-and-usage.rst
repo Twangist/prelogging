@@ -26,7 +26,7 @@ details its parameters and their possible values.
 
 As our :ref:`first example <config-use-case-lcdict>` indicated,
 often it's not necessary to specify formatters from scratch,
-because ``LCDict`` provides about a dozen formatter *presets* —
+because ``LCDict`` provides an extensible about a dozen formatter *presets* —
 predefined formatter specifications which cover many needs.
 You can use the name of any of these presets as the ``formatter`` argument
 to ``add_*_handler`` methods and to ``set_handler_formatter``.

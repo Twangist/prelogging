@@ -347,8 +347,7 @@ contains tutorials that show typical setups and uses of logging, configured in
 code at runtime.
 The `logging Cookbook <https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook>`_
 contains a wealth of techniques, several of which exceed the scope of `prelogging` because
- they involve `logging` capabilities that can't be configured statically (e.g.
-the use of
+they involve `logging` capabilities that can't be configured statically (e.g. the use of
 `LoggerAdapters <https://docs.python.org/3/library/logging.html#loggeradapter-objects>`_,
 or
 `QueueListeners <https://docs.python.org/3/library/logging.handlers.html#queuelistener>`_

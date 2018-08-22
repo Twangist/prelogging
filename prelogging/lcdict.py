@@ -208,10 +208,12 @@ class LCDict(LCDictBasic):
         """
         (Virtual) Adds the ``attach_to_root`` parameter to
         ``LCDictBasic.add_handler()``.
+
         :param formatter: name of formatter (-spec), or name of formatter preset
-        :param attach_to_root: If true, add the handler to the root
-            logger; if ``None``, do what ``self.attach_handlers_to_root`` says;
+        :param attach_to_root: If true, add the handler to the root logger;
+            if ``None``, do what ``self.attach_handlers_to_root`` says;
             if false, don't add to root.
+
         :param handler_dict: Other keyword args as for LCDictBasic.add_handler,
             e.g. ``level``, ``filters``
 
@@ -280,6 +282,7 @@ class LCDict(LCDictBasic):
     def add_stderr_handler(self, handler_name,  # *,
                            **kwargs):
         """Add a console (stream) handler that writes to ``sys.stderr``.
+
         :param kwargs: Keyword args for
             add_stream_handler, LCDict.add_handler, LCDictBasic.add_handler,
             e.g. ``locking``, ``level``, ``formatter``, ``attach_to_root``, ``filters``
