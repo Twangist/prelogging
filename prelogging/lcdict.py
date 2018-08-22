@@ -1,11 +1,14 @@
 # coding=utf-8
 
-import os
 from copy import deepcopy
 
 from .lcdictbasic import LCDictBasic
-from .formatter_presets import *
+from .formatter_presets import update_formatter_presets, _formatter_presets
+import socket
+from logging.handlers import SysLogHandler, SYSLOG_UDP_PORT
+import os
 from .six import PY2
+
 
 __author__ = "Brian O'Neill"
 
@@ -13,7 +16,10 @@ __doc__ = """\
     .. include:: _global.rst
 """
 
-_formatter_presets = load_formatter_presets()
+# update _formatter_presets with (path to this module) + 'formatter_presets.txt'
+update_formatter_presets(
+    os.path.join(os.path.dirname(__file__), 'formatter_presets.txt')
+)
 
 # -----------------------------------------------------------------------
 # LCDict
@@ -403,9 +409,6 @@ class LCDict(LCDictBasic):
             handler_name,
             class_='logging.NullHandler',
             **kwargs)
-
-    import socket
-    from logging.handlers import SysLogHandler, SYSLOG_UDP_PORT
 
     def add_syslog_handler(self, handler_name,   # *,
                          address=('localhost', SYSLOG_UDP_PORT),

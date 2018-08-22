@@ -1,0 +1,32 @@
+msg
+    format: '%(message)s'
+
+level_msg
+    format: '%(levelname)-8s: %(message)s'
+
+process_msg
+    format: '%(processName)-10s: %(message)s'
+
+logger_process_msg
+    format: '%(name)-20s: %(processName)-10s: %(message)s'
+
+logger_level_msg
+    format: '%(name)-20s: %(levelname)-8s: %(message)s'
+
+logger_msg
+    format: '%(name)-20s: %(message)s'
+
+process_level_msg
+    format: '%(processName)-10s: %(levelname)-8s: %(message)s'
+
+process_time_level_msg
+    format: '%(processName)-10s: %(asctime)s: %(levelname)-8s: %(message)s'
+
+process_logger_level_msg
+    format: '%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s'
+
+process_time_logger_level_msg
+    format: '%(processName)-10s: %(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'
+
+time_logger_level_msg
+    format: '%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'
