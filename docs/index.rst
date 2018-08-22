@@ -7,10 +7,10 @@
 `prelogging` is a pure Python package that provides a simple, consistent, powerful
 API for configuring logging. The package includes several "batteries":
 
-    * formatter presets — a basic fund of useful formatters
     * consistent methods to add handlers both mundane and exotic
     * multiprocessing-safe handlers which output to the console, to files and
-      rotating files, and to the system log.
+      rotating files, and to the system log
+    * formatter presets — a fund of useful shorthands for formatters, which you can extend and modify
 
 .. Using `prelogging`
 
@@ -30,10 +30,11 @@ Chapters
     guide-to-examples
     class-reference
 
+.. TODO !!!! mark/tag index items, and restore this last TOC item:
+    the-index
+
 Index
 ----------
 
 * :ref:`genindex`
 
-.. TODO !!!! mark/tag index items, and restore this last TOC item:
-    the-index
