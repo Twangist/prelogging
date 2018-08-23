@@ -151,4 +151,5 @@ shy of 100% coverage when both tests and examples are run:
 || ``lcdict.py``             || \98%  || \96% |
 || ``locking_handlers.py``   || 100%  || 100% |
 || ``lcdict_builder_abc.py`` || 100%  || 100% |
+|| ``formatter_presets.py``  || 100%  || 100% |
 +----------------------------+--------+-------+

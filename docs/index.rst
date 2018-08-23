@@ -25,16 +25,9 @@ Chapters
     configuration
     LCDictBasic-organization-basic_usage
     LCDict-features-and-usage
+    formatter-presets
     configuring-loggers
     topics-recipes
     guide-to-examples
     class-reference
-
-.. TODO !!!! mark/tag index items, and restore this last TOC item:
-    the-index
-
-Index
-----------
-
-* :ref:`genindex`
-
+    genindex

@@ -3,7 +3,7 @@
 from copy import deepcopy
 
 from .lcdictbasic import LCDictBasic
-from .formatter_presets import update_formatter_presets, _formatter_presets
+from .formatter_presets import update_formatter_presets_from_file, _formatter_presets
 import socket
 from logging.handlers import SysLogHandler, SYSLOG_UDP_PORT
 import os
@@ -17,7 +17,7 @@ __doc__ = """\
 """
 
 # update _formatter_presets with (path to this module) + 'formatter_presets.txt'
-update_formatter_presets(
+update_formatter_presets_from_file(
     os.path.join(os.path.dirname(__file__), 'formatter_presets.txt')
 )
 

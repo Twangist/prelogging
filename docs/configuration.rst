@@ -380,7 +380,7 @@ attached to the root logger. (You can override this default by passing
 * To allow chaining, as in the above example, the methods of
   ``LCDictBasic`` and ``LCDict`` generally return ``self``.
 
-* Here's the :ref:`complete table of prelogging's formatter presets <preset-formatters>`.
+* Here's the :ref:`complete table of prelogging's formatter presets <preset-formatters-table>`.
 
 Configuring our requirements using ``LCDictBasic``
 ++++++++++++++++++++++++++++++++++++++++++++++++++++

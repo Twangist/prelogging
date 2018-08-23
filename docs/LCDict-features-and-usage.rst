@@ -9,13 +9,13 @@
 conveniences. The class is fully documented in :ref:`LCDict`.
 In this chapter we describe the features it adds:
 
-* :ref:`formatter presets <formatter_presets>`
+* :ref:`formatter presets <formatter_presets_in_LCDict>`
 * :ref:`add_*_handler methods for several classes in logging.handlers <supported-handlers>`
 * :ref:`optional automatic attaching of handlers to the root logger as they're added <auto-attach-handlers-to-root>`
 * :ref:`easy multiprocessing-safe logging <easy-mp-safe-logging>`
 * :ref:`simplified creation and use of filters <filters>`.
 
-.. _formatter_presets:
+.. _formatter_presets_in_LCDict:
 
 Formatter presets
 -------------------------------------------------------
@@ -26,43 +26,15 @@ details its parameters and their possible values.
 
 As our :ref:`first example <config-use-case-lcdict>` indicated,
 often it's not necessary to specify formatters from scratch,
-because ``LCDict`` provides an extensible about a dozen formatter *presets* —
-predefined formatter specifications which cover many needs.
+because `prelogging` provides an extensible, modifiable collection of *formatter
+presets* — predefined formatter specifications which cover many needs.
 You can use the name of any of these presets as the ``formatter`` argument
-to ``add_*_handler`` methods and to ``set_handler_formatter``.
+to ``add_*_handler`` methods and to ``set_handler_formatter``. `prelogging` ships
+with about a dozen of them, shown in :ref:`this table <preset-formatters-table>`.
 
-The following table exhibits all the formatter presets:
+.. index:: formatter presets (added to an LCDict only when used)
 
 .. _LCDict-using-formatter-presets:
-.. _preset-formatters:
-
-.. index:: preset formatters (LCDict), formatter presets (LCDict)
-
-+--------------------------------------+-----------------------------------------------------------------------------------+
-|| Formatter name                      || Format string                                                                    |
-+======================================+===================================================================================+
-|| ``'msg'``                           || ``'%(message)s'``                                                                |
-+--------------------------------------+-----------------------------------------------------------------------------------+
-|| ``'level_msg'``                     || ``'%(levelname)-8s: %(message)s'``                                               |
-+--------------------------------------+-----------------------------------------------------------------------------------+
-|| ``'process_msg'``                   || ``'%(processName)-10s: %(message)s'``                                            |
-+--------------------------------------+-----------------------------------------------------------------------------------+
-|| ``'logger_process_msg'``            || ``'%(name)-20s: %(processName)-10s: %(message)s'``                               |
-+--------------------------------------+-----------------------------------------------------------------------------------+
-|| ``'logger_level_msg'``              || ``'%(name)-20s: %(levelname)-8s: %(message)s'``                                  |
-+--------------------------------------+-----------------------------------------------------------------------------------+
-|| ``'logger_msg'``                    || ``'%(name)-20s: %(message)s'``                                                   |
-+--------------------------------------+-----------------------------------------------------------------------------------+
-|| ``'process_level_msg'``             || ``'%(processName)-10s: %(levelname)-8s: %(message)s'``                           |
-+--------------------------------------+-----------------------------------------------------------------------------------+
-|| ``'process_time_level_msg'``        || ``'%(processName)-10s: %(asctime)s: %(levelname)-8s: %(message)s'``              |
-+--------------------------------------+-----------------------------------------------------------------------------------+
-|| ``'process_logger_level_msg'``      || ``'%(processName)-10s: %(name)-20s: %(levelname)-8s: %(message)s'``              |
-+--------------------------------------+-----------------------------------------------------------------------------------+
-|| ``'process_time_logger_level_msg'`` || ``'%(processName)-10s: %(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'`` |
-+--------------------------------------+-----------------------------------------------------------------------------------+
-|| ``'time_logger_level_msg'``         || ``'%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'``                     |
-+--------------------------------------+-----------------------------------------------------------------------------------+
 
 Formatter presets are added to an ``LCDict`` "just in time", when they're used::
 
@@ -98,6 +70,13 @@ Formatter presets are added to an ``LCDict`` "just in time", when they're used::
 
 Only ``'level_msg'`` has been added to ``lcd.formatters``.
 
+Of course, the dozen or so formatter presets that `prelogging` contains,
+aren't a comprehensive collection, and probably won't meet everyone's needs
+or suit everyone's tastes. Therefore `prelogging` lets you add your own,
+and/or modify existing ones, using the ``update_formatter_presets_from_file(filename)``
+function. This function, and the format of the files it accepts, are described
+in the chapter :ref:`Formatter Presets <preset-formatters-chapter>` following
+this one.
 
 ------------------------------------------------------
 
@@ -113,7 +92,7 @@ for which ``LCDictBasic`` supplies  ``add_*_handler`` methods. Its ``handlers``
 module defines more specialized handler classes, for about half of which (presently)
 ``LCDict`` provides corresponding ``add_*_handler`` methods.
 
-.. index:: `'logging` handler classes encapsulated
+.. index:: logging handler classes encapsulated
 
 .. _LCDict-handler-classes-encapsulated:
 

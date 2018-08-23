@@ -1,4 +1,4 @@
-Configuring loggers
+Configuring Loggers
 =======================================================
 
 We have already seen examples of how easy it can be to configure the root logger

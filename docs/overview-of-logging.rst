@@ -127,6 +127,8 @@ thresholding as described above and in greater detail :ref:`below <how_a_message
 written. They can also be used to modify messages or supplement them with
 additional context.
 
+.. index:: logger names
+
 Loggers are identified by name
 -------------------------------------------
 
@@ -137,6 +139,8 @@ it's evaluated. The `logging` package always creates a special logger, the *root
 logger*, which *we*, as users of `logging`, identify by the name ``''`` (the
 empty string); it's accessed by the expression ``logging.getLogger('')``, or
 equivalently by ``logging.getLogger()``.
+
+.. index:: root logger names (warning re pitfalls)
 
 .. warning::
 
@@ -169,6 +173,9 @@ to construe that in whatever way suits your needs and situation.
 
 .. _ANCESTORS:
 
+.. index:: logger parent, logger children
+.. index:: logger ancestors, ancestors of a logger
+
 The parent-child and ancestor relationships between loggers
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -181,6 +188,8 @@ is *not* a parent or ancestor of ``a``, nor is ``a.b`` a parent or ancestor
 of ``a.bxyz``: the relation isn't just "startswith" between strings.)
 
 .. _how_a_message_is_logged:
+
+.. index:: How a message is logged
 
 How a message is logged
 ---------------------------------
@@ -199,6 +208,8 @@ we first have to introduce a few more concepts:
 
 
 .. _NOTSET:
+
+.. index:: NOTSET (special loglevel)
 
 The special loglevel **NOTSET**
 +++++++++++++++++++++++++++++++++++++++++++++++++
@@ -223,6 +234,8 @@ to determine whether a message that the logger logs will be sent to handlers or 
 
 .. _effective_level:
 
+.. index:: effective level of a logger
+
 The "effective level" of a logger
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -245,6 +258,8 @@ In the next subsection we'll explain just which handlers a message is sent to
 when its level clears the effective level threshold.
 
 .. _propagation:
+
+.. index:: propagate flag of a logger
 
 Propagation
 +++++++++++++++++++++++++++++++++++++++++++++++++

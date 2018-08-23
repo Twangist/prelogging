@@ -38,6 +38,8 @@ Further Topics and Recipes
 
 ----------------------------------
 
+.. index:: LCDictBuilderABC
+
 .. _config-abc:
 
 Using ``LCDictBuilderABC``
@@ -105,6 +107,8 @@ subclass specific to that program area.
 --------------------------------------------------
 
 .. _tr-mp:
+
+.. index:: Multiprocessing-aware logging — two approaches
 
 Multiprocessing — two approaches
 ----------------------------------------------
@@ -220,6 +224,8 @@ examples illustrate the use of every locking handler. The section
 to use the Boolean ``locking`` parameter to enable locking. These resources
 more than suffice to explain how to take advantage of the simple interface
 that `prelogging` provides to its locking handlers.
+
+.. index:: QueueHandlers
 
 .. _mp-queue-and-logging-thread:
 
@@ -342,6 +348,9 @@ Here's what the logging thread does:
 --------------------------------------------------
 
 .. _null-handler:
+
+.. index:: libraries (using `prelogging` in)
+.. index:: NullHandlers
 
 Using `prelogging` in libraries: using a null handler
 -----------------------------------------------------------------
@@ -488,6 +497,8 @@ Results (4 cases)
 
 --------------------------------------------------
 
+.. index:: Django (using `prelogging` with)
+
 .. _using-prelogging-with-django:
 
 Using `prelogging` with `Django`
@@ -538,7 +549,7 @@ In :ref:`the second subsection<providing-extra-dynamic-data-to-a-filter>`,
 we'll discuss how to provide a filter with dynamic data,
 whose value may be different each time the filter is called.
 
-.. index:: Filters -- providing extra static data
+.. index:: Filters — providing extra static data
 
 .. _providing-extra-static-data-to-a-filter:
 
@@ -739,7 +750,7 @@ This prints the following to stdout::
     count_info > record levelname = INFO, _level_count = 2; returning 0
 
 
-.. index:: Filters -- providing extra dynamic data
+.. index:: Filters — providing extra dynamic data
 
 .. _providing-extra-dynamic-data-to-a-filter:
 
@@ -866,6 +877,8 @@ as a container:
 Of course, you can pass a data-returning callable rather than a container.
 
 ------------------------------------------------------
+
+.. index:: SMTPHandlers (email handlers)
 
 .. _smtp-handler:
 

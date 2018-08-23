@@ -3,7 +3,7 @@ import sys
 from .six import PY2
 
 __author__ = "Brian O'Neill"
-__all__ = ('update_formatter_presets', 'FormatterSpec')
+__all__ = ('update_formatter_presets_from_file', 'FormatterSpec')
 
 # -----------------------------------------------------------------------
 # FormatterSpec -- namedtuple subclass for static declaration
@@ -50,12 +50,12 @@ _formatter_presets = {}      # type: Dict[str, FormatterSpec]
 
 
 # -----------------------------------------------------------------------
-# update_formatter_presets
+# update_formatter_presets_from_file
 # -----------------------------------------------------------------------
 if PY2: FileNotFoundError = IOError
 
 
-def update_formatter_presets(filename):       # -> Dict[str, FormatterSpec]
+def update_formatter_presets_from_file(filename):
     try:
         with open(filename, 'r') as f:
             lines = f.readlines()
@@ -69,7 +69,7 @@ def update_formatter_presets(filename):       # -> Dict[str, FormatterSpec]
         return
 
     try:
-        new_formatter_specs = _read_formatter_presets(lines)
+        new_formatter_specs = _make_formatter_specs(lines)
     except ValueError as e:
         #  | raised, bubbled up
         # print(..., file=sys.stderr)
@@ -118,7 +118,7 @@ def _parse_line(line):   # -> Tuple[LineType, (str or Tuple[str, str] or None)]
     return KEY_VAL, (_clean(parts[0], "key"), _clean(parts[1], "value"))
 
 
-def _read_formatter_presets(lines):
+def _make_formatter_specs(lines):             # -> Dict[str, FormatterSpec]
     keys = ('format', 'dateformat', 'style')
 
     name = ''

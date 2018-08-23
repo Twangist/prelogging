@@ -1,7 +1,7 @@
 __author__ = 'brianoneill'
 
 from prelogging.formatter_presets import (
-    FormatterSpec, _formatter_presets, _read_formatter_presets, update_formatter_presets
+    FormatterSpec, _formatter_presets, _make_formatter_specs, update_formatter_presets_from_file
 )
 from unittest import TestCase
 
@@ -10,7 +10,7 @@ import io
 from prelogging.six import PY2
 
 # ---------------------------------------------------------------------------
-# update_formatter_presets(lines)
+# update_formatter_presets_from_file(lines)
 # ---------------------------------------------------------------------------
 if PY2: FileNotFoundError = IOError
 
@@ -19,13 +19,6 @@ class Test_update_formatter_presets(TestCase):
 
     def test_LCDict_startup(self):
         import prelogging.lcdict
-        # import os
-        # # update formatter_presets_ with 'formatter_presets.txt' file
-        # # Note, this test is probably brittle
-        # #  .    -- depends on 'tests' dir being a sibling of 'prelogging'
-        # update_formatter_presets(
-        #     os.path.join(os.path.dirname(__file__), "../prelogging", 'formatter_presets.txt')
-        # )
         d = {
             'msg': FormatterSpec("%(message)s"),
             'level_msg': FormatterSpec('%(levelname)-8s: %(message)s'),
@@ -48,7 +41,7 @@ class Test_update_formatter_presets(TestCase):
         sio_err = io.StringIO()
         sys.stderr = sio_err
 
-        update_formatter_presets('/nosuchfile_98765432.txt')
+        update_formatter_presets_from_file('/nosuchfile_98765432.txt')
 
         self.assertEqual(
             sio_err.getvalue(),
@@ -66,7 +59,7 @@ class Test_update_formatter_presets(TestCase):
 
         # write to stderr:
         # "File formatter_presets_badfile.txt, line 2: expected key:value"
-        update_formatter_presets('formatter_presets_badfile.txt')
+        update_formatter_presets_from_file('formatter_presets_badfile.txt')
 
         self.assertEqual(
             sio_err.getvalue(),
@@ -77,11 +70,11 @@ class Test_update_formatter_presets(TestCase):
 
 
 # ---------------------------------------------------------------------------
-# _read_formatter_presets(lines)
+# _make_formatter_specs(lines)
 # ---------------------------------------------------------------------------
 # TODO -- TESTS
 """
-Mostly, test _read_formatter_presets(lines)
+Mostly, test _make_formatter_specs(lines)
 
 -- 8 errors to test (search: "# | raise")
 -- empty file
@@ -103,7 +96,7 @@ somename
 
 '''
         with self.assertRaises(ValueError) as exc:
-            _read_formatter_presets(s.splitlines(True))
+            _make_formatter_specs(s.splitlines(True))
 
         self.assertEqual(str(exc.exception),
                          "line 2: 'format' key:value missing in 'somename'")
@@ -120,12 +113,12 @@ somethingElse
     indented
 '''
         with self.assertRaises(ValueError) as exc1:
-            _read_formatter_presets(s1.splitlines(True))
+            _make_formatter_specs(s1.splitlines(True))
         self.assertEqual(str(exc1.exception),
                          "line 2: expected name, starting in column 1")
 
         with self.assertRaises(ValueError) as exc2:
-            _read_formatter_presets(s2.splitlines(True))
+            _make_formatter_specs(s2.splitlines(True))
         self.assertEqual(str(exc2.exception),
                          "line 4: expected name, starting in column 1")
 
@@ -144,17 +137,17 @@ name
     abc
 '''
         with self.assertRaises(ValueError) as exc1:
-            _read_formatter_presets(s1.splitlines(True))
+            _make_formatter_specs(s1.splitlines(True))
         self.assertEqual(str(exc1.exception),
                          "line 2: key must be nonempty")
 
         with self.assertRaises(ValueError) as exc2:
-            _read_formatter_presets(s2.splitlines(True))
+            _make_formatter_specs(s2.splitlines(True))
         self.assertEqual(str(exc2.exception),
                          "line 2: value must be nonempty")
 
         with self.assertRaises(ValueError) as exc3:
-            _read_formatter_presets(s3.splitlines(True))
+            _make_formatter_specs(s3.splitlines(True))
         self.assertEqual(str(exc3.exception),
                          "line 3: expected key:value")
 
@@ -164,7 +157,7 @@ somename
     style: '%
 '''
         with self.assertRaises(ValueError) as exc:
-            _read_formatter_presets(s.splitlines(True))
+            _make_formatter_specs(s.splitlines(True))
         self.assertEqual(str(exc.exception),
                          "line 2: 'format' key:value missing in 'somename'")
 
@@ -174,7 +167,7 @@ somename
 
 '''
         with self.assertRaises(ValueError) as exc2:
-            _read_formatter_presets(s2.splitlines(True))
+            _make_formatter_specs(s2.splitlines(True))
         self.assertEqual(str(exc2.exception),
                          "line 3: 'format' key:value missing in 'somename'")
 
@@ -185,7 +178,7 @@ somename
     badbadkey: val
 '''
         with self.assertRaises(ValueError) as exc:
-            _read_formatter_presets(s.splitlines(True))
+            _make_formatter_specs(s.splitlines(True))
         self.assertEqual(str(exc.exception),
                          "line 3: bad key 'badbadkey' -- must be one of "
                          "'format', 'dateformat', 'style'")
