@@ -259,9 +259,12 @@ class LCDictBasic(dict):
                       class_='logging.Formatter',   # the typical case
                       format=None,
                       dateformat=None,
-                      style='%',            # Only '%' works in Py2
+                      style='%',
                       ** format_dict):
-        """Add a formatter to the ``'formatters'`` subdictionary.
+        """\
+        .. _LCDB_add_formatter-docstring:
+
+        Add a formatter to the ``formatters`` subdictionary.
 
         :param formatter_name: just that
 
@@ -322,7 +325,7 @@ class LCDictBasic(dict):
 
     def add_filter(self, filter_name,
                    ** filter_dict):
-        """Add a filter to the ``'filters'`` subdictionary.
+        """Add a filter to the ``filters`` subdictionary.
 
         :param filter_name: just that
         :param filter_dict: keyword/value pairs
@@ -355,7 +358,7 @@ class LCDictBasic(dict):
                     formatter=None,
                     filters=None,
                     ** handler_dict):
-        """Add a handler to the ``'handlers'`` subdictionary.
+        """Add a handler to the ``handlers`` subdictionary.
 
         :param handler_name: just that
         :param level: the loglevel of this handler (default: 'NOTSET')
@@ -628,7 +631,7 @@ class LCDictBasic(dict):
                    level='NOTSET',
                    propagate=None,
                    filters=None):
-        """Add a logger to the ``'loggers'`` subdictionary.
+        """Add a logger to the ``loggers`` subdictionary.
 
         :param logger_name: just that
         :param handlers: a handler name, or sequence of handler names

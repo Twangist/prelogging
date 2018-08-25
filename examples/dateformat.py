@@ -15,7 +15,7 @@ def main():
     """
     lcd = LCDict(attach_handlers_to_root=True)
 
-    # style='%' is the default, & could be omitted
+    # style='%' is the default
     lcd.add_formatter('fmtr1',
                        format='%(asctime)s %(levelname)s: %(message)s',
                        dateformat='%H:%M:%S')

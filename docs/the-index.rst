@@ -1,4 +1,0 @@
-Index
-======
-
-:ref:`Index <genindex>`

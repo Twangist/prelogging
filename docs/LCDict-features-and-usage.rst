@@ -9,7 +9,7 @@
 conveniences. The class is fully documented in :ref:`LCDict`.
 In this chapter we describe the features it adds:
 
-* :ref:`formatter presets <formatter_presets_in_LCDict>`
+* :ref:`using formatter presets <formatter_presets_in_LCDict>`
 * :ref:`add_*_handler methods for several classes in logging.handlers <supported-handlers>`
 * :ref:`optional automatic attaching of handlers to the root logger as they're added <auto-attach-handlers-to-root>`
 * :ref:`easy multiprocessing-safe logging <easy-mp-safe-logging>`
@@ -17,7 +17,7 @@ In this chapter we describe the features it adds:
 
 .. _formatter_presets_in_LCDict:
 
-Formatter presets
+Using formatter presets
 -------------------------------------------------------
 
 We've already seen simple examples of adding new formatters using
@@ -72,11 +72,14 @@ Only ``'level_msg'`` has been added to ``lcd.formatters``.
 
 Of course, the dozen or so formatter presets that `prelogging` contains,
 aren't a comprehensive collection, and probably won't meet everyone's needs
-or suit everyone's tastes. Therefore `prelogging` lets you add your own,
-and/or modify existing ones, using the ``update_formatter_presets_from_file(filename)``
-function. This function, and the format of the files it accepts, are described
-in the chapter :ref:`Formatter Presets <preset-formatters-chapter>` following
-this one.
+or suit everyone's tastes. Therefore `prelogging` provides two functions that
+let you add your own presets, and/or modify existing ones:
+
+    * ``update_formatter_presets_from_file(filename)``, and
+    * ``update_formatter_presets(multiline_str)``.
+
+These functions, and the formats of their arguments, are described in the chapter
+:ref:`Formatter Presets <preset-formatters-chapter>` following this one.
 
 ------------------------------------------------------
 

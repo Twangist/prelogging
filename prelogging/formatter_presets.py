@@ -1,9 +1,10 @@
 from collections import namedtuple
 import sys
+from textwrap import dedent
 from .six import PY2
 
 __author__ = "Brian O'Neill"
-__all__ = ('update_formatter_presets_from_file', 'FormatterSpec')
+__all__ = ['update_formatter_presets_from_file', 'update_formatter_presets']
 
 # -----------------------------------------------------------------------
 # FormatterSpec -- namedtuple subclass for static declaration
@@ -56,9 +57,17 @@ if PY2: FileNotFoundError = IOError
 
 
 def update_formatter_presets_from_file(filename):
+    """
+    .. _update_formatter_presets_from_file-docstring:
+
+    Create a dict of "formatter specifications" from the contents of the file,
+    and update the internal collection of formatter presets with that.
+
+    :param filename: (str) a filename
+    """
     try:
         with open(filename, 'r') as f:
-            lines = f.readlines()
+            text = f.read()
     except FileNotFoundError:
         #  | raise
         # print("File '%s' not found" % filename, file=sys.stderr)
@@ -68,19 +77,49 @@ def update_formatter_presets_from_file(filename):
         sys.stderr.write(s)
         return
 
+    _update_formatter_presets(text, _errmsg_prefix="File %s, " % filename)
+
+
+def _update_formatter_presets(multiline_str, _errmsg_prefix=''):
+    """
+    See ``update_formatter_presets``.
+
+    :param _errmsg_prefix: as for ``update_formatter_presets``.
+    :param _errmsg_prefix: (str) Internal arg, used by ``update_formatter_presets_from_file``.
+        Any message will be prefixed with this.
+    """
+    # splitlines arg is `keepends` i.e. trailing '\n's. Omission: because PY2.
+    lines = dedent(multiline_str).splitlines(True)
     try:
         new_formatter_specs = _make_formatter_specs(lines)
     except ValueError as e:
         #  | raised, bubbled up
         # print(..., file=sys.stderr)
         # Py2 horror
-        s = ("File %s, " % filename) + str(e) + "\n"
+        s = _errmsg_prefix + str(e) + "\n"
         if PY2: s = unicode(s)
         sys.stderr.write(s)
         return
 
     _formatter_presets.update(new_formatter_specs)
 
+
+def update_formatter_presets(multiline_str):
+    """
+    .. _update_formatter_presets-docstring:
+
+    Create a dict of "formatter specifications" from ``multiline_str``, and update
+    the internal collection of formatter presets with that.
+
+    :param multiline_str: A multiline string which, when ``dedent``\ed,
+        conforms to the format of files expected by ``update_formatter_presets_from_file``.
+        This function calls ``dedent`` on ``multiline_str``, so that you don't have to.
+        (See `dedent <https://docs.python.org/3/library/textwrap.html#textwrap.dedent>`_.)
+        That is, names in the file don't have to begin in column 1; they can begin
+        in any column, as long as they all begin in the *same* column, and as long
+        as key:value lines are indented even more.
+    """
+    _update_formatter_presets(multiline_str)
 
 # -----------------------------------------------------------------------
 # (helpers)

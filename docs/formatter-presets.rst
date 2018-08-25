@@ -5,19 +5,19 @@
 Formatter Presets
 --------------------------------------------------------
 
-.. todo::
-    FROM LCDict-features-and-usage (modify/condense)
+`prelogging` provides an extensible, modifiable collection of *formatter
+presets* — predefined formatter specifications which you can reference by
+name as the ``formatter`` argument to ``add_*_handler`` and
+``set_handler_formatter`` methods of ``LCDict``, without having to first
+call ``add_formatter``. We've already seen them in use, in the
+:ref:`first example of using prelogging <config-use-case-lcdict>`
+and in the previous chapter's section on
+:ref:`using formatter presets <formatter_presets_in_LCDict>`.
 
-    `prelogging` provides an extensible, modifiable collection of *formatter
-    presets* — predefined formatter specifications which cover many needs.
-    You can use the name of any of these presets as the ``formatter`` argument
-    to ``add_*_handler`` methods and to ``set_handler_formatter``. `prelogging` ships
-    with about a dozen of them, shown in :ref:`this table <preset-formatters-table>`.
-
-
-.. _preset-formatters-table:
+When first loaded, `prelogging` provides these presets:
 
 .. index:: formatter presets (shipped with prelogging — table)
+.. _preset-formatters-table:
 
 +--------------------------------------+-----------------------------------------------------------------------------------+
 || Formatter name                      || Format string                                                                    |
@@ -45,28 +45,119 @@ Formatter Presets
 || ``'time_logger_level_msg'``         || ``'%(asctime)s: %(name)-20s: %(levelname)-8s: %(message)s'``                     |
 +--------------------------------------+-----------------------------------------------------------------------------------+
 
-.. todo::
-    FROM LCDict-features-and-usage (modify/condense)
 
-    Of course, the dozen or so formatter presets that `prelogging` contains,
-    aren't a comprehensive collection, and probably won't meet everyone's needs
-    or suit everyone's tastes. Therefore `prelogging` lets you add your own,
-    and/or modify existing ones, using the ``update_formatter_presets_from_file(filename)``
-    function. This function, and the format of the files it accepts, are described
-    in the chapter :ref:`Formatter presets <preset-formatters-chapter>` following
-    this one.
+This collection is by no means comprehensive – nor could it be, as `logging` recognizes
+about 20 `keywords in format strings <https://docs.python.org/3/library/logging.html#logrecord-attributes>`_.
+The names of these presets probably won't be to everyone's liking either (``level`` not ``levelname``;
+``msg`` and ``process``, which are themselves recognized keywords, rather than ``message``
+and ``processName``).
+Nevertheless, formatter presets are a useful facility, especially across multiple projects.
+Therefore, `prelogging` lets you add your own formatter presets, and/or modify existing ones.
+Two functions make that possible:
 
-.. todo::
-    Include a link (repeat it) to all the format-string keywords that `logging` recognizes
-    Here it is:
-    `the complete list of keywords that can appear in formatters <https://docs.python.org/3/library/logging.html#logrecord-attributes>`_.
+    * ``update_formatter_presets(multiline_str)`` reads descriptions of formatters in
+      a multiline string;
+    * ``update_formatter_presets_from_file(filename)`` reads descriptions of formatters
+      from a text file;
 
-.. _update_formatter_presets_from_file:
+both functions then update the collection of formatter presets.
+
+Generally, you call one of these functions, once, after importing `prelogging`
+or things from it, and before creating an ``LCDict`` and populating it using your new
+or improved formatter presets.
+
+The following subsections describe these functions and the expected formats of
+their arguments. It's convenient to present the file-based function first.
 
 .. index:: update_formatter_presets_from_file function
+.. _update_formatter_presets_from_file:
 
 The ``update_formatter_presets_from_file`` function
 ++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. todo::
-    Blah blah
+.. autofunction:: prelogging.formatter_presets.update_formatter_presets_from_file
+
+This function basically passes the contents of the file to ``update_formatter_presets``,
+described below.
+
+File format
+~~~~~~~~~~~~
+
+This functions expects a text file with the following format:
+
+    * Zero or more blank lines
+    * Zero or *formatter descriptions*, all separated by one or more blank lines
+
+A blank line consists only of whitespace. A *formatter description* is a group of
+lines of the following sort:
+
+    * A `name`, beginning in column 1, followed by one or more indented `key` : `value` pairs
+    * Each `key` must be one of ``format``, ``dateformat``, ``style``
+    * A pair with key ``format`` is required; ``dateformat`` and ``style`` are optional
+    * If a `value` contains spaces then it should be enclosed in quotes (single or double);
+      otherwise, enclosing quotes are optional (any outermost matching quotes are removed)
+    * A `name` can contain spaces, and does not have to be quoted unless you want it to have
+      initial or trailing whitespace
+    * In a `key` : `value` pair, zero or more spaces may precede and follow the ``:``
+    * The `value` given for ``style`` should be one of ``%`` ``{`` ``$``; if ``style`` is omitted
+      then it defaults to ``%``. (Under Python 2, only ``%`` is allowed, so if you're still using
+      that then you may as well skip ``style``.)
+
+These keys and values are as in the :ref:`LCDictBasic.add_formatter <LCDB_add_formatter-docstring>`
+method.
+
+Here's an example of a valid/well-formed file (assume the names begin in column 1)::
+
+    name_level_message
+        format: '%(name)s - %(levelname)s - %(message)s'
+
+    name level message
+        format: '%(name)s - %(levelname)s - %(message)s'
+
+    datetime_name_level_message
+        format: '{asctime}: {name:15s} - {levelname:8s} - {message}'
+        dateformat: '%Y.%m.%d %I:%M:%S %p'
+        style: {
+
+    '    his formatter    '
+        format: %(message)s
+
+If the file passed to ``update_formatter_presets_from_file`` has ill-formed contents,
+the function writes an appropriate error message to ``stderr``, citing the file name
+and offending line number, and the collection of formatter presets remains unchanged.
+
+
+.. index:: update_formatter_presets function
+.. _update_formatter_presets:
+
+The ``update_formatter_presets`` function
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. autofunction:: prelogging.formatter_presets.update_formatter_presets
+
+For example, all of these are equivalent well-formed possible arguments::
+
+        # <-- assume that's column 1
+
+            s1 = '''\˛
+        myformatter
+            format: '%(message)s'
+            style: '%'
+        '''
+            s2 = '''\
+            myformatter
+                format: '%(message)s'
+                    style: '%'
+            '''
+            s2 = '''\
+                myformatter
+                  format: '%(message)s'
+                  style: '%'
+            '''
+
+Note that each triple-quote beginning a multiline string is followed by ``\``,
+so that the logical line 1 is not actually line 2.
+
+If the string passed to ``update_formatter_presets`` is ill-formed, the function
+writes an appropriate error message to ``stderr``, citing the offending line
+number, and the collection of formatter presets remains unchanged.
