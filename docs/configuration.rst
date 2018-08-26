@@ -324,7 +324,7 @@ a ``dict`` subclass ``LCDictBasic``, and `its` subclass ``LCDict``. (The
 shows all the classes in the `prelogging` package and their interrelations.)
 ``LCDictBasic`` provides the basic model of building a logging config
 dict; ``LCDict`` supplies additional conveniences — for example, formatter
-presets (i.e. predefined formatters), and easy access to advanced features
+presets (predefined formatters), and easy access to advanced features
 such as filter creation and multiprocessing-safe rotating file handlers.
 The centerpiece of `prelogging` is the ``LCDict`` class.
 
@@ -368,7 +368,7 @@ expect: each adds a subdictionary to ``lcd['handlers']`` with the respective
 keys ``'h_stderr'`` and ``'h_file'``, and with key/value pairs given by the
 keyword parameters.
 
-We've used a couple of the Formatter presets supplied by ``LCDict`` —
+We've used a couple of `prelogging`'s formatter presets —
 ``'msg'`` and ``'logger_level_msg'``. Because we pass the flag
 ``attach_handlers_to_root=True`` when creating ``lcd``, every
 handler we add to ``lcd`` is (by default) automatically

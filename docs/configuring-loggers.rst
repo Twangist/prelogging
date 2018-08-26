@@ -45,7 +45,7 @@ of the root because, by default, loggers are created with ``propagate=True``
 
 If the formatters of the handlers include the logger name — as the formatter
 preset ``logger_level_msg`` does, for example — each logged message will state
-which module wrote it.
+which logger wrote it.
 
 The following example illustrates the general technique:
 
