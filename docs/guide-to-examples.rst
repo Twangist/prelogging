@@ -140,6 +140,43 @@ Handler examples
 
 .. _mproc_examples:
 
+Filter examples
+++++++++++++++++++++++++++++++++
+
+``filter-class-extra-static-data.py``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Passing extra static data to a class filter via keyword arguments to ``add_class_filter``
+    to specify how different instances will filter messages.
+
+    Described and walked through in the section on
+    :ref:`providing extra, static data to a class filter <providing-extra-static-data-to-a-filter-class>`
+    of the "Further Topics and Recipes" chapter.
+
+``filter-callable-extra-static-data.py``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    The analogous construction – passing extra static data to a callable filter
+    via keyword arguments to ``add_class_filter`` to specify how it will filter messages.
+
+    Namedropped but not described in the section on
+    :ref:`providing extra, static data to a callable filter <providing-extra-static-data-to-a-filter-class>`
+    of "Further Topics and Recipes".
+
+``filter-adding-fields--custom-formatter-keywords-for-fields.py``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    This example illustrates adding custom fields and data to logged messages.
+    It uses a custom formatter with two new keywords, ``user`` and ``ip``,
+    and a class filter created with a callable data source – static initializing data
+    for the filter, but a source of dynamic data.
+    The filter's ``filter`` method adds attributes of the same names as the keywords
+    to each ``LogRecord`` passed to it, calling the data source to obtain current
+    values for these attributes.
+
+    Loosely adapts the section
+     `Using Filters to impart contextual information <https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information>`_
+    of The Logging Cookbook.
+
+
 Multiprocessing examples
 ++++++++++++++++++++++++++++++++
 

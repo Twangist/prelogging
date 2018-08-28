@@ -66,8 +66,13 @@ Generally, you call one of these functions, once, after importing `prelogging`
 or things from it, and before creating an ``LCDict`` and populating it using your new
 or improved formatter presets.
 
+**Note**: The changes and additions made by these functions do **not** persist
+after your program exits.
+
 The following subsections describe these functions and the expected formats of
 their arguments. It's convenient to present the file-based function first.
+
+------------------------------------------------------------------------------
 
 .. index:: update_formatter_presets_from_file function
 .. _update_formatter_presets_from_file:
@@ -106,6 +111,8 @@ lines of the following sort:
 These keys and values are as in the :ref:`LCDictBasic.add_formatter <LCDB_add_formatter-docstring>`
 method.
 
+Example 1 – basic and corner cases
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Here's an example of a valid/well-formed file (assume the names begin in column 1)::
 
     name_level_message
@@ -126,9 +133,24 @@ If the file passed to ``update_formatter_presets_from_file`` has ill-formed cont
 the function writes an appropriate error message to ``stderr``, citing the file name
 and offending line number, and the collection of formatter presets remains unchanged.
 
+.. index:: formatter presets (formatter_presets.txt – declares default collection)
+
+Example 2 – ``formatter_presets.txt`` declares `prelogging`'s formatter presets
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Another example of a valid file containing formatter presets is the text file
+``formatter_presets.txt`` in the `prelogging` directory. `prelogging` creates
+its stock of formatter presets by calling
+
+.. code::
+
+    update_formatter_presets_from_file('formatter_presets.txt')
+
+when the ``lcdict`` module is loaded.
 
 .. index:: update_formatter_presets function
 .. _update_formatter_presets:
+
+------------------------------------------------------------------------------
 
 The ``update_formatter_presets`` function
 ++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -156,7 +178,7 @@ For example, all of these are equivalent well-formed possible arguments::
             '''
 
 Note that each triple-quote beginning a multiline string is followed by ``\``,
-so that the logical line 1 is not actually line 2.
+so that the logical line `n` is not actually line `n`\+1.
 
 If the string passed to ``update_formatter_presets`` is ill-formed, the function
 writes an appropriate error message to ``stderr``, citing the offending line

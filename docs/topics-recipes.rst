@@ -562,7 +562,7 @@ extra, unchanging data, and in this section we'll see how to do so.
 .. _providing-extra-static-data-to-a-filter-class:
 
 Class filter
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``add_class_filter`` method has the following signature::
 
@@ -580,17 +580,17 @@ and its ``__init__`` method is called. If the signature of ``__init__`` includes
 Thus, the filter class's ``__init__`` can save values in ``kwargs`` as
 instance attributes, for later use by the ``filter`` method.
 
-The following example illustrates this::
+The following example (basically ``examples/filter-class-extra-static-data.py``)
+illustrates this scenario::
 
     import logging
     from prelogging import LCDict
-    import pprint
 
     class CountAndSquelchOdd():
         def __init__(self, *args, **kwargs):
             self.level_count = 0
 
-            pprint.pprint(kwargs)
+            print(kwargs)
             # {'filtername': _____, 'loglevel_to_count': nnn}
             self.filtername = kwargs.get('filtername', '')
             self.loglevel_to_count = kwargs.get('loglevel_to_count', 0)
@@ -599,17 +599,22 @@ The following example illustrates this::
             """Suppress odd-numbered messages (records)
             whose level == self.loglevel_to_count,
             where the "first" message is 0-th hence even-numbered.
+
+            Returns int or bool -- not great practice, but just to distinguish
+            which branch of if-then-else was taken.
             """
             if record.levelno == self.loglevel_to_count:
                 self.level_count += 1
-                ret = self.level_count % 2
+                ret = self.level_count % 2          # int
             else:
-                ret = True
+                ret = True                          # bool
 
-            print("{} > record levelname = {}, self.level_count = {}; returning {}".
+            print("{:11s} > record levelname = {}, self.level_count = {}; returning {}".
                   format(self.filtername, record.levelname,
                          self.level_count, ret))
             return ret
+
+Now configure logging::
 
     lcd = LCDict(attach_handlers_to_root=True,
                  root_level='DEBUG')
@@ -629,43 +634,46 @@ The following example illustrates this::
     lcd.config()
 
 The call to ``lcd.config()`` creates two instances of ``CountAndSquelchOdd``,
-which print their ``kwargs`` to ``stdout`` in ``__init__``. Here's what
-they print::
+which print their ``kwargs`` to ``stdout`` in ``__init__``. Here's what they print::
 
     {'filtername': 'count_info', 'loglevel_to_count': 20}
     {'filtername': 'count_debug', 'loglevel_to_count': 10}
 
-Now let's use the root logger::
+Finally, let's use the root logger::
 
     root = logging.getLogger()
 
     for i in range(2):
-        print("i ==", i)
+        print("\ni ==", i)
         root.debug(str(i))
+        print("---")
         root.info(str(i))
 
 This loop prints the following to stdout::
 
+
     i == 0
     count_debug > record levelname = DEBUG, self.level_count = 1; returning 1
-    count_info > record levelname = DEBUG, self.level_count = 0; returning True
+    count_info  > record levelname = DEBUG, self.level_count = 0; returning True
     DEBUG   : 0
+    ---
     count_debug > record levelname = INFO, self.level_count = 1; returning True
-    count_info > record levelname = INFO, self.level_count = 1; returning 1
+    count_info  > record levelname = INFO, self.level_count = 1; returning 1
     INFO    : 0
+
     i == 1
     count_debug > record levelname = DEBUG, self.level_count = 2; returning 0
+    ---
     count_debug > record levelname = INFO, self.level_count = 2; returning True
-    count_info > record levelname = INFO, self.level_count = 2; returning 0
+    count_info  > record levelname = INFO, self.level_count = 2; returning 0
 
-.. note::
-    When ``root.debug(str(1))`` is called, only one line
-    is printed. The ``'count_debug'`` filter returns 0, which suppresses not only
-    the logger's message, but also any calls to the logger's other filters – ``count_info``, in this case.
+When ``root.debug(str(1))`` is called, only one line is printed.
+The ``'count_debug'`` filter returns 0, which suppresses not only
+the logger's message, but also any calls to the logger's other filters – ``count_info``, in this case.
 
-    When ``root.info(str(1))`` is called, two lines are printed.
-    ``'count_debug'`` returns ``True``, so ``count_info`` is called; it returns 0,
-    suppressing the logger's message.
+When ``root.info(str(1))`` is called, two lines are printed.
+``'count_debug'`` returns ``True``, so ``count_info`` is called; it returns 0,
+suppressing the logger's message.
 
 
 .. _providing-extra-static-data-to-a-filter-callable:
@@ -689,65 +697,9 @@ of that method, and part of its docstring::
         return: self
         """
 
-The following example illustrates this::
-
-    import logging
-    from prelogging import LCDict
-
-    _level_count = 0
-
-
-    def filter_fn(record, **kwargs):
-
-        filtername = kwargs.get('filtername', '')
-        loglevel_to_count = kwargs.get('loglevel_to_count', 0)
-
-        """Suppress odd-numbered messages (records)
-        whose level == loglevel_to_count,
-        where the "first" message is 0-th hence even-numbered.
-        """
-        global _level_count
-        if record.levelno == loglevel_to_count:
-            _level_count += 1
-            ret = _level_count % 2
-        else:
-            ret = True
-
-        print("{} > record levelname = {}, _level_count = {}; returning {}".
-              format(filtername, record.levelname,
-                     _level_count, ret))
-        return ret
-
-    lcd = LCDict(attach_handlers_to_root=True,
-                 root_level='DEBUG')
-    lcd.add_stdout_handler('console-out',
-                           level='DEBUG',
-                           formatter='level_msg')
-    lcd.add_callable_filter('count_info', filter_fn,
-                            # extra, static data
-                            filtername='count_info',
-                            loglevel_to_count=logging.INFO)
-    lcd.attach_root_filters('count_info')
-
-    lcd.config()
-
-Now use root logger::
-
-    root = logging.getLogger()
-
-    for i in range(2):
-        root.debug(str(i))
-        root.info(str(i))
-
-This prints the following to stdout::
-
-    count_info > record levelname = DEBUG, _level_count = 0; returning True
-    DEBUG   : 0
-    count_info > record levelname = INFO, _level_count = 1; returning 1
-    INFO    : 0
-    count_info > record levelname = DEBUG, _level_count = 1; returning True
-    DEBUG   : 1
-    count_info > record levelname = INFO, _level_count = 2; returning 0
+The example ``filter-callable-extra-static-data.py``) illustrates using a callable
+filter. As it's quite similar to the class filter example above, there's no need
+to walk through the code here.
 
 
 .. index:: Filters — providing extra dynamic data
@@ -874,7 +826,103 @@ as a container:
     101
     dw = 101
 
-Of course, you can pass a data-returning callable rather than a container.
+Of course, you can pass a data-returning callable rather than a container. That's
+the approach taken in the next, and last, filter topic.
+
+.. index:: formatter (adding custom fields and data to messages)
+.. index:: filter (adding custom fields and data to messages)
+.. index:: adding custom fields and data to messages (with a formatter and a class filter)
+
+.. _adding-custom-fields-and-data-to-messages-with-formatter-and-filter:
+
+Adding custom fields and data to messages
++++++++++++++++++++++++++++++++++++++++++++++
+
+.. todo::
+
+    This example illustrates adding custom fields and data to logged messages.
+    It uses a custom formatter with two new keywords, ``user`` and ``ip``,
+    and a class filter created with a callable data source – static initializing data
+    for the filter, but a source of dynamic data.
+    The filter's ``filter`` method adds attributes of the same names as the keywords
+    to each ``LogRecord`` passed to it, calling the data source to obtain current
+    values for these attributes.
+
+    Loosely adapts the section
+     `Using Filters to impart contextual information <https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information>`_
+    of The Logging Cookbook.
+
+TODO/BLAH::
+
+    import logging
+    from prelogging import LCDict
+    from random import choice
+
+    USER = 0
+    IP = 1
+
+
+    class FilterThatAddsFields():
+        def __init__(self, *args, **kwargs):
+            # self.fieldname = kwargs.get('fieldname', '')
+            self.datasource = kwargs.get('datasource', None)    # callable
+
+        def filter(self, record):
+            """ """
+            # Added attribute names must be the same as keywords in format string (below)
+            record.user = self.datasource(USER)
+            record.ip = self.datasource(IP)
+            return True
+
+    def get_data(keyword):
+        """ Source of dynamic data, passed to filter via `add_class_filter` """
+        IPS = ['192.0.0.1', '254.15.16.17']
+        USERS = ['John', 'Mary', 'Arachnid']
+
+        if keyword == IP:
+            return choice(IPS)
+        elif keyword == USER:
+            return choice(USERS)
+        return None
+
+
+    def config_logging():
+        lcd = LCDict(attach_handlers_to_root=True,
+                     root_level='DEBUG')
+        lcd.add_formatter('user_ip_level_msg',
+                          format='User: %(user)-10s  IP: %(ip)-15s  %(levelname)-8s  %(message)s')
+        lcd.add_stdout_handler('console-out',
+                               level='DEBUG',
+                               formatter='user_ip_level_msg')
+        lcd.add_class_filter('field-adding_filter', FilterThatAddsFields,
+                             # extra, static data
+                             datasource=get_data)
+        lcd.attach_root_filters('field-adding_filter')
+
+        lcd.config()
+
+
+    if __name__ == '__main__':
+        LEVELS = (logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL)
+        config_logging()
+        root = logging.getLogger()
+
+        for i in range(10):
+            root.log(choice(LEVELS), "Msg %d", i)
+        '''
+        Prints something like (ymwv):
+            User: Arachnid    IP: 254.15.16.17     CRITICAL  Msg 0
+            User: John        IP: 192.0.0.1        INFO      Msg 1
+            User: Mary        IP: 192.0.0.1        DEBUG     Msg 2
+            User: John        IP: 192.0.0.1        CRITICAL  Msg 3
+            User: Mary        IP: 254.15.16.17     WARNING   Msg 4
+            User: John        IP: 254.15.16.17     CRITICAL  Msg 5
+            User: John        IP: 254.15.16.17     DEBUG     Msg 6
+            User: John        IP: 254.15.16.17     CRITICAL  Msg 7
+            User: Arachnid    IP: 192.0.0.1        DEBUG     Msg 8
+            User: Mary        IP: 254.15.16.17     ERROR     Msg 9
+        '''
+
 
 ------------------------------------------------------
 
