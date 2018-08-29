@@ -46,8 +46,11 @@ When first loaded, `prelogging` provides these presets:
 +--------------------------------------+-----------------------------------------------------------------------------------+
 
 
-This collection is by no means comprehensive – nor could it be, as `logging` recognizes
-about 20 `keywords in format strings <https://docs.python.org/3/library/logging.html#logrecord-attributes>`_.
+This collection is by no means comprehensive, nor could it be. (`logging` recognizes
+about 20 `keywords in format strings <https://docs.python.org/3/library/logging.html#logrecord-attributes>`_;
+you can even use your own keywords, as shown in
+:ref:`adding-custom-fields-and-data-to-messages-with-formatter-and-filter`;
+these can all be combined in infinitely many format strings.)
 The names of these presets probably won't be to everyone's liking either (``level`` not ``levelname``;
 ``msg`` and ``process``, which are themselves recognized keywords, rather than ``message``
 and ``processName``).
@@ -60,14 +63,14 @@ Two functions make that possible:
     * ``update_formatter_presets_from_file(filename)`` reads descriptions of formatters
       from a text file;
 
-both functions then update the collection of formatter presets.
+Both functions update the collection of formatter presets.
+
+**Note**: The changes and additions made by these functions do **not** persist
+after your program exits.
 
 Generally, you call one of these functions, once, after importing `prelogging`
 or things from it, and before creating an ``LCDict`` and populating it using your new
 or improved formatter presets.
-
-**Note**: The changes and additions made by these functions do **not** persist
-after your program exits.
 
 The following subsections describe these functions and the expected formats of
 their arguments. It's convenient to present the file-based function first.
@@ -88,25 +91,26 @@ described below.
 File format
 ~~~~~~~~~~~~
 
-This functions expects a text file with the following format:
+This functions expects a text file consisting of:
 
-    * Zero or more blank lines
-    * Zero or *formatter descriptions*, all separated by one or more blank lines
+    * zero or more blank lines, followed by
+    * zero or *formatter descriptions*, all separated by one or more blank lines.
 
 A blank line consists only of whitespace. A *formatter description* is a group of
-lines of the following sort:
+lines consisting of a `name`, beginning in column 1 on a line by itself, followed
+by one or more indented lines each containing a `key` ``:`` `value` pair, and all
+subject to the following conditions:
 
-    * A `name`, beginning in column 1, followed by one or more indented `key` : `value` pairs
-    * Each `key` must be one of ``format``, ``dateformat``, ``style``
-    * A pair with key ``format`` is required; ``dateformat`` and ``style`` are optional
+    * Each `key` must be one of ``format``, ``dateformat``, ``style``.
+      ``format`` is required; the others are optional.
     * If a `value` contains spaces then it should be enclosed in quotes (single or double);
-      otherwise, enclosing quotes are optional (any outermost matching quotes are removed)
+      otherwise, enclosing quotes are optional (any outermost matching quotes are removed).
     * A `name` can contain spaces, and does not have to be quoted unless you want it to have
-      initial or trailing whitespace
-    * In a `key` : `value` pair, zero or more spaces may precede and follow the ``:``
+      initial or trailing whitespace.
+    * In a `key` ``:`` `value` pair, zero or more spaces may precede and follow the colon.
     * The `value` given for ``style`` should be one of ``%`` ``{`` ``$``; if ``style`` is omitted
       then it defaults to ``%``. (Under Python 2, only ``%`` is allowed, so if you're still using
-      that then you may as well skip ``style``.)
+      that then you should omit ``style``.)
 
 These keys and values are as in the :ref:`LCDictBasic.add_formatter <LCDB_add_formatter-docstring>`
 method.
@@ -122,12 +126,12 @@ Here's an example of a valid/well-formed file (assume the names begin in column 
         format: '%(name)s - %(levelname)s - %(message)s'
 
     datetime_name_level_message
-        format: '{asctime}: {name:15s} - {levelname:8s} - {message}'
+        format    : '{asctime}: {name:15s} - {levelname:8s} - {message}'
         dateformat: '%Y.%m.%d %I:%M:%S %p'
         style: {
 
     '    his formatter    '
-        format: %(message)s
+        format:%(message)s
 
 If the file passed to ``update_formatter_presets_from_file`` has ill-formed contents,
 the function writes an appropriate error message to ``stderr``, citing the file name
@@ -137,13 +141,12 @@ and offending line number, and the collection of formatter presets remains uncha
 
 Example 2 – ``formatter_presets.txt`` declares `prelogging`'s formatter presets
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 Another example of a valid file containing formatter presets is the text file
 ``formatter_presets.txt`` in the `prelogging` directory. `prelogging` creates
 its stock of formatter presets by calling
 
-.. code::
-
-    update_formatter_presets_from_file('formatter_presets.txt')
+    ``update_formatter_presets_from_file(``\ *path/to/* ``'formatter_presets.txt')``
 
 when the ``lcdict`` module is loaded.
 
@@ -161,7 +164,7 @@ For example, all of these are equivalent well-formed possible arguments::
 
         # <-- assume that's column 1
 
-            s1 = '''\˛
+            s1 = '''\
         myformatter
             format: '%(message)s'
             style: '%'

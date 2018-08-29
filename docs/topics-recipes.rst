@@ -5,7 +5,6 @@ Further Topics and Recipes
 
 .. include:: _global.rst
 
-
 * Configuration distributed across multiple modules or packages
     * :ref:`config-abc`
     * :ref:`migration-dynamic`
@@ -27,12 +26,15 @@ Further Topics and Recipes
 
         * :ref:`setting-LOGGING-Django-variable`
 
+
 * :ref:`providing-extra-data-to-a-filter`
     .. hlist::
         :columns: 3
 
         * :ref:`providing-extra-static-data-to-a-filter`
         * :ref:`providing-extra-dynamic-data-to-a-filter`
+
+* :ref:`adding-custom-fields-and-data-to-messages-with-formatter-and-filter`
 
 * :ref:`smtp-handler`
 
@@ -47,16 +49,15 @@ Using ``LCDictBuilderABC``
 
 One way for a larger program to configure logging is to pass around an
 ``LCDict`` to the different "areas" of the program, each area contributing
-specifications of its desired formatters, filters, handlers and loggers.
+specifications of the logging entities it will use.
 The ``LCDictBuilderABC`` class provides a mini-microframework that automates
 this approach: each area of a program need only define an ``LCDictBuilderABC``
 subclass and override its method ``add_to_lcdict(lcd)``, where it contributes
 its specifications by calling methods on ``lcd``.
 
-The `LCDictBuilderABC <https://pythonhosted.org/prelogging/LCDictBuilderABC.html>`_
-documentation describes how that class and its two methods operate. The test
-``tests/test_lcdict_builder.py`` illustrates using the class to configure logging
-across multiple modules.
+The :ref:`LCDictBuilderABC` documentation describes how that class and its two
+methods operate. The test ``tests/test_lcdict_builder.py`` illustrates using the
+class to configure logging across multiple modules.
 
 .. _migration-dynamic:
 
@@ -100,8 +101,7 @@ should continue to work properly if you pass them an* LCDict.
 
 Thus, the ``add_to_config_dict`` function specific to each
 program area can easily be converted to an ``add_to_lcdict(cls, lcd: LCDict)``
-classmethod of an `LCDictBuilderABC <https://pythonhosted.org/prelogging/LCDictBuilderABC.html>`_
-subclass specific to that program area.
+classmethod of an :ref:`LCDictBuilderABC` subclass specific to that program area.
 
 
 --------------------------------------------------
@@ -145,16 +145,16 @@ In this section we'll discuss the second and third approaches.
     the code that performs it uses logging. Let's say there are :math:`L` many
     loggers used:
 
-        .. math::
+    .. math::
 
-            logger_1, \cdots, logger_i, \cdots, logger_L,
+        logger_1, \cdots, logger_i, \cdots, logger_L,
 
     Each logger :math:`logger_i` is denoted by some name :math:`name_i`,
     and has some intended handlers:
 
-        .. math::
+    .. math::
 
-            handler_{i, j} \quad (j < n_i).
+        handler_{i, j} \quad (j < n_i).
 
     Later, we notice that the work can be parallelized: we can partition it into
     chunks which can be worked on simultaneously and the results recombined.
@@ -591,7 +591,6 @@ illustrates this scenario::
             self.level_count = 0
 
             print(kwargs)
-            # {'filtername': _____, 'loglevel_to_count': nnn}
             self.filtername = kwargs.get('filtername', '')
             self.loglevel_to_count = kwargs.get('loglevel_to_count', 0)
 
@@ -609,7 +608,7 @@ illustrates this scenario::
             else:
                 ret = True                          # bool
 
-            print("{:11s} > record levelname = {}, self.level_count = {}; returning {}".
+            print("{:11s}: record levelname = {}, self.level_count = {}; returning {}".
                   format(self.filtername, record.levelname,
                          self.level_count, ret))
             return ret
@@ -641,37 +640,34 @@ which print their ``kwargs`` to ``stdout`` in ``__init__``. Here's what they pri
 
 Finally, let's use the root logger::
 
-    root = logging.getLogger()
-
     for i in range(2):
         print("\ni ==", i)
-        root.debug(str(i))
+        logging.debug(str(i))
         print("---")
-        root.info(str(i))
+        logging.info(str(i))
 
 This loop prints the following to stdout::
 
-
     i == 0
-    count_debug > record levelname = DEBUG, self.level_count = 1; returning 1
-    count_info  > record levelname = DEBUG, self.level_count = 0; returning True
+    count_debug: record levelname = DEBUG, self.level_count = 1; returning 1
+    count_info : record levelname = DEBUG, self.level_count = 0; returning True
     DEBUG   : 0
     ---
-    count_debug > record levelname = INFO, self.level_count = 1; returning True
-    count_info  > record levelname = INFO, self.level_count = 1; returning 1
+    count_debug: record levelname = INFO, self.level_count = 1; returning True
+    count_info : record levelname = INFO, self.level_count = 1; returning 1
     INFO    : 0
 
     i == 1
-    count_debug > record levelname = DEBUG, self.level_count = 2; returning 0
+    count_debug: record levelname = DEBUG, self.level_count = 2; returning 0
     ---
-    count_debug > record levelname = INFO, self.level_count = 2; returning True
-    count_info  > record levelname = INFO, self.level_count = 2; returning 0
+    count_debug: record levelname = INFO, self.level_count = 2; returning True
+    count_info : record levelname = INFO, self.level_count = 2; returning 0
 
-When ``root.debug(str(1))`` is called, only one line is printed.
+When ``logging.debug(str(1))`` is called, only one line is printed.
 The ``'count_debug'`` filter returns 0, which suppresses not only
 the logger's message, but also any calls to the logger's other filters – ``count_info``, in this case.
 
-When ``root.info(str(1))`` is called, two lines are printed.
+When ``logging.info(str(1))`` is called, two lines are printed.
 ``'count_debug'`` returns ``True``, so ``count_info`` is called; it returns 0,
 suppressing the logger's message.
 
@@ -768,7 +764,7 @@ First, configure logging with the dict we've built:
 Now log something. The filter prints the value of ``list1[0]``, which is ``21``;
 thus it returns ``False``, so no message is logged:
 
-    >>> logging.getLogger().debug("data_wrapper = %r" % data_wrapper)
+    >>> logging.debug("data_wrapper = %r" % data_wrapper)   # uses root logger
     21
 
 Now change the value of ``data_wrapper[0]``:
@@ -779,7 +775,7 @@ Prior to configuration, the filter's ``list1`` referred to ``data_wrapper``;
 but that's no longer true: ``list1[0]`` is still ``21``, not `101`, so the
 filter still returns ``False``:
 
-    >>> logging.getLogger().debug("data_wrapper = %r" % data_wrapper)
+    >>> logging.debug("data_wrapper = %r" % data_wrapper)
     21
 
 Successfully passing dynamic data
@@ -817,17 +813,20 @@ as a container:
 
     >>> # filter prints 21 and returns False:
     >>> # in the filter, data_wrapper.data == 21
-    >>> logging.getLogger().debug("dw = %s" % dw)
+    >>> logging.debug("dw = %s" % dw)
     21
     dw.data = 101
     >>> # In the filter, data_wrapper.data == 101,
     >>> #  so message is logged:
-    logging.getLogger().debug("dw =", dw)
+    logging.debug("dw =", dw)
     101
     dw = 101
 
-Of course, you can pass a data-returning callable rather than a container. That's
-the approach taken in the next, and last, filter topic.
+Of course, this has become complicated, even kludgy. Instead, you can pass a
+data-returning callable rather than a container. That's the approach taken in
+the next topic.
+
+------------------------------------------------------
 
 .. index:: formatter (adding custom fields and data to messages)
 .. index:: filter (adding custom fields and data to messages)
@@ -836,23 +835,17 @@ the approach taken in the next, and last, filter topic.
 .. _adding-custom-fields-and-data-to-messages-with-formatter-and-filter:
 
 Adding custom fields and data to messages
-+++++++++++++++++++++++++++++++++++++++++++++
+-------------------------------------------
 
-.. todo::
+This example demonstrates adding custom fields and data to logged messages.
+It uses a custom formatter with two new keywords, ``user`` and ``ip``,
+and a class filter created with a callable data source – static initializing data
+for the filter, but a source of dynamic data.
+The filter's ``filter`` method adds attributes of the same names as the keywords
+to each ``LogRecord`` passed to it, calling the data source to obtain current
+values for these attributes.
 
-    This example illustrates adding custom fields and data to logged messages.
-    It uses a custom formatter with two new keywords, ``user`` and ``ip``,
-    and a class filter created with a callable data source – static initializing data
-    for the filter, but a source of dynamic data.
-    The filter's ``filter`` method adds attributes of the same names as the keywords
-    to each ``LogRecord`` passed to it, calling the data source to obtain current
-    values for these attributes.
-
-    Loosely adapts the section
-     `Using Filters to impart contextual information <https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information>`_
-    of The Logging Cookbook.
-
-TODO/BLAH::
+Here's the class filter and the data source::
 
     import logging
     from prelogging import LCDict
@@ -861,21 +854,21 @@ TODO/BLAH::
     USER = 0
     IP = 1
 
-
     class FilterThatAddsFields():
         def __init__(self, *args, **kwargs):
-            # self.fieldname = kwargs.get('fieldname', '')
             self.datasource = kwargs.get('datasource', None)    # callable
 
         def filter(self, record):
-            """ """
-            # Added attribute names must be the same as keywords in format string (below)
+            """
+            Add attributes to `record`.
+            Their names must be the same as the keywords in format string (below).
+            """
             record.user = self.datasource(USER)
             record.ip = self.datasource(IP)
             return True
 
     def get_data(keyword):
-        """ Source of dynamic data, passed to filter via `add_class_filter` """
+        """ Source of dynamic data, passed to filter via `add_class_filter`. """
         IPS = ['192.0.0.1', '254.15.16.17']
         USERS = ['John', 'Mary', 'Arachnid']
 
@@ -885,44 +878,44 @@ TODO/BLAH::
             return choice(USERS)
         return None
 
+Configure logging::
 
-    def config_logging():
-        lcd = LCDict(attach_handlers_to_root=True,
-                     root_level='DEBUG')
-        lcd.add_formatter('user_ip_level_msg',
-                          format='User: %(user)-10s  IP: %(ip)-15s  %(levelname)-8s  %(message)s')
-        lcd.add_stdout_handler('console-out',
-                               level='DEBUG',
-                               formatter='user_ip_level_msg')
-        lcd.add_class_filter('field-adding_filter', FilterThatAddsFields,
-                             # extra, static data
-                             datasource=get_data)
-        lcd.attach_root_filters('field-adding_filter')
+    lcd = LCDict(attach_handlers_to_root=True,
+                 root_level='DEBUG')
+    lcd.add_formatter('user_ip_level_msg',
+                      format='User: %(user)-10s  IP: %(ip)-15s  %(levelname)-8s  %(message)s')
+    lcd.add_stdout_handler('console-out',
+                           level='DEBUG',
+                           formatter='user_ip_level_msg')
+    lcd.add_class_filter('field-adding_filter', FilterThatAddsFields,
+                         # extra, static data
+                         datasource=get_data)
+    lcd.attach_root_filters('field-adding_filter')
 
-        lcd.config()
+    lcd.config()
 
+Finally, log some messages, using the root logger::
 
-    if __name__ == '__main__':
-        LEVELS = (logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL)
-        config_logging()
-        root = logging.getLogger()
+    LEVELS = (logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL)
+    for i in range(10):
+        logging.log(choice(LEVELS), "Msg %d", i)
 
-        for i in range(10):
-            root.log(choice(LEVELS), "Msg %d", i)
-        '''
-        Prints something like (ymwv):
-            User: Arachnid    IP: 254.15.16.17     CRITICAL  Msg 0
-            User: John        IP: 192.0.0.1        INFO      Msg 1
-            User: Mary        IP: 192.0.0.1        DEBUG     Msg 2
-            User: John        IP: 192.0.0.1        CRITICAL  Msg 3
-            User: Mary        IP: 254.15.16.17     WARNING   Msg 4
-            User: John        IP: 254.15.16.17     CRITICAL  Msg 5
-            User: John        IP: 254.15.16.17     DEBUG     Msg 6
-            User: John        IP: 254.15.16.17     CRITICAL  Msg 7
-            User: Arachnid    IP: 192.0.0.1        DEBUG     Msg 8
-            User: Mary        IP: 254.15.16.17     ERROR     Msg 9
-        '''
+The loop prints something like this::
 
+    User: Arachnid    IP: 254.15.16.17     CRITICAL  Msg 0
+    User: John        IP: 192.0.0.1        INFO      Msg 1
+    User: Mary        IP: 192.0.0.1        DEBUG     Msg 2
+    User: John        IP: 192.0.0.1        CRITICAL  Msg 3
+    User: Mary        IP: 254.15.16.17     WARNING   Msg 4
+    User: John        IP: 254.15.16.17     CRITICAL  Msg 5
+    User: John        IP: 254.15.16.17     DEBUG     Msg 6
+    User: John        IP: 254.15.16.17     CRITICAL  Msg 7
+    User: Arachnid    IP: 192.0.0.1        DEBUG     Msg 8
+    User: Mary        IP: 254.15.16.17     ERROR     Msg 9
+
+This example loosely adapts the code of the section
+`Using Filters to impart contextual information <https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information>`_
+in *The Logging Cookbook*.
 
 ------------------------------------------------------
 

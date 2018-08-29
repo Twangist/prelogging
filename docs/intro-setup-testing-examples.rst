@@ -135,8 +135,8 @@ Note: the examples that use ``deco`` of course require that package to be instal
 the SMTP examples require that you edit ``examples/_smtp_credentials.py`` to contain
 valid email credentials.
 
-The section `Guide to Examples <https://pythonhosted.org/prelogging/guide-to-examples.html>`_
-catalogs all the examples and briefly describes each one.
+The section :ref:`guide-to-examples` catalogs all the examples and briefly
+describes each one.
 
 Coverage from tests + examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

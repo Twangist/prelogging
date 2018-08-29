@@ -173,7 +173,7 @@ Filter examples
     values for these attributes.
 
     Loosely adapts the section
-     `Using Filters to impart contextual information <https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information>`_
+    `Using Filters to impart contextual information <https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information>`_
     of The Logging Cookbook.
 
 

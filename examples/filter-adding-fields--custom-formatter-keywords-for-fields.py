@@ -60,10 +60,10 @@ def config_logging():
 if __name__ == '__main__':
     LEVELS = (logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL)
     config_logging()
-    root = logging.getLogger()
+    # root = logging.getLogger()
 
     for i in range(10):
-        root.log(choice(LEVELS), "Msg %d", i)
+        logging.log(choice(LEVELS), "Msg %d", i)
     '''
     Prints something like (ymwv):
         User: Arachnid    IP: 254.15.16.17     CRITICAL  Msg 0

@@ -1,7 +1,7 @@
 .. prelogging documentation master file, created by
    sphinx-quickstart on Sat Jul  9 18:19:34 2016.
 
-`prelogging` v\ |version|
+`prelogging` v\ |release|
 ==================================================
 
 `prelogging` is a pure Python package that provides a simple, consistent, powerful

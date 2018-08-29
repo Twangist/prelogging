@@ -63,7 +63,7 @@ def update_formatter_presets_from_file(filename):
     Create a dict of "formatter specifications" from the contents of the file,
     and update the internal collection of formatter presets with that.
 
-    :param filename: (str) a filename
+    :param str filename: a filename
     """
     try:
         with open(filename, 'r') as f:

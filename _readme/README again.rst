@@ -1,26 +1,30 @@
 .. include:: ../docs/_global.rst
 
-`prelogging` is an API for the configuration of logging in Python, as provided by
-the `logging` package in the standard library.
+What it is, who it's for, why it is, what it does, why it's cool.
+
+That function "logging.basicConfig" function (sic?) gets you set up with one call,
+but it has complications and hard limitations: you can set up logging to the console,
+or to a file, but not both; some parameters apply to only one of those situations.
+
+----------
 
 `prelogging` streamlines the process of *configuring* logging in Python, as provided by the
 `logging <https://docs.python.org/3/library/logging.html?highlight=logging#module-logging>`_
 package in the Python standard library. It presents a simple, streamlined, consistent API for
 specifying how you want logging set up — the format of messages, their destinations
-and loglevels (severity thresholds), and so on. You can use it to configure logging
-once and for all at startup, as well as to add additional logging entities.
+and loglevels (severity thresholds), and so on.
+
+`prelogging` attempts to help you set up logging to achieve the results you want: messages
+appearing in the formats you want, where you want, when you want (that is, at what times,
+or under what conditions). `prelogging` makes some of the more advanced capabilities
+of `logging` easilyl accessible. It even supplies missing functionality: it provides
+multiprocessing-safe logging to the console, files, rotating files, and `syslog`.
 
 When logging is correctly set up to your liking, the benefits can be great and
 measurable. When you or a colleague examines a log file, you can more quickly
 find the information you want, because each message was written to the place you
 expect (just once!), under just the conditions you expected, and in the format you
 expect.
-
-It attempts to help you set up logging to achieve the results you want: messages
-appearing in the formats you want, where you want, when you want (that is, at what times,
-or under what conditions). `prelogging` makes some of the more advanced capabilities
-of `logging` easilyl accessible. It even supplies missing functionality: it provides
-multiprocessing-safe logging to the console, files, rotating files, and `syslog`.
 
 
 `prelogging` offers a straightforward, consistent API for constructing a
@@ -36,7 +40,7 @@ multiple times to the same or different destinations, to unintended
 destinations, not when expected, or even not at all. `logging` is a respectably
 powerful and complex package whose basic ways of doing things may not be quickly
 apparent. Understanding how `logging` works is essential to getting the most out
-it. `prelogging`
+it. The `prelogging` API
 
 
 The logging package is very powerful,
