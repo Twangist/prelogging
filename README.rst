@@ -1,8 +1,8 @@
 .. .. include:: ../docs/_global.rst
-.. README for `prelogging` |version|
+.. README for `prelogging` 0.4.0
 
-README for `prelogging` 0.4.0
-=================================
+README for `prelogging` |version|
+===================================
 
 See the full documentation at `https://pythonhosted.org/prelogging/ <https://pythonhosted.org/prelogging/>`_.
 
