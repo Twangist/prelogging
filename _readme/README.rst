@@ -3,7 +3,7 @@
 README for `prelogging` |version|
 =================================
 
-See the full documentation at `https://pythonhosted.org/prelogging/ <https://pythonhosted.org/prelogging/>`_.
+See the full documentation at `https://prelogging.readthedocs.io <https://prelogging.readthedocs.io/>`_.
 
 .. What it is, who it's for, why it is, what it does, why it's cool.
 
@@ -122,7 +122,7 @@ depending on the module.
 The examples illustrate many basic and advanced uses, including several adaptations
 of examples in the `Logging HOWTO <https://docs.python.org/3/howto/logging.html>`_ guide
 and `The Logging Cookbook <https://docs.python.org/3/howto/logging-cookbook.html#logging-cookbook>`_.
-The `Guide to Examples <https://pythonhosted.org/prelogging/guide-to-examples.html>`_
+The `Guide to Examples <https://prelogging.readthedocs.io/en/latest/guide-to-examples.html>`_
 in the full `prelogging` documentation catalogs all the examples and briefly
 describes each one.
 
