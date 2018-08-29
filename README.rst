@@ -1,6 +1,6 @@
 .. include:: ../docs/_global.rst
 
-README for `prelogging` |release|
+README for `prelogging` |version|
 =================================
 
 See the full documentation at `https://pythonhosted.org/prelogging/ <https://pythonhosted.org/prelogging/>`_.
