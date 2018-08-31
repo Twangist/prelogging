@@ -1,11 +1,9 @@
 .. include:: ../docs/_global.rst
 
-README for `prelogging` |version|
+README for `prelogging` 0.4.1
 =================================
 
 See the full documentation at `https://prelogging.readthedocs.io <https://prelogging.readthedocs.io/>`_.
-
-.. What it is, who it's for, why it is, what it does, why it's cool.
 
 `prelogging` streamlines the process of *configuring* logging in Python, as provided by the
 `logging <https://docs.python.org/3/library/logging.html?highlight=logging#module-logging>`_
@@ -20,9 +18,9 @@ to record its successive states, and to report any anomalies, unexpected situati
 or errors, together with enough context to aid understanding and diagnosis. Messages
 can be logged to multiple destinations at once — ``stderr`` in a terminal, a local file,
 the system log, email, or a Unix log server over TCP, to cite common choices.
-Logging is a very sophisticated version of using the `print` statement for debugging.
+Logging is a very sophisticated version of using the ``print`` statement for debugging.
 
-Once you've configured logging, use it is easy and powerful. Configuration, then,
+Once you've configured logging, using it is easy and powerful. Configuration, then,
 is the barrier to entry.
 
 `prelogging` attempts to help you set up logging to give the results you hope for: messages
@@ -49,7 +47,8 @@ Using prelogging
 -------------------------
 
 With `prelogging`, you construct a *logging configuration dictionary*, or
-*logging config dict*, a dict in the format expected by ``logging.dictConfig()``.
+*logging config dict*, a dict in the format expected by `logging`'s
+``dictConfig()`` function. (We'll behold one below.)
 
 Logging config dicts are represented in `prelogging` by the ``LCDict`` class. You call
 the methods of this class on an instance to incrementally build a logging config dict,
@@ -60,10 +59,10 @@ for example, when attaching an already-described formatter to a handler, or atta
 already-described handlers to a logger.
 
 When you've added all the elements you require, a call to the instance's ``config()``
-method results in a call to ``logging.dictConfig()``, which configures logging.
+method results in a call to ``logging.config.dictConfig()``, which configures logging.
 At this point, you are most likely done with the ``LCDict`` instance. You access
-loggers with the ``logging.getLogger(name)`` function, as usual, using the names
-you gave them in the logging config dict.
+loggers with the ``logging.getLogger(name)`` function, as usual, using the ``name``\s
+you gave them.
 
 .. sidebar:: is-a or has-a
 
@@ -133,6 +132,20 @@ The tests and examples together achieve almost complete coverage.
 Quick Start
 -------------------
 
+.. uh ^^^ is next level heading char, to bump +++ down a level
+
+In this section, we'll state some reasonable configuration requirements,
+and examine three ways of configuring them with `prelogging` – a first attempt,
+a more concise revision, and lastly a less concise version. These approaches
+will let us compare the two ways that `logging` provides for achieving
+the same configuration. Finally, we'll see how to leverage *ancestry* and *propagation*
+among loggers so that the same configuration can cover more general situations than
+first anticipated.
+
+
+Basic Configuration Example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Let's see how to configure logging with `prelogging`. Suppose we want the
 following setup:
 
@@ -144,9 +157,9 @@ following setup:
     loglevel ``INFO`` or higher should appear on-screen, but all messages should
     be logged to the file. Messages to ``stderr`` should consist of just the
     message, but messages written to the file should also contain the logger
-    name and the (name of the) message's loglevel.
+    name and the name of the message's loglevel.
 
-    The logfile contents should persist: the file handler should **append**
+    The logfile contents should persist: the file handler should *append*
     to the logfile, rather than overwriting it each time the program using these
     loggers is run.
 
@@ -158,6 +171,10 @@ Both handlers should be attached to the root logger, which should have level
 ``DEBUG`` to allow all messages through. The file handler should be created with
 ``mode='a'`` (append, not ``'w'`` for overwrite) so that the the logfile
 contents can persist.
+
+**Note**: Already these requirements exceed the abilities of ``logging.basicConfig()``
+when used to configure logging in a single call. Used in that manner, the function
+can create a stream handler or a file handler, but not both.
 
 Using the example configuration
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -192,17 +209,22 @@ and the logfile should contain (something much like) these lines:
     root                : WARNING : 4. Foo factory raised IndexError
 
 Creating the example configuration
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Here's a first pass at using an ``LCDict`` to configure logging as required.
-After walking through this, we'll look at a more concise version which takes
-advantage of various conveniences offerred by ``LCDict``::
+We've inserted two "debugging" statements (commented "FYI"), for your enlightenment.
+After walking through this code, we'll look at a more concise version which takes
+advantage of various conveniences offerred by ``LCDict``.
+
+.. code::
 
     from prelogging import LCDict
 
     lcd = LCDict(root_level='DEBUG')
+    print(isinstance(lcd, dict))    # FYI
+
     lcd.add_formatter('con', format='%(message)s')
-    lcd.add_formatter('file', format='%(name)15s: %(levelname)8s: %(message)s')
+    lcd.add_formatter('file', format='%(name)-20s: %(levelname)-8s: %(message)s')
     lcd.add_stderr_handler(
                     'h_stderr',
                     formatter='con',
@@ -211,51 +233,87 @@ advantage of various conveniences offerred by ``LCDict``::
                          formatter='file',
                          filename='blather.log')
     lcd.attach_root_handlers('h_stderr', 'h_file')  # attach handlers to root
+    lcd.dump()                      # prettyprints the logging config dict (FYI)
     lcd.config()
 
-This should remind you of how logging can be set up using the `logging` API.
-However, each ``LCDict`` method accomplishes more, on average, than the `logging` functions
-and methods you'd use to set this up. Here, we're building a dictionary; the actual formatter
-and handlers aren't created until the final ``lcd.config()`` call.
+
+This should remind you somewhat of how logging can be set up using the `logging` API.
+However, most of these ``LCDict`` method calls accomplish more than the `logging` functions
+and methods you'd use to create and relate logging entities with the same configuration
+as this `prelogging` code achieves.
+(Below, in the section :ref:`Creating the example configuration less concisely <mimicing_logging_API>`,
+we'll mimic the `logging` API, to see that `prelogging` can be just as granular,
+arguably to little good effect.)
 
 First we create an ``LCDict``, which we call ``lcd`` — a logging config dict
-with root loglevel ``'DEBUG'`` (the default root loglevel is ``'WARNING'``).
-We add to it a couple of (descriptions of) formatters that the handlers will use.
-Next, we add the handlers: first, one named 'h_stderr' which writes to ``stderr``,
-uses the simpler format we named ``'con'``, and has loglevel ``'INFO'``; next,
-a file handler 'h_file', which writes to a file ``'blather.log'`` (in the current
-directory). ``add_file_handler`` takes a ``mode`` keyword parameter, which we
-didn't have to specify, as its default value is ``'a'``.
-The last configuration step attaches the two handlers to the root logger.
-Finally we configure logging by calling ``config()`` on ``lcd``.
+with root loglevel ``'DEBUG'`` (the default root loglevel is ``'WARNING'``, as in `logging`).
+The next line prints ``True``: an ``LCDict`` *is* a dict.
+
+We add to it a couple of (descriptions of) formatters that the handlers will use,
+naming them ``'con'`` and ``'file'``. Next, we add the handlers: first, one named
+``'h_stderr'`` which writes to ``stderr``, uses the simpler format we named ``'con'``,
+and has loglevel ``'INFO'``; second, a file handler ``'h_file'``, which writes to
+a file ``'blather.log'`` (in the current directory), and has the default loglevel
+``'NOTSET'``.. ``add_file_handler`` takes a ``mode`` keyword parameter, which
+we didn't have to specify, as its default value is ``'a'`` (for *append*). The
+last configuration step attaches the two handlers to the root logger.
+
+Finally we configure logging by calling ``config()`` on ``lcd``, which basically
+calls ``logging.config.dictConfig(self)`` to create all the specified entities
+and relationships.
+
+Just before ``config()``, we've called the ``dump()`` method to print the logging
+config dict as a dict. ``lcd.dump()`` is basically a call to ``pprint.pprint(self)``
+– ``LCDict`` doesn't override ``__str__`` or ``__repr__``. Here's what that line prints::
+
+    {'disable_existing_loggers': False,
+     'filters': {},
+     'formatters': {'con': {'class': 'logging.Formatter', 'format': '%(message)s'},
+                    'file': {'class': 'logging.Formatter',
+                             'format': '%(name)-20s: %(levelname)-8s: %(message)s'}},
+     'handlers': {'h_file': {'class': 'logging.FileHandler',
+                             'delay': False,
+                             'filename': 'blather.log',
+                             'formatter': 'file',
+                             'mode': 'a'},
+                  'h_stderr': {'class': 'logging.StreamHandler',
+                               'formatter': 'con',
+                               'level': 'INFO',
+                               'stream': 'ext://sys.stderr'}},
+     'incremental': False,
+     'loggers': {},
+     'root': {'handlers': ['h_stderr', 'h_file'], 'level': 'DEBUG'},
+     'version': 1}
+
+This is the dict that's passed to ``dictConfig()`` – a triply-nested thicket of
+curly braces, quotes and colons. Typing or maintaining this, even with more
+whitespace, seems unappealing. By contrast, `prelogging` lets you build this
+dict entity by entity, omitting cruft and clutter.
 
 **Note**: In `prelogging`, loglevels are always identified by their names
-rather than their numeric values – thus, ``'DEBUG'`` not ``logging.DEBUG``, and so on.
+rather than their numeric values – thus, ``'DEBUG'`` not ``logging.DEBUG``, and
+so on. The values of parameters to `prelogging` methods that change the logging
+config dict generally become leaves of the nested dict, and they're mostly strings.
 
 Creating the example configuration more concisely
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We can simplify this example further::
+We can simplify the code further::
 
     from prelogging import LCDict
 
     lcd = LCDict(root_level='DEBUG',
-                 attach_handlers_to_root=True
-    ).add_stderr_handler(
+                 attach_handlers_to_root=True)
+    lcd.add_stderr_handler(
                     'h_stderr',
                     formatter='msg',
-                    level='INFO'
-    ).add_file_handler(
+                    level='INFO')
+    lcd.add_file_handler(
                     'h_file',
                     formatter='logger_level_msg',
                     filename='blather.log')
     lcd.config()
 
-
-
-Here, most of the method calls are chained.
-The methods of ``LCDict`` (and its superclass ``LCDictBasic``) generally return
-``self``, which makes chaining possible.
 
 Because handlers are so commonly attached to the root logger,
 ``LCDict`` makes it easy to do that.
@@ -268,21 +326,82 @@ be overridden in any ``add_*_handler`` call with the keyword argument ``attach_t
 
 No formatters are explicitly created, yet the handlers reference formatters
 named ``'msg'`` and ``'logger_level_msg'``. These are a couple of the `formatter
-presets` supplied by `prelogging`.
+presets` supplied by `prelogging`. You can add your own formatter presets if
+the rough dozen supplied don't suit your needs.
+
+If we had called ``dump()`` on ``lcd`` just before ``config()``, we'd see a
+dict identical to the one above except for the names of the formatters.
+
+Chaining ``LCDict`` methods
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+The methods of ``LCDict`` (and of its superclass ``LCDictBasic``) that change
+the state of the logging config dict all return ``self``, which makes chaining them
+possible. We don't even need the ``lcd`` variable::
+
+    LCDict(root_level='DEBUG',
+           attach_handlers_to_root=True
+    ).add_stderr_handler(
+                    'h_stderr',
+                    formatter='msg',
+                    level='INFO'
+    ).add_file_handler(
+                    'h_file',
+                    formatter='logger_level_msg',
+                    filename='blather.log'
+    ).config()
+
+
+.. _mimicing_logging_API:
+
+Creating the example configuration less concisely - mimicking the `logging` API
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+`prelogging` lets you make changes to the logging config dict with the same
+granularity as the logging API requires. For illustration's sake, we'll write
+our example in a *less* concise way. Here, each ``LCDict`` method does one small
+thing at a time, corresponding 1-1 with the logging API calls you'd have to use
+to actually construct the entities::
+
+    lcd = LCDict()
+    lcd.set_root_level('DEBUG')
+
+    lcd.add_formatter('msg', format='%(message)s')
+    lcd.add_formatter('logger_level_msg', format='%(name)-20s: %(levelname)-8s: %(message)s')
+
+    lcd.add_stderr_handler('h_stderr')
+    lcd.set_handler_formatter('h_stderr', 'msg')
+    lcd.set_handler_level('h_stderr', 'INFO')
+
+    lcd.add_file_handler('h_file', filename='blather.log')
+    lcd.set_handler_formatter('h_file', 'logger_level_msg')
+    lcd.set_handler_level('h_stderr', 'INFO')
+
+    lcd.attach_root_handlers('h_stderr')
+    lcd.attach_root_handlers('h_file')  # attach handlers to root
+
+    lcd.config()
+
+In `prelogging`, it's usually unnecessary to call the ``set_handler_formatter``
+or ``set_*_level`` methods, and repeated consecutive calls to "attach" methods
+can generally be coalesced into one call with a list parameter (or eliminated
+altogether, by passing that list to a prior``add_*`` call).
 
 
 Adding additional loggers that use the existing handlers
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Suppose you later add to your project a module ``new_module.py``, which will also
 use logging, via its own logger ``'new_module'``. If it meets your needs for this
-logger to use the existing handlers, then you can just use this logger,
+logger to use the existing handlers, then you can just *use it*,
 no extra configuration required!
 
 For example::
 
     # new_module.py
     import logging
+
+    # ...
+    # logging has already been configured -- handlers created & attached to root
 
     logger = logging.getLogger(__name__)    # __name__ == 'new_module'
     # ...
@@ -294,13 +413,13 @@ This writes the error message to ``stderr``::
 
     UH OH!!!!
 
-and also appends both messages to the file, together with the logger name and level::
+and also appends both messages to the logfile, together with the logger name and level::
 
     new_module          : DEBUG   : It's 11:11 pm
     new_module          : ERROR   : UH OH!!!!
 
 Why this works: ancestors and propagation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. sidebar:: Ancestors and names
 
@@ -325,18 +444,17 @@ The name of the root logger is simply ``''`` (empty string),
 and it is the only ancestor of ``logger``. Thus, without any extra work,
 all messages logged by ``logger`` will be sent directly to the root's handlers.
 
-If we attached a third handler to this logger (during configuration, or afterward
-configuration, using the `logging` API), and if we left the logger's ``propagate``
+**Note**: If we attached a handler to this logger (during configuration, or after
+configuration using the `logging` API), and if we left the logger's ``propagate``
 flag set to True, then messages written by this logger would be sent to that handler
 *as well as* to the two attached to the root.
 
 -------------------------------------------------------------------------------
 
-
 .. _supported-handlers:
 
 Handler classes encapsulated by ``LCDict``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------------------
 
 The `logging` package defines more than a dozen handler classes — subclasses of
 ``logging.Handler`` — in the modules ``logging`` and ``logging.handlers``.
@@ -375,46 +493,85 @@ optional multiprocessing-aware "locking" support in most cases:
 .. _easy-mp-safe-logging:
 
 Easy multiprocessing-safe logging
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As shown in the table above, `prelogging` provides multiprocessing-safe ("locking")
 versions of the essential handler classes that write to the console, streams, files,
 rotating files, and syslog.
 
+
+
+--------------------------------------
+
+
+Additional "batteries" included
+----------------------------------------
+
 .. _easy-filter-creation:
 .. _filters:
 
 Simplified creation and use of filters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Filter allow finer control than mere loglevel comparison over which messages
+Filters allow finer control than mere loglevel comparison over which messages
 actually get logged. In conjunction with formatters, they can also be used
-to add additional data fields to messages.
+to add additional data fields to messages. Filters can be attached to handlers
+and to loggers. In fact, the same filter can be attached to multiple handlers
+and multiple loggers.
 
 There are two kinds of filters: class filters and callable filters.
 ``LCDict`` provides a pair of convenience methods, ``add_class_filter`` and
-``add_callable_filter``, which are much easier to use than the lower-level
-``LCDictBasic`` method ``add_filter``.
+``add_callable_filter``, which are easy to use – and much easier to use than
+the lower-level ``LCDictBasic`` method ``add_filter``.
 
 In Python 2, the `logging` module imposes a fussy requirement on callables
 that can be used as filters, which the Python 3 implementation of `logging`
 removes. The ``add_callable_filter`` method provides a single, sane interface
 for adding callable filters that works in both Python versions.
 
--------------------------------------------------------------------------------
 
 .. _config-abc:
 
-Using ``LCDictBuilderABC``
--------------------------------
+Configuration across modules and packages using ``LCDictBuilderABC``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 One way for a larger program to configure logging is to pass around an
-``LCDict`` to the different "areas" of the program, each area contributing
+``LCDict`` to the different "areas" of the program, each contributing
 specifications of its desired formatters, filters, handlers and loggers.
 (Just what the "areas" of a program are, is in the eye of the developer. They
-might be all the modules, or only certain major ones.)
-The ``LCDictBuilderABC`` class provides a mini-microframework that automates
-this approach: each area of a program only has to define an ``LCDictBuilderABC``
-subclass and override its method ``add_to_lcdict(lcd)``, where it contributes
-its specifications by calling methods on ``lcd``.
+might be all modules, only certain major modules, all or some subpackages, etc.)
 
+The ``LCDictBuilderABC`` class provides a mini-microframework that automates
+this approach. Here, ``ABC`` stands for *abstract base class*. Each area of a
+program only has to define an ``LCDictBuilderABC`` subclass and implement the
+base class's abstract classmethod ``add_to_lcdict(lcd)``. Each implementation
+contributes its specifications by calling methods on ``lcd``. These
+implementations are *callbacks*: your code doesn't call them directly; rather,
+they're called by ``LCDictBuilderABC.build_lcdict()``, which you *do* call.
+``LCDictBuilderABC.build_lcdict`` *is* implemented and you shouldn't need to
+override it.
+
+Some presumably "top-level" area of the program calls the ``build_lcdict()``
+classmethod of ``LCDictBuilderABC`` or a subclass, and that one call takes care
+of the rest. ``build_lcdict()`` creates an ``LCDict`` – ``lcd``, say – using the
+parameters passed to it, passes ``lcd`` to every ``add_to_lcdict()`` classmethod
+of ``LCDictBuilderABC`` subclasses (roughly speaking), and returns ``lcd``.
+Note that ``config()`` is *not* called in this process, to allow top-level
+postprocessing of the returned ``LCDict``.
+
+--------------------------------------
+
+Next steps
+------------
+If you've made it this far, we're flattered, and grateful for your
+interest in `prelogging`. You probably don't need encouragement to take it for
+a spin, but ... please take it for a spin!
+
+"Readme"s try to strike a balance between saying too little and saying too much.
+This one probably falls off that tightrope a few times, erring in both ways.
+For complete accounts of the topics introduced here,
+solid explanations of how logging works,
+and many useful techniques and recipes,
+please check out `prelogging`'s actual `documentation <https://prelogging.readthedocs.io/>`_.
+
+Happy logging!

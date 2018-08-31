@@ -114,6 +114,7 @@ class TestLCDEx(TestCase):
         ).add_file_handler(
             'default_file',
             filename='blather.log',
+            formatter='process_time_logger_level_msg'
         )
 
         # lcd.dump()      # | DEBUG comment out

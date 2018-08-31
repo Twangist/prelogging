@@ -801,7 +801,7 @@ class LCDictBasic(dict):
             self['disable_existing_loggers'] = bool(disable_existing_loggers)
         if not self._warn_undefined:    # 0.2.7b13
             self.check()                # 0.2.7b13
-        logging.config.dictConfig(dict(self))
+        logging.config.dictConfig(self)
 
     def dump(self, **kwargs):                   # pragma: no cover
         """
@@ -809,10 +809,11 @@ class LCDictBasic(dict):
         For debugging, sanity checks, etc.
         This method does NOT return ''self''.
 
-        :param kwargs: any keyword arguments that can be passed to ``print``, e.g. ``file``.
+        :param kwargs: any keyword arguments that can be passed to ``print``,
+            e.g. ``file``.
         """
         from pprint import pformat
-        print(pformat(dict(self)), **kwargs)
+        print(pformat(self), **kwargs)
 
     # -------------------------------------------------------
     # Consistency checking

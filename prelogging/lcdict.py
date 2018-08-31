@@ -314,10 +314,11 @@ class LCDict(LCDictBasic):
         # but a handler can be locking.
         locking = self._locking__adjust(locking)
 
-        if not formatter:
-            formatter = ('process_time_logger_level_msg'
-                         if locking else
-                         'time_logger_level_msg')
+        ###  v-.4.0* A confusing dubious convenience -- killed:
+        # if not formatter:
+        #     formatter = ('process_time_logger_level_msg'
+        #                  if locking else
+        #                  'time_logger_level_msg')
         self.add_handler(handler_name,
                          class_='logging.FileHandler',
                          filename=os.path.join(self.log_path, filename),
