@@ -198,7 +198,7 @@ In order to explain what happens when a logger logs a message,
 
 .. code::
 
-    logger.log(level, message)
+    logging.getLogger('L').log(level, message)
 
 we first have to introduce a few more concepts:
 
@@ -274,7 +274,8 @@ the root and ``logger.propagate`` is True, the message is *also* sent to any
 handlers of the logger's parent; if the parent isn't the root and its ``propagate``
 flag is True, the message is sent to the handlers of the parent's parent; and so
 on, until this process reaches either the root or an ancestor whose ``propagate``
-flag is False.
+flag is False. The loglevels of ancestor loggers are **not** consulted when they
+are ascended through; the message is sent directly to their handlers.
 
 If no handlers are encountered in this procedure, in Python 3.2+ the message is sent
 to the "handler of last resort", ``logging.LastResort``, whose loglevel is 'WARNING',
@@ -282,11 +283,15 @@ and which simply writes the message to ``stderr``.  (In earlier versions of Pyth
 or if you set ``logging.LastResort = None`` in 3.2+, an error message is written
 to ``stderr`` that no handlers could be found for the logger.)
 
+In many cases, to configure logging it's sufficient just to add a handler or
+few and attach them to the root.
+
 .. note::
     The `logging` documentation contains a `pair of flowcharts <https://docs.python.org/3/howto/logging.html#logging-flow>`_,
     "Logging flow" and "Handler flow", which summarize what this section,
     :ref:`How a message is logged<how_a_message_is_logged>`, has described; however,
-    they predate Python 3.2, so "Handler flow" doesn't mention the "last resort" handler.
+    they seem to predate Python 3.2, so "Handler flow" doesn't mention the "last resort"
+    handler.
 
 
 `logging` defaults
@@ -300,12 +305,12 @@ attach handlers to ``'mylogger'``; logging a message with that logger will "just
 work". Suppose this is a complete program::
 
     import logging
-    ``logging.getLogger('mylogger').warning("Hi there")``
+    logging.getLogger('mylogger').warning("Uh oh.")
 
-When run, it writes ``Hi there`` to ``stderr``. In light of the last section,
+When run, it writes ``Uh oh.`` to ``stderr``. In light of the last section,
 we can now understand why. The effective level of ``'mylogger'`` is the level of
 its parent, the root logger, which is ``WARNING``, and the level of the message clears
-that. Thus, the message is sent to ``'mylogger'``'s handlers (none). Because
+that threshold. Thus, the message is sent to ``'mylogger'``'s handlers (none). Because
 ``'mylogger'`` has ``propagate`` set to True, the message is also sent to
 the handlers of the root. The root has no handlers, so the message is sent to the
 last resort handler, whose loglevel is ``WARNING``, which lets the message through,
@@ -315,28 +320,90 @@ The ``warning(...)`` logger method shown above is a shorthand for
 ``log(logging.WARNING, ...)``. Similarly, there are convenience methods ``debug``,
 ``info``, ``error`` and ``critical``.
 
---------------------------------------------------------
+.. index:: logging.log() side effect
+.. index:: logging.debug() side effect
+.. index:: logging.info() side effect
+.. index:: logging.warning() side effect
+.. index:: logging.error() side effect
+.. index:: logging.critical() side effect
+.. index:: logging.basicConfig (used by `logging` to create side effect)
 
-For another example, you can just say:
+.. _convenience_fn_side_effect:
 
-    ``logging.error("Something went wrong")``
+The *logging* convenience functions ``log()``, ``debug()``, ... ``critical()`` have a side-effect
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-and something plausible will happen (again, the string will be written to
-``stderr``). This works because ``logging.error(...)`` is a shorthand for
-``logging.log(logging.ERROR, ...)``, which in turn is a shorthand for
-``logging.getLogger().log(logging.ERROR, ...)``.
+`logging` provides six functions, ``logging.log()``, ``logging.debug()``, ...
+``logging.critical()``,  which let you instantly use logging out of the box,
+with no configuration or even any calls to ``getLogger``. You can just call::
 
---------------------------------------------------------
+    logging.error("Something went wrong")
 
-.. sidebar:: logging.basicConfig()
+and something plausible will happen. This works because ``logging.error(...)``
+is (almost always) a shorthand for ``logging.getLogger().error(...)``.
+
+However, in one circumstance these six functions all have a side effect which can
+make them **not** mere shorthands for expressions that explicitly access the root
+logger with ``getLogger``.
+
+Specifically, if the root logger has no handlers when any of them is called, these
+functions call ``logging.basicConfig()`` (with no arguments), which creates a ``stderr``
+stream handler that has a formatter with format string
+
+.. code::
+
+    BASIC_FORMAT = "%(levelname)s:%(name)s:%(message)s"
+
+and attaches it to the root. One might expect that these functions under such
+circumstances would use the LastResort handler, as described above; but they don't.
+
+Consider this complete program::
+
+    import logging
+    from importlib import reload
+    import sys
+
+    # logging.error installs a root handler because none exist,
+    # so order of these three calls matters.
+    logging.getLogger('').error('Trouble!')
+    logging.getLogger('newlogger').critical('Big trouble!')
+    logging.error('Trouble!')
+
+    print('-----------------', file=sys.stderr)
+    reload(logging)
+
+    # Clear everything, and do the three calls again, with logging.error first.
+    logging.error('Trouble!')
+    logging.getLogger('newlogger').critical('Big trouble!')
+    logging.getLogger('').error('Trouble!')
+
+When run, it prints these messages to ``stderr``::
+
+    Trouble!
+    Big trouble!
+    ERROR:root:Trouble!
+    -----------------
+    ERROR:root:Trouble!
+    CRITICAL:newlogger:Big trouble!
+    ERROR:root:Trouble!
+
+The call to ``logging.error`` attaches a new handler to the root. Subsequently,
+all loggers that propagate to the root have the format of their messages changed
+(albeit for the better).
+
+.. index:: logging.basicConfig
+
+.. topic:: logging.basicConfig()
 
     The `logging.basicConfig() <https://docs.python.org/3/library/logging.html#logging.basicConfig>`_
     function lets you configure the root logger (up to a point), using
     a monolithic function that's somewhat complex yet of limited capabilities.
+    When used to quickly configure logging with a single call, the function
+    can create a stream handler, or a file handler (but not both!), and attaches
+    it to the root.
 
-In many cases, to configure logging it's sufficient just to add a handler or
-two and attach them to the root.
 
+--------------------------------------------------------
 
 In the next chapter, we'll examine the approaches to configuration offered by
 `logging`, and then see how `prelogging` simplifies the process.

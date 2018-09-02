@@ -642,9 +642,9 @@ Finally, let's use the root logger::
 
     for i in range(2):
         print("\ni ==", i)
-        logging.debug(str(i))
+        logging.debug(str(i))   # root has a handler, so no format surprises
         print("---")
-        logging.info(str(i))
+        logging.info(str(i))    # no format surprises
 
 This loop prints the following to stdout::
 
@@ -665,7 +665,8 @@ This loop prints the following to stdout::
 
 When ``logging.debug(str(1))`` is called, only one line is printed.
 The ``'count_debug'`` filter returns 0, which suppresses not only
-the logger's message, but also any calls to the logger's other filters – ``count_info``, in this case.
+the logger's message, but also any calls to the logger's other filters –
+``count_info``, in this case.
 
 When ``logging.info(str(1))`` is called, two lines are printed.
 ``'count_debug'`` returns ``True``, so ``count_info`` is called; it returns 0,
@@ -764,7 +765,7 @@ First, configure logging with the dict we've built:
 Now log something. The filter prints the value of ``list1[0]``, which is ``21``;
 thus it returns ``False``, so no message is logged:
 
-    >>> logging.debug("data_wrapper = %r" % data_wrapper)   # uses root logger
+    >>> logging.debug("data_wrapper = %r" % data_wrapper)
     21
 
 Now change the value of ``data_wrapper[0]``:
@@ -815,10 +816,11 @@ as a container:
     >>> # in the filter, data_wrapper.data == 21
     >>> logging.debug("dw = %s" % dw)
     21
-    dw.data = 101
+
+    >>> dw.data = 101
     >>> # In the filter, data_wrapper.data == 101,
     >>> #  so message is logged:
-    logging.debug("dw =", dw)
+    >>> logging.debug("dw =", dw)
     101
     dw = 101
 
