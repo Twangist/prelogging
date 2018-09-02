@@ -1,7 +1,7 @@
 .. include:: ../docs/_global.rst
 
-README for *prelogging* 0.4.2
-=================================
+README for *prelogging* 0.4.2rc1
+======================================
 
 See the full documentation at `https://prelogging.readthedocs.io <https://prelogging.readthedocs.io/>`_.
 
@@ -534,6 +534,8 @@ for adding callable filters that works in both Python versions.
 
 Configuration across modules and packages using ``LCDictBuilderABC``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. Collaborative configuration with LCDictBuilderABC
 
 One way for a larger program to configure logging is to pass around an
 ``LCDict`` to the different "areas" of the program, each contributing
