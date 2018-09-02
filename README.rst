@@ -1,6 +1,6 @@
 .. include:: ../docs/_global.rst
 
-README for *prelogging* 0.4.1
+README for *prelogging* 0.4.2
 =================================
 
 See the full documentation at `https://prelogging.readthedocs.io <https://prelogging.readthedocs.io/>`_.
