@@ -535,6 +535,8 @@ for adding callable filters that works in both Python versions.
 Configuration across modules and packages using ``LCDictBuilderABC``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. Collaborative configuration with LCDictBuilderABC
+
 One way for a larger program to configure logging is to pass around an
 ``LCDict`` to the different "areas" of the program, each contributing
 specifications of its desired formatters, filters, handlers and loggers.
