@@ -3,7 +3,7 @@
 README for *prelogging* 0.4.2rc1
 ======================================
 
-See the full documentation at `https://prelogging.readthedocs.io <https://prelogging.readthedocs.io/>`_.
+*See the full documentation at* `https://prelogging.readthedocs.io <https://prelogging.readthedocs.io/>`_.
 
 *prelogging* streamlines the process of *configuring* logging in Python, as provided by the
 `logging <https://docs.python.org/3/library/logging.html?highlight=logging#module-logging>`_
