@@ -18,9 +18,10 @@ More generally it's true that a call to lcd.config() annihilates any handlers
 attached to loggers configured in lcd.
 
 Thus, it's chancy to do "collaborative configuration" by having separate "areas"
-of a program build their own lcd's and each call config() on them. Not does that
-approach lose `prelogging`'s error checking, but it also opens the door to
-hard-to-diagnose logging bugs.
+of a program build their own ``LCDict``\s and each call ``config()`` on them.
+Not only does that approach sacrifice `prelogging`'s consistency checking, but it
+also opens the door to hard-to-diagnose logging bugs.
+
 """
 
 USE_PRELOGGING = False

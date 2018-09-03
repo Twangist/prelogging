@@ -81,6 +81,27 @@ Simple examples
     ``add_formatter``.
 
 
+dictConfig-kills-existing-root-handlers.py
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    A call to ``logging.config.dictConfig(d)`` kills existing handlers on any logger
+    that's configured -- even with ``'disable_existing_loggers': False``. The root logger
+    *always* get configured. Thus, multiple calls to ``logging.config.dictConfig(d)``
+    leave the root with only the handlers specified for it in the last logging
+    config dict passed.
+
+    The same is of course true of ``LCDict.config()``.
+
+    This program demonstrates the phenomenon, using either `prelogging` or pure
+    `logging` APIs depending on the value of the constant ``USE_PRELOGGING``.
+    It helps make the case for ``LCDictBuilderABC``.
+
+    Thus, it's chancy to do "collaborative configuration" by having separate "areas"
+    of a program build their own ``LCDict``\s and each call ``config()`` on them.
+    Not only does that approach sacrifice `prelogging`'s consistency checking, but it
+    also opens the door to hard-to-diagnose logging bugs.
+
+
 Handler examples
 +++++++++++++++++++
 
