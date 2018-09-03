@@ -1,6 +1,6 @@
 .. include:: ../docs/_global.rst
 
-README for *prelogging* 0.4.2rc1
+README for *prelogging* 0.4.2rc2
 ======================================
 
 *See the full documentation at* `https://prelogging.readthedocs.io <https://prelogging.readthedocs.io/>`_.
@@ -42,36 +42,6 @@ powerful and complex package whose basic ways of doing things may not be quickly
 apparent. Understanding how *logging* works is essential to getting the most out
 it. *prelogging*'s documentation and examples can help clarify much about *logging*
 that may seem murky.
-
-Using prelogging
--------------------------
-
-With *prelogging*, you construct a *logging configuration dictionary*, or
-*logging config dict*, a dict in the format expected by *logging*'s
-``dictConfig()`` function. (We'll behold one below.)
-
-Logging config dicts are represented in *prelogging* by the ``LCDict`` class. You call
-the methods of this class on an instance to incrementally build a logging config dict,
-adding specifications of formatters, filters (if any), handlers, and loggers other
-than the root if you want any. When adding these descriptions of logging entities,
-you give them names, and then refer to them by those names in subsequent method calls –
-for example, when attaching an already-described formatter to a handler, or attaching
-already-described handlers to a logger.
-
-When you've added all the elements you require, a call to the instance's ``config()``
-method results in a call to ``logging.config.dictConfig()``, which configures logging.
-At this point, you are most likely done with the ``LCDict`` instance. You access
-loggers with the ``logging.getLogger(name)`` function, as usual, using the ``name``\s
-you gave them.
-
-.. sidebar:: is-a or has-a
-
-    The ``LCDict`` class, which represents logging config dicts, is a subclass of ``dict`` –
-    It doesn't *contain* a dict, it *is* one. In ordinary and intended uses, this can be
-    considered an implementation detail: the methods of ``"LCDict`` are sufficient to build
-    a logging config dict, without any calls to ``dict`` methods. Nevertheless, you really
-    *are* building a ``dict``, after all, and it would be premature and presumptuous to
-    offer a nanny-API which denies that.
 
 Requirements
 ---------------
@@ -127,6 +97,69 @@ describes each one.
 
 The tests and examples together achieve almost complete coverage.
 
+-----------------------------------
+
+Using prelogging
+-------------------------
+
+With *prelogging*, you construct a *logging configuration dictionary*, or
+*logging config dict*, a dict in the format expected by *logging*'s
+`dictConfig() <https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_
+function (``logging.config.dictConfig()``, to be precise).
+
+Logging config dicts are represented in *prelogging* by the ``LCDict`` class.
+A minimal logging config dict looks like this::
+
+    >>> from prelogging import LCDict
+    >>> LCDict().dump()
+    {'disable_existing_loggers': False,
+     'filters': {},
+     'formatters': {},
+     'handlers': {},
+     'incremental': False,
+     'loggers': {},
+     'root': {'handlers': [], 'level': 'WARNING'},
+     'version': 1}
+
+You can pass this dict to ``dictConfig()``, though it will have no effect: it contains
+only defaults, and specifies no logging entities so none would be created.
+
+The default values here are the same as *logging* uses, except for ``disable_existing_loggers``,
+which *logging* sets to True. This value determines whether existing loggers are "disabled"
+or not when ``dictConfig`` is called. If you want the *logging* default value,
+simply pass the keyword parameter ``disable_existing_loggers=True`` to ``LCDict()``.
+This is (/should be) the only *logging* default value that *prelogging* changes.
+
+You call the methods of ``LCDict`` on an instance to incrementally build a logging config dict,
+adding specifications of formatters, filters (if any), handlers, and loggers other
+than the root if you want any. When adding these descriptions of logging entities,
+you give them names, and then refer to them by those names in subsequent method calls –
+for example, when attaching an already-described formatter to a handler, or attaching
+already-described handlers to a logger. Methods affecting the root (setting its level,
+attaching handlers) alter the sub-dict ``'root'``. Adding a formatter, filter, handler
+or logger adds a new *key* ``:`` *value* pair to the appropriate sub-dict (with key
+``'filters'``, ``'formatters'``, ``'handlers'``, or ``'loggers'``).
+The *key* is the name you're giving the entity;
+the *value* will be a sub-sub-dict comprising all the attributes of the entity
+(e.g. loglevel for handlers and loggers, format string for formatters, and the like).
+
+When you've added all the elements you require, a call to the instance's ``config()``
+method results in a call to ``dictConfig()``, which configures logging.
+If you want to change
+At this point, you are most likely done with the ``LCDict`` instance. You access
+loggers with the ``logging.getLogger(name)`` function, as usual, using the ``name``\s
+you gave them.
+
+
+.. sidebar:: is-a or has-a
+
+    The ``LCDict`` class, which represents logging config dicts, is a subclass of ``dict`` –
+    It doesn't *contain* a dict, it *is* one. In ordinary and intended uses, this can be
+    considered an implementation detail: the methods of ``"LCDict`` are sufficient to build
+    a logging config dict, without any calls to ``dict`` methods. Nevertheless, you really
+    *are* building a ``dict``, after all, and it would be premature and presumptuous to
+    offer a nanny-API which denies that.
+
 -------------------------------------------------------------------------------
 
 Quick Start
@@ -172,7 +205,9 @@ Both handlers should be attached to the root logger, which should have level
 ``mode='a'`` (append, not ``'w'`` for overwrite) so that the the logfile
 contents can persist.
 
-**Note**: Already these requirements exceed the abilities of ``logging.basicConfig()``
+**Note**: Already these requirements exceed the abilities of
+`logging.basicConfig() <https://docs.python.org/3/library/logging.html#logging.basicConfig>`_
+
 when used to configure logging in a single call. Used in that manner, the function
 can create a stream handler or a file handler, but not both.
 
@@ -374,7 +409,6 @@ to actually construct the entities::
 
     lcd.add_file_handler('h_file', filename='blather.log')
     lcd.set_handler_formatter('h_file', 'logger_level_msg')
-    lcd.set_handler_level('h_stderr', 'INFO')
 
     lcd.attach_root_handlers('h_stderr')
     lcd.attach_root_handlers('h_file')  # attach handlers to root
@@ -499,10 +533,7 @@ As shown in the table above, *prelogging* provides multiprocessing-safe ("lockin
 versions of the essential handler classes that write to the console, streams, files,
 rotating files, and syslog.
 
-
-
 --------------------------------------
-
 
 Additional "batteries" included
 ----------------------------------------
@@ -543,23 +574,78 @@ specifications of its desired formatters, filters, handlers and loggers.
 (Just what the "areas" of a program are, is in the eye of the developer. They
 might be all modules, only certain major modules, all or some subpackages, etc.)
 
+This approach is better than having each area of a program configure itself
+using logging config dicts. A call to ``dictConfig`` has the effect of clearing
+existing handlers from any logger that's configured in the logging config dict.
+*The root logger is always configured in a logging config dict*, so root handlers
+get blown away. By passing around a single dict and finally issuing a single call
+to configure logging, you avoid such unpleasant surprises.
+
 The ``LCDictBuilderABC`` class provides a mini-microframework that automates
 this approach. Here, ``ABC`` stands for *abstract base class*. Each area of a
 program only has to define an ``LCDictBuilderABC`` subclass and implement the
 base class's abstract classmethod ``add_to_lcdict(lcd)``. Each implementation
-contributes its specifications by calling methods on ``lcd``. These
-implementations are *callbacks*: your code doesn't call them directly; rather,
-they're called by ``LCDictBuilderABC.build_lcdict()``, which you *do* call.
-``LCDictBuilderABC.build_lcdict`` *is* implemented and you shouldn't need to
-override it.
+contributes its specifications by calling methods on ``lcd``.
+You benefit from *prelogging*\'s warnings upon redefinition of an entity or use
+of an unknown name for an entity that supposedly already exists.
+
+These ``add_to_lcdict`` implementations are *callbacks*: your code doesn't call
+them directly; rather, they're called by ``LCDictBuilderABC.build_lcdict()``,
+which *is* implemented and which you *do* call.
 
 Some presumably "top-level" area of the program calls the ``build_lcdict()``
 classmethod of ``LCDictBuilderABC`` or a subclass, and that one call takes care
 of the rest. ``build_lcdict()`` creates an ``LCDict`` – ``lcd``, say – using the
 parameters passed to it, passes ``lcd`` to every ``add_to_lcdict()`` classmethod
 of ``LCDictBuilderABC`` subclasses (roughly speaking), and returns ``lcd``.
-Note that ``config()`` is *not* called in this process, to allow top-level
-postprocessing of the returned ``LCDict``.
+Note that ``config()`` is *not* called in this process.
+
+Schematic Example
+++++++++++++++++++++
+Suppose a program has a ``main.py`` module and two other modules ``A.py`` and ``B.py``.
+These three modules comprise the "areas" of the program that we want to collaborate
+in configuring logging.
+
+In ``main`` we'll create a concrete builder ``LCDictBuilder`` and call its
+``build_lcdict()`` method. Modules ``A`` and ``B`` will subclass ``LCDictBuilder``,
+so the ``add_to_lcdict()`` methods of  those subclasses will be called *after*
+``LCDictBuilder.add_to_lcdict``. Thus the top-level ``LCDict`` builder class can
+add things which both ``A`` and ``B`` can use.
+
+``A`` and ``B`` will have to be imported by the time ``build_lcdict()`` is called;
+furthermore they will need to import ``LCDictBuilder``. These issues can all
+be settled, but we will punt on the details and present the skeletal code here as
+one module::
+
+    from prelogging import LCDictBuilderABC
+
+    # Top-level concrete builder class
+    # *You* get to call it LCDictBuilder
+    class LCDictBuilder( LCDictBuilderABC ):
+        def add_to_lcdict(lcd):
+            # Add what "main" module needs for logging;
+            # add anything to be shared by "A" and "B"
+            return
+
+    # Builder for area A
+    class LCDictBuilderA( LCDictBuilder ):
+        def add_to_lcdict(lcd):
+            # Add what "A" needs for logging;
+            # can refer to what "main" added to ``lcd``
+            return
+
+    # Builder for area B
+    class LCDictBuilderA( LCDictBuilder ):
+        def add_to_lcdict(lcd):
+            # Add what "B" needs for logging;
+            # can refer to what "main" added to ``lcd``
+            return
+
+    # In main:
+
+    lcd = LCDictBuilder.build_lcdict()
+    # postprocessing, if any
+    lcd.config()
 
 --------------------------------------
 
