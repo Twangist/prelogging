@@ -584,9 +584,8 @@ Assuming the logging config dict contains ``'incremental': False`` (the default
 in both *logging* and *prelogging*, as shown above),
 a call to ``dictConfig`` clears existing handlers
 from any logger that's configured in the logging config dict.
-(You can preserve the root's handlers by leaving the ``'root'`` subdictionary
-empty, which will be the case if you don't attach handlers to it or set its
-loglevel to something other than ``WARNING``).
+(You can preserve the root's handlers by making the ``'root'`` subdictionary
+empty).
 
 If the logging config dict contains ``'incremental': True``, which we
 don't recommend, then many restrictions apply:
