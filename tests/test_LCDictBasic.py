@@ -47,11 +47,9 @@ class TestLCD(TestCase):
             'root': {'level': 'DEBUG', 'handlers': []},
             'loggers': {},
             'disable_existing_loggers': False,
-            'formatters': {'msg': {'class': 'logging.Formatter', 'format': '%(message)s'},
-                           'process_msg': {'class': 'logging.Formatter',
-                                           'format': '%(processName)-10s: %(message)s'},
-                           'logger_process_msg': {'class': 'logging.Formatter',
-                                                  'format': '%(name)-15s: %(processName)-10s: %(message)s'}
+            'formatters': {'msg': {'format': '%(message)s'},
+                           'process_msg': {'format': '%(processName)-10s: %(message)s'},
+                           'logger_process_msg': {'format': '%(name)-15s: %(processName)-10s: %(message)s'}
                           },
             'incremental': False,
             'filters': {},
@@ -78,11 +76,9 @@ class TestLCD(TestCase):
             'loggers': {},
             'disable_existing_loggers': False,
             'incremental': False,
-            'formatters': {'msg': {'class': 'logging.Formatter', 'format': '%(message)s'},
-                           'process_msg': {'class': 'logging.Formatter',
-                                           'format': '%(processName)-10s: %(message)s'},
-                           'logger_process_msg': {'class': 'logging.Formatter',
-                                                  'format': '%(name)-15s: %(processName)-10s: %(message)s'}
+            'formatters': {'msg': {'format': '%(message)s'},
+                           'process_msg': {'format': '%(processName)-10s: %(message)s'},
+                           'logger_process_msg': {'format': '%(name)-15s: %(processName)-10s: %(message)s'}
                           },
             'filters': {},
             'handlers': {'console': {'formatter': 'msg', 'level': 'INFO',
@@ -108,11 +104,9 @@ class TestLCD(TestCase):
             'loggers': {'default': {'level': 'DEBUG', 'handlers': ['console', 'default_file']}},
             'disable_existing_loggers': False,
             'incremental': False,
-            'formatters': {'msg': {'class': 'logging.Formatter', 'format': '%(message)s'},
-                           'process_msg': {'class': 'logging.Formatter',
-                                           'format': '%(processName)-10s: %(message)s'},
-                           'logger_process_msg': {'class': 'logging.Formatter',
-                                                  'format': '%(name)-15s: %(processName)-10s: %(message)s'}
+            'formatters': {'msg': {'format': '%(message)s'},
+                           'process_msg': {'format': '%(processName)-10s: %(message)s'},
+                           'logger_process_msg': {'format': '%(name)-15s: %(processName)-10s: %(message)s'}
                           },
             'filters': {},
             'handlers': {'console': {'formatter': 'msg', 'level': 'INFO',
@@ -187,11 +181,12 @@ class TestLCD(TestCase):
                     self.info_count += 1
                 return True
 
-        # Note: If Python 2.x, filter can't be just
-        # .     any callable taking a logging record as arg;
-        # .     it must have an attribute .filter
-        # .     which must be a callable taking a logging record as arg.
         if PY2:
+            # Note: If Python 2.x, filter can't be just
+            # .     any callable taking a logging record as arg;
+            # .     it must have an attribute .filter
+            # .     which must be a callable taking a LogRecord as arg.
+            # .     Typically one does this:
             _count_debug.filter = _count_debug
 
         lcd = LCDictBasic()
@@ -1072,4 +1067,3 @@ class TestLCD_Warnings(TestLCD_NoWarnings):
         super(TestLCD_Warnings, self).setUp()
         # change warnings to ALL
         self.lcd.warnings = LCDictBasic.Warnings.ALL
-

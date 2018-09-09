@@ -50,8 +50,7 @@ class TestLCDEx(TestCase):
 
         self.assertEqual(
             lcd['formatters'],
-            {'msg': {'class': 'logging.Formatter',
-                     'format': '%(message)s'},
+            {'msg': {'format': '%(message)s'},
             }
         )
 
@@ -205,8 +204,7 @@ class TestLCDEx_Misc(TestCase):
             d,
             {'disable_existing_loggers': False,
              'filters': {},
-             'formatters': {'msg': {'class': 'logging.Formatter',
-                                    'format': '%(message)s'}},
+             'formatters': {'msg': {'format': '%(message)s'}},
              'handlers': {'h': { # 'level': 'NOTSET',
                                 'formatter': 'msg'}},
              'incremental': False,
