@@ -1,0 +1,15 @@
+0.4.3
+--------
+* Removed 'class_' keyword parameter from add_formatter, no longer
+  add this to dict:
+  * it's not used by dictConfig, and
+  * it's inserted even when creating a custom formatter
+    (it's harmless but confusing)
+
+* Added method add_custom_formatter(...)
+    [ TODO: to LCDictBasic? LCDict? ]
+
+* Added example custom_formatter.py
+
+  Described in Guide to Examples chapter    [ TODO ]
+å

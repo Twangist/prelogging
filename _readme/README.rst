@@ -325,6 +325,9 @@ curly braces, quotes and colons. Typing or maintaining this, even with more
 whitespace, seems unappealing. By contrast, *prelogging* lets you build this
 dict entity by entity, omitting cruft and clutter.
 
+The only mandatory item in the dict is ``'version': 1``; all others, even the
+five sub-dictionaries, are optional.
+
 **Note**: In *prelogging*, loglevels are always identified by their names
 rather than their numeric values – thus, ``'DEBUG'`` not ``logging.DEBUG``, and
 so on. The values of parameters to *prelogging* methods that change the logging
@@ -575,11 +578,28 @@ specifications of its desired formatters, filters, handlers and loggers.
 might be all modules, only certain major modules, all or some subpackages, etc.)
 
 This approach is better than having each area of a program configure itself
-using logging config dicts. A call to ``dictConfig`` has the effect of clearing
-existing handlers from any logger that's configured in the logging config dict.
-*The root logger is always configured in a logging config dict*, so root handlers
-get blown away. By passing around a single dict and finally issuing a single call
-to configure logging, you avoid such unpleasant surprises.
+using logging config dicts. Here are a few shortcomings of that approach.
+
+Assuming the logging config dict contains ``'incremental': False`` (the default
+in both *logging* and *prelogging*, as shown above),
+a call to ``dictConfig`` clears existing handlers
+from any logger that's configured in the logging config dict.
+(You can preserve the root's handlers by leaving the ``'root'`` subdictionary
+empty, which will be the case if you don't attach handlers to it or set its
+loglevel to something other than ``WARNING``).
+
+If the logging config dict contains ``'incremental': True``, which we
+don't recommend, then many restrictions apply:
+
+* You can't add new formatters, filters – they're ignored.
+* You can't add handlers with new names – doing so raises ``ValueError``.
+* You can only change the loglevel of existing handlers, but you can't change it
+  to ``NOTSET`` – attempting to do so merely preserves the existing loglevel.
+
+(*prelogging* assumes that you'll want to leave ``'incremental'`` set to ``False``.)
+
+By passing around a single dict and finally issuing a single call to configure
+logging, you avoid such unpleasant surprises and limitations.
 
 The ``LCDictBuilderABC`` class provides a mini-microframework that automates
 this approach. Here, ``ABC`` stands for *abstract base class*. Each area of a
