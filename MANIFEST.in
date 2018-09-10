@@ -2,8 +2,10 @@ include run_tests.py
 include run_examples.py
 include run_all.py
 include _execfile.py
-include LICENSE.txt
+include setup.py
 include setup.cfg
+include CHANGELOG.txt
+include LICENSE.txt
 include README.rst
 
 recursive-include tests *
