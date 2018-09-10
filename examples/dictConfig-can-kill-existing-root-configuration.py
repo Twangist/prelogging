@@ -25,6 +25,7 @@ also opens the door to hard-to-diagnose logging bugs.
 """
 
 USE_PRELOGGING = False
+PRESERVE_ROOT = False
 
 
 def config_1():
@@ -59,9 +60,14 @@ def config_2():
                           format='%(name)s - %(levelname)s - %(message)s')
         lcd.add_stdout_handler('L-out', formatter='my-other-fmt')
         lcd.add_logger('L', handlers='L-out', propagate=False)
+        if preserve_root:
+            lcd['root'] = {}
         lcd.config()
         # lcd.dump()    # generates the dict below
     else:
+        root_dict = ({}
+                     if preserve_root else
+                     {'handlers': [], 'level': 'WARNING'})
         d = {'disable_existing_loggers': False,
              'filters': {},
              'formatters': {'my-other-fmt': {'class': 'logging.Formatter',
@@ -74,7 +80,7 @@ def config_2():
              'loggers': {'L': {'handlers': ['L-out'],
                                'level': 'NOTSET',
                                'propagate': False}},
-             'root': {'handlers': [], 'level': 'WARNING'},
+             'root': root_dict,
              'version': 1}
         logging.config.dictConfig(d)
 
@@ -105,9 +111,14 @@ if __name__ == '__main__':
 
     logging.getLogger('L').warning("Hey, look out!")
     # To stdout
-    # L - WARNING - Hey, look out!
+    #   L - WARNING - Hey, look out!
     logging.getLogger('').error('Your bad!')
     logging.getLogger('newlogger').critical('Alert from newlogger')
-    # These two lines write to stderr (with LastResort handler):
-    # Alert from newlogger
-    # Your bad!
+    # With PRESERVE_ROOT=False,
+    # the above two lines write to stderr (with LastResort handler):
+    #   Alert from newlogger
+    #   Your bad!
+    # With PRESERVE_ROOT=True, they write
+    #   ** Your bad!
+    #   ** Alert from newlogger
+    # (root handler is preserved)
