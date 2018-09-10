@@ -2,20 +2,21 @@ from prelogging import LCDict
 import logging
 
 __doc__ = """\
+This example helps make the case for ``LCDictBuilderABC``.
+
 A call to ``logging.config.dictConfig(d)`` kills existing handlers on any logger
-that's configured -- even with ``'disable_existing_loggers': False``. The root logger
-*always* get configured. Thus, multiple calls to ``logging.config.dictConfig(d)``
-leave the root with only the handlers specified for it in the last logging
-config dict passed.
+that's configured in ``d`` – even with ``'disable_existing_loggers': False``.
+The root logger *always* get configured if ``d['root']`` is nonempty. Thus,
+multiple calls to ``logging.config.dictConfig(d)`` can leave the root with only
+the handlers specified for it in the last logging config dict passed, or with
+no handlers at all.
 
 The same is of course true of ``LCDict.config()``.
 
 This program demonstrates the phenomenon, using either `prelogging` or pure
-`logging` APIs depending on the value of USE_PRELOGGING. Its purpose is to
-make the case for LCDictBuilderABC.
-
-More generally it's true that a call to lcd.config() annihilates any handlers
-attached to loggers configured in lcd.
+`logging` APIs depending on the value of the constant ``USE_PRELOGGING``.
+When the ``PRESERVE_ROOT`` constant is True, the ``'root'`` subdict is set
+to ``{}``, preserving the root's configuration, including its handlers.
 
 Thus, it's chancy to do "collaborative configuration" by having separate "areas"
 of a program build their own ``LCDict``\s and each call ``config()`` on them.
@@ -25,6 +26,7 @@ also opens the door to hard-to-diagnose logging bugs.
 """
 
 USE_PRELOGGING = False
+PRESERVE_ROOT = False
 
 
 def config_1():
@@ -59,9 +61,14 @@ def config_2():
                           format='%(name)s - %(levelname)s - %(message)s')
         lcd.add_stdout_handler('L-out', formatter='my-other-fmt')
         lcd.add_logger('L', handlers='L-out', propagate=False)
+        if preserve_root:
+            lcd['root'] = {}
         lcd.config()
         # lcd.dump()    # generates the dict below
     else:
+        root_dict = ({}
+                     if preserve_root else
+                     {'handlers': [], 'level': 'WARNING'})
         d = {'disable_existing_loggers': False,
              'filters': {},
              'formatters': {'my-other-fmt': {'class': 'logging.Formatter',
@@ -74,7 +81,7 @@ def config_2():
              'loggers': {'L': {'handlers': ['L-out'],
                                'level': 'NOTSET',
                                'propagate': False}},
-             'root': {'handlers': [], 'level': 'WARNING'},
+             'root': root_dict,
              'version': 1}
         logging.config.dictConfig(d)
 
@@ -105,9 +112,14 @@ if __name__ == '__main__':
 
     logging.getLogger('L').warning("Hey, look out!")
     # To stdout
-    # L - WARNING - Hey, look out!
+    #   L - WARNING - Hey, look out!
     logging.getLogger('').error('Your bad!')
     logging.getLogger('newlogger').critical('Alert from newlogger')
-    # These two lines write to stderr (with LastResort handler):
-    # Alert from newlogger
-    # Your bad!
+    # With PRESERVE_ROOT=False,
+    # the above two lines write to stderr (with LastResort handler):
+    #   Alert from newlogger
+    #   Your bad!
+    # With PRESERVE_ROOT=True, they write
+    #   ** Your bad!
+    #   ** Alert from newlogger
+    # (root handler is preserved)

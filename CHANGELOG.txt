@@ -1,0 +1,15 @@
+0.4.3rc1
+--------
+
+* Removed 'class_'/'class' keyword parameter from LCDictBasic.add_formatter,
+  it's no longer added to formatter sub-sub-dicts:
+
+  * it's not used by dictConfig, and
+  * it was inserted even when creating a custom formatter
+  * it's (perhaps harmless but) misleading: that's not how a custom formatter
+    is specified
+
+  Docs and tests updated accordingly.
+
+* Added examples custom_class_formatter.py, custom_callable_formatter.py,
+  and brief descriptions in Guide To Examples

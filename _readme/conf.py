@@ -59,8 +59,8 @@ author = 'Brian O\'Neill'
 # built documents.
 # version: the short X.Y version.
 # release: the full version, including alpha/beta/rc tags.
-version = '0.4.2'
-release = '0.4.2rc2'
+version = '0.4.3'
+release = '0.4.3rc1'
 ## Dev:
 # from prelogging import __version_sans_release__, __version__
 # version = __version_sans_release__

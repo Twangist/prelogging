@@ -219,8 +219,7 @@ Here's how to do so::
     from logging import config
 
     config_dict = {
-         'formatters': {'logger_level_msg': {'class': 'logging.Formatter',
-                                             'format': '%(name)-20s: %(levelname)-8s: '
+         'formatters': {'logger_level_msg': {'format': '%(name)-20s: %(levelname)-8s: '
                                                        '%(message)s'}},
          'handlers': {'h_stderr': {'class': 'logging.StreamHandler',
                                    'level': 'INFO',

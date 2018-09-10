@@ -81,20 +81,24 @@ Simple examples
     ``add_formatter``.
 
 
-dictConfig-kills-existing-root-handlers.py
+dictConfig-can-kill-existing-root-configuration.py
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+    This example helps make the case for ``LCDictBuilderABC``.
+
     A call to ``logging.config.dictConfig(d)`` kills existing handlers on any logger
-    that's configured -- even with ``'disable_existing_loggers': False``. The root logger
-    *always* get configured. Thus, multiple calls to ``logging.config.dictConfig(d)``
-    leave the root with only the handlers specified for it in the last logging
-    config dict passed.
+    that's configured in ``d`` – even with ``'disable_existing_loggers': False``.
+    The root logger *always* get configured if ``d['root']`` is nonempty. Thus,
+    multiple calls to ``logging.config.dictConfig(d)`` can leave the root with only
+    the handlers specified for it in the last logging config dict passed, or with
+    no handlers at all.
 
     The same is of course true of ``LCDict.config()``.
 
     This program demonstrates the phenomenon, using either `prelogging` or pure
     `logging` APIs depending on the value of the constant ``USE_PRELOGGING``.
-    It helps make the case for ``LCDictBuilderABC``.
+    When the ``PRESERVE_ROOT`` constant is True, the ``'root'`` subdict is set
+    to ``{}``, preserving the root's configuration, including its handlers.
 
     Thus, it's chancy to do "collaborative configuration" by having separate "areas"
     of a program build their own ``LCDict``\s and each call ``config()`` on them.
@@ -196,6 +200,19 @@ Filter examples
     Loosely adapts the section
     `Using Filters to impart contextual information <https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information>`_
     of The Logging Cookbook.
+
+Custom formatter examples
+++++++++++++++++++++++++++
+
+custom_class_formatter.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    How to configure and use a subclass of ``logging.Formatter`` as a formatter.
+
+custom_callable_formatter.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    How to configure and use a callable as a formatter.
 
 
 Multiprocessing examples

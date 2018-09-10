@@ -177,8 +177,7 @@ a dict with the given settings::
 
     >>> d.dump()
     {'filters': {},
-     'formatters': {'fmtr': {'class': 'logging.Formatter',
-                             'format': '%(name)s %(message)s'}},
+     'formatters': {'fmtr': {'format': '%(name)s %(message)s'}},
      'handlers': {},
      'incremental': False,
      'loggers': {},
@@ -199,8 +198,7 @@ for a new handler ``'fh'``::
 
     >>> d.dump()
     {'filters': {},
-     'formatters': {'fmtr': {'class': 'logging.Formatter',
-                             'format': '%(name)s %(message)s'}},
+     'formatters': {'fmtr': {'format': '%(name)s %(message)s'}},
      'handlers': {'fh': {'class': 'logging.FileHandler',
                          'delay': False,
                          'filename': 'logfile.log',
@@ -246,8 +244,7 @@ and examine the underlying dict::
     ... ).attach_root_handlers('fh', 'console')
     >>> d.dump()
     {'filters': {},
-     'formatters': {'fmtr': {'class': 'logging.Formatter',
-                             'format': '%(name)s %(message)s'}},
+     'formatters': {'fmtr': {'format': '%(name)s %(message)s'}},
      'handlers': {'console': {'class': 'logging.StreamHandler',
                               'formatter': 'fmtr',
                               'level': 'INFO'},

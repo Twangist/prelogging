@@ -256,7 +256,7 @@ class LCDictBasic(dict):
         return self['root']
 
     def add_formatter(self, formatter_name,     # *,
-                      class_='logging.Formatter',   # the typical case
+                      # class_='logging.Formatter',   # the typical case
                       format=None,
                       dateformat=None,
                       style='%',
@@ -299,15 +299,11 @@ class LCDictBasic(dict):
             |    ``'$'``     template-based formatting
 
         :param format_dict: Any other key/value pairs (for a custom
-            subclasses, perhaps)
+            formatters)
 
         :return: ``self``
         """
         self._check_readd(self.formatters, formatter_name, 'formatter')
-
-        assert 'class' not in format_dict
-        assert 'class_' not in format_dict
-        format_dict['class'] = class_
 
         # "fmt" is recognized too;
         # "format" takes precedence over "fmt" if both are given

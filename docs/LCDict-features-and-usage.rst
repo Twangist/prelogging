@@ -57,8 +57,7 @@ Formatter presets are added to an ``LCDict`` "just in time", when they're used::
     >>> lcd.dump()
     {'disable_existing_loggers': False,
      'filters': {},
-     'formatters': {'level_msg': {'class': 'logging.Formatter',
-                                  'format': '%(levelname)-8s: %(message)s'}},
+     'formatters': {'level_msg': {'format': '%(levelname)-8s: %(message)s'}},
      'handlers': {'console': {'class': 'logging.StreamHandler',
                               'formatter': 'level_msg',
                               'level': 'NOTSET',
