@@ -8,8 +8,7 @@ A call to ``logging.config.dictConfig(d)`` kills existing handlers on any logger
 that's configured in ``d`` – even with ``'disable_existing_loggers': False``.
 The root logger *always* get configured if ``d['root']`` is nonempty. Thus,
 multiple calls to ``logging.config.dictConfig(d)`` can leave the root with only
-the handlers specified for it in the last logging config dict passed, or with
-no handlers at all.
+the handlers specified for it in the last logging config dict passed (so, perhaps none).
 
 The same is of course true of ``LCDict.config()``.
 
